@@ -63,6 +63,8 @@ public:
 	
 	uint32_t GetCurrentSector();
 
+	void ProcessAudioPlaybackStart();
+
 	void SetIrqSource(PceCdRomIrqSource src);
 	void ClearIrqSource(PceCdRomIrqSource src);
 

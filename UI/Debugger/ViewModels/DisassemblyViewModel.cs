@@ -27,7 +27,7 @@ namespace Mesen.Debugger.ViewModels
 		public DisassemblyViewStyleProvider StyleProvider { get; }
 
 		[Reactive] public int ScrollPosition { get; set; } = 0;
-		[Reactive] public int MaxScrollPosition { get; private set; } = 10000;
+		[Reactive] public int MaxScrollPosition { get; private set; } = 1000000000;
 		[Reactive] public int TopAddress { get; private set; } = 0;
 		[Reactive] public CodeLineData[] Lines { get; private set; } = Array.Empty<CodeLineData>();
 

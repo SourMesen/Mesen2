@@ -21,6 +21,7 @@ enum class ScaleFilterType
 	Super2xSai = 4,
 	SuperEagle = 5,
 	Prescale = 6,
+	LcdGrid = 7,
 };
 
 enum class VideoFilterType
@@ -28,6 +29,7 @@ enum class VideoFilterType
 	None = 0,
 	NtscBlargg,
 	NtscBisqwit,
+	LcdGrid,
 	xBRZ2x,
 	xBRZ3x,
 	xBRZ4x,
@@ -89,6 +91,11 @@ struct VideoConfig
 	double Hue = 0;
 	double Saturation = 0;
 	double ScanlineIntensity = 0;
+
+	double LcdGridTopLeftBrightness = 1.0;
+	double LcdGridTopRightBrightness = 1.0;
+	double LcdGridBottomLeftBrightness = 1.0;
+	double LcdGridBottomRightBrightness = 1.0;
 
 	double NtscArtifacts = 0;
 	double NtscBleed = 0;
@@ -220,7 +227,10 @@ enum class ControllerType
 
 	//SMS
 	SmsController,
-	SmsLightPhaser
+	SmsLightPhaser,
+
+	//GBA
+	GbaController,
 };
 
 struct KeyMapping
@@ -338,7 +348,8 @@ enum class ConsoleType
 	Gameboy = 1,
 	Nes = 2,
 	PcEngine = 3,
-	Sms = 4
+	Sms = 4,
+	Gba = 5
 };
 
 enum class GameboyModel
@@ -397,6 +408,43 @@ struct GameboyConfig
 	uint32_t Obj0Colors[4] = { 0xFFFFFF, 0xB0B0B0, 0x686868, 0x000000 };
 	uint32_t Obj1Colors[4] = { 0xFFFFFF, 0xB0B0B0, 0x686868, 0x000000 };
 
+	uint32_t Square1Vol = 100;
+	uint32_t Square2Vol = 100;
+	uint32_t NoiseVol = 100;
+	uint32_t WaveVol = 100;
+};
+
+enum class GbaSaveType
+{
+	AutoDetect,
+	None,
+	Sram,
+	EepromUnknown,
+	Eeprom512,
+	Eeprom8192,
+	Flash64,
+	Flash128
+};
+
+struct GbaConfig
+{
+	ControllerConfig Controller;
+
+	bool SkipBootScreen = true;
+	bool DisableFrameSkipping = false;
+
+	bool BlendFrames = true;
+	bool GbaAdjustColors = true;
+
+	bool HideBgLayers[4] = {};
+	bool DisableSprites = false;
+
+	RamState RamPowerOnState = RamState::AllZeros;
+	GbaSaveType SaveType = GbaSaveType::AutoDetect;
+	bool AllowInvalidInput = false;
+
+	uint32_t ChannelAVol = 100;
+	uint32_t ChannelBVol = 100;
 	uint32_t Square1Vol = 100;
 	uint32_t Square2Vol = 100;
 	uint32_t NoiseVol = 100;
@@ -685,6 +733,10 @@ struct DebugConfig
 
 	bool SmsBreakOnNopLoad = false;
 
+	bool GbaBreakOnNopLoad = false;
+	bool GbaBreakOnInvalidOpCode = false;
+	bool GbaBreakOnUnalignedMemAccess = false;
+
 	bool ScriptAllowIoOsAccess = false;
 	bool ScriptAllowNetworkAccess = false;
 	uint32_t ScriptTimeout = 1;
@@ -924,4 +976,5 @@ enum class DebuggerFlags
 	NesDebuggerEnabled = (1 << 7),
 	PceDebuggerEnabled = (1 << 8),
 	SmsDebuggerEnabled = (1 << 9),
+	GbaDebuggerEnabled = (1 << 10),
 };

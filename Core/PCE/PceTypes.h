@@ -385,13 +385,10 @@ struct PceScsiBusState
 	bool Signals[9];
 	ScsiPhase Phase;
 
-	bool StatusDone;
 	bool MessageDone;
-	uint8_t MessageData;
 	uint8_t DataPort;
 	uint8_t ReadDataPort;
 
-	bool DataTransferDone;
 	uint32_t Sector;
 	uint8_t SectorsToRead;
 };

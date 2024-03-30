@@ -478,7 +478,6 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 			_emu->ProcessEvent(EventType::EndFrame);
 
 			_frameCount++;
-			_spc->ProcessEndFrame();
 			_regs->SetNmiFlag(true);
 			SendFrame();
 

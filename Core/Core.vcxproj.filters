@@ -2712,6 +2712,99 @@
     <ClInclude Include="Gameboy\APU\GbWaveChannel.h">
       <Filter>Gameboy\APU</Filter>
     </ClInclude>
+    <ClInclude Include="Gameboy\APU\GbEnvelope.h">
+      <Filter>Gameboy\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaConsole.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Debugger\DummyGbaCpu.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Debugger\GbaDebugger.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Debugger\GbaDisUtils.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Debugger\GbaEventManager.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Debugger\GbaPpuTools.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Debugger\GbaTraceLogger.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaCpu.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaTypes.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaMemoryManager.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaControlManager.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaDefaultVideoFilter.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaPpu.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Debugger\GbaAssembler.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaDmaController.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Input\GbaController.h">
+      <Filter>GBA\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaTimer.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\APU\GbaApu.h">
+      <Filter>GBA\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Cart\GbaCart.h">
+      <Filter>GBA\Cart</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Cart\GbaEeprom.h">
+      <Filter>GBA\Cart</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Cart\GbaFlash.h">
+      <Filter>GBA\Cart</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaSerial.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\APU\GbaNoiseChannel.h">
+      <Filter>GBA\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\APU\GbaSquareChannel.h">
+      <Filter>GBA\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\APU\GbaWaveChannel.h">
+      <Filter>GBA\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\APU\GbaEnvelope.h">
+      <Filter>GBA\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\APU\GbaApuFifo.h">
+      <Filter>GBA\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\GbaRomPrefetch.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\Video\GenericNtscFilter.h">
+      <Filter>Shared\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Debugger\GbaCodeDataLogger.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2915,6 +3008,72 @@
     <ClCompile Include="Gameboy\APU\GbWaveChannel.cpp">
       <Filter>Gameboy\APU</Filter>
     </ClCompile>
+    <ClCompile Include="GBA\GbaConsole.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Debugger\DummyGbaCpu.cpp">
+      <Filter>GBA\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Debugger\GbaDebugger.cpp">
+      <Filter>GBA\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Debugger\GbaDisUtils.cpp">
+      <Filter>GBA\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Debugger\GbaEventManager.cpp">
+      <Filter>GBA\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Debugger\GbaPpuTools.cpp">
+      <Filter>GBA\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Debugger\GbaTraceLogger.cpp">
+      <Filter>GBA\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaCpu.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaDefaultVideoFilter.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\ExpressionEvaluator.Gba.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaCpu.Arm.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaCpu.Thumb.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaPpu.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaDmaController.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaControlManager.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaTimer.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\APU\GbaApu.cpp">
+      <Filter>GBA\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Cart\GbaCart.cpp">
+      <Filter>GBA\Cart</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\GbaMemoryManager.cpp">
+      <Filter>GBA</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\APU\GbaNoiseChannel.cpp">
+      <Filter>GBA\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\APU\GbaSquareChannel.cpp">
+      <Filter>GBA\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\APU\GbaWaveChannel.cpp">
+      <Filter>GBA\APU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">
@@ -3009,6 +3168,21 @@
     </Filter>
     <Filter Include="Gameboy\APU">
       <UniqueIdentifier>{2ce2d3b6-58f7-4b68-bf2b-1236e5bbfaed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GBA">
+      <UniqueIdentifier>{108b719f-c802-46f9-b986-8c4ec5fa435b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GBA\Debugger">
+      <UniqueIdentifier>{7d3eff06-05c9-4bc9-9e23-ae2a82e7d257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GBA\Input">
+      <UniqueIdentifier>{a17e421b-59fb-4e80-9f21-ae1bb819812c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GBA\APU">
+      <UniqueIdentifier>{6dc9cf91-5871-4abe-8c4f-610f9d6f3eb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GBA\Cart">
+      <UniqueIdentifier>{4cc96bee-c354-4a9b-9947-85959ccc072f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

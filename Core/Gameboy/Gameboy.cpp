@@ -14,7 +14,6 @@
 #include "Gameboy/Carts/GbsCart.h"
 #include "Gameboy/GbBootRom.h"
 #include "Gameboy/GbDefaultVideoFilter.h"
-#include "SNES/SnesNtscFilter.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/CheatManager.h"
 #include "Shared/BatteryManager.h"
@@ -318,6 +317,11 @@ GameboyHeader Gameboy::GetHeader()
 	return header;
 }
 
+bool Gameboy::IsCpuStopped()
+{
+	return _cpu->GetState().Stopped;
+}
+
 bool Gameboy::IsCgb()
 {
 	return _model == GameboyModel::GameboyColor;
@@ -503,13 +507,15 @@ void Gameboy::RunFrame()
 	while(frameCount == _ppu->GetFrameCount()) {
 		_cpu->Exec();
 	}
+
+	_apu->Run();
+	_apu->PlayQueuedAudio();
 }
 
 void Gameboy::ProcessEndOfFrame()
 {
 	_controlManager->UpdateControlDevices();
 	_controlManager->UpdateInputState();
-	_apu->Run();
 }
 
 BaseControlManager* Gameboy::GetControlManager()
@@ -569,7 +575,7 @@ uint32_t Gameboy::GetMasterClockRate()
 BaseVideoFilter* Gameboy::GetVideoFilter(bool getDefaultFilter)
 {
 	if(getDefaultFilter || GetRomFormat() == RomFormat::Gbs) {
-		return new GbDefaultVideoFilter(_emu);
+		return new GbDefaultVideoFilter(_emu, false);
 	}
 
 	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
@@ -577,10 +583,10 @@ BaseVideoFilter* Gameboy::GetVideoFilter(bool getDefaultFilter)
 	switch(filterType) {
 		case VideoFilterType::NtscBlargg:
 		case VideoFilterType::NtscBisqwit:
-			return new SnesNtscFilter(_emu);
+			return new GbDefaultVideoFilter(_emu, true);
 
 		default:
-			return new GbDefaultVideoFilter(_emu);
+			return new GbDefaultVideoFilter(_emu, false);
 	}
 }
 

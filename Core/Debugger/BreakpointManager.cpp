@@ -81,12 +81,13 @@ BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)
 	}
 }
 
+template<uint8_t accessWidth>
 int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address, bool processMarkedBreakpoints)
 {
 	EvalResultType resultType;
 	vector<Breakpoint> &breakpoints = _breakpoints[(int)operationInfo.Type];
 	for(size_t i = 0, len = breakpoints.size(); i < len; i++) {
-		if(breakpoints[i].Matches(operationInfo, address)) {
+		if(breakpoints[i].Matches<accessWidth>(operationInfo, address)) {
 			if(breakpoints[i].HasCondition() && !_bpExpEval->Evaluate(_rpnList[(int)operationInfo.Type][i], resultType, operationInfo, address)) {
 				continue;
 			}
@@ -102,3 +103,7 @@ int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo
 
 	return -1;
 }
+
+template int BreakpointManager::InternalCheckBreakpoint<1>(MemoryOperationInfo operationInfo, AddressInfo& address, bool processMarkedBreakpoints);
+template int BreakpointManager::InternalCheckBreakpoint<2>(MemoryOperationInfo operationInfo, AddressInfo& address, bool processMarkedBreakpoints);
+template int BreakpointManager::InternalCheckBreakpoint<4>(MemoryOperationInfo operationInfo, AddressInfo& address, bool processMarkedBreakpoints);

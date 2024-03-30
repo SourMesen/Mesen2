@@ -90,7 +90,7 @@ extern "C"
 	DllExport void __stdcall GetAvailableInputOverrides(uint8_t* availableIndexes) { WithDebugger(void, GetAvailableInputOverrides(availableIndexes)); }
 	
 	DllExport void __stdcall GetTokenList(CpuType cpuType, char* tokenList) { WithDebugger(void, GetTokenList(cpuType, tokenList)); }
-	DllExport int32_t __stdcall EvaluateExpression(const char* expression, CpuType cpuType, EvalResultType* resultType, bool useCache) { return WithDebugger(int32_t, EvaluateExpression(expression, cpuType, *resultType, useCache)); }
+	DllExport int64_t __stdcall EvaluateExpression(const char* expression, CpuType cpuType, EvalResultType* resultType, bool useCache) { return WithDebugger(int64_t, EvaluateExpression(expression, cpuType, *resultType, useCache)); }
 
 	DllExport void __stdcall GetCallstack(CpuType cpuType, StackFrameInfo* callstackArray, uint32_t& callstackSize)
 	{
@@ -161,8 +161,7 @@ extern "C"
 	DllExport DebugTilemapTileInfo __stdcall GetTilemapTileInfo(uint32_t x, uint32_t y, CpuType cpuType, GetTilemapOptions options, uint8_t* vram, BaseState& state) { return WithTool(DebugTilemapTileInfo, GetPpuTools(cpuType), GetTilemapTileInfo(x, y, vram, options, state)); }
 
 	DllExport DebugSpritePreviewInfo __stdcall GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state) { return WithTool(DebugSpritePreviewInfo, GetPpuTools(cpuType), GetSpritePreviewInfo(options, state)); }
-	DllExport void __stdcall GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* buffer) { WithToolVoid(GetPpuTools(cpuType), GetSpritePreview(options, state, vram, oamRam, palette, buffer)); }
-	DllExport void __stdcall GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo sprites[]) { WithToolVoid(GetPpuTools(cpuType), GetSpriteList(options, state, vram, oamRam, palette, sprites)); }
+	DllExport void __stdcall GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo sprites[], uint32_t* spritePreviews, uint32_t* screenPreview) { WithToolVoid(GetPpuTools(cpuType), GetSpriteList(options, state, vram, oamRam, palette, sprites, spritePreviews, screenPreview)); }
 
 	DllExport DebugPaletteInfo __stdcall GetPaletteInfo(CpuType cpuType, GetPaletteInfoOptions options) { return WithTool(DebugPaletteInfo, GetPpuTools(cpuType), GetPaletteInfo(options)); }
 	DllExport void __stdcall SetPaletteColor(CpuType cpuType, int32_t colorIndex, uint32_t color) { WithToolVoid(GetPpuTools(cpuType), SetPaletteColor(colorIndex, color)); }

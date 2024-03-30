@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Gameboy/APU/GbSquareChannel.h"
 #include "Gameboy/APU/GbApu.h"
+#include "Gameboy/APU/GbEnvelope.h"
 
 GbSquareChannel::GbSquareChannel(GbApu* apu)
 {
@@ -52,18 +53,16 @@ void GbSquareChannel::ClockSweepUnit()
 		if(newFreq >= 2048) {
 			_state.Enabled = false;
 			_state.SweepEnabled = false;
+			_state.Output = 0;
 		} else {
 			//"If the new frequency is 2047 or less and the sweep shift is not zero, this new frequency is written back to the shadow frequency and square 1's frequency in NR13 and NR14,"
 			if(_state.SweepShift) {
 				_state.Frequency = newFreq;
 				_state.SweepFreq = newFreq;
 
-				newFreq = GetSweepTargetFrequency();
-				if(newFreq >= 2048) {
-					//"then frequency calculation and overflow check are run AGAIN immediately using this new value, but this second new frequency is not written back."
-					_state.Enabled = false;
-					_state.SweepEnabled = false;
-				}
+				//8 cpu cycles later, the next frequency is checked
+				//This is checked by SameSuite's channel_1_sweep test
+				_state.SweepUpdateDelay = 8 * 4;
 			}
 		}
 	}
@@ -86,40 +85,19 @@ void GbSquareChannel::ClockLengthCounter()
 		if(_state.Length == 0) {
 			//"Length becoming 0 should clear status"
 			_state.Enabled = false;
-			UpdateOutput();
+			_state.Output = 0;
 		}
 	}
 }
 
 void GbSquareChannel::UpdateOutput()
 {
-	if(_state.Enabled) {
-		_state.Output = _dutySequences[_state.Duty][(_state.DutyPos - 1) & 0x07] * _state.Volume;
-	} else {
-		_state.Output = 0;
-	}
+	_state.Output = _dutySequences[_state.Duty][(_state.DutyPos - 1) & 0x07] * _state.Volume;
 }
 
 void GbSquareChannel::ClockEnvelope()
 {
-	if(_state.EnvTimer > 0 && _state.EnvPeriod > 0 && !_state.EnvStopped) {
-		_state.EnvTimer--;
-
-		if(_state.EnvTimer == 0) {
-			if(_state.EnvRaiseVolume && _state.Volume < 0x0F) {
-				_state.Volume++;
-			} else if(!_state.EnvRaiseVolume && _state.Volume > 0) {
-				_state.Volume--;
-			} else {
-				_state.EnvStopped = true;
-			}
-
-			//Clocking envelope should update output immediately (based on div_trigger_volume test)
-			UpdateOutput();
-
-			_state.EnvTimer = _state.EnvPeriod;
-		}
-	}
+	GbEnvelope::ClockEnvelope(_state, *this);
 }
 
 uint8_t GbSquareChannel::GetRawOutput()
@@ -142,6 +120,26 @@ void GbSquareChannel::Exec(uint32_t clocksToRun)
 
 	if(!_state.Enabled) {
 		return;
+	}
+
+	if(_state.SweepUpdateDelay) {
+		if(_state.SweepUpdateDelay > clocksToRun) {
+			_state.SweepUpdateDelay -= clocksToRun;
+		} else {
+			_state.SweepUpdateDelay = 0;
+			
+			//"If the new frequency is 2047 or less and the sweep shift is not zero, this new frequency is written back to the shadow frequency and square 1's frequency in NR13 and NR14,"
+			if(_state.SweepShift) {
+				uint16_t newFreq = GetSweepTargetFrequency();
+				if(newFreq >= 2048) {
+					//"then frequency calculation and overflow check are run AGAIN immediately using this new value, but this second new frequency is not written back."
+					_state.Enabled = false;
+					_state.SweepEnabled = false;
+					_state.Output = 0;
+					return;
+				}
+			}
+		}
 	}
 
 	_state.Timer -= clocksToRun;
@@ -196,6 +194,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				//while negate mode was enabled will disable the channel
 				//Required for sweep-details tests 4, 5 and 6
 				_state.Enabled = false;
+				_state.Output = 0;
 			}
 			break;
 
@@ -204,32 +203,9 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 			_state.Duty = (value & 0xC0) >> 6;
 			break;
 
-		case 2:
-		{
-			if(_state.EnvPeriod == 0 && !_state.EnvStopped) {
-				//"If the old envelope period was zero and the envelope is still doing automatic updates, volume is incremented by 1"
-				_state.Volume++;
-			} else if(!_state.EnvRaiseVolume) {
-				//"otherwise if the envelope was in subtract mode, volume is incremented by 2"
-				_state.Volume += 2;
-			}
-
-			bool raiseVolume = (value & 0x08) != 0;
-			if(raiseVolume != _state.EnvRaiseVolume) {
-				//"If the mode was changed (add to subtract or subtract to add), volume is set to 16 - volume."
-				_state.Volume = 16 - _state.Volume;
-			}
-
-			//"Only the low 4 bits of volume are kept after the above operations."
-			_state.Volume &= 0xF;
-
-			_state.EnvPeriod = value & 0x07;
-			_state.EnvRaiseVolume = raiseVolume;
-			_state.EnvVolume = (value & 0xF0) >> 4;
-
-			if(!(value & 0xF8)) {
-				_state.Enabled = false;
-			}
+		case 2: {
+			GbEnvelope::WriteRegister(_state, value, *this);
+			UpdateOutput();
 			break;
 		}
 
@@ -252,6 +228,15 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 					_state.Timer -= 4;
 				}
 
+				//"Channel volume is reloaded from NRx2."
+				_state.Volume = _state.EnvVolume;
+
+				if(_state.Enabled) {
+					//Updating the output here is needed to pass the channel_1_restart_nrx2_glitch test
+					//Only do this if the channel was already enabled, otherwise other tests fail
+					UpdateOutput();
+				}
+
 				//"Channel is enabled, if volume is not 0 or raise volume flag is set"
 				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
 
@@ -264,9 +249,6 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				//"Volume envelope timer is reloaded with period."
 				_state.EnvTimer = _state.EnvPeriod;
 				_state.EnvStopped = false;
-
-				//"Channel volume is reloaded from NRx2."
-				_state.Volume = _state.EnvVolume;
 
 				//Sweep-related
 				//"During a trigger event, several things occur:"
@@ -283,12 +265,8 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 
 				//"If the sweep shift is non-zero, frequency calculation and the overflow check are performed immediately."
 				if(_state.SweepShift > 0) {
-					//Calculate new frequency and disable channel as needed (but don't save it in SweepFreq - otherwise sweep-details #2 fails)
-					if(GetSweepTargetFrequency() > 2047) {
-						_state.Enabled = false;
-						_state.SweepEnabled = false;
-					}
-
+					//After ~8 cpu cycles, the next frequency is checked (which can disable the channel)
+					_state.SweepUpdateDelay = 8 * 4 + 2;
 					if(_state.SweepNegate) {
 						_state.SweepNegateCalcDone = true;
 					}
@@ -307,5 +285,6 @@ void GbSquareChannel::Serialize(Serializer& s)
 	SV(_state.Volume); SV(_state.EnvVolume); SV(_state.EnvRaiseVolume); SV(_state.EnvPeriod); SV(_state.EnvTimer); SV(_state.Duty); SV(_state.Frequency);
 	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.DutyPos); SV(_state.Output);
 	SV(_state.SweepNegateCalcDone); SV(_state.EnvStopped);
+	SV(_state.SweepUpdateDelay);
 	SV(_dac);
 }

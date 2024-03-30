@@ -94,6 +94,12 @@ uint32_t PceCdRom::GetCurrentSector()
 	}
 }
 
+void PceCdRom::ProcessAudioPlaybackStart()
+{
+	SetIrqSource(PceCdRomIrqSource::DataTransferDone);
+	_scsi.SetStatusMessage(ScsiStatus::Good, 0);
+}
+
 void PceCdRom::SetIrqSource(PceCdRomIrqSource src)
 {
 	//LogDebug("Set IRQ source: " + HexUtilities::ToHex((uint8_t)src));

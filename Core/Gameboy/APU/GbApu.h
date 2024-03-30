@@ -58,6 +58,8 @@ public:
 
 	void Run();
 
+	void PlayQueuedAudio();
+
 	void GetSoundSamples(int16_t* &samples, uint32_t& sampleCount);
 
 	void ClockFrameSequencer();

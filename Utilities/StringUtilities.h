@@ -72,4 +72,19 @@ public:
 		}
 		return true;
 	}
+
+	static string GetString(char* src, uint32_t maxLen)
+	{
+		return GetString((uint8_t*)src, maxLen);
+	}
+
+	static string GetString(uint8_t* src, int maxLen)
+	{
+		for(int i = 0; i < maxLen; i++) {
+			if(src[i] == 0) {
+				return string(src, src + i);
+			}
+		}
+		return string(src, src+maxLen);
+	}
 };

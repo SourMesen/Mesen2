@@ -47,15 +47,6 @@ enum class BreakpointType
 	Write = 2,
 };
 
-enum class BreakpointCategory
-{
-	Snes = 0,
-	SnesVideoRam = 1,
-	Oam = 2,
-	CgRam = 3,
-	Spc = 4
-};
-
 namespace CdlFlags
 {
 	enum CdlFlags : uint8_t
@@ -154,7 +145,7 @@ struct CodeLineData
 	uint16_t Flags;
 
 	EffectiveAddressInfo EffectiveAddress;
-	uint16_t Value;
+	uint32_t Value;
 	CpuType LineCpuType;
 
 	uint8_t ByteCode[8];
@@ -207,7 +198,9 @@ enum class TileFormat
 	PceBackgroundBpp2Cg0,
 	PceBackgroundBpp2Cg1,
 	SmsBpp4,
-	SmsSgBpp1
+	SmsSgBpp1,
+	GbaBpp4,
+	GbaBpp8,
 };
 
 enum class TileLayout
@@ -334,8 +327,12 @@ enum class BreakSource
 	NesBreakOnExtOutputMode,
 
 	PceBreakOnInvalidVramAddress,
-
+	
 	SmsNopLoad,
+
+	GbaInvalidOpCode,
+	GbaNopLoad,
+	GbaUnalignedMemoryAccess
 };
 
 struct BreakEvent
@@ -363,10 +360,10 @@ enum class StepType
 
 struct StepRequest
 {
+	int64_t BreakAddress = -1;
 	int32_t StepCount = -1;
 	int32_t PpuStepCount = -1;
 	int32_t CpuCycleStepCount = -1;
-	int32_t BreakAddress = -1;
 	int32_t BreakScanline = INT32_MIN;
 	StepType Type = StepType::Step;
 	

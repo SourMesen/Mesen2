@@ -13,13 +13,12 @@ private:
 	GbNoiseState _state = {};
 	GbChannelDac _dac = {};
 	GbApu* _apu = nullptr;
-	
-	void UpdateOutput();
 
 public:
 	GbNoiseChannel(GbApu* apu);
 	GbNoiseState& GetState();
 
+	void UpdateOutput();
 	bool Enabled();
 	void Disable();
 	void ResetLengthCounter();

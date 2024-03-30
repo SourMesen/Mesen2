@@ -21,13 +21,12 @@ private:
 	GbChannelDac _dac = {};
 	GbApu* _apu = nullptr;
 
-	void UpdateOutput();
-
 public:
 	GbSquareChannel(GbApu* apu);
 
 	GbSquareState& GetState();
 
+	void UpdateOutput();
 	bool Enabled();
 	void Disable();
 	void ResetLengthCounter();

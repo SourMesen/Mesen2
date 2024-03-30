@@ -38,6 +38,8 @@
 #include "PCE/PceTypes.h"
 #include "SMS/Debugger/SmsDebugger.h"
 #include "SMS/SmsTypes.h"
+#include "GBA/Debugger/GbaDebugger.h"
+#include "GBA/GbaTypes.h"
 #include "Shared/BaseControlManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Audio/SoundMixer.h"
@@ -90,6 +92,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 			case CpuType::Nes: debugger.reset(new NesDebugger(this)); break;
 			case CpuType::Pce: debugger.reset(new PceDebugger(this)); break;
 			case CpuType::Sms: debugger.reset(new SmsDebugger(this)); break;
+			case CpuType::Gba: debugger.reset(new GbaDebugger(this)); break;
 			default: throw std::runtime_error("Unsupported CPU type");
 		}
 
@@ -163,6 +166,7 @@ uint64_t Debugger::GetCpuCycleCount()
 		case CpuType::Nes: return GetDebugger<type, NesDebugger>()->GetCpuCycleCount();
 		case CpuType::Pce: return GetDebugger<type, PceDebugger>()->GetCpuCycleCount();
 		case CpuType::Sms: return GetDebugger<type, SmsDebugger>()->GetCpuCycleCount();
+		case CpuType::Gba: return GetDebugger<type, GbaDebugger>()->GetCpuCycleCount();
 		default: return 0; break;
 	}
 }
@@ -208,6 +212,7 @@ void Debugger::ProcessInstruction()
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessInstruction(); break;
 		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessInstruction(); break;
 		case CpuType::Sms: GetDebugger<type, SmsDebugger>()->ProcessInstruction(); break;
+		case CpuType::Gba: GetDebugger<type, GbaDebugger>()->ProcessInstruction(); break;
 	}
 
 	debugger->AllowChangeProgramCounter = false;
@@ -220,7 +225,7 @@ void Debugger::ProcessInstruction()
 	}
 }
 
-template<CpuType type, MemoryAccessFlags flags, typename T>
+template<CpuType type, uint8_t accessWidth, MemoryAccessFlags flags, typename T>
 void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
@@ -239,6 +244,7 @@ void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType op
 		case CpuType::Nes: GetDebugger<CpuType::Nes, NesDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Pce: GetDebugger<CpuType::Pce, PceDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Sms: GetDebugger<CpuType::Sms, SmsDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Gba: GetDebugger<CpuType::Gba, GbaDebugger>()->ProcessRead<accessWidth>(addr, value, opType); break;
 	}
 
 	if(_scriptManager->HasCpuMemoryCallbacks()) {
@@ -246,7 +252,7 @@ void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType op
 	}
 }
 
-template<CpuType type, MemoryAccessFlags flags, typename T>
+template<CpuType type, uint8_t accessWidth, MemoryAccessFlags flags, typename T>
 bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
@@ -265,6 +271,7 @@ bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType o
 		case CpuType::Nes: GetDebugger<CpuType::Nes, NesDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Pce: GetDebugger<CpuType::Pce, PceDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Sms: GetDebugger<CpuType::Sms, SmsDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Gba: GetDebugger<CpuType::Gba, GbaDebugger>()->ProcessWrite<accessWidth>(addr, value, opType); break;
 	}
 	
 	if(_scriptManager->HasCpuMemoryCallbacks()) {
@@ -320,6 +327,12 @@ template<CpuType type>
 void Debugger::ProcessHaltedCpu()
 {
 	IDebugger* dbg = _debuggers[(int)type].Debugger.get();
+	if(dbg->IsStepBack() && ProcessStepBack(dbg)) {
+		dbg->AllowChangeProgramCounter = true; //set to true temporarily to allow debugger to pause on break requests when rewinding/step back is active
+		SleepOnBreakRequest<type>();
+		dbg->AllowChangeProgramCounter = false;
+		return;
+	}
 
 	//Set AllowChangeProgramCounter to allow SleepUntilResume to break properly
 	dbg->AllowChangeProgramCounter = true;
@@ -401,6 +414,7 @@ void Debugger::ProcessPpuCycle()
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuCycle(); break;
 		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessPpuCycle(); break;
 		case CpuType::Sms: GetDebugger<type, SmsDebugger>()->ProcessPpuCycle(); break;
+		case CpuType::Gba: GetDebugger<type, GbaDebugger>()->ProcessPpuCycle(); break;
 		default: throw std::runtime_error("Invalid cpu type");
 	}
 }
@@ -456,9 +470,10 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 	_executionStopped = false;
 }
 
+template<uint8_t accessWidth>
 void Debugger::ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 {
-	int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo, true);
+	int breakpointId = bpManager->CheckBreakpoint<accessWidth>(operation, addressInfo, true);
 	if(_breakRequestCount || _waitForBreakResume || (step.BreakNeeded && (!_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints || step.Type == StepType::CpuCycleStep))) {
 		SleepUntilResume(sourceCpu, step.Source);
 	} else {
@@ -468,13 +483,14 @@ void Debugger::ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, Brea
 	}
 }
 
+template<uint8_t accessWidth>
 void Debugger::ProcessPredictiveBreakpoint(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 {
 	if(_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints) {
 		return;
 	}
 
-	int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo, false);
+	int breakpointId = bpManager->CheckBreakpoint<accessWidth>(operation, addressInfo, false);
 	if(breakpointId >= 0) {
 		SleepUntilResume(sourceCpu, BreakSource::Breakpoint, &operation, breakpointId);
 	}
@@ -570,7 +586,7 @@ void Debugger::GetTokenList(CpuType cpuType, char* tokenList)
 	expEval.GetTokenList(tokenList);
 }
 
-int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
+int64_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
 	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, MemoryType::None };
 	AddressInfo addressInfo = { 0, MemoryType::None };
@@ -605,6 +621,7 @@ void Debugger::PauseOnNextFrame()
 		case CpuType::Nes: Step(CpuType::Nes, 241, StepType::SpecificScanline, BreakSource::PpuStep); break;
 		case CpuType::Pce: Step(CpuType::Pce, 243, StepType::SpecificScanline, BreakSource::PpuStep); break;
 		case CpuType::Sms: Step(CpuType::Sms, 240, StepType::SpecificScanline, BreakSource::PpuStep); break;
+		case CpuType::Gba: Step(CpuType::Gba, 160, StepType::SpecificScanline, BreakSource::PpuStep); break;
 	}
 }
 
@@ -691,6 +708,7 @@ bool Debugger::IsDebugWindowOpened(CpuType cpuType)
 		case CpuType::Nes: return _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
 		case CpuType::Pce: return _settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled);
 		case CpuType::Sms: return _settings->CheckDebuggerFlag(DebuggerFlags::SmsDebuggerEnabled);
+		case CpuType::Gba: return _settings->CheckDebuggerFlag(DebuggerFlags::GbaDebuggerEnabled);
 	}
 
 	return false;
@@ -709,8 +727,10 @@ bool Debugger::IsBreakOptionEnabled(BreakSource src)
 		case BreakSource::NesBreakOnCpuCrash: return _settings->GetDebugConfig().NesBreakOnCpuCrash;
 		case BreakSource::NesBreakOnExtOutputMode: return _settings->GetDebugConfig().NesBreakOnExtOutputMode;
 		case BreakSource::PceBreakOnInvalidVramAddress: return _settings->GetDebugConfig().PceBreakOnInvalidVramAddress;
+		case BreakSource::GbaInvalidOpCode: return _settings->GetDebugConfig().GbaBreakOnInvalidOpCode;
+		case BreakSource::GbaUnalignedMemoryAccess: return _settings->GetDebugConfig().GbaBreakOnUnalignedMemAccess;
 	}
-	return false;
+	return true;
 }
 
 void Debugger::BreakImmediately(CpuType sourceCpu, BreakSource source)
@@ -738,6 +758,7 @@ void Debugger::GetCpuState(BaseState &dstState, CpuType cpuType)
 		case CpuType::Nes: memcpy(&dstState, &srcState, sizeof(NesCpuState)); break;
 		case CpuType::Pce: memcpy(&dstState, &srcState, sizeof(PceCpuState)); break;
 		case CpuType::Sms: memcpy(&dstState, &srcState, sizeof(SmsCpuState)); break;
+		case CpuType::Gba: memcpy(&dstState, &srcState, sizeof(GbaCpuState)); break;
 	}
 }
 
@@ -756,6 +777,7 @@ void Debugger::SetCpuState(BaseState& srcState, CpuType cpuType)
 		case CpuType::Nes: memcpy(&dstState, &srcState, sizeof(NesCpuState)); break;
 		case CpuType::Pce: memcpy(&dstState, &srcState, sizeof(PceCpuState)); break;
 		case CpuType::Sms: memcpy(&dstState, &srcState, sizeof(SmsCpuState)); break;
+		case CpuType::Gba: memcpy(&dstState, &srcState, sizeof(GbaCpuState)); break;
 	}
 }
 
@@ -796,6 +818,11 @@ void Debugger::GetPpuState(BaseState& state, CpuType cpuType)
 			GetDebugger<CpuType::Sms, SmsDebugger>()->GetPpuState(state);
 			break;
 		}
+		
+		case CpuType::Gba: {
+			GetDebugger<CpuType::Gba, GbaDebugger>()->GetPpuState(state);
+			break;
+		}
 	}
 }
 
@@ -832,6 +859,11 @@ void Debugger::SetPpuState(BaseState& state, CpuType cpuType)
 			GetDebugger<CpuType::Sms, SmsDebugger>()->SetPpuState(state);
 			break;
 		}
+
+		case CpuType::Gba: {
+			GetDebugger<CpuType::Gba, GbaDebugger>()->SetPpuState(state);
+			break;
+		}
 	}
 }
 
@@ -858,6 +890,11 @@ void Debugger::SetProgramCounter(CpuType cpuType, uint32_t addr)
 uint32_t Debugger::GetProgramCounter(CpuType cpuType, bool getInstPc)
 {
 	return _debuggers[(int)cpuType].Debugger->GetProgramCounter(getInstPc);
+}
+
+uint8_t Debugger::GetCpuFlags(CpuType cpuType)
+{
+	return _debuggers[(int)cpuType].Debugger->GetCpuFlags();
 }
 
 CpuInstructionProgress Debugger::GetInstructionProgress(CpuType cpuType)
@@ -939,6 +976,7 @@ bool Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption str
 		case CpuType::Nes: return GetDebugger<CpuType::Nes, NesDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 		case CpuType::Pce: return GetDebugger<CpuType::Pce, PceDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 		case CpuType::Sms: return GetDebugger<CpuType::Sms, SmsDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
+		case CpuType::Gba: return GetDebugger<CpuType::Gba, GbaDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 	}
 
 	return false;
@@ -1056,11 +1094,12 @@ template void Debugger::ProcessInstruction<CpuType::Gameboy>();
 template void Debugger::ProcessInstruction<CpuType::Nes>();
 template void Debugger::ProcessInstruction<CpuType::Pce>();
 template void Debugger::ProcessInstruction<CpuType::Sms>();
+template void Debugger::ProcessInstruction<CpuType::Gba>();
 
 template void Debugger::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::Spc, MemoryAccessFlags::DspAccess>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Spc, 1, MemoryAccessFlags::DspAccess>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint16_t& value, MemoryOperationType opType);
@@ -1069,11 +1108,14 @@ template void Debugger::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8
 template void Debugger::ProcessMemoryRead<CpuType::Nes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Pce>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Sms>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Gba, 1>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Gba, 2>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Gba, 4>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
 
 template bool Debugger::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template bool Debugger::ProcessMemoryWrite<CpuType::Spc, MemoryAccessFlags::DspAccess>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Spc, 1, MemoryAccessFlags::DspAccess>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint16_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
@@ -1081,6 +1123,9 @@ template bool Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint
 template bool Debugger::ProcessMemoryWrite<CpuType::Nes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Sms>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Gba, 1>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Gba, 2>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Gba, 4>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
 
 template void Debugger::ProcessMemoryAccess<CpuType::Pce, MemoryType::PceAdpcmRam, MemoryOperationType::Write>(uint32_t addr, uint8_t& value);
 template void Debugger::ProcessMemoryAccess<CpuType::Pce, MemoryType::PceAdpcmRam, MemoryOperationType::Read>(uint32_t addr, uint8_t& value);
@@ -1096,6 +1141,7 @@ template void Debugger::ProcessHaltedCpu<CpuType::Snes>();
 template void Debugger::ProcessHaltedCpu<CpuType::Spc>();
 template void Debugger::ProcessHaltedCpu<CpuType::Gameboy>();
 template void Debugger::ProcessHaltedCpu<CpuType::Sms>();
+template void Debugger::ProcessHaltedCpu<CpuType::Gba>();
 
 template void Debugger::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
@@ -1103,6 +1149,7 @@ template void Debugger::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, 
 template void Debugger::ProcessInterrupt<CpuType::Nes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Pce>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Sms>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+template void Debugger::ProcessInterrupt<CpuType::Gba>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
 template void Debugger::ProcessPpuRead<CpuType::Snes>(uint16_t addr, uint8_t& value, MemoryType memoryType, MemoryOperationType opType);
 template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t& value, MemoryType memoryType, MemoryOperationType opType);
@@ -1123,3 +1170,12 @@ template void Debugger::ProcessPpuCycle<CpuType::Gameboy>();
 template void Debugger::ProcessPpuCycle<CpuType::Nes>();
 template void Debugger::ProcessPpuCycle<CpuType::Pce>();
 template void Debugger::ProcessPpuCycle<CpuType::Sms>();
+template void Debugger::ProcessPpuCycle<CpuType::Gba>();
+
+template void Debugger::ProcessBreakConditions<1>(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+template void Debugger::ProcessBreakConditions<2>(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+template void Debugger::ProcessBreakConditions<4>(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+
+template void Debugger::ProcessPredictiveBreakpoint<1>(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+template void Debugger::ProcessPredictiveBreakpoint<2>(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+template void Debugger::ProcessPredictiveBreakpoint<4>(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);

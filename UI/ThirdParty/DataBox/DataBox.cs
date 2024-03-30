@@ -368,6 +368,16 @@ public class DataBox : TemplatedControl
 
 		return false;
 	}
+
+	public DataBoxRow? GetRow(int index)
+	{
+		return _rowsPresenter?.GetRow(index);
+	}
+
+	public T? GetCellControl<T>(int row, int column) where T : class
+	{
+		return _rowsPresenter?.GetRow(row)?.CellsPresenter?.GetControl<T>(column);
+	}
 }
 
 public class ValueGetter : AvaloniaObject

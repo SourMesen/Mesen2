@@ -84,6 +84,11 @@ void PceCdAudioPlayer::PlaySample()
 	}
 }
 
+void PceCdAudioPlayer::ProcessAudioPlaybackStart()
+{
+	_cdrom->ProcessAudioPlaybackStart();
+}
+
 void PceCdAudioPlayer::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 {
 	double volume = _cdrom->GetAudioFader().GetVolume(PceAudioFaderTarget::CdAudio);

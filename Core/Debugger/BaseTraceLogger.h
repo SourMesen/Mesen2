@@ -103,7 +103,10 @@ enum class RowDataType
 	TRB,
 	
 	FlagsA,
-	FlagsB
+	FlagsB,
+
+	CPSR,
+	Mode,
 };
 
 struct TraceLogPpuState
@@ -186,26 +189,31 @@ protected:
 	void WriteEffectiveAddress(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType cpuMemoryType, CpuType cpuType)
 	{
 		EffectiveAddressInfo effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
-		if(effectiveAddress.ShowAddress && effectiveAddress.Address.Address >= 0) {
-			MemoryType effectiveMemType = effectiveAddress.Address.Type == MemoryType::None ? cpuMemoryType : effectiveAddress.Address.Type;
+		if(effectiveAddress.ShowAddress && effectiveAddress.Address >= 0) {
+			MemoryType effectiveMemType = effectiveAddress.Type == MemoryType::None ? cpuMemoryType : effectiveAddress.Type;
 			if(_options.UseLabels) {
-				AddressInfo addr { effectiveAddress.Address.Address, effectiveMemType };
+				AddressInfo addr { (int32_t)effectiveAddress.Address, effectiveMemType };
 				string label = _labelManager->GetLabel(addr);
 				if(!label.empty()) {
-					WriteStringValue(output, " [" + label + "]", rowPart);
+					if(label.size() > 2 && label[label.size() - 1] == '0' && label[label.size() - 2] == '+') {
+						//If label ends in +0, strip the +0 (write the original label name instead)
+						WriteStringValue(output, " [" + label.substr(0, label.size() - 2) + "]", rowPart);
+					} else {
+						WriteStringValue(output, " [" + label + "]", rowPart);
+					}
 					return;
 				}
 			}
 
-			WriteStringValue(output, " [$" + DebugUtilities::AddressToHex(cpuType, effectiveAddress.Address.Address) + "]", rowPart);
+			WriteStringValue(output, " [$" + DebugUtilities::AddressToHex(cpuType, effectiveAddress.Address) + "]", rowPart);
 		}
 	}
 
 	void WriteMemoryValue(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType memType, CpuType cpuType)
 	{
 		EffectiveAddressInfo effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
-		if(effectiveAddress.Address.Address >= 0 && effectiveAddress.ValueSize > 0) {
-			MemoryType effectiveMemType = effectiveAddress.Address.Type == MemoryType::None ? memType : effectiveAddress.Address.Type;
+		if(effectiveAddress.Address >= 0 && effectiveAddress.ValueSize > 0) {
+			MemoryType effectiveMemType = effectiveAddress.Type == MemoryType::None ? memType : effectiveAddress.Type;
 			uint16_t value = info.GetMemoryValue(effectiveAddress, _memoryDumper, effectiveMemType);
 			if(rowPart.DisplayInHex) {
 				output += "= $";

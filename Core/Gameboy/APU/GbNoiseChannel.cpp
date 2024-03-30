@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Gameboy/APU/GbNoiseChannel.h"
 #include "Gameboy/APU/GbApu.h"
+#include "Gameboy/APU/GbEnvelope.h"
 
 GbNoiseChannel::GbNoiseChannel(GbApu* apu)
 {
@@ -49,24 +50,7 @@ void GbNoiseChannel::UpdateOutput()
 
 void GbNoiseChannel::ClockEnvelope()
 {
-	if(_state.EnvTimer > 0 && _state.EnvPeriod > 0 && !_state.EnvStopped) {
-		_state.EnvTimer--;
-
-		if(_state.EnvTimer == 0) {
-			if(_state.EnvRaiseVolume && _state.Volume < 0x0F) {
-				_state.Volume++;
-			} else if(!_state.EnvRaiseVolume && _state.Volume > 0) {
-				_state.Volume--;
-			} else {
-				_state.EnvStopped = true;
-			}
-
-			//Based on the channel_4_volume_div test, clocking the envelope updates the output immediately
-			UpdateOutput();
-
-			_state.EnvTimer = _state.EnvPeriod;
-		}
-	}
+	GbEnvelope::ClockEnvelope(_state, *this);
 }
 
 uint8_t GbNoiseChannel::GetRawOutput()
@@ -163,30 +147,7 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 2: {
-			if(_state.EnvPeriod == 0 && !_state.EnvStopped) {
-				//"If the old envelope period was zero and the envelope is still doing automatic updates, volume is incremented by 1"
-				_state.Volume++;
-			} else if(!_state.EnvRaiseVolume) {
-				//"otherwise if the envelope was in subtract mode, volume is incremented by 2"
-				_state.Volume += 2;
-			}
-
-			bool raiseVolume = (value & 0x08) != 0;
-			if(raiseVolume != _state.EnvRaiseVolume) {
-				//"If the mode was changed (add to subtract or subtract to add), volume is set to 16 - volume."
-				_state.Volume = 16 - _state.Volume;
-			}
-
-			//"Only the low 4 bits of volume are kept after the above operations."
-			_state.Volume &= 0xF;
-
-			_state.EnvPeriod = value & 0x07;
-			_state.EnvRaiseVolume = (value & 0x08) != 0;
-			_state.EnvVolume = (value & 0xF0) >> 4;
-
-			if(!(value & 0xF8)) {
-				_state.Enabled = false;
-			}
+			GbEnvelope::WriteRegister(_state, value, *this);
 			break;
 		}
 

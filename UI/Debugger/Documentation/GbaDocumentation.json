@@ -1,0 +1,204 @@
+{
+	"instructions": [
+		{
+			"op": "adc",
+			"name": "ADC - Add with Carry",
+			"description": ""
+		},
+		{
+			"op": "add",
+			"name": "ADD - Add",
+			"description": ""
+		},
+		{
+			"op": "and",
+			"name": "AND - Bitwise AND",
+			"description": ""
+		},
+		{
+			"op": "b",
+			"name": "B - Branch",
+			"description": ""
+		},
+		{
+			"op": "bal",
+			"name": "BAL - Branch Always",
+			"description": ""
+		},
+		{
+			"op": "bic",
+			"name": "BIC - Bit Clear",
+			"description": ""
+		},
+		{
+			"op": "bl",
+			"name": "BL - Branch with Link",
+			"description": ""
+		},
+		{
+			"op": "bll",
+			"name": "BLL - Branch with Link (low)",
+			"description": ""
+		},
+		{
+			"op": "blh",
+			"name": "BLH - Branch with Link (high)",
+			"description": ""
+		},
+		{
+			"op": "bx",
+			"name": "BX - Branch and Exchange",
+			"description": ""
+		},
+		{
+			"op": "asr",
+			"name": "ASL - Arithmetic Shift Right",
+			"description": ""
+		},
+		{
+			"op": "cmn",
+			"name": "CMN - Compare Negative",
+			"description": ""
+		},
+		{
+			"op": "cmp",
+			"name": "CMP - Compare",
+			"description": ""
+		},
+		{
+			"op": "eor",
+			"name": "EOR - Exclusive OR",
+			"description": ""
+		},
+		{
+			"op": "ldm",
+			"name": "LDM - Load Multiple Registers",
+			"description": ""
+		},
+		{
+			"op": "ldr",
+			"name": "LDR - Load Register",
+			"description": ""
+		},
+		{
+			"op": "lds",
+			"name": "LDS - Load Sign-Extended",
+			"description": ""
+		},
+		{
+			"op": "lsl",
+			"name": "LSL - Logical Shift Left",
+			"description": ""
+		},
+		{
+			"op": "lsr",
+			"name": "LSR - Logical Shift Right",
+			"description": ""
+		},
+		{
+			"op": "mla",
+			"name": "MLA - Multiply Accumulate",
+			"description": ""
+		},
+		{
+			"op": "mov",
+			"name": "MOV - Move",
+			"description": ""
+		},
+		{
+			"op": "mrs",
+			"name": "MRS - Move Status to Register",
+			"description": ""
+		},
+		{
+			"op": "msr",
+			"name": "MSR - Move Register to Status",
+			"description": ""
+		},
+		{
+			"op": "mul",
+			"name": "MUL - Multiply",
+			"description": ""
+		},
+		{
+			"op": "mvn",
+			"name": "MVN - Move Negative Register",
+			"description": ""
+		},
+		{
+			"op": "neg",
+			"name": "NEG - Negate",
+			"description": ""
+		},
+		{
+			"op": "orr",
+			"name": "ORR - Inclusive OR",
+			"description": ""
+		},
+		{
+			"op": "pop",
+			"name": "POP - Pop Registers",
+			"description": ""
+		},
+		{
+			"op": "push",
+			"name": "PUSH - Push Registers",
+			"description": ""
+		},
+		{
+			"op": "ror",
+			"name": "ROR - Rotate Right",
+			"description": ""
+		},
+		{
+			"op": "rsb",
+			"name": "RSB - Reverse Subtract",
+			"description": ""
+		},
+		{
+			"op": "rsc",
+			"name": "RSC - Reverse Subtract with Carry",
+			"description": ""
+		},
+		{
+			"op": "sbc",
+			"name": "SBC - Subtract with Carry",
+			"description": ""
+		},
+		{
+			"op": "stm",
+			"name": "STM - Store Multiple Registers",
+			"description": ""
+		},
+		{
+			"op": "str",
+			"name": "STR - Store Register",
+			"description": ""
+		},
+		{
+			"op": "sub",
+			"name": "SUB - Subtract",
+			"description": ""
+		},
+		{
+			"op": "swi",
+			"name": "SWI - Software Interrupt",
+			"description": ""
+		},
+		{
+			"op": "swp",
+			"name": "SWP - Swap Register with Memory",
+			"description": ""
+		},
+		{
+			"op": "teq",
+			"name": "TEQ - Test Equality",
+			"description": ""
+		},
+		{
+			"op": "tst",
+			"name": "TST - Test Bits",
+			"description": ""
+		}
+	]
+}

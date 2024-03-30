@@ -53,6 +53,12 @@ namespace Mesen.Debugger.Windows
 					});
 					break;
 
+				case ConsoleNotificationType.CodeBreak:
+					if(_model.Config.RefreshOnBreakPause) {
+						_model.RefreshData();
+					}
+					break;
+
 				case ConsoleNotificationType.PpuFrameDone:
 					if(!ToolRefreshHelper.LimitFps(this, 10)) {
 						_model.RefreshData();
@@ -82,6 +88,11 @@ namespace Mesen.Debugger.Windows
 		private void OnResetClick(object sender, RoutedEventArgs e)
 		{
 			_model.SelectedTab?.ResetData();
+		}
+
+		private void OnRefreshClick(object sender, RoutedEventArgs e)
+		{
+			_model.RefreshData();
 		}
 
 		private void InitializeComponent()

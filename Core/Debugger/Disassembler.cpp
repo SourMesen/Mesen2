@@ -14,6 +14,7 @@
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "SNES/Coprocessors/CX4/Cx4Types.h"
 #include "Gameboy/GbTypes.h"
+#include "GBA/GbaTypes.h"
 #include "NES/NesTypes.h"
 #include "PCE/PceTypes.h"
 #include "SMS/SmsTypes.h"
@@ -85,6 +86,8 @@ void Disassembler::ResetPrgCache()
 	InitSource(MemoryType::GbPrgRom);
 	InitSource(MemoryType::NesPrgRom);
 	InitSource(MemoryType::PcePrgRom);
+	InitSource(MemoryType::SmsPrgRom);
+	InitSource(MemoryType::GbaPrgRom);
 }
 
 void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
@@ -101,6 +104,10 @@ void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
 
 vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t bank)
 {
+	if(!_debugger->HasCpuType(cpuType)) {
+		return {};
+	}
+
 	constexpr int bytesPerRow = 8;
 
 	vector<DisassemblyResult> results;
@@ -151,6 +158,8 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		}
 	};
 
+	uint8_t cpuFlags = _debugger->GetCpuFlags(cpuType);
+
 	auto pushUnmappedBlock = [&]() {
 		int32_t prevAddress = results.size() > 0 ? results[results.size() - 1].CpuAddress + 1 : bankStart;
 		results.push_back(DisassemblyResult(prevAddress, LineFlags::BlockStart | LineFlags::UnmappedMemory));
@@ -184,8 +193,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
 		} else if((isData && disData) || (!isData && !isCode && disUnident)) {
-			//TODOv2 this should use current cpu flags for SNES
-			disassemblyInfo.Initialize(i, 0, cpuType, relAddress.Type, _memoryDumper);
+			disassemblyInfo.Initialize(i, cpuFlags, cpuType, relAddress.Type, _memoryDumper);
 			opSize = disassemblyInfo.GetOpSize();
 		}
 
@@ -523,6 +531,30 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 					}
 
 					data.OpSize = disInfo.GetOpSize();
+					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
+					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
+						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);
+					}
+					break;
+				}
+
+				case CpuType::Gba:
+				{
+					GbaCpuState state = (GbaCpuState&)_debugger->GetCpuStateRef(lineCpuType);
+
+					CodeDataLogger* cdl = cdlManager->GetCodeDataLogger(row.Address.Type);
+					if(!disInfo.IsInitialized()) {
+						disInfo = DisassemblyInfo(row.Address.Address, state.CPSR.ToInt32(), CpuType::Gba, row.Address.Type, _memoryDumper);
+					} else {
+						data.Flags |= (!cdl || cdl->IsCode(data.AbsoluteAddress.Address)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+					}
+
+					data.OpSize = disInfo.GetOpSize();
+
+					state.CPSR.Thumb = data.OpSize == 2;
+					state.Pipeline.Execute.Address = (uint32_t)row.CpuAddress;
+					state.R[15] = state.Pipeline.Execute.Address + (data.OpSize * 2);
+
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
 					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
 						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);

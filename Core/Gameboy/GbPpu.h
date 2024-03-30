@@ -50,6 +50,11 @@ private:
 	uint8_t _spriteIndexes[10] = {};
 	uint8_t _oamReadBuffer[2] = {};
 	
+	bool _lcdDisabled = true;
+	bool _stopOamBlocked = false;
+	bool _stopVramBlocked = false;
+	bool _stopPaletteBlocked = false;
+
 	bool _oamReadBlocked = false;
 	bool _oamWriteBlocked = false;
 	bool _vramReadBlocked = false;
@@ -58,6 +63,9 @@ private:
 	bool _isFirstFrame = true;
 	bool _forceBlankFrame = true;
 	bool _rendererIdle = false;
+
+	uint8_t _tileIndex = 0;
+	uint8_t _gbcTileGlitch = 0;
 
 	GbPixelType _lastPixelType = {};
 	uint8_t _lastBgColor = 0;
@@ -82,6 +90,11 @@ private:
 
 	void UpdateStatIrq();
 
+	__forceinline uint8_t LcdReadOam(uint8_t addr);
+	__forceinline uint8_t LcdReadVram(uint16_t addr);
+	__forceinline uint16_t LcdReadBgPalette(uint8_t addr);
+	__forceinline uint16_t LcdReadObjPalette(uint8_t addr);
+
 	void SendFrame();
 	void UpdatePalette();
 
@@ -99,6 +112,8 @@ public:
 	uint16_t* GetEventViewerBuffer();
 	uint16_t* GetPreviousEventViewerBuffer();
 
+	void SetCpuStopState(bool stopped);
+
 	uint32_t GetFrameCount();
 	uint8_t GetScanline();
 	uint16_t GetCycle();
@@ -111,6 +126,8 @@ public:
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
+
+	void SetTileFetchGlitchState(bool enabled);
 
 	bool IsVramReadAllowed();
 	bool IsVramWriteAllowed();

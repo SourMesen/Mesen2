@@ -4,6 +4,7 @@
 #include "Gameboy/GbTimer.h"
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
+#include "Gameboy/GbControlManager.h"
 #include "Shared/Emulator.h"
 #include "Utilities/Serializer.h"
 
@@ -36,10 +37,25 @@ bool GbCpu::IsHalted()
 	return _state.HaltCounter > 0;
 }
 
+bool GbCpu::HandleStoppedState()
+{
+	if((((GbControlManager*)_gameboy->GetControlManager())->ReadInputPort() & 0x0F) != 0x0F) {
+		_state.Stopped = false;
+		_state.HaltCounter = 0;
+		_ppu->SetCpuStopState(false);
+		return true;
+	}
+	return false;
+}
+
 void GbCpu::Exec()
 {
 #ifndef DUMMYCPU
-	if(_prevIrqVector && !_state.HaltBug) {
+	if(_state.Stopped) {
+		if(HandleStoppedState()) {
+			return;
+		}
+	} else if(_prevIrqVector && !_state.HaltBug) {
 		if(_state.IME) {
 			uint16_t oldPc = _state.PC;
 			ExecCpuCycle();
@@ -831,6 +847,9 @@ void GbCpu::InvalidOp()
 
 void GbCpu::STOP()
 {
+	//TODOGB some stop-related quirks aren't implemented yet
+	//See: https://gbdev.io/pandocs/Reducing_Power_Consumption.html#the-bizarre-case-of-the-game-boy-stop-instruction-before-even-considering-timing
+
 	//Skip the next byte (unused operand)
 	ReadCode();
 
@@ -840,7 +859,9 @@ void GbCpu::STOP()
 		_state.HaltCounter = 33942;
 #endif
 	} else {
+		_state.Stopped = true;
 		_state.HaltCounter = 1;
+		_ppu->SetCpuStopState(true);
 	}
 }
 

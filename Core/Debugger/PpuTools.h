@@ -13,7 +13,14 @@ struct ViewerRefreshConfig
 	uint16_t Cycle;
 };
 
-enum class NullableBoolean
+enum class SpriteVisibility : uint8_t
+{
+	Visible = 0,
+	Offscreen = 1,
+	Disabled = 2
+};
+
+enum class NullableBoolean : int8_t
 {
 	Undefined = -1,
 	False = 0,
@@ -48,17 +55,22 @@ struct DebugSpriteInfo
 	int16_t Bpp;
 	int16_t Palette;
 	DebugSpritePriority Priority;
-	int16_t Width;
-	int16_t Height;
-	bool HorizontalMirror;
-	bool VerticalMirror;
-	bool Visible;
+	uint16_t Width;
+	uint16_t Height;
+	NullableBoolean HorizontalMirror;
+	NullableBoolean VerticalMirror;
+	NullableBoolean MosaicEnabled;
+	NullableBoolean BlendingEnabled;
+	NullableBoolean WindowMode;
+	NullableBoolean TransformEnabled;
+	NullableBoolean DoubleSize;
+	int8_t TransformParamIndex;
+	SpriteVisibility Visibility;
 	bool UseExtendedVram;
 	NullableBoolean UseSecondTable;
 
 	uint32_t TileCount;
 	uint32_t TileAddresses[8 * 8];
-	uint32_t SpritePreview[64 * 64];
 
 public:
 	void Init()
@@ -75,11 +87,17 @@ public:
 		Bpp = 2;
 		Palette = -1;
 		Priority = DebugSpritePriority::Undefined;
-		Width = -1;
-		Height = -1;
-		HorizontalMirror = false;
-		VerticalMirror = false;
-		Visible = false;
+		Width = 0;
+		Height = 0;
+		HorizontalMirror = NullableBoolean::Undefined;
+		VerticalMirror = NullableBoolean::Undefined;
+		MosaicEnabled = NullableBoolean::Undefined;
+		TransformEnabled = NullableBoolean::Undefined;
+		BlendingEnabled = NullableBoolean::Undefined;
+		WindowMode = NullableBoolean::Undefined;
+		DoubleSize = NullableBoolean::Undefined;
+		TransformParamIndex = -1;
+		Visibility = SpriteVisibility::Offscreen;
 		UseExtendedVram = false;
 		UseSecondTable = NullableBoolean::Undefined;
 		TileCount = 0;
@@ -114,6 +132,7 @@ struct DebugTilemapInfo
 	uint32_t ColumnCount;
 	uint32_t TilemapAddress;
 	uint32_t TilesetAddress;
+	int8_t Priority = -1;
 };
 
 struct DebugTilemapTileInfo
@@ -127,7 +146,9 @@ struct DebugTilemapTileInfo
 
 	int32_t TileIndex = -1;
 	int32_t TileAddress = -1;
-	
+
+	int32_t PixelData = -1;
+
 	int32_t PaletteIndex = -1;
 	int32_t PaletteAddress = -1;
 
@@ -153,6 +174,7 @@ struct DebugSpritePreviewInfo
 	uint32_t VisibleHeight;
 
 	bool WrapBottomToTop;
+	bool WrapRightToLeft;
 };
 
 enum class RawPaletteFormat
@@ -184,6 +206,7 @@ struct DebugPaletteInfo
 class PpuTools
 {
 protected:
+	static constexpr uint32_t _spritePreviewSize = 128*128;
 	static constexpr uint32_t _grayscaleColorsBpp1[2] = { 0xFF000000, 0xFFFFFFFF };
 	static constexpr uint32_t _grayscaleColorsBpp2[4] = { 0xFF000000, 0xFF666666, 0xFFBBBBBB, 0xFFFFFFFF };
 	static constexpr uint32_t _grayscaleColorsBpp4[16] = {
@@ -221,8 +244,7 @@ public:
 	virtual DebugTilemapInfo GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) = 0;
 	
 	virtual DebugSpritePreviewInfo GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state) = 0;
-	virtual void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) = 0;
-	virtual void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) = 0;
+	virtual void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview) = 0;
 
 	int32_t GetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y);
 	void SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t color);
@@ -257,6 +279,7 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 
 		case TileFormat::Bpp4:
 		case TileFormat::SmsBpp4:
+		case TileFormat::GbaBpp4:
 		case TileFormat::PceSpriteBpp4:
 		case TileFormat::PceSpriteBpp2Sp01:
 		case TileFormat::PceSpriteBpp2Sp23:
@@ -265,9 +288,10 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 			return colors[palette * 16 + colorIndex];
 
 		case TileFormat::Bpp8:
+		case TileFormat::GbaBpp8:
 		case TileFormat::Mode7:
 		case TileFormat::Mode7ExtBg:
-			return colors[colorIndex];
+			return colors[palette * 256 + colorIndex];
 
 		case TileFormat::Mode7DirectColor:
 			return ColorUtilities::Rgb555ToArgb(((colorIndex & 0x07) << 2) | ((colorIndex & 0x38) << 4) | ((colorIndex & 0xC0) << 7));
@@ -373,6 +397,30 @@ template<TileFormat format> uint8_t PpuTools::GetTilePixelColor(const uint8_t* r
 		case TileFormat::SmsSgBpp1:
 			color = ((ram[rowStart & ramMask] >> shift) & 0x01);
 			return color;
+
+		case TileFormat::GbaBpp4: {
+			uint8_t pixelOffset = (7 - shift);
+			uint32_t addr = (rowStart + (pixelOffset >> 1));
+			if(addr <= ramMask) {
+				if(pixelOffset & 0x01) {
+					return ram[addr] >> 4;
+				} else {
+					return ram[addr] & 0x0F;
+				}
+			} else {
+				return 0;
+			}
+		}
+
+		case TileFormat::GbaBpp8: {
+			uint8_t pixelOffset = (7 - shift);
+			uint32_t addr = rowStart + pixelOffset;
+			if(addr <= ramMask) {
+				return ram[addr];
+			} else {
+				return 0;
+			}
+		}
 
 		default:
 			throw std::runtime_error("unsupported format");

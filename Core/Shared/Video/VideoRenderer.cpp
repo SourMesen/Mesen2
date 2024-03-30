@@ -75,7 +75,7 @@ void VideoRenderer::RenderThread()
 
 	while(!_stopFlag.load()) {
 		//Wait until a frame is ready, or until 32ms have passed (to allow HUD to update at ~30fps when paused)
-		bool forceRender = _waitForRender.Wait(32);
+		bool forceRender = !_waitForRender.Wait(32);
 		if(_renderer) {
 			FrameInfo size = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
 			_scriptHudSurface.UpdateSize(size.Width * _scriptHudScale, size.Height * _scriptHudScale);

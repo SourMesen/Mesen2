@@ -94,8 +94,6 @@ private:
 
 	void Reset();
 
-	void SetStatusMessage(ScsiStatus status, uint8_t data);
-
 	void ProcessStatusPhase();
 	void ProcessMessageInPhase();
 	void QueueDriveUpdate(ScsiUpdateType action, uint32_t delay);
@@ -122,6 +120,8 @@ private:
 
 public:
 	PceScsiBus(Emulator* emu, PceConsole* console, PceCdRom* cdRom, DiscInfo& disc);
+
+	void SetStatusMessage(ScsiStatus status, uint8_t data, uint32_t length = 1);
 
 	PceScsiBusState& GetState() { return _state; }
 

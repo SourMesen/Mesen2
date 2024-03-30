@@ -132,13 +132,15 @@ void SmsConsole::RunFrame()
 	while(frame == _vdp->GetFrameCount()) {
 		_cpu->Exec();
 	}
+
+	_psg->Run();
+	_psg->PlayQueuedAudio();
 }
 
 void SmsConsole::ProcessEndOfFrame()
 {
 	_controlManager->UpdateControlDevices();
 	_controlManager->UpdateInputState();
-	_psg->Run();
 }
 
 void SmsConsole::UpdateRegion(bool forceUpdate)

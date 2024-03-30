@@ -24,6 +24,7 @@ struct GbCpuState : BaseState
 	bool EiPending;
 	bool IME;
 	bool HaltBug;
+	bool Stopped;
 };
 
 namespace GbCpuFlags
@@ -120,7 +121,6 @@ enum class EvtColor
 	RenderingIdle = 3,
 	RenderingBgLoad = 4,
 	RenderingOamLoad = 5,
-	LcdColor = 6,
 };
 
 enum class GbPixelType : uint8_t
@@ -250,6 +250,7 @@ struct GbSquareState
 	uint16_t SweepTimer;
 	uint16_t SweepFreq;
 	uint16_t SweepPeriod;
+	uint8_t SweepUpdateDelay;
 	bool SweepNegate;
 	uint8_t SweepShift;
 

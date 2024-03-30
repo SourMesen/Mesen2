@@ -28,8 +28,10 @@ public:
 
 	static int ReadMemory(lua_State *lua);
 	static int WriteMemory(lua_State *lua);
-	static int ReadMemoryWord(lua_State *lua);
-	static int WriteMemoryWord(lua_State *lua);
+	static int ReadMemory16(lua_State *lua);
+	static int WriteMemory16(lua_State *lua);
+	static int ReadMemory32(lua_State* lua);
+	static int WriteMemory32(lua_State* lua);
 
 	static int GetLabelAddress(lua_State* lua);
 	static int ConvertAddress(lua_State *lua);

@@ -15,6 +15,7 @@ namespace Mesen.ViewModels
 		[ObservableAsProperty] public bool ShowCustomRatio { get; }
 		[ObservableAsProperty] public bool ShowNtscBlarggSettings { get; }
 		[ObservableAsProperty] public bool ShowNtscBisqwitSettings { get; }
+		[ObservableAsProperty] public bool ShowLcdGridSettings { get; }
 		public bool IsWindows { get; }
 		public bool IsMacOs { get; }
 
@@ -42,6 +43,7 @@ namespace Mesen.ViewModels
 			AddDisposable(this.WhenAnyValue(_ => _.Config.AspectRatio).Select(_ => _ == VideoAspectRatio.Custom).ToPropertyEx(this, _ => _.ShowCustomRatio));
 			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.NtscBlargg).ToPropertyEx(this, _ => _.ShowNtscBlarggSettings));
 			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.NtscBisqwit).ToPropertyEx(this, _ => _.ShowNtscBisqwitSettings));
+			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.LcdGrid).ToPropertyEx(this, _ => _.ShowLcdGridSettings));
 			AddDisposable(this.WhenAnyValue(_ => _.Config.UseSoftwareRenderer).Subscribe(softwareRenderer => {
 				if(softwareRenderer) {
 					//Not supported
@@ -89,6 +91,11 @@ namespace Mesen.ViewModels
 			Config.NtscIFilterLength = 50;
 			Config.NtscQFilterLength = 50;
 			Config.VideoFilter = VideoFilterType.None;
+
+			Config.LcdGridTopLeftBrightness = 100;
+			Config.LcdGridTopRightBrightness = 85;
+			Config.LcdGridBottomLeftBrightness = 85;
+			Config.LcdGridBottomRightBrightness = 85;
 		}
 	}
 }

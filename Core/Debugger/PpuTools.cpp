@@ -42,6 +42,9 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t* source, uint32_t
 		
 		case TileFormat::SmsBpp4: InternalGetTileView<TileFormat::SmsBpp4>(options, source, srcSize, colors, outBuffer); break;
 		case TileFormat::SmsSgBpp1: InternalGetTileView<TileFormat::SmsSgBpp1>(options, source, srcSize, colors, outBuffer); break;
+		
+		case TileFormat::GbaBpp4: InternalGetTileView<TileFormat::GbaBpp4>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::GbaBpp8: InternalGetTileView<TileFormat::GbaBpp8>(options, source, srcSize, colors, outBuffer); break;
 	}
 }
 
@@ -106,6 +109,9 @@ void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, 
 		
 		case TileFormat::SmsBpp4: bpp = 4; rowOffset = 4; break;
 		case TileFormat::SmsSgBpp1: bpp = 1; rowOffset = 1; break;
+
+		case TileFormat::GbaBpp4: bpp = 4; rowOffset = 4; break;
+		case TileFormat::GbaBpp8: bpp = 8; rowOffset = 8; break;
 
 		default: bpp = 8; break;
 	}
@@ -235,6 +241,8 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 		case TileFormat::PceSpriteBpp4: rowOffset = 2; break;
 		case TileFormat::SmsBpp4: rowOffset = 4; break;
 		case TileFormat::SmsSgBpp1: rowOffset = 1; break;
+		case TileFormat::GbaBpp4: rowOffset = 4; break;
+		case TileFormat::GbaBpp8: rowOffset = 8; break;
 	}
 
 	uint8_t* ram = (uint8_t*)memInfo.Memory;
@@ -345,6 +353,29 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 		case TileFormat::SmsSgBpp1:
 			setBit(rowStart, shift, 0);
 			break;
+
+		case TileFormat::GbaBpp4: {
+			uint8_t pixelOffset = (7 - shift);
+			int32_t addr = (rowStart + (pixelOffset >> 1));
+			if(addr <= ramMask) {
+				int offset = pixelOffset & 0x01 ? 4 : 0;
+				for(int i = 0; i < 4; i++) {
+					setBit(addr, i+offset, i);
+				}
+			}
+			break;
+		}
+
+		case TileFormat::GbaBpp8: {
+			uint8_t pixelOffset = (7 - shift);
+			int32_t addr = rowStart + pixelOffset;
+			if(addr <= ramMask) {
+				for(int i = 0; i < 8; i++) {
+					setBit(addr, i, i);
+				}
+			}
+			break;
+		}
 
 		default:
 			throw std::runtime_error("unsupported format");

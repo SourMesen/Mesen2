@@ -85,10 +85,36 @@ uint16_t* GbPpu::GetPreviousEventViewerBuffer()
 	return _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 }
 
+void GbPpu::SetCpuStopState(bool stopped)
+{
+	if(!_gameboy->IsCgb()) {
+		if(stopped) {
+			_lcdDisabled = true;
+		} else if(_state.LcdEnabled) {
+			_lcdDisabled = !_state.LcdEnabled;
+		}
+	} else {
+		if(stopped) {
+			//When the CPU is stopped on the CGB, the LCD is still active, but its oam/vram/palette
+			//access is frozen to what it was when the CPU stopped. So if stopped during mode 3, the
+			//LCD essentially continues rendering the last image that was on screen.
+			//If this is done outside of mode 3, oam/vram/pal access can be disabled, causing the
+			//screen to turn black, etc.
+			_stopOamBlocked = !_oamReadBlocked;
+			_stopVramBlocked = !_vramReadBlocked;
+			_stopPaletteBlocked = _state.Mode <= PpuMode::OamEvaluation;
+		} else {
+			_stopOamBlocked = false;
+			_stopVramBlocked = false;
+			_stopPaletteBlocked = false;
+		}
+	}
+}
+
 template<bool singleStep>
 void GbPpu::Exec()
 {
-	if(!_state.LcdEnabled) {
+	if(_lcdDisabled) {
 		//LCD is disabled, prevent IRQs, etc.
 		//Not quite correct in terms of frame pacing
 		if(_gameboy->GetApuCycleCount() - _lastFrameTime > 70224) {
@@ -405,7 +431,7 @@ void GbPpu::RunDrawCycle()
 	}
 
 	FindNextSprite();
-	if(_fetchSprite >= 0 && _bgFetcher.Step >= 5 && _bgFifo.Size > 0) {
+ 	if(_fetchSprite >= 0 && _bgFetcher.Step >= 5 && _bgFifo.Size > 0) {
 		_evtColor = EvtColor::RenderingOamLoad;
 		ClockSpriteFetcher();
 		FindNextSprite();
@@ -462,7 +488,7 @@ void GbPpu::RunDrawCycle()
 void GbPpu::WriteBgPixel(uint8_t colorIndex)
 {
 	uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
-	_currentBuffer[outOffset] = _state.CgbBgPalettes[colorIndex] & 0x7FFF;
+	_currentBuffer[outOffset] = LcdReadBgPalette(colorIndex) & 0x7FFF;
 	if(_gameboy->IsSgb()) {
 		_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex & 0x03);
 	}
@@ -471,7 +497,7 @@ void GbPpu::WriteBgPixel(uint8_t colorIndex)
 void GbPpu::WriteObjPixel(uint8_t colorIndex)
 {
 	uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
-	_currentBuffer[outOffset] = _state.CgbObjPalettes[colorIndex] & 0x7FFF;
+	_currentBuffer[outOffset] = LcdReadObjPalette(colorIndex) & 0x7FFF;
 	if(_gameboy->IsSgb()) {
 		_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex & 0x03);
 	}
@@ -532,8 +558,8 @@ void GbPpu::ClockSpriteFetcher()
 			int16_t sprY = (int16_t)_spriteY[_fetchSprite] - 16;
 
 			if(!_dmaController->IsOamDmaRunning()) {
-				_oamReadBuffer[0] = _oam[sprAddr + 2]; //Tile Index
-				_oamReadBuffer[1] = _oam[sprAddr + 3]; //Attributes
+				_oamReadBuffer[0] = LcdReadOam(sprAddr + 2); //Tile Index
+				_oamReadBuffer[1] = LcdReadOam(sprAddr + 3); //Attributes
 			} else {
 				//When DMA is running, this data is replaced by the content
 				//at the address that the DMA unit was reading/writing at the time.
@@ -558,11 +584,11 @@ void GbPpu::ClockSpriteFetcher()
 			break;
 		}
 
-		case 3: _oamFetcher.LowByte = _vram[_oamFetcher.Addr]; break;
+		case 3: _oamFetcher.LowByte = LcdReadVram(_oamFetcher.Addr); break;
 
 		case 5: {
 			//Fetch sprite data (high byte)
-			_oamFetcher.HighByte = _vram[_oamFetcher.Addr + 1];
+			_oamFetcher.HighByte = LcdReadVram(_oamFetcher.Addr + 1);
 			PushSpriteToPixelFifo();
 			break;
 		}
@@ -602,7 +628,7 @@ void GbPpu::ClockTileFetcher()
 
 			uint8_t row = yOffset >> 3;
 			uint16_t tileAddr = tilemapAddr + _fetchColumn + row * 32;
-			uint8_t tileIndex = _vram[tileAddr];
+			_tileIndex = LcdReadVram(tileAddr);
 
 			uint8_t attributes = _state.CgbEnabled ? _vram[tileAddr | 0x2000] : 0;
 			bool vMirror = (attributes & 0x40) != 0;
@@ -610,7 +636,7 @@ void GbPpu::ClockTileFetcher()
 
 			uint16_t baseTile = _state.BgTileSelect ? 0 : 0x1000;
 			uint8_t tileY = vMirror ? (7 - (yOffset & 0x07)) : (yOffset & 0x07);
-			uint16_t tileRowAddr = baseTile + (baseTile ? (int8_t)tileIndex * 16 : tileIndex * 16) + tileY * 2;
+			uint16_t tileRowAddr = baseTile + (baseTile ? (int8_t)_tileIndex * 16 : _tileIndex * 16) + tileY * 2;
 			tileRowAddr |= tileBank;
 			_bgFetcher.Addr = tileRowAddr;
 			_bgFetcher.Attributes = (attributes & 0xBF);
@@ -619,13 +645,21 @@ void GbPpu::ClockTileFetcher()
 
 		case 3: {
 			//Fetch tile data (low byte)
-			_bgFetcher.LowByte = _vram[_bgFetcher.Addr];
+			if(_gbcTileGlitch) {
+				_bgFetcher.LowByte = _tileIndex;
+			} else {
+				_bgFetcher.LowByte = LcdReadVram(_bgFetcher.Addr);
+			}
 			break;
 		}
 
 		case 5: {
 			//Fetch tile data (high byte)
-			_bgFetcher.HighByte = _vram[_bgFetcher.Addr + 1];
+			if(_gbcTileGlitch) {
+				_bgFetcher.HighByte = _tileIndex;
+			} else {
+				_bgFetcher.HighByte = LcdReadVram(_bgFetcher.Addr + 1);
+			}
 			
 			[[fallthrough]];
 		}
@@ -703,6 +737,26 @@ void GbPpu::UpdateStatIrq()
 		_memoryManager->RequestIrq(GbIrqSource::LcdStat);
 	}
 	_state.StatIrqFlag = irqFlag;
+}
+
+uint8_t GbPpu::LcdReadOam(uint8_t addr)
+{
+	return _stopOamBlocked ? 0xFF : _oam[addr];
+}
+
+uint8_t GbPpu::LcdReadVram(uint16_t addr)
+{
+	return _stopVramBlocked ? 0xFF : _vram[addr];
+}
+
+uint16_t GbPpu::LcdReadBgPalette(uint8_t addr)
+{
+	return _stopPaletteBlocked ? 0 : _state.CgbBgPalettes[addr];
+}
+
+uint16_t GbPpu::LcdReadObjPalette(uint8_t addr)
+{
+	return _stopPaletteBlocked ? 0 : _state.CgbObjPalettes[addr];
 }
 
 uint32_t GbPpu::GetFrameCount()
@@ -839,7 +893,7 @@ uint8_t GbPpu::Read(uint16_t addr)
 void GbPpu::Write(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
-		case 0xFF40: 
+		case 0xFF40:
 			_state.Control = value; 
 			if(_state.LcdEnabled != ((value & 0x80) != 0)) {
 				_state.LcdEnabled = (value & 0x80) != 0;
@@ -864,12 +918,14 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_state.Mode = PpuMode::HBlank;
 					_state.IrqMode = PpuMode::NoIrq;
 					_wyEnableFlag = false;
+					_lcdDisabled = true;
 
 					_lastFrameTime = _gameboy->GetApuCycleCount();
 					
 					//"If the HDMA started when the screen was on, when the screen is switched off it will copy one block after the switch."
 					_dmaController->ProcessHdma();
 				} else {
+					_lcdDisabled = false;
 					_isFirstFrame = true;
 					_forceBlankFrame = !_gameboy->IsCgb() || (_gameboy->GetApuCycleCount() - _lastFrameTime) > 5000;
 					_state.Cycle = 7;
@@ -949,6 +1005,11 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			LogDebug("[Debug] GB - Missing write handler: $" + HexUtilities::ToHex(addr));
 			break;
 	}
+}
+
+void GbPpu::SetTileFetchGlitchState(bool enabled)
+{
+	_gbcTileGlitch = enabled;
 }
 
 bool GbPpu::IsVramReadAllowed()
@@ -1230,6 +1291,14 @@ void GbPpu::Serialize(Serializer& s)
 		SV(_lastBgColor);
 		SV(_insertGlitchBgPixel);
 
+		SV(_gbcTileGlitch);
+		SV(_tileIndex);
+
+		SV(_stopOamBlocked);
+		SV(_stopVramBlocked);
+		SV(_stopPaletteBlocked);
+		SV(_lcdDisabled);
+		
 		SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
 		SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);
 		SV(_drawnPixels); SV(_fetchColumn); SV(_fetchWindow); SV(_fetchSprite); SV(_spriteCount);
@@ -1244,6 +1313,13 @@ void GbPpu::Serialize(Serializer& s)
 		SVArray(_spriteX, 10);
 		SVArray(_spriteY, 10);
 		SVArray(_spriteIndexes, 10);
+	}
+
+	if(!s.IsSaving()) {
+		//For save state compatibility
+		if(!_state.LcdEnabled) {
+			_lcdDisabled = true;
+		}
 	}
 }
 

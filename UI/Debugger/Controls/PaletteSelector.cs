@@ -166,7 +166,8 @@ namespace Mesen.Debugger.Controls
 					case PaletteSelectionMode.SingleColor: maxPalette = colorCount - 1; break;
 					case PaletteSelectionMode.TwoColors: maxPalette = (colorCount / 2) - 1; break;
 					case PaletteSelectionMode.FourColors: maxPalette = (colorCount / 4) - 1; break;
-					case PaletteSelectionMode.SixteenColors: maxPalette = (colorCount / 16) -1; break;
+					case PaletteSelectionMode.SixteenColors: maxPalette = (colorCount / 16) - 1; break;
+					case PaletteSelectionMode._256Colors: maxPalette = (colorCount / 256) - 1; break;
 				}
 
 				return Math.Max(0, Math.Min(value, maxPalette));
@@ -187,6 +188,7 @@ namespace Mesen.Debugger.Controls
 						case PaletteSelectionMode.TwoColors: SelectedPalette -= ColumnCount / 2; break;
 						case PaletteSelectionMode.FourColors: SelectedPalette -= ColumnCount / 4; break;
 						case PaletteSelectionMode.SixteenColors: SelectedPalette -= ColumnCount / 16; break;
+						case PaletteSelectionMode._256Colors: SelectedPalette -= 1; break;
 					}
 					break;
 
@@ -196,6 +198,7 @@ namespace Mesen.Debugger.Controls
 						case PaletteSelectionMode.TwoColors: SelectedPalette += ColumnCount / 2; break;
 						case PaletteSelectionMode.FourColors: SelectedPalette += ColumnCount / 4; break;
 						case PaletteSelectionMode.SixteenColors: SelectedPalette += ColumnCount / 16; break;
+						case PaletteSelectionMode._256Colors: SelectedPalette += 1; break;
 					}
 					break;
 			}
@@ -261,6 +264,8 @@ namespace Mesen.Debugger.Controls
 				} else if(SelectionMode == PaletteSelectionMode.SixteenColors && columnCount >= 16) {
 					int selectedRow = (SelectedPalette * 16) / columnCount;
 					selectionRect = new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height);
+				} else if(SelectionMode == PaletteSelectionMode._256Colors) {
+					selectionRect = new Rect(0, SelectedPalette * height * 16, width * 16, height * 16);
 				}
 
 				if(selectionRect != default) {
@@ -287,7 +292,7 @@ namespace Mesen.Debugger.Controls
 			int clickedRow = Math.Min(rowCount - 1, p.Y / cellHeight);
 			int clickedColumn = Math.Min(columnCount - 1, p.X / cellWidth);
 
-			return clickedRow * columnCount + clickedColumn;
+			return Math.Clamp(clickedRow * columnCount + clickedColumn, 0, PaletteColors.Length - 1);
 		}
 
 		protected override void OnPointerMoved(PointerEventArgs e)
@@ -339,6 +344,8 @@ namespace Mesen.Debugger.Controls
 				paletteIndex /= 4;
 			} else if(SelectionMode == PaletteSelectionMode.SixteenColors) {
 				paletteIndex /= 16;
+			} else if(SelectionMode == PaletteSelectionMode._256Colors) {
+				paletteIndex /= 256;
 			}
 			SelectedPalette = paletteIndex;
 		}
@@ -361,6 +368,7 @@ namespace Mesen.Debugger.Controls
 		SingleColor,
 		TwoColors,
 		FourColors,
-		SixteenColors
+		SixteenColors,
+		_256Colors,
 	}
 }
