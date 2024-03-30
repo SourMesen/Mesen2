@@ -59,7 +59,11 @@ namespace Mesen.Controls
 			wnd.SingleKeyMode = true;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			await wnd.ShowCenteredDialog(this.GetVisualRoot() as Visual);
-			this.KeyBinding = wnd.ShortcutKey.Key1;
+			secrets
+wnd.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+await wnd.ShowDialog(this.GetVisualRoot() as Visual);
+this.KeyBinding = wnd.ShortcutKey.Key1;
+}
 		}
 
 		protected override void OnPointerReleased(PointerReleasedEventArgs e)
