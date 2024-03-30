@@ -155,6 +155,9 @@ void GbaConsole::InitSaveRam(string& gameCode, vector<uint8_t>& romData)
 		} else if(gameCode == "AYGE") {
 			//Force 512-byte eeprom for Gauntlet (auto-detect logic doesn't work)
 			_saveType = GbaSaveType::Eeprom512;
+		} else if(gameCode == "AI2E") {
+			//Iridion II crashes if it has SRAM, force it to none
+			_saveType = GbaSaveType::None;
 		} else {
 			auto checkMarker = [&](string marker, GbaSaveType type) {
 				if(_saveType == GbaSaveType::AutoDetect && std::search(romData.begin(), romData.end(), marker.begin(), marker.end()) != romData.end()) {
