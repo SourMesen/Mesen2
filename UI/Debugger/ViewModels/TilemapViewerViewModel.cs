@@ -150,6 +150,7 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewAttributeInMemoryViewer,
+					IsVisible = () => CpuType == CpuType.Nes,
 					HintText = () => {
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						return tile?.TileMapAddress > 0 ? $"${tile?.AttributeAddress:X4}" : "";
