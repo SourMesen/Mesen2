@@ -129,7 +129,7 @@ void GbaControlManager::CheckForIrq()
 	}
 }
 
-void GbaControlManager::WriteInputPort(uint32_t addr, uint8_t value)
+void GbaControlManager::WriteInputPort(GbaAccessModeVal mode, uint32_t addr, uint8_t value)
 {
 	if(addr & 0x01) {
 		BitUtilities::SetBits<8>(_state.KeyControl, value);
@@ -137,7 +137,11 @@ void GbaControlManager::WriteInputPort(uint32_t addr, uint8_t value)
 		BitUtilities::SetBits<0>(_state.KeyControl, value);
 	}
 
-	CheckForIrq();
+	bool updateIrq = (addr & 0x03) == 0x03 || (mode & GbaAccessMode::Byte) || ((mode & GbaAccessMode::HalfWord) && (addr & 0x01));
+	if(updateIrq) {
+		//Only check for irq updates after the write operation is done (otherwise this could trigger an unexpected IRQ)
+		CheckForIrq();
+	}
 }
 
 void GbaControlManager::Serialize(Serializer& s)

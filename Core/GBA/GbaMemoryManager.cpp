@@ -519,7 +519,7 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 	switch(addr) {
 		case 0x132:
 		case 0x133:
-			return _controlManager->WriteInputPort(addr, value);
+			return _controlManager->WriteInputPort(mode, addr, value);
 
 		case 0x200: _state.NewIE = (_state.NewIE & 0xFF00) | value; TriggerIrqUpdate(); break;
 		case 0x201: _state.NewIE = (_state.NewIE & 0xFF) | (value << 8); TriggerIrqUpdate(); break;

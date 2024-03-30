@@ -31,6 +31,6 @@ public:
 	void UpdateControlDevices() override;
 	uint8_t ReadInputPort(uint32_t addr);
 	__noinline bool CheckInputCondition();
-	void WriteInputPort(uint32_t addr, uint8_t value);
+	void WriteInputPort(GbaAccessModeVal mode, uint32_t addr, uint8_t value);
 	void Serialize(Serializer& s) override;
 };
