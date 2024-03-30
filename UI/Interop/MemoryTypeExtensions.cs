@@ -92,6 +92,17 @@ namespace Mesen.Interop
 				case MemoryType.SmsPort:
 					return CpuType.Sms;
 
+				case MemoryType.GbaPrgRom:
+				case MemoryType.GbaBootRom:
+				case MemoryType.GbaSaveRam:
+				case MemoryType.GbaIntWorkRam:
+				case MemoryType.GbaExtWorkRam:
+				case MemoryType.GbaVideoRam:
+				case MemoryType.GbaSpriteRam:
+				case MemoryType.GbaPaletteRam:
+				case MemoryType.GbaMemory:
+					return CpuType.Gba;
+
 				default:
 					throw new NotImplementedException("Unsupported cpu type");
 			}
@@ -123,6 +134,9 @@ namespace Mesen.Interop
 				
 				case MemoryType.SmsVideoRam:
 				case MemoryType.SmsPaletteRam:
+					return true;
+
+				case MemoryType.GbaVideoRam:
 					return true;
 
 				default:
@@ -167,6 +181,10 @@ namespace Mesen.Interop
 				case MemoryType.SmsBootRom:
 				case MemoryType.SmsPaletteRam:
 				case MemoryType.SmsPort:
+				
+				case MemoryType.GbaBootRom:
+				case MemoryType.GbaPaletteRam:
+				case MemoryType.GbaSpriteRam:
 					return false;
 			}
 
@@ -187,6 +205,7 @@ namespace Mesen.Interop
 				case MemoryType.NesPpuMemory:
 				case MemoryType.PceMemory:
 				case MemoryType.SmsMemory:
+				case MemoryType.GbaMemory:
 					return true;
 			}
 			return false;
@@ -206,6 +225,8 @@ namespace Mesen.Interop
 				case MemoryType.SpcRom:
 				case MemoryType.SmsPrgRom:
 				case MemoryType.SmsBootRom:
+				case MemoryType.GbaPrgRom:
+				case MemoryType.GbaBootRom:
 					return true;
 			}
 			return false;
@@ -253,6 +274,18 @@ namespace Mesen.Interop
 				case MemoryType.SmsBootRom:
 				case MemoryType.SmsPort:
 					return true;
+
+				//GBA
+				case MemoryType.GbaMemory:
+				case MemoryType.GbaPrgRom:
+				case MemoryType.GbaBootRom:
+				case MemoryType.GbaSaveRam:
+				case MemoryType.GbaIntWorkRam:
+				case MemoryType.GbaExtWorkRam:
+				case MemoryType.GbaVideoRam:
+				case MemoryType.GbaSpriteRam:
+				case MemoryType.GbaPaletteRam:
+					return true;
 			}
 
 			return false;
@@ -271,6 +304,7 @@ namespace Mesen.Interop
 				case MemoryType.NesMemory:
 				case MemoryType.PceMemory:
 				case MemoryType.SmsMemory:
+				case MemoryType.GbaMemory:
 					return true;
 			}
 
@@ -300,6 +334,10 @@ namespace Mesen.Interop
 				case MemoryType.SmsPrgRom:
 					return true;
 
+				case MemoryType.GbaMemory:
+				case MemoryType.GbaPrgRom:
+					return true;
+
 				case MemoryType.NesPpuMemory:
 					//NES PPU memory contains no logged data unless game uses CHR ROM
 					return DebugApi.GetMemorySize(MemoryType.NesChrRom) > 0;
@@ -321,17 +359,19 @@ namespace Mesen.Interop
 
 		public static bool SupportsExecBreakpoints(this MemoryType memType)
 		{
-			if(memType.IsPpuMemory()) {
-				return false;
-			}
-
 			switch(memType) {
 				case MemoryType.PceAdpcmRam:
 				case MemoryType.SmsPort:
 					return false;
-			}
 
-			return true;
+				case MemoryType.GbaVideoRam:
+				case MemoryType.GbaSpriteRam:
+				case MemoryType.GbaPaletteRam:
+					return true;
+
+				default:
+					return !memType.IsPpuMemory();
+			}
 		}
 
 
@@ -418,6 +458,16 @@ namespace Mesen.Interop
 				MemoryType.SmsVideoRam => "VRAM",
 				MemoryType.SmsPaletteRam => "PAL",
 				MemoryType.SmsPort => "PORT",
+
+				MemoryType.GbaMemory => "CPU",
+				MemoryType.GbaPrgRom => "ROM",
+				MemoryType.GbaBootRom => "BIOS",
+				MemoryType.GbaSaveRam => "SRAM",
+				MemoryType.GbaIntWorkRam => "IWRAM",
+				MemoryType.GbaExtWorkRam => "EWRAM",
+				MemoryType.GbaVideoRam => "VRAM",
+				MemoryType.GbaSpriteRam => "OAM",
+				MemoryType.GbaPaletteRam => "PAL",
 
 				MemoryType.None => "n/a",
 

@@ -25,10 +25,16 @@ void RewindData::ProcessXorState(T& data, deque<RewindData>& prevStates, int32_t
 		RewindData& prevState = prevStates[position];
 		if(prevState.IsFullState) {
 			//XOR with previous state to restore state data to its initial state
-			vector<uint8_t> prevStateData;
-			CompressionHelper::Decompress(prevState._saveStateData, prevStateData);
-			for(size_t i = 0, len = std::min(prevStateData.size(), data.size()); i < len; i++) {
-				data[i] ^= prevStateData[i];
+			if(!prevState._uncompressedData.empty()) {
+				for(size_t i = 0, len = std::min(prevState._uncompressedData.size(), data.size()); i < len; i++) {
+					data[i] ^= prevState._uncompressedData[i];
+				}
+			} else {
+				vector<uint8_t> prevStateData;
+				CompressionHelper::Decompress(prevState._saveStateData, prevStateData);
+				for(size_t i = 0, len = std::min(prevStateData.size(), data.size()); i < len; i++) {
+					data[i] ^= prevStateData[i];
+				}
 			}
 			break;
 		}
@@ -71,6 +77,18 @@ void RewindData::SaveState(Emulator* emu, deque<RewindData>& prevStates, int32_t
 		ProcessXorState(data, prevStates, position);
 	} else {
 		IsFullState = true;
+		while(position > 0) {
+			position--;
+			RewindData& prevState = prevStates[position];
+			if(prevState.IsFullState) {
+				//Get rid of previous full state's uncompressed data once the next full state is added
+				prevState._uncompressedData = {};
+				break;
+			}
+		}
+
+		//Keep uncompressed data for the next 30 states - this avoids having to decompress the state 30 times
+		_uncompressedData = vector<uint8_t>(data.begin(), data.end());
 	}
 
 	CompressionHelper::Compress(data, 1, _saveStateData);

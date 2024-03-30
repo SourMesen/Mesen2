@@ -138,9 +138,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_GoToLocation),
-					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint && vm.Breakpoint.GetRelativeAddress() >= 0,
+					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.SupportsExec && vm.Breakpoint.GetRelativeAddress() >= 0,
 					OnClick = () => {
-						if(Selection.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint) {
+						if(Selection.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.SupportsExec) {
 							int addr = vm.Breakpoint.GetRelativeAddress();
 							if(addr >= 0) {
 								Debugger.ScrollToAddress(addr);

@@ -301,12 +301,10 @@ void RewindManager::ProcessEndOfFrame()
 		} else if(_currentHistory.FrameCount == 0 && _rewindState == RewindState::Debugging) {
 			//Reached the end of the current 30-frame block, move to the next,
 			//the step back target cycle could be at the start of the next block
-			if(!_historyBackup.empty()) {
+			if(_historyBackup.size() > 1) {
 				_history.push_back(_historyBackup.front());
 				_historyBackup.pop_front();
-				if(!_historyBackup.empty()) {
-					_currentHistory = _historyBackup.front();
-				}
+				_currentHistory = _historyBackup.front();
 			}
 		}
 	} else if(_currentHistory.FrameCount >= RewindManager::BufferSize) {

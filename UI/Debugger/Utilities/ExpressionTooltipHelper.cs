@@ -64,8 +64,9 @@ namespace Mesen.Debugger.Utilities
 
 			addRow(" ");
 			addBoldRow("Accessing memory");
-			addRow("  [<address>] - (Byte) Memory value at <address>");
-			addRow("  {<address>} - (Word) Memory value at <address>");
+			addRow("  [<address>] - 8-bit memory value at <address>");
+			addRow("  {<address>} - 16-bit memory value at <address>");
+			addRow("  #<address> - 32-bit memory value at <address>");
 			addRow("  :<address> - Returns the ROM/RAM address for the specified CPU address");
 
 			addRow(" ");
@@ -75,6 +76,8 @@ namespace Mesen.Debugger.Utilities
 			addRow("  x == [$150] || y == [10]");
 			addRow("  [[$15] + y] -- Read value at $15, add Y to it and return the value stored at the resulting address.");
 			addRow("  {$FFEA} -- NMI handler's address.");
+			addRow("  #r0 -- Returns the 32-bit value stored at the address stored in r0.");
+			addRow("  #(r0+20) -- Returns the 32-bit value stored at the address stored in r0, offset by 20.");
 
 			return panel;
 		}

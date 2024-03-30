@@ -40,6 +40,7 @@ namespace Mesen.Debugger.ViewModels
 				ConsoleType.Gameboy => 144,
 				ConsoleType.PcEngine => 240, //TODOv2
 				ConsoleType.Sms => 192,
+				ConsoleType.Gba => 160,
 				_ => throw new Exception("Invalid console type")
 			};
 

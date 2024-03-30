@@ -6,6 +6,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
+#include "Shared/Video/GenericNtscFilter.h"
 
 NesNtscFilter::NesNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 {
@@ -47,8 +48,8 @@ void NesNtscFilter::OnBeforeApplyFilter()
 	shared_ptr<IConsole> console = _emu->GetConsole();
 	PpuModel model = ((NesConsole*)console.get())->GetPpu()->GetPpuModel();
 
-	if(NtscFilterOptionsChanged(_ntscSetup) || model != _ppuModel || memcmp(_nesConfig.UserPalette, nesCfg.UserPalette, sizeof(nesCfg.UserPalette)) != 0) {
-		InitNtscFilter(_ntscSetup);
+	if(GenericNtscFilter::NtscFilterOptionsChanged(_ntscSetup, _emu->GetSettings()->GetVideoConfig()) || model != _ppuModel || memcmp(_nesConfig.UserPalette, nesCfg.UserPalette, sizeof(nesCfg.UserPalette)) != 0) {
+		GenericNtscFilter::InitNtscFilter(_ntscSetup, _emu->GetSettings()->GetVideoConfig());
 
 		uint32_t palette[512];
 		NesDefaultVideoFilter::GetFullPalette(palette, nesCfg, model);

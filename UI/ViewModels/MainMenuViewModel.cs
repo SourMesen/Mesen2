@@ -224,10 +224,10 @@ namespace Mesen.ViewModels
 				new ContextMenuSeparator(),
 				new MainMenuAction(EmulatorShortcut.PowerOff) { ActionType = ActionType.PowerOff },
 				
-				new ContextMenuSeparator() { IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.Format != RomFormat.GameGear },
+				new ContextMenuSeparator() { IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.Format != RomFormat.GameGear && RomInfo.ConsoleType != ConsoleType.Gba },
 				new MainMenuAction() { 
 					ActionType = ActionType.GameConfig,
-					IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.Format != RomFormat.GameGear,
+					IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.Format != RomFormat.GameGear && RomInfo.ConsoleType != ConsoleType.Gba,
 					IsEnabled = () => IsGameRunning,
 					OnClick = () => {
 						new GameConfigWindow().ShowCenteredDialog((Control)wnd);
@@ -355,6 +355,8 @@ namespace Mesen.ViewModels
 						GetVideoFilterMenuItem(VideoFilterType.NtscBlargg),
 						GetVideoFilterMenuItem(VideoFilterType.NtscBisqwit),
 						new ContextMenuSeparator(),
+						GetVideoFilterMenuItem(VideoFilterType.LcdGrid),
+						new ContextMenuSeparator(),
 						GetVideoFilterMenuItem(VideoFilterType.xBRZ2x),
 						GetVideoFilterMenuItem(VideoFilterType.xBRZ3x),
 						GetVideoFilterMenuItem(VideoFilterType.xBRZ4x),
@@ -412,7 +414,7 @@ namespace Mesen.ViewModels
 					IsEnabled = () => IsGameRunning,
 					IsVisible = () => (
 						!IsGameRunning || 
-						MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy
+						MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy && MainWindow.RomInfo.ConsoleType != ConsoleType.Gba
 					),
 					SubActions = new List<object>() {
 						GetRegionMenuItem(ConsoleRegion.Auto),
@@ -477,6 +479,10 @@ namespace Mesen.ViewModels
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Gameboy)
 				},
 				new MainMenuAction() {
+					ActionType = ActionType.Gba,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Gba)
+				},
+				new MainMenuAction() {
 					ActionType = ActionType.PcEngine,
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.PcEngine)
 				},
@@ -484,7 +490,6 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.Sms,
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Sms)
 				},
-
 				new ContextMenuSeparator(),
 
 				new MainMenuAction() {
@@ -679,7 +684,7 @@ namespace Mesen.ViewModels
 			ToolsMenuItems = new List<object>() {
 				new MainMenuAction() {
 					ActionType = ActionType.Cheats,
-					IsEnabled = () => IsGameRunning,
+					IsEnabled = () => IsGameRunning && MainWindow.RomInfo.ConsoleType.SupportsCheats(),
 					OnClick = () => {
 						ApplicationHelper.GetOrCreateUniqueWindow(wnd, () => new CheatListWindow());
 					}

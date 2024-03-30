@@ -32,21 +32,31 @@ public:
 	bool SaveCdlFile(string cdlFilepath);
 	string GetCdlFilePath(string romName);
 
-	template<uint8_t flags = 0>
+	template<uint8_t flags = 0, uint8_t accessWidth = 1>
 	void SetCode(int32_t absoluteAddr)
 	{
-		_cdlData[absoluteAddr] |= CdlFlags::Code | flags;
+		for(int i = 0; i < accessWidth; i++) {
+			_cdlData[absoluteAddr+i] |= CdlFlags::Code | flags;
+		}
 	}
 
+	template<uint8_t accessWidth = 1>
 	void SetCode(int32_t absoluteAddr, uint8_t flags)
 	{
-		_cdlData[absoluteAddr] |= CdlFlags::Code | flags;
+		_cdlData[absoluteAddr] |= CdlFlags::Code | flags; //only sets extra flags on first byte
+		if constexpr(accessWidth > 1) {
+			for(int i = 1; i < accessWidth; i++) {
+				_cdlData[absoluteAddr+i] |= CdlFlags::Code;
+			}
+		}
 	}
 
-	template<uint8_t flags = 0>
+	template<uint8_t flags = 0, uint8_t accessWidth = 1>
 	void SetData(int32_t absoluteAddr)
 	{
-		_cdlData[absoluteAddr] |= CdlFlags::Data | flags;
+		for(int i = 0; i < accessWidth; i++) {
+			_cdlData[absoluteAddr+i] |= CdlFlags::Data | flags;
+		}
 	}
 
 	virtual CdlStatistics GetStatistics();

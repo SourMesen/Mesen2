@@ -45,14 +45,15 @@ namespace Mesen.Debugger
 		public string Comment = "";
 
 		public bool ShowEffectiveAddress = false;
-		public AddressInfo EffectiveAddress = new AddressInfo() { Address = -1, Type = MemoryType.None };
-		public UInt16 Value = 0;
+		public Int64 EffectiveAddress = -1;
+		public MemoryType EffectiveAddressType = MemoryType.None;
+		public UInt32 Value = 0;
 		public byte ValueSize = 0;
 
 		public string GetEffectiveAddressString(string format, out CodeSegmentType segmentType)
 		{
-			if(ShowEffectiveAddress && EffectiveAddress.Address >= 0) {
-				AddressInfo relAddress = EffectiveAddress;
+			if(ShowEffectiveAddress && EffectiveAddress >= 0) {
+				AddressInfo relAddress = new() { Address = (Int32)EffectiveAddress, Type = EffectiveAddressType };
 				CodeLabel? label = LabelManager.GetLabel(relAddress);
 				if(label != null && !string.IsNullOrWhiteSpace(label.Label)) {
 					segmentType = CodeSegmentType.Label;
@@ -65,7 +66,7 @@ namespace Mesen.Debugger
 					return "[" + label.Label + "]";
 				} else {
 					segmentType = CodeSegmentType.EffectiveAddress;
-					return "[$" + EffectiveAddress.Address.ToString(format) + "]";
+					return "[$" + EffectiveAddress.ToString(format) + "]";
 				}
 			} else {
 				segmentType = CodeSegmentType.None;
@@ -79,6 +80,8 @@ namespace Mesen.Debugger
 				return " = $" + Value.ToString(ConfigManager.Config.Debug.Debugger.UseLowerCaseDisassembly ? "x2" : "X2");
 			} else if(ValueSize == 2) {
 				return " = $" + Value.ToString(ConfigManager.Config.Debug.Debugger.UseLowerCaseDisassembly ? "x4" : "X4");
+			} else if(ValueSize == 4) {
+				return " = $" + Value.ToString(ConfigManager.Config.Debug.Debugger.UseLowerCaseDisassembly ? "x8" : "X8");
 			} else {
 				return "";
 			}
@@ -116,6 +119,7 @@ namespace Mesen.Debugger
 			this.AbsoluteAddress = data.AbsoluteAddress;
 			this.ShowEffectiveAddress = data.EffectiveAddress.ShowAddress;
 			this.EffectiveAddress = data.EffectiveAddress.Address;
+			this.EffectiveAddressType = data.EffectiveAddress.Type;
 			this.Flags = (LineFlags)data.Flags;
 			this.Value = data.Value;
 			this.ValueSize = data.EffectiveAddress.ValueSize;
@@ -163,7 +167,8 @@ namespace Mesen.Debugger
 
 	public struct EffectiveAddressInfo
 	{
-		public AddressInfo Address;
+		public Int64 Address;
+		public MemoryType Type;
 		public byte ValueSize;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowAddress;
 	}
@@ -176,7 +181,7 @@ namespace Mesen.Debugger
 		public UInt16 Flags;
 
 		public EffectiveAddressInfo EffectiveAddress;
-		public UInt16 Value;
+		public UInt32 Value;
 		public CpuType LineCpuType;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]

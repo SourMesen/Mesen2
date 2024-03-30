@@ -48,8 +48,12 @@ namespace Mesen.Debugger.ViewModels
 			Manager.WatchChanged -= Manager_WatchChanged;
 		}
 
-		private void Manager_WatchChanged(object? sender, EventArgs e)
+		private void Manager_WatchChanged(bool resetSelection)
 		{
+			if(resetSelection) {
+				Selection.Clear();
+			}
+
 			UpdateWatch();
 		}
 
@@ -153,8 +157,8 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}
 
-			if(entry.NumericValue >= 0) {
-				return new LocationInfo() { RelAddress = new() { Address = entry.NumericValue, Type = CpuType.ToMemoryType() } };
+			if(entry.NumericValue >= 0 && entry.NumericValue < UInt32.MaxValue) {
+				return new LocationInfo() { RelAddress = new() { Address = (int)entry.NumericValue, Type = CpuType.ToMemoryType() } };
 			} else {
 				return null;
 			}
@@ -216,6 +220,10 @@ namespace Mesen.Debugger.ViewModels
 							ActionType = ActionType.RowFormatHex24Bits,
 							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 3, Selection.SelectedItems)
 						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatHex32Bits,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 4, Selection.SelectedItems)
+						},
 						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatSigned8Bits,
@@ -228,6 +236,10 @@ namespace Mesen.Debugger.ViewModels
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatSigned24Bits,
 							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 3, Selection.SelectedItems)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatSigned32Bits,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 4, Selection.SelectedItems)
 						},
 						new ContextMenuSeparator(),
 						new ContextMenuAction() {

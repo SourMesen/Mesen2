@@ -19,10 +19,10 @@ namespace Mesen.Debugger.Disassembly
 		
 		//(.[a-z]) is allowed after the ocode to support assemblers (for source view) that use
 		//e.g .b/.w/.l suffixes to select between 8/16bit operations, etc.
-		private static Regex _opCode = new Regex("^([a-z0-9]{2,5}(.[a-z]){0,1})([\\s]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _opCode = new Regex("^([a-z0-9]{1,5}(.[a-z]){0,1})([\\s]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-		private static Regex _syntax = new Regex("^[]([)!+,.|:<>]{1}", RegexOptions.Compiled);
-		private static Regex _operand = new Regex("^(([$][0-9a-f]*([.]\\d){0,1})|(#[$0-9][0-9a-f]*)|#|([@_a-z]([@_a-z0-9])*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _syntax = new Regex("^[]([)!+,.|:<>-]{1}", RegexOptions.Compiled);
+		private static Regex _operand = new Regex("^((([$]|0x)[0-9a-f]*([.]\\d){0,1})|(#([$]|0x|[0-9])[0-9a-f]*)|#|([@_a-z]([@_a-z0-9])*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		public static List<CodeColor> GetCpuHighlights(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues)
 		{
@@ -92,7 +92,7 @@ namespace Mesen.Debugger.Disassembly
 					colors.Add(new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None, pos));
 				}
 
-				if(lineData.ShowEffectiveAddress && lineData.EffectiveAddress.Address >= 0) {
+				if(lineData.ShowEffectiveAddress && lineData.EffectiveAddress >= 0) {
 					string effAddress = lineData.GetEffectiveAddressString(addressFormat, out CodeSegmentType type);
 					colors.Add(new CodeColor(" " + effAddress, cfg.CodeEffectiveAddressColor, type));
 				}

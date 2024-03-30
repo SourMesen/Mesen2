@@ -93,19 +93,24 @@ void SmsPsg::Run()
 	}
 
 	if(_clockCounter >= 20000) {
-		blip_end_frame(_leftChannel, _clockCounter);
-		blip_end_frame(_rightChannel, _clockCounter);
-
-		uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, SmsPsg::MaxSamples, 1);
-		blip_read_samples(_rightChannel, _soundBuffer + 1, SmsPsg::MaxSamples, 1);
-
-		if(_console->IsPsgAudioMuted()) {
-			memset(_soundBuffer, 0, SmsPsg::MaxSamples * 2 * sizeof(int16_t));
-		}
-
-		_soundMixer->PlayAudioBuffer(_soundBuffer, sampleCount, SmsPsg::SampleRate);
-		_clockCounter = 0;
+		PlayQueuedAudio();
 	}
+}
+
+void SmsPsg::PlayQueuedAudio()
+{
+	blip_end_frame(_leftChannel, _clockCounter);
+	blip_end_frame(_rightChannel, _clockCounter);
+
+	uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, SmsPsg::MaxSamples, 1);
+	blip_read_samples(_rightChannel, _soundBuffer + 1, SmsPsg::MaxSamples, 1);
+
+	if(_console->IsPsgAudioMuted()) {
+		memset(_soundBuffer, 0, SmsPsg::MaxSamples * 2 * sizeof(int16_t));
+	}
+
+	_soundMixer->PlayAudioBuffer(_soundBuffer, sampleCount, SmsPsg::SampleRate);
+	_clockCounter = 0;
 }
 
 void SmsPsg::Write(uint8_t value)

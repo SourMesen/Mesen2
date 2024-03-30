@@ -17,6 +17,7 @@ namespace Mesen.Interop
 				CpuType.Nes => MemoryType.NesMemory,
 				CpuType.Pce => MemoryType.PceMemory,
 				CpuType.Sms => MemoryType.SmsMemory,
+				CpuType.Gba => MemoryType.GbaMemory,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -29,6 +30,7 @@ namespace Mesen.Interop
 				CpuType.Nes => MemoryType.NesPpuMemory,
 				CpuType.Pce => getExtendedRam ? MemoryType.PceVideoRamVdc2 : MemoryType.PceVideoRam,
 				CpuType.Sms => MemoryType.SmsVideoRam,
+				CpuType.Gba => MemoryType.GbaVideoRam,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -41,6 +43,7 @@ namespace Mesen.Interop
 				CpuType.Nes => MemoryType.NesSpriteRam,
 				CpuType.Pce => getExtendedRam ? MemoryType.PceSpriteRamVdc2 : MemoryType.PceSpriteRam,
 				CpuType.Sms => MemoryType.None,
+				CpuType.Gba => MemoryType.GbaSpriteRam,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -58,6 +61,7 @@ namespace Mesen.Interop
 				CpuType.Nes => MemoryType.NesPrgRom,
 				CpuType.Pce => MemoryType.PcePrgRom,
 				CpuType.Sms => MemoryType.SmsPrgRom,
+				CpuType.Gba => MemoryType.GbaPrgRom,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -75,6 +79,7 @@ namespace Mesen.Interop
 				CpuType.Nes => MemoryType.NesInternalRam,
 				CpuType.Pce => MemoryType.PceWorkRam,
 				CpuType.Sms => MemoryType.SmsWorkRam,
+				CpuType.Gba => MemoryType.GbaIntWorkRam,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -92,6 +97,7 @@ namespace Mesen.Interop
 				CpuType.Nes => 4,
 				CpuType.Pce => 4,
 				CpuType.Sms => 4,
+				CpuType.Gba => 7,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -109,6 +115,7 @@ namespace Mesen.Interop
 				CpuType.Nes => 3,
 				CpuType.Pce => 4,
 				CpuType.Sms => 4,
+				CpuType.Gba => 4,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -126,6 +133,7 @@ namespace Mesen.Interop
 				CpuType.Nes => DebuggerFlags.NesDebuggerEnabled,
 				CpuType.Pce => DebuggerFlags.PceDebuggerEnabled,
 				CpuType.Sms => DebuggerFlags.SmsDebuggerEnabled,
+				CpuType.Gba => DebuggerFlags.GbaDebuggerEnabled,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -143,6 +151,7 @@ namespace Mesen.Interop
 				CpuType.Nes => ConsoleType.Nes,
 				CpuType.Pce => ConsoleType.PcEngine,
 				CpuType.Sms => ConsoleType.Sms,
+				CpuType.Gba => ConsoleType.Gba,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
@@ -171,6 +180,7 @@ namespace Mesen.Interop
 				case CpuType.Nes:
 				case CpuType.Pce:
 				case CpuType.Sms:
+				case CpuType.Gba:
 					return true;
 
 				default:
@@ -224,6 +234,7 @@ namespace Mesen.Interop
 				CpuType.Nes => 0xEA,
 				CpuType.Pce => 0xEA,
 				CpuType.Sms => 0x00,
+				//TODOGBA - assembler support
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}

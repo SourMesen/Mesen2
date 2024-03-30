@@ -27,6 +27,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/StringUtilities.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/sha1.h"
 #include "Utilities/CRC32.h"
@@ -714,14 +715,7 @@ string BaseCartridge::GetGameCode()
 
 string BaseCartridge::GetCartName()
 {
-	int nameLength = 21;
-	for(int i = 0; i < 21; i++) {
-		if(_cartInfo.CartName[i] == 0) {
-			nameLength = i;
-			break;
-		}
-	}
-	string name = string(_cartInfo.CartName, nameLength);
+	string name = StringUtilities::GetString(_cartInfo.CartName, 21);
 
 	size_t lastNonSpace = name.find_last_not_of(' ');
 	if(lastNonSpace != string::npos) {

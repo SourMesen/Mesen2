@@ -14,15 +14,16 @@ enum class CpuType : uint8_t;
 
 struct EffectiveAddressInfo
 {
-	AddressInfo Address = { -1, MemoryType::None };
+	int64_t Address = -1;
+	MemoryType Type = MemoryType::None;
 	uint8_t ValueSize = 0;
 	bool ShowAddress = false;
 
-	EffectiveAddressInfo(int32_t address = -1, uint8_t valueSize = 1, bool showAddress = true, MemoryType memType = MemoryType::None)
+	EffectiveAddressInfo(int64_t address = -1, uint8_t valueSize = 1, bool showAddress = true, MemoryType memType = MemoryType::None)
 	{
 		if(address >= 0) {
-			Address.Address = address;
-			Address.Type = memType;
+			Address = address;
+			Type = memType;
 			ValueSize = valueSize;
 			ShowAddress = showAddress;
 		}
@@ -37,6 +38,8 @@ private:
 	uint8_t _flags;
 	CpuType _cpuType;
 	bool _initialized = false;
+
+	template<CpuType type> uint32_t GetFullOpCode();
 
 public:
 	DisassemblyInfo();
@@ -58,7 +61,7 @@ public:
 	void GetByteCode(uint8_t copyBuffer[8]);
 	void GetByteCode(string &out);
 
-	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags, CpuType type, uint32_t cpuAddress, MemoryType memType, MemoryDumper* memoryDumper);
+	static uint8_t GetOpSize(uint32_t opCode, uint8_t flags, CpuType type, uint32_t cpuAddress, MemoryType memType, MemoryDumper* memoryDumper);
 	bool IsJumpToSub();
 	bool IsReturnInstruction();
 	
@@ -70,6 +73,6 @@ public:
 
 	EffectiveAddressInfo GetEffectiveAddress(Debugger* debugger, void *cpuState, CpuType type);
 
-	uint16_t GetMemoryValue(EffectiveAddressInfo effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType);
+	uint32_t GetMemoryValue(EffectiveAddressInfo effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType);
 };
 

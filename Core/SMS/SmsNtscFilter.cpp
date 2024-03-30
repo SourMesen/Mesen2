@@ -3,6 +3,7 @@
 #include "SMS/SmsVdp.h"
 #include "SMS/SmsTypes.h"
 #include "SMS/SmsConsole.h"
+#include "Shared/Video/GenericNtscFilter.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
@@ -61,11 +62,11 @@ HudScaleFactors SmsNtscFilter::GetScaleFactor()
 
 void SmsNtscFilter::OnBeforeApplyFilter()
 {
-	if(NtscFilterOptionsChanged(*_ntscSetup.get())) {
-		InitNtscFilter(*_ntscSetup.get());
+	if(GenericNtscFilter::NtscFilterOptionsChanged(*_ntscSetup.get(), _emu->GetSettings()->GetVideoConfig())) {
+		GenericNtscFilter::InitNtscFilter(*_ntscSetup.get(), _emu->GetSettings()->GetVideoConfig());
 		sms_ntsc_init(_ntscData.get(), _ntscSetup.get());
 
-		InitNtscFilter(*_snesNtscSetup.get());
+		GenericNtscFilter::InitNtscFilter(*_snesNtscSetup.get(), _emu->GetSettings()->GetVideoConfig());
 		snes_ntsc_init(_snesNtscData.get(), _snesNtscSetup.get());
 	}
 }

@@ -279,6 +279,16 @@ namespace Mesen.Utilities
 					}
 					break;
 
+				case ConsoleType.Gba:
+					switch(layer) {
+						case VideoLayer.Bg1: return (() => ConfigManager.Config.Gba.HideBgLayer1, (val) => ConfigManager.Config.Gba.HideBgLayer1 = val);
+						case VideoLayer.Bg2: return (() => ConfigManager.Config.Gba.HideBgLayer2, (val) => ConfigManager.Config.Gba.HideBgLayer2 = val);
+						case VideoLayer.Bg3: return (() => ConfigManager.Config.Gba.HideBgLayer3, (val) => ConfigManager.Config.Gba.HideBgLayer3 = val);
+						case VideoLayer.Bg4: return (() => ConfigManager.Config.Gba.HideBgLayer4, (val) => ConfigManager.Config.Gba.HideBgLayer4 = val);
+						case VideoLayer.Sprite1: return (() => ConfigManager.Config.Gba.DisableSprites, (val) => ConfigManager.Config.Gba.DisableSprites = val);
+					}
+					break;
+
 				case ConsoleType.PcEngine:
 					switch(layer) {
 						case VideoLayer.Bg1: return (() => ConfigManager.Config.PcEngine.DisableBackground, (val) => ConfigManager.Config.PcEngine.DisableBackground = val);
@@ -312,6 +322,7 @@ namespace Mesen.Utilities
 				ConfigManager.Config.Snes.ApplyConfig();
 				ConfigManager.Config.Nes.ApplyConfig();
 				ConfigManager.Config.Gameboy.ApplyConfig();
+				ConfigManager.Config.Gba.ApplyConfig();
 				ConfigManager.Config.PcEngine.ApplyConfig();
 				ConfigManager.Config.Sms.ApplyConfig();
 			}
@@ -328,6 +339,11 @@ namespace Mesen.Utilities
 			ConfigManager.Config.Nes.DisableSprites = false;
 			ConfigManager.Config.Gameboy.DisableBackground = false;
 			ConfigManager.Config.Gameboy.DisableSprites = false;
+			ConfigManager.Config.Gba.HideBgLayer1 = false;
+			ConfigManager.Config.Gba.HideBgLayer2 = false;
+			ConfigManager.Config.Gba.HideBgLayer3 = false;
+			ConfigManager.Config.Gba.HideBgLayer4 = false;
+			ConfigManager.Config.Gba.DisableSprites = false;
 			ConfigManager.Config.PcEngine.DisableBackground = false;
 			ConfigManager.Config.PcEngine.DisableBackgroundVdc2 = false;
 			ConfigManager.Config.PcEngine.DisableSprites = false;

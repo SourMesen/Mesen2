@@ -160,6 +160,13 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
+		public void AddEntry(string name, NullableBoolean value)
+		{
+			if(value != NullableBoolean.Undefined) {
+				AddEntry(name, value == NullableBoolean.True);
+			}
+		}
+		
 		public void AddEntry(string name, object value, bool useMonoFont = false)
 		{
 			_updatedKeys.Add(name);

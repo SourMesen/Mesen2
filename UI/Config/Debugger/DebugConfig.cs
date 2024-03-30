@@ -86,6 +86,10 @@ namespace Mesen.Config
 				
 				SmsBreakOnNopLoad = Debugger.Sms.BreakOnNopLoad,
 
+				GbaBreakOnInvalidOpCode = Debugger.Gba.BreakOnInvalidOpCode,
+				GbaBreakOnNopLoad = Debugger.Gba.BreakOnNopLoad,
+				GbaBreakOnUnalignedMemAccess = Debugger.Gba.BreakOnUnalignedMemAccess,
+
 				ScriptAllowIoOsAccess = ScriptWindow.AllowIoOsAccess,
 				ScriptAllowNetworkAccess = ScriptWindow.AllowNetworkAccess,
 				ScriptTimeout = ScriptWindow.ScriptTimeout
@@ -142,6 +146,10 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnInvalidVramAddress;
 
 		[MarshalAs(UnmanagedType.I1)] public bool SmsBreakOnNopLoad;
+		
+		[MarshalAs(UnmanagedType.I1)] public bool GbaBreakOnNopLoad;
+		[MarshalAs(UnmanagedType.I1)] public bool GbaBreakOnInvalidOpCode;
+		[MarshalAs(UnmanagedType.I1)] public bool GbaBreakOnUnalignedMemAccess;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ScriptAllowIoOsAccess;
 		[MarshalAs(UnmanagedType.I1)] public bool ScriptAllowNetworkAccess;

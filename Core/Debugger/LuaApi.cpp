@@ -90,8 +90,13 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 		{ "read", LuaApi::ReadMemory },
 		{ "write", LuaApi::WriteMemory },
-		{ "readWord", LuaApi::ReadMemoryWord },
-		{ "writeWord", LuaApi::WriteMemoryWord },
+		{ "read16", LuaApi::ReadMemory16 },
+		{ "write16", LuaApi::WriteMemory16 },
+		{ "read32", LuaApi::ReadMemory32 },
+		{ "write32", LuaApi::WriteMemory32 },
+
+		{ "readWord", LuaApi::ReadMemory16 }, //for backward compatibility
+		{ "writeWord", LuaApi::WriteMemory16 }, //for backward compatibility
 		
 		{ "convertAddress", LuaApi::ConvertAddress },
 		{ "getLabelAddress", LuaApi::GetLabelAddress },
@@ -266,7 +271,7 @@ int LuaApi::WriteMemory(lua_State *lua)
 	return l.ReturnCount();
 }
 
-int LuaApi::ReadMemoryWord(lua_State *lua)
+int LuaApi::ReadMemory16(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	l.ForceParamCount(3);
@@ -278,12 +283,29 @@ int LuaApi::ReadMemoryWord(lua_State *lua)
 	checkminparams(2);
 	errorCond(address < 0, "address must be >= 0");
 	checkEnum(MemoryType, memType, "invalid memory type");
-	uint16_t value = _memoryDumper->GetMemoryValueWord(memType, address, disableSideEffects);
+	uint16_t value = _memoryDumper->GetMemoryValue16(memType, address, disableSideEffects);
 	l.Return(returnSignedValue ? (int16_t)value : value);
 	return l.ReturnCount();
 }
 
-int LuaApi::WriteMemoryWord(lua_State *lua)
+int LuaApi::ReadMemory32(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	l.ForceParamCount(3);
+	bool returnSignedValue = l.ReadBool();
+	int type = l.ReadInteger();
+	bool disableSideEffects = (type & 0x100) == 0x100;
+	MemoryType memType = (MemoryType)(type & 0xFF);
+	int address = l.ReadInteger();
+	checkminparams(2);
+	errorCond(address < 0, "address must be >= 0");
+	checkEnum(MemoryType, memType, "invalid memory type");
+	uint32_t value = _memoryDumper->GetMemoryValue32(memType, address, disableSideEffects);
+	l.Return(returnSignedValue ? (int32_t)value : value);
+	return l.ReturnCount();
+}
+
+int LuaApi::WriteMemory16(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	int type = l.ReadInteger();
@@ -295,7 +317,22 @@ int LuaApi::WriteMemoryWord(lua_State *lua)
 	errorCond(value > 65535 || value < -32768, "value out of range");
 	errorCond(address < 0, "address must be >= 0");
 	checkEnum(MemoryType, memType, "invalid memory type");
-	_memoryDumper->SetMemoryValueWord(memType, address, value, disableSideEffects);
+	_memoryDumper->SetMemoryValue16(memType, address, value, disableSideEffects);
+	return l.ReturnCount();
+}
+
+int LuaApi::WriteMemory32(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	int type = l.ReadInteger();
+	bool disableSideEffects = (type & 0x100) == 0x100;
+	MemoryType memType = (MemoryType)(type & 0xFF);
+	int value = l.ReadInteger();
+	int address = l.ReadInteger();
+	checkparams();
+	errorCond(address < 0, "address must be >= 0");
+	checkEnum(MemoryType, memType, "invalid memory type");
+	_memoryDumper->SetMemoryValue32(memType, address, value, disableSideEffects);
 	return l.ReturnCount();
 }
 

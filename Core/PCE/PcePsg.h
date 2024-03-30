@@ -46,5 +46,7 @@ public:
 	void Write(uint16_t addr, uint8_t value);
 	void Run();
 
+	void PlayQueuedAudio();
+
 	void Serialize(Serializer& s) override;
 };

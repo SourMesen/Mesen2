@@ -19,6 +19,7 @@ enum class FirmwareType
 	Satellaview,
 	Gameboy,
 	GameboyColor,
+	GameboyAdvance,
 	Sgb1GameboyCpu,
 	Sgb2GameboyCpu,
 	SGB1,
@@ -70,6 +71,10 @@ struct MissingFirmwareMessage
 			case FirmwareType::GameboyColor:
 				FileHashes[0] = "B4F2E416A35EEF52CBA161B159C7C8523A92594FACB924B3EDE0D722867C50C7";
 				FileHashes[1] = "3A307A41689BEE99A9A32EA021BF45136906C86B2E4F06C806738398E4F92E45";
+				break;
+
+			case FirmwareType::GameboyAdvance:
+				FileHashes[0] = "FD2547724B505F487E6DCB29EC2ECFF3AF35A841A77AB2E85FD87350ABD36570";
 				break;
 
 			case FirmwareType::Sgb1GameboyCpu: FileHashes[0] = "0E4DDFF32FC9D1EEAAE812A157DD246459B00C9E14F2F61751F661F32361E360"; break;
@@ -269,6 +274,26 @@ public:
 		}
 
 		MessageManager::DisplayMessage("Error", "Could not find boot rom: " + filename);*/
+		return false;
+	}
+
+	static bool LoadGbaBootRom(Emulator* emu, uint8_t** bootRom)
+	{
+		string filename = "gba_bios.bin";
+
+		uint32_t size = 0x4000;
+		if(AttemptLoadFirmware(bootRom, filename, size)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::GameboyAdvance, size);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(bootRom, filename, size)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find BIOS rom: " + filename);
 		return false;
 	}
 

@@ -3,12 +3,23 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugUtilities.h"
 
+template<uint8_t accessWidth>
 bool Breakpoint::Matches(MemoryOperationInfo& operation, AddressInfo &info)
 {
 	if(operation.MemType == _memoryType && DebugUtilities::IsRelativeMemory(_memoryType)) {
-		return (int32_t)operation.Address >= _startAddr && (int32_t)operation.Address <= _endAddr;
+		for(int i = 0; i < accessWidth; i++) {
+			if((int32_t)operation.Address + i >= _startAddr && (int32_t)operation.Address + i <= _endAddr) {
+				return true;
+			}
+		}
+		return false;
 	} else if(_memoryType == info.Type) {
-		return info.Address >= _startAddr && info.Address <= _endAddr;
+		for(int i = 0; i < accessWidth; i++) {
+			if(info.Address + i >= _startAddr && info.Address + i <= _endAddr) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	return false;
@@ -61,3 +72,7 @@ bool Breakpoint::IsAllowedForOpType(MemoryOperationType opType)
 	}
 	return true;
 }
+
+template bool Breakpoint::Matches<1>(MemoryOperationInfo& operation, AddressInfo& info);
+template bool Breakpoint::Matches<2>(MemoryOperationInfo& operation, AddressInfo& info);
+template bool Breakpoint::Matches<4>(MemoryOperationInfo& operation, AddressInfo& info);

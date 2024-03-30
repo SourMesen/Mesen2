@@ -564,7 +564,7 @@ namespace Mesen.Debugger.Windows
 							BreakOnWrite = true,
 							BreakOnRead = true
 						};
-						if(bp.IsCpuBreakpoint) {
+						if(bp.SupportsExec) {
 							bp.BreakOnExec = true;
 						}
 					}

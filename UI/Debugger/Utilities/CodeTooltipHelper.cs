@@ -17,10 +17,10 @@ namespace Mesen.Debugger.Utilities
 		{
 			int address = -1;
 			if(seg.Type == CodeSegmentType.EffectiveAddress) {
-				if(seg.Data.EffectiveAddress.Address >= 0) {
-					MemoryType memType = seg.Data.EffectiveAddress.Type != MemoryType.None ? seg.Data.EffectiveAddress.Type : cpuType.ToMemoryType();
+				if(seg.Data.EffectiveAddress >= 0) {
+					MemoryType memType = seg.Data.EffectiveAddressType != MemoryType.None ? seg.Data.EffectiveAddressType : cpuType.ToMemoryType();
 					if(memType.IsRelativeMemory()) {
-						AddressInfo relAddress = new AddressInfo() { Address = seg.Data.EffectiveAddress.Address, Type = memType };
+						AddressInfo relAddress = new AddressInfo() { Address = (Int32)seg.Data.EffectiveAddress, Type = memType };
 						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
 						return new LocationInfo {
 							RelAddress = relAddress,
@@ -29,7 +29,7 @@ namespace Mesen.Debugger.Utilities
 					} else {
 						//Used by e.g ports on the SMS
 						return new LocationInfo {
-							AbsAddress = seg.Data.EffectiveAddress
+							AbsAddress = new AddressInfo() { Address = (Int32)seg.Data.EffectiveAddress, Type = seg.Data.EffectiveAddressType }
 						};
 					}
 				}
@@ -37,7 +37,7 @@ namespace Mesen.Debugger.Utilities
 				string addressText = seg.Text.Trim(' ', '[', ']', '$');
 				int.TryParse(addressText, System.Globalization.NumberStyles.HexNumber, null, out address);
 				if(address >= 0) {
-					MemoryType memType = seg.Data.EffectiveAddress.Address >= 0 && seg.Data.EffectiveAddress.Type != MemoryType.None ? seg.Data.EffectiveAddress.Type : cpuType.ToMemoryType();
+					MemoryType memType = seg.Data.EffectiveAddress >= 0 && seg.Data.EffectiveAddressType != MemoryType.None ? seg.Data.EffectiveAddressType : cpuType.ToMemoryType();
 					if(memType.IsRelativeMemory()) {
 						AddressInfo relAddress = new AddressInfo() { Address = address, Type = memType };
 						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
@@ -233,15 +233,30 @@ namespace Mesen.Debugger.Utilities
 
 				int byteValue = DebugApi.GetMemoryValue(valueMemType, valueAddress);
 				int wordValue;
+				int dwordValue;
 				if(useAbsAddress && absAddress != null) {
 					wordValue = (DebugApi.GetMemoryValue(absAddress.Value.Type, (uint)absAddress.Value.Address + 1) << 8) | byteValue;
+					dwordValue = (
+						(DebugApi.GetMemoryValue(absAddress.Value.Type, (uint)absAddress.Value.Address + 3) << 24) |
+						(DebugApi.GetMemoryValue(absAddress.Value.Type, (uint)absAddress.Value.Address + 2) << 16) |
+						wordValue
+					);
 				} else {
 					wordValue = (DebugApi.GetMemoryValue(cpuMemType, (uint)relAddress + 1) << 8) | byteValue;
+					dwordValue = (
+						(DebugApi.GetMemoryValue(cpuMemType, (uint)relAddress + 3) << 24) |
+						(DebugApi.GetMemoryValue(cpuMemType, (uint)relAddress + 2) << 16) |
+						wordValue
+					);
 				}
 
 				StackPanel mainPanel = new StackPanel() { Spacing = -4, Margin = new Avalonia.Thickness(0, -1, 0, 0) };
 				mainPanel.Children.Add(GetHexDecPanel(byteValue, "X2", monoFont, fontSize));
 				mainPanel.Children.Add(GetHexDecPanel(wordValue, "X4", monoFont, fontSize));
+				if(cpuType.GetConsoleType() == ConsoleType.Gba || cpuType.GetConsoleType() == ConsoleType.Snes) {
+					//Only show 32-bit values for GBA/SNES since these are the 2 systems that are most likely to be using 32-bit values in memory
+					mainPanel.Children.Add(GetHexDecPanel(dwordValue, "X8", monoFont, fontSize));
+				}
 
 				items.AddEntry("Address", GetAddressField(relAddress, absAddress, cpuType, monoFont, fontSize), true);
 				items.AddEntry("Value", mainPanel);

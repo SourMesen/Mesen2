@@ -1,9 +1,10 @@
 #include "pch.h"
 #include "PCE/PceNtscFilter.h"
+#include "PCE/PceDefaultVideoFilter.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
-#include "PCE/PceDefaultVideoFilter.h"
+#include "Shared/Video/GenericNtscFilter.h"
 
 PceNtscFilter::PceNtscFilter(Emulator* emu) : PceDefaultVideoFilter(emu)
 {
@@ -52,8 +53,8 @@ void PceNtscFilter::OnBeforeApplyFilter()
 {
 	_pceConfig = _emu->GetSettings()->GetPcEngineConfig();
 
-	if(NtscFilterOptionsChanged(_ntscSetup)) {
-		InitNtscFilter(_ntscSetup);
+	if(GenericNtscFilter::NtscFilterOptionsChanged(_ntscSetup, _emu->GetSettings()->GetVideoConfig())) {
+		GenericNtscFilter::InitNtscFilter(_ntscSetup, _emu->GetSettings()->GetVideoConfig());
 		snes_ntsc_init(&_ntscData, &_ntscSetup);
 	}
 }
