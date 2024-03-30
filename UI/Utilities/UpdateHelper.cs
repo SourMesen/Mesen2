@@ -78,7 +78,13 @@ namespace Mesen.Utilities
 				File.Copy(srcFile, destFile, true);
 
 				//Start new version
-				Process.Start(destFile);
+csharp
+//Start new version
+Process.Start(destFile);
+} 
+catch (Exception ex) {
+    Console.WriteLine("An error occurred: " + ex.Message);
+}
 			} catch {
 				try {
 					//Something failed, try again with admin rights (if we aren't already running as an admin)
