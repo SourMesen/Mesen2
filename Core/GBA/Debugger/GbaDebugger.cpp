@@ -176,7 +176,7 @@ void GbaDebugger::ProcessRead(uint32_t addr, uint32_t value, MemoryOperationType
 			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 
-		if(addr >= 0x04000000 && addr <= 0x07000000) {
+		if(addr >= 0x04000000 && addr < 0x08000000) {
 			_eventManager->AddEvent(DebugEventType::Register, operation);
 		}
 
@@ -207,7 +207,7 @@ void GbaDebugger::ProcessWrite(uint32_t addr, uint32_t value, MemoryOperationTyp
 		_traceLogger->LogNonExec(operation, addressInfo);
 	}
 
-	if(addr >= 0x04000000 && addr <= 0x07000000) {
+	if(addr >= 0x04000000 && addr < 0x08000000) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
