@@ -28,7 +28,7 @@ void GbaDisUtils::ThumbDisassemble(DisassemblyInfo& info, string& out, uint32_t 
 	GbaThumbOpCategory category = GbaCpu::GetThumbOpCategory(opCode);
 
 	auto writeBranchTarget = [&str, labelManager](uint32_t addr) {
-		AddressInfo relAddr = { addr, MemoryType::GbaMemory };
+		AddressInfo relAddr = { (int32_t)addr, MemoryType::GbaMemory };
 		string label = labelManager ? labelManager->GetLabel(relAddr) : "";
 		if(label.empty()) {
 			str.WriteAll('$', HexUtilities::ToHex(addr));
@@ -406,7 +406,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 	GbaArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
 
 	auto writeBranchTarget = [&str, labelManager](uint32_t addr) {
-		AddressInfo relAddr = { addr, MemoryType::GbaMemory };
+		AddressInfo relAddr = { (int32_t)addr, MemoryType::GbaMemory };
 		string label = labelManager ? labelManager->GetLabel(relAddr) : "";
 		if(label.empty()) {
 			str.WriteAll('$', HexUtilities::ToHex(addr));
