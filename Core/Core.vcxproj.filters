@@ -1021,6 +1021,9 @@
     <ClInclude Include="Shared\Interfaces\IMessageManager.h">
       <Filter>Shared\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\Interfaces\IMouseManager.h">
+      <Filter>Shared\Interfaces</Filter>
+    </ClInclude>
     <ClInclude Include="Shared\Interfaces\INotificationListener.h">
       <Filter>Shared\Interfaces</Filter>
     </ClInclude>

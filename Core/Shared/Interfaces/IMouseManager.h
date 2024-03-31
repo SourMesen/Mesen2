@@ -22,12 +22,12 @@ struct SystemMouseState
 class IMouseManager
 {
 public:
-  virtual ~IMouseManager() {}
+	virtual ~IMouseManager() {}
 
-  virtual SystemMouseState GetSystemMouseState(void* windowHandle) = 0;
-  virtual bool CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* windowHandle) = 0;
-  virtual void ReleaseMouse() = 0;
-  virtual void SetSystemMousePosition(int32_t x, int32_t y) = 0;
-  virtual void SetCursorImage(CursorImage cursor) = 0;
-  virtual double GetPixelScale() = 0;
+	virtual SystemMouseState GetSystemMouseState(void* windowHandle) = 0;
+	virtual bool CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* windowHandle) = 0;
+	virtual void ReleaseMouse() = 0;
+	virtual void SetSystemMousePosition(int32_t x, int32_t y) = 0;
+	virtual void SetCursorImage(CursorImage cursor) = 0;
+	virtual double GetPixelScale() = 0;
 };

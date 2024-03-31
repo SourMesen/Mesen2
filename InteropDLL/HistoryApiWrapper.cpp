@@ -14,11 +14,11 @@
 #ifdef _WIN32
 	#include "Windows/Renderer.h"
 	#include "Windows/SoundManager.h"
-	#include "Windows/WindowsKeyManager.h"
+#elif __APPLE__
+	#include "Sdl/SdlSoundManager.h"
 #else
-	#include "Linux/SdlRenderer.h"
-	#include "Linux/SdlSoundManager.h"
-	#include "Linux/LinuxKeyManager.h"
+	#include "Sdl/SdlRenderer.h"
+	#include "Sdl/SdlSoundManager.h"
 #endif
 
 extern unique_ptr<Emulator> _emu;

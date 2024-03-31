@@ -742,6 +742,7 @@
     <ClInclude Include="Shared\Video\VideoDecoder.h" />
     <ClInclude Include="Shared\Video\VideoRenderer.h" />
     <ClInclude Include="Shared\Audio\WaveRecorder.h" />
+    <ClInclude Include="Shared\Interfaces\IMouseManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debugger\Base6502Assembler.cpp" />
