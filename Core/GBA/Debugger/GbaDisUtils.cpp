@@ -27,6 +27,16 @@ void GbaDisUtils::ThumbDisassemble(DisassemblyInfo& info, string& out, uint32_t 
 	uint16_t opCode = info.GetByteCode()[0] | (info.GetByteCode()[1] << 8);
 	GbaThumbOpCategory category = GbaCpu::GetThumbOpCategory(opCode);
 
+	auto writeBranchTarget = [&str, labelManager](uint32_t addr) {
+		AddressInfo relAddr = { addr, MemoryType::GbaMemory };
+		string label = labelManager ? labelManager->GetLabel(relAddr) : "";
+		if(label.empty()) {
+			str.WriteAll('$', HexUtilities::ToHex(addr));
+		} else {
+			str.Write(label, true);
+		}
+	};
+
 	switch(category) {
 		case GbaThumbOpCategory::MoveShiftedRegister:
 		{
@@ -348,7 +358,8 @@ void GbaDisUtils::ThumbDisassemble(DisassemblyInfo& info, string& out, uint32_t 
 				default: str.Write("invalid"); break;
 			}
 
-			str.WriteAll(" $", HexUtilities::ToHex(memoryAddr + offset));
+			str.Write(' ');
+			writeBranchTarget(memoryAddr + offset);
 			break;
 		}
 
@@ -364,7 +375,8 @@ void GbaDisUtils::ThumbDisassemble(DisassemblyInfo& info, string& out, uint32_t 
 		case GbaThumbOpCategory::UnconditionalBranch:
 		{
 			int16_t offset = ((int16_t)((opCode & 0x7FF) << 5)) >> 4;
-			str.WriteAll("BAL $", HexUtilities::ToHex(memoryAddr + offset + 4));
+			str.Write("BAL ");
+			writeBranchTarget(memoryAddr + offset + 4);
 			break;
 		}
 
@@ -393,6 +405,16 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 
 	GbaArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
 
+	auto writeBranchTarget = [&str, labelManager](uint32_t addr) {
+		AddressInfo relAddr = { addr, MemoryType::GbaMemory };
+		string label = labelManager ? labelManager->GetLabel(relAddr) : "";
+		if(label.empty()) {
+			str.WriteAll('$', HexUtilities::ToHex(addr));
+		} else {
+			str.Write(label, true);
+		}
+	};
+
 	switch(category) {
 		case GbaArmOpCategory::Branch:
 		{
@@ -401,8 +423,10 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 				str.Write('L');
 			}
 			WriteCond(str, opCode);
+			str.Write(' ');
+			
 			int32_t offset = (((int32_t)opCode << 8) >> 6);
-			str.WriteAll(" $", HexUtilities::ToHex(memoryAddr + offset + 8));
+			writeBranchTarget(memoryAddr + offset + 8);
 			break;
 		}
 
