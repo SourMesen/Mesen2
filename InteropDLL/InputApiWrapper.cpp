@@ -7,6 +7,7 @@
 #include "MacOS/MacOSMouseManager.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
+extern unique_ptr<IMouseManager> _mouseManager;
 extern unique_ptr<Emulator> _emu;
 
 extern "C" 
@@ -83,36 +84,49 @@ extern "C"
 		_emu->ResetLagCounter();
 	}
 
-#ifdef __APPLE__
-	DllExport MouseState __stdcall GetSystemMouseState()
+	DllExport SystemMouseState __stdcall GetSystemMouseState(void* windowHandle)
 	{
-		return MacOSMouseManager::GetMouseState();
+		if(_mouseManager) {
+			return _mouseManager->GetSystemMouseState(windowHandle);
+		}
+		SystemMouseState state = {};
+		return state;
 	}
 
-	DllExport void __stdcall SetSystemMouseCaptured(bool enabled)
+	DllExport bool __stdcall CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* windowHandle)
 	{
-		MacOSMouseManager::SetMouseCaptured(enabled);
+		if(_mouseManager) {
+			return _mouseManager->CaptureMouse(x, y, width, height, windowHandle);
+		}
+		return false;
 	}
 
-	DllExport void __stdcall SetSystemMousePosition(double x, double y)
+	DllExport void __stdcall ReleaseMouse()
 	{
-		MacOSMouseManager::SetMousePosition(x, y);
+		if(_mouseManager) {
+			_mouseManager->ReleaseMouse();
+		}
 	}
 
-	DllExport void __stdcall SetSystemCursorImage(CursorIcon image)
+	DllExport void __stdcall SetSystemMousePosition(int32_t x, int32_t y)
 	{
-		MacOSMouseManager::SetCursor(image);
+		if(_mouseManager) {
+			_mouseManager->SetSystemMousePosition(x, y);
+		}
 	}
 
-	DllExport double __stdcall GetSystemPixelScale()
+	DllExport void __stdcall SetCursorImage(CursorImage image)
 	{
-		return MacOSMouseManager::GetPixelScale();
+		if(_mouseManager) {
+			_mouseManager->SetCursorImage(image);
+		}
 	}
-#else
-	DllExport MouseState __stdcall GetSystemMouseState() { MouseState state = {}; return state; }
-	DllExport void __stdcall SetSystemMouseCaptured(bool enabled) {}
-	DllExport void __stdcall SetSystemMousePosition(double x, double y) {}
-	DllExport void __stdcall SetSystemCursorImage(CursorIcon image) {}
-	DllExport double __stdcall GetSystemPixelScale() { return 1.0; }
-#endif
+
+	DllExport double __stdcall GetPixelScale()
+	{
+		if(_mouseManager) {
+			return _mouseManager->GetPixelScale();
+		}
+		return 1.0;
+	}
 }

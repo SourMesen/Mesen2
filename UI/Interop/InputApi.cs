@@ -1,6 +1,5 @@
 ﻿using Mesen.Config;
 using Mesen.Utilities;
-using Mesen.Utilities.GlobalMouseLib;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -25,15 +24,12 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool HasControlDevice(ControllerType type);
 
-		[DllImport(DllPath)] public static extern InteropMouseState GetSystemMouseState();
-
-		[DllImport(DllPath)] public static extern void SetSystemMouseCaptured([MarshalAs(UnmanagedType.I1)]bool enabled);
-
-		[DllImport(DllPath)] public static extern void SetSystemMousePosition(double x, double y);
-
-		[DllImport(DllPath)] public static extern void SetSystemCursorImage(CursorIcon cursor);
-
-		[DllImport(DllPath)] public static extern double GetSystemPixelScale();
+		[DllImport(DllPath)] public static extern SystemMouseState GetSystemMouseState(IntPtr windowHandle);
+		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool CaptureMouse(Int32 x, Int32 y, Int32 width, Int32 height, IntPtr windowHandle);
+		[DllImport(DllPath)] public static extern void ReleaseMouse();
+		[DllImport(DllPath)] public static extern void SetSystemMousePosition(Int32 x, Int32 y);
+		[DllImport(DllPath)] public static extern void SetCursorImage(CursorImage cursor);
+		[DllImport(DllPath)] public static extern double GetPixelScale();
 
 		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt16 key, IntPtr outKeyName, Int32 maxLength);
 		public unsafe static string GetKeyName(UInt16 key)
@@ -63,11 +59,18 @@ namespace Mesen.Interop
 		}
 	}
 
-	[StructLayout(LayoutKind.Sequential)]
-	public struct InteropMouseState
+	public enum CursorImage
 	{
-		public double XPosition;
-		public double YPosition;
+		Hidden,
+		Arrow,
+		Cross
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct SystemMouseState
+	{
+		public Int32 XPosition;
+		public Int32 YPosition;
 		[MarshalAs(UnmanagedType.I1)] public bool LeftButton;
 		[MarshalAs(UnmanagedType.I1)] public bool RightButton;
 		[MarshalAs(UnmanagedType.I1)] public bool MiddleButton;

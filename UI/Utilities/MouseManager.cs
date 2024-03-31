@@ -5,7 +5,6 @@ using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Localization;
-using Mesen.Utilities.GlobalMouseLib;
 using Mesen.ViewModels;
 using Mesen.Views;
 using Mesen.Windows;
@@ -32,7 +31,8 @@ namespace Mesen.Utilities
 		private MainMenuView _mainMenu;
 		private MainWindow _wnd;
 
-		private MousePosition _prevPosition;
+		private int _prevPositionX;
+		private int _prevPositionY;
 		private bool _mouseCaptured = false;
 		private DateTime _lastMouseMove = DateTime.Now;
 
@@ -60,9 +60,10 @@ namespace Mesen.Utilities
 			if(MainWindowViewModel.Instance.RecentGames.Visible) {
 				return;
 			}
+
+			SystemMouseState mouseState = InputApi.GetSystemMouseState(GetRendererHandle());
 			
-			bool leftPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Left);
-			if(_wnd.IsActive && leftPressed && !IsPointerInMenu() && (EmuApi.IsRunning() || !MainWindowViewModel.Instance.RecentGames.Visible)) {
+			if(_wnd.IsActive && mouseState.LeftButton && !IsPointerInMenu() && (EmuApi.IsRunning() || !MainWindowViewModel.Instance.RecentGames.Visible)) {
 				//Close menu when renderer is clicked
 				_mainMenu.MainMenu.Close();
 				if(MainWindowViewModel.Instance.AudioPlayer == null) {
@@ -73,45 +74,41 @@ namespace Mesen.Utilities
 			}
 
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
-			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd) / InputApi.GetSystemPixelScale()));
+			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd) / InputApi.GetPixelScale()));
 
-			MousePosition p = GlobalMouse.GetMousePosition(GetRendererHandle());
-			if(_prevPosition.X != p.X || _prevPosition.Y != p.Y) {
+			if(_prevPositionX != mouseState.XPosition || _prevPositionY != mouseState.YPosition) {
 				//Send mouse movement x/y values to core
 				if(_mouseCaptured) {
-					InputApi.SetMouseMovement((Int16)(p.X - _prevPosition.X), (Int16)(p.Y - _prevPosition.Y));
+					InputApi.SetMouseMovement((Int16)(mouseState.XPosition - _prevPositionX), (Int16)(mouseState.YPosition - _prevPositionY));
 				}
-				_prevPosition = p;
+				_prevPositionX = mouseState.XPosition;
+				_prevPositionY = mouseState.YPosition;
 				_lastMouseMove = DateTime.Now;
 			}
-			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
+			PixelPoint mousePos = new PixelPoint(mouseState.XPosition, mouseState.YPosition);
 
 			if(_wnd.IsActive && (_mainMenu.IsPointerOver || _mainMenu.IsKeyboardFocusWithin || _mainMenu.MainMenu.IsOpen)) {
 				//When mouse or keyboard focus is in menu, release mouse and keep arrow cursor
 				SetMouseOffScreen();
 				ReleaseMouse();
 				if(rendererScreenRect.Contains(mousePos)) {
-					GlobalMouse.SetCursorIcon(CursorIcon.Arrow);
+					InputApi.SetCursorImage(CursorImage.Arrow);
 				}
 				return;
 			}
 
 			if(rendererScreenRect.Contains(mousePos)) {
 				//Send mouse state to emulation core
-				Point rendererPos = _renderer.PointToClient(mousePos) * LayoutHelper.GetLayoutScale(_wnd) / InputApi.GetSystemPixelScale();
+				Point rendererPos = _renderer.PointToClient(mousePos) * LayoutHelper.GetLayoutScale(_wnd) / InputApi.GetPixelScale();
 				InputApi.SetMousePosition(rendererPos.X / rendererScreenRect.Width, rendererPos.Y / rendererScreenRect.Height);
 
-				bool rightPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Right);
-				bool middlePressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Middle);
-				bool button4Pressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Button4);
-				bool button5Pressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Button5);
-				bool buttonPressed = (leftPressed || rightPressed || middlePressed || button4Pressed || button5Pressed);
+				bool buttonPressed = (mouseState.LeftButton || mouseState.RightButton || mouseState.MiddleButton || mouseState.Button4 || mouseState.Button5);
 
-				InputApi.SetKeyState(LeftMouseButtonKeyCode, leftPressed);
-				InputApi.SetKeyState(RightMouseButtonKeyCode, rightPressed);
-				InputApi.SetKeyState(MiddleMouseButtonKeyCode, middlePressed);
-				InputApi.SetKeyState(MouseButton4KeyCode, button4Pressed);
-				InputApi.SetKeyState(MouseButton5KeyCode, button5Pressed);
+				InputApi.SetKeyState(LeftMouseButtonKeyCode, mouseState.LeftButton);
+				InputApi.SetKeyState(RightMouseButtonKeyCode, mouseState.RightButton);
+				InputApi.SetKeyState(MiddleMouseButtonKeyCode, mouseState.MiddleButton);
+				InputApi.SetKeyState(MouseButton4KeyCode, mouseState.Button4);
+				InputApi.SetKeyState(MouseButton5KeyCode, mouseState.Button5);
 
 				if(!_mouseCaptured && AllowMouseCapture && buttonPressed) {
 					//If the mouse button is clicked and mouse isn't captured but can be, turn on mouse capture
@@ -120,16 +117,18 @@ namespace Mesen.Utilities
 
 				if(_mouseCaptured) {
 					if(AllowMouseCapture) {
-						GlobalMouse.SetCursorIcon(CursorIcon.Hidden);
-						GlobalMouse.SetMousePosition((uint)(rendererTopLeft.X + rendererScreenRect.Width / 2), (uint)(rendererTopLeft.Y + rendererScreenRect.Height / 2));
-						_prevPosition = GlobalMouse.GetMousePosition(GetRendererHandle());
+						InputApi.SetCursorImage(CursorImage.Hidden);
+						InputApi.SetSystemMousePosition(rendererTopLeft.X + rendererScreenRect.Width / 2, rendererTopLeft.Y + rendererScreenRect.Height / 2);
+						SystemMouseState newState = InputApi.GetSystemMouseState(GetRendererHandle());
+						_prevPositionX = newState.XPosition;
+						_prevPositionY = newState.YPosition;
 					} else {
 						ReleaseMouse();
 					}
 				}
 
 				if(!_mouseCaptured) {
-					GlobalMouse.SetCursorIcon(MouseIcon);
+					InputApi.SetCursorImage(MouseIcon);
 				}
 			} else {
 				SetMouseOffScreen();
@@ -139,8 +138,8 @@ namespace Mesen.Utilities
 		private void UpdateMainMenuVisibility()
 		{
 			//Get global mouse position without restrictions - need to know if mouse is over menu or not
-			MousePosition p = GlobalMouse.GetMousePosition(IntPtr.Zero);
-			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
+			SystemMouseState mouseState = InputApi.GetSystemMouseState(IntPtr.Zero);
+			PixelPoint mousePos = new PixelPoint(mouseState.XPosition, mouseState.YPosition);
 
 			bool inExclusiveFullscreen = _wnd.WindowState == WindowState.FullScreen && ConfigManager.Config.Video.UseExclusiveFullscreen;
 			bool autoHideMenu = _wnd.WindowState == WindowState.FullScreen || ConfigManager.Config.Preferences.AutoHideMenu;
@@ -198,12 +197,12 @@ namespace Mesen.Utilities
 			}
 		}
 
-		private CursorIcon MouseIcon
+		private CursorImage MouseIcon
 		{
 			get
 			{
 				if(!EmuApi.IsRunning() || EmuApi.IsPaused()) {
-					return CursorIcon.Arrow;
+					return CursorImage.Arrow;
 				}
 
 				bool hasLightGun = (
@@ -216,18 +215,18 @@ namespace Mesen.Utilities
 
 				if(hasLightGun) {
 					if(ConfigManager.Config.Input.HidePointerForLightGuns) {
-						return CursorIcon.Hidden;
+						return CursorImage.Hidden;
 					} else {
-						return CursorIcon.Cross;
+						return CursorImage.Cross;
 					}
 				} else if(InputApi.HasControlDevice(ControllerType.OekaKidsTablet)) {
-					return CursorIcon.Cross;
+					return CursorImage.Cross;
 				}
 
 				if((DateTime.Now - _lastMouseMove).TotalSeconds > 1) {
-					return CursorIcon.Hidden;
+					return CursorImage.Hidden;
 				} else {
-					return CursorIcon.Arrow;
+					return CursorImage.Arrow;
 				}
 			}
 		}
@@ -241,7 +240,7 @@ namespace Mesen.Utilities
 				PixelPoint topLeft = _renderer.PointToScreen(new Point());
 				PixelRect rendererScreenRect = new PixelRect(topLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd)));
 				
-				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, rendererScreenRect.Width, rendererScreenRect.Height, GetRendererHandle());
+				InputApi.CaptureMouse(topLeft.X, topLeft.Y, rendererScreenRect.Width, rendererScreenRect.Height, GetRendererHandle());
 			}
 		}
 
@@ -249,7 +248,7 @@ namespace Mesen.Utilities
 		{
 			if(_mouseCaptured) {
 				_mouseCaptured = false;
-				GlobalMouse.ReleaseCursor();
+				InputApi.ReleaseMouse();
 			}
 		}
 

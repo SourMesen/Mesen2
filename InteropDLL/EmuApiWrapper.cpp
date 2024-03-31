@@ -26,6 +26,7 @@
 #elif __APPLE__
 	#include "Linux/SdlSoundManager.h"
 	#include "MacOS/MacOSKeyManager.h"
+	#include "MacOS/MacOSMouseManager.h"
 #else
 	#include "Linux/SdlRenderer.h"
 	#include "Linux/SdlSoundManager.h"
@@ -37,6 +38,7 @@
 unique_ptr<IRenderingDevice> _renderer;
 unique_ptr<IAudioDevice> _soundManager;
 unique_ptr<IKeyManager> _keyManager;
+unique_ptr<IMouseManager> _mouseManager;
 unique_ptr<Emulator> _emu(new Emulator());
 bool _softwareRenderer = false;
 
@@ -109,6 +111,7 @@ extern "C" {
 					_keyManager.reset(new WindowsKeyManager(_emu.get(), (HWND)_windowHandle));
 				#elif __APPLE__
 					_keyManager.reset(new MacOSKeyManager(_emu.get()));
+					_mouseManager.reset(new MacOSMouseManager());
 				#else 
 					_keyManager.reset(new LinuxKeyManager(_emu.get()));
 				#endif

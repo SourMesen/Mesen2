@@ -13,6 +13,9 @@
 #include "MacOS/MacOSMouseManager.h"
 #undef Debugger
 
+//Defined in EmuApiWrapper.cpp
+extern unique_ptr<IMouseManager> _mouseManager;
+
 MacOSKeyManager::MacOSKeyManager(Emulator* emu)
 {
 	_emu = emu;
@@ -34,7 +37,8 @@ MacOSKeyManager::MacOSKeyManager(Emulator* emu)
 		if([event type] == NSEventTypeMouseMoved || [event type] == NSEventTypeLeftMouseDragged || [event type] == NSEventTypeRightMouseDragged || [event type] == NSEventTypeOtherMouseDragged) {
 			//Send mouse move events to MacOSMouseManager for captured movement and pass them to UI
 			//as when mouse is captured on MacOS, absolute position is frozen and only deltaX/Y gives movement data
-			MacOSMouseManager::SetRelativeMovement([event deltaX], [event deltaY]);
+			MacOSMouseManager* mouseManager = static_cast<MacOSMouseManager*>(_mouseManager.get());
+			mouseManager->SetRelativeMovement([event deltaX], [event deltaY]);
 			return event;
 		}
 

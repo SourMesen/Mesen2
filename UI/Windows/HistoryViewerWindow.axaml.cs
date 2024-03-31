@@ -9,7 +9,6 @@ using Avalonia.Data;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using Avalonia.Layout;
-using Mesen.Utilities.GlobalMouseLib;
 using Mesen.Utilities;
 using Mesen.Config;
 using System.Runtime.InteropServices;
@@ -74,21 +73,21 @@ namespace Mesen.Windows
 
 			bool usesSoftwareRenderer = _model.IsSoftwareRendererVisible;
 
-			bool leftPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Left);
-			MousePosition p = GlobalMouse.GetMousePosition(usesSoftwareRenderer ? IntPtr.Zero : _renderer.Handle);
-			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
+			SystemMouseState mouseState = InputApi.GetSystemMouseState(usesSoftwareRenderer ? IntPtr.Zero : _renderer.Handle);
+			PixelPoint mousePos = new PixelPoint(mouseState.XPosition, mouseState.YPosition);
+
 			PixelPoint rendererTopLeft;
 			PixelRect rendererScreenRect;
 			if(usesSoftwareRenderer) {
 				rendererTopLeft = _softwareRenderer.PointToScreen(new Point());
-				rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_softwareRenderer.Bounds.Size, LayoutHelper.GetLayoutScale(this) / InputApi.GetSystemPixelScale()));
+				rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_softwareRenderer.Bounds.Size, LayoutHelper.GetLayoutScale(this) / InputApi.GetPixelScale()));
 			} else {
 				rendererTopLeft = _renderer.PointToScreen(new Point());
-				rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(this) / InputApi.GetSystemPixelScale()));
+				rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(this) / InputApi.GetPixelScale()));
 			}
 
 			if(rendererScreenRect.Contains(mousePos)) {
-				if(leftPressed && !_prevLeftPressed) {
+				if(mouseState.LeftButton && !_prevLeftPressed) {
 					if(_mainMenu.IsOpen) {
 						_mainMenu.Close();
 					} else {
@@ -97,7 +96,7 @@ namespace Mesen.Windows
 				}
 			}
 
-			_prevLeftPressed = leftPressed;
+			_prevLeftPressed = mouseState.LeftButton;
 		}
 
 		private void InitializeComponent()

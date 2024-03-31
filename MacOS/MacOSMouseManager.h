@@ -1,36 +1,24 @@
 #pragma once
+#include "Shared/Interfaces/IMouseManager.h"
 
-enum class CursorIcon
-{
-	Hidden,
-	Arrow,
-	Cross
-};
-
-struct MouseState
-{
-	double XPosition;
-	double YPosition;
-	bool LeftButton;
-	bool RightButton;
-	bool MiddleButton;
-	bool Button4;
-	bool Button5;
-};
-
-class MacOSMouseManager
+class MacOSMouseManager : public IMouseManager
 {
 private:
-	static double _relativeX;
-	static double _relativeY;
-	static bool _mouseCaptured;
-	static bool _cursorHidden;
+	double _relativeX;
+	double _relativeY;
+	bool _mouseCaptured;
+	bool _cursorHidden;
 
 public:
-	static MouseState GetMouseState();
-	static void SetMouseCaptured(bool enabled);
-	static void SetMousePosition(double x, double y);
-	static void SetRelativeMovement(double x, double y);
-	static void SetCursor(CursorIcon cursor);
-	static double GetPixelScale();
+	MacOSMouseManager();
+	virtual ~MacOSMouseManager();
+
+	SystemMouseState GetSystemMouseState(void* windowHandle);
+	bool CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* windowHandle);
+  void ReleaseMouse();
+  void SetSystemMousePosition(int32_t x, int32_t y);
+  void SetCursorImage(CursorImage cursor);
+  double GetPixelScale();
+
+	void SetRelativeMovement(double x, double y);
 };

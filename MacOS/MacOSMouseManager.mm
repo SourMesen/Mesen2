@@ -3,21 +3,26 @@
 
 #include "MacOSMouseManager.h"
 
-double MacOSMouseManager::_relativeX = 0.0;
-double MacOSMouseManager::_relativeY = 0.0;
-bool MacOSMouseManager::_mouseCaptured = false;
-bool MacOSMouseManager::_cursorHidden = false;
-
-MouseState MacOSMouseManager::GetMouseState()
+MacOSMouseManager::MacOSMouseManager()
 {
-	MouseState state = {};
+	_relativeX = 0.0;
+	_relativeY = 0.0;
+	_mouseCaptured = false;
+	_cursorHidden = false;
+}
+
+MacOSMouseManager::~MacOSMouseManager() {}
+
+SystemMouseState MacOSMouseManager::GetSystemMouseState(void* windowHandle)
+{
+	SystemMouseState state = {};
 	if(_mouseCaptured) {
-		state.XPosition = _relativeX;
-		state.YPosition = _relativeY;
+		state.XPosition = (int32_t) _relativeX;
+		state.YPosition = (int32_t) _relativeY;
 	} else {
 		NSPoint location = [NSEvent mouseLocation];
-		state.XPosition = location.x;
-		state.YPosition = CGDisplayPixelsHigh(kCGDirectMainDisplay) - location.y;
+		state.XPosition = (int32_t) location.x;
+		state.YPosition = (int32_t) (CGDisplayPixelsHigh(kCGDirectMainDisplay) - location.y);
 	}
 	NSUInteger buttons = [NSEvent pressedMouseButtons];
 	state.LeftButton = (buttons & 1) != 0;
@@ -28,23 +33,26 @@ MouseState MacOSMouseManager::GetMouseState()
 	return state;
 }
 
-void MacOSMouseManager::SetMouseCaptured(bool enabled)
+bool MacOSMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* windowHandle)
 {
-	if(enabled) {
-		NSPoint location = [NSEvent mouseLocation];
-		CGAssociateMouseAndMouseCursorPosition(NO);
-		_relativeX = location.x;
-		_relativeY = CGDisplayPixelsHigh(kCGDirectMainDisplay) - location.y;
-	} else {
-		CGAssociateMouseAndMouseCursorPosition(YES);
-	}
-	_mouseCaptured = enabled;
+	NSPoint location = [NSEvent mouseLocation];
+	CGAssociateMouseAndMouseCursorPosition(NO);
+	_relativeX = location.x;
+	_relativeY = CGDisplayPixelsHigh(kCGDirectMainDisplay) - location.y;
+	_mouseCaptured = true;
+	return true;
 }
 
-void MacOSMouseManager::SetMousePosition(double x, double y)
+void MacOSMouseManager::ReleaseMouse()
 {
-	_relativeX = x;
-	_relativeY = y;
+	CGAssociateMouseAndMouseCursorPosition(YES);
+	_mouseCaptured = false;
+}
+
+void MacOSMouseManager::SetSystemMousePosition(int32_t x, int32_t y)
+{
+	_relativeX = (double) x;
+	_relativeY = (double) y;
 }
 
 void MacOSMouseManager::SetRelativeMovement(double x, double y)
@@ -53,19 +61,20 @@ void MacOSMouseManager::SetRelativeMovement(double x, double y)
 	_relativeY += y;
 }
 
-void MacOSMouseManager::SetCursor(CursorIcon cursor) {
-	if(cursor == CursorIcon::Hidden && !_cursorHidden) {
+void MacOSMouseManager::SetCursorImage(CursorImage cursor)
+{
+	if(cursor == CursorImage::Hidden && !_cursorHidden) {
 		[NSCursor hide];
 		_cursorHidden = true;
 	}
-	if(cursor != CursorIcon::Hidden && _cursorHidden) {
+	if(cursor != CursorImage::Hidden && _cursorHidden) {
 		[NSCursor unhide];
 		_cursorHidden = false;
 	}
 	switch(cursor) {
-		case CursorIcon::Hidden: break; //Already handled above
-		case CursorIcon::Arrow: [[NSCursor arrowCursor] set]; break;
-		case CursorIcon::Cross: [[NSCursor crosshairCursor] set]; break;
+		case CursorImage::Hidden: break; //Already handled above
+		case CursorImage::Arrow: [[NSCursor arrowCursor] set]; break;
+		case CursorImage::Cross: [[NSCursor crosshairCursor] set]; break;
 	}
 }
 
