@@ -208,6 +208,10 @@
 								Content="{l:Translate chkAutoLoadSymFiles}"
 							/>
 							<CheckBox
+								IsChecked="{CompiledBinding Integration.AutoLoadElfFiles}"
+								Content="{l:Translate chkAutoLoadElfFiles}"
+							/>
+							<CheckBox
 								IsChecked="{CompiledBinding Integration.AutoLoadMlbFiles}"
 								Content="{l:Translate chkAutoLoadMlbFiles}"
 							/>

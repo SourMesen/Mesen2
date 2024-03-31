@@ -32,6 +32,7 @@ namespace Mesen.Utilities
 		public const string IpsExt = "ips";
 		public const string CdlExt = "cdl";
 		public const string DbgFileExt = "dbg";
+		public const string ElfFileExt = "elf";
 		public const string SymFileExt = "sym";
 		public const string MesenLabelExt = "mlb";
 		public const string NesAsmLabelExt = "fns";
