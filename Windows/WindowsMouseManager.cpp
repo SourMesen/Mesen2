@@ -14,7 +14,7 @@ SystemMouseState WindowsMouseManager::GetSystemMouseState(void* rendererHandle)
 	SystemMouseState state = {};
 	POINT point;
 	GetCursorPos(&point);
-	if(rendererHandle != nullptr && WindowFromPoint(point) != rendererHandle) {
+	if(rendererHandle != nullptr && WindowFromPoint(point) != (HWND) rendererHandle) {
 		//Mouse is over another window
 		state.XPosition = -1;
 		state.YPosition = -1;
@@ -41,7 +41,7 @@ bool WindowsMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int3
 	rect.left = x;
 	rect.top = y;
 	rect.right = x + width;
-	rect.buttom = y + height;
+	rect.bottom = y + height;
 	ClipCursor(&rect);
 	return true;
 }
@@ -60,8 +60,8 @@ void WindowsMouseManager::SetCursorImage(CursorImage cursor)
 {
 	switch(cursor) {
 		case CursorImage::Hidden: SetCursor(nullptr); break;
-		case CursorImage::Arrow: SetCursor(_arrowCursor); break;
-		case CursorImage::Cross: SetCursor(_crossCursor); break;
+		case CursorImage::Arrow: SetCursor((HCURSOR) _arrowCursor); break;
+		case CursorImage::Cross: SetCursor((HCURSOR) _crossCursor); break;
 	}
 }
 
