@@ -72,7 +72,8 @@ namespace Mesen.Windows
 				new("ZMBV Codec (DOSBox)", "", "GPL2+", "https://www.dosbox.com/"),
 				new("CSCD Codec (lsnes)", "", "GPL2+", "https://repo.or.cz/lsnes.git"),
 				new("kissfft", "", "BSD 3-clause", "https://github.com/mborgerding/kissfft"),
-				new("orfanidis_eq", "", "MIT", "https://github.com/thedrgreenthumb/orfanidis_eq")
+				new("orfanidis_eq", "", "MIT", "https://github.com/thedrgreenthumb/orfanidis_eq"),
+				new("ELFSharp", "", "MIT", "https://github.com/konrad-kruczynski/elfsharp")
 			};
 
 			LibraryList.Sort((a, b) => a.Name.CompareTo(b.Name));

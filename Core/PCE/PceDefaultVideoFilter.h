@@ -37,7 +37,9 @@ protected:
 
 	HudScaleFactors GetScaleFactor() override
 	{
-		if(_frameDivider == 0) {
+		if(_emu->GetRomInfo().Format == RomFormat::PceHes) {
+			return { 1, 1 };
+		} else if(_frameDivider == 0) {
 			return { PceConstants::InternalResMultipler, PceConstants::InternalResMultipler };
 		} else {
 			return { (double)4 / _frameDivider, 1 };
