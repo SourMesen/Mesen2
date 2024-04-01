@@ -11,7 +11,7 @@
 
 LinuxMouseManager::LinuxMouseManager(void* windowHandle)
 {
-	_mainWindow = windowHandle;
+	_mainWindow = (Window) windowHandle;
 
 	_display = XOpenDisplay(nullptr);
 	_defaultScreen = XDefaultScreen(_display);
@@ -21,8 +21,8 @@ LinuxMouseManager::LinuxMouseManager(void* windowHandle)
 	_crossCursor = XCreateFontCursor(_display, XC_crosshair);
 
 	XColor color = {};
-	uint8_t nullCursorData[1] = {0};
-	Pixmap pixmap = XCreateBitmapFromData(_display, _rootWindow, nullCursorData, 1, 1);
+	uint8_t nullCursorData = 0;
+	Pixmap pixmap = XCreateBitmapFromData(_display, _rootWindow, (const char*) &nullCursorData, 1, 1);
 	_hiddenCursor = XCreatePixmapCursor(_display, pixmap, pixmap, &color, &color, 0, 0);
 }
 
@@ -32,15 +32,16 @@ SystemMouseState LinuxMouseManager::GetSystemMouseState(void* rendererHandle)
 {
 	SystemMouseState state = {};
 
-	Window root = nullptr;
-	Window c = nullptr;
-	Window child = nullptr;
-	int rootX, rootY, childX, childY, mask;
+	Window root = 0;
+	Window c = 0;
+	Window child = 0;
+	int rootX, rootY, childX, childY;
+	uint32_t mask;
 
 	XGrabServer(_display);
 	XQueryPointer(_display, _rootWindow, &root, &c, &rootX, &rootY, &childX, &childY, &mask);
 	if(root != _rootWindow) c = root;
-	while(c != nullptr) {
+	while(c != 0) {
 		child = c;
 		XQueryPointer(_display, c, &root, &c, &rootX, &rootY, &childX, &childY, &mask);
 	}
@@ -50,8 +51,8 @@ SystemMouseState LinuxMouseManager::GetSystemMouseState(void* rendererHandle)
 	state.XPosition = rootX;
 	state.YPosition = rootY;
 	state.LeftButton = (mask & (1 << 8)) != 0;
-	state.RightButton = (mask & (1 << 9)) != 0;
-	state.MiddleButton = (mask & (1 << 10)) != 0;
+	state.RightButton = (mask & (1 << 10)) != 0;
+	state.MiddleButton = (mask & (1 << 9)) != 0;
 	//TODO back/forward are not supported by XQueryPointer?
 	//state.Button4 = (mask & (1 << 11)) != 0;
 	//state.Button5 = (mask & (1 << 12)) != 0;
@@ -68,7 +69,7 @@ bool LinuxMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int32_
 	}
 
 	for(int i = 0; i < 10; i++) {
-		int result = XGrabPointer(_display, rendererHandle, true, NoEventMask, GrabModeAsync, GrabModeAsync, rendererHandle, _hiddenCursor, nullptr);
+		int result = XGrabPointer(_display, (Window) rendererHandle, true, NoEventMask, GrabModeAsync, GrabModeAsync, (Window) rendererHandle, _hiddenCursor, 0);
 		XFlush(_display);
 		if(result == 1 && i < 9) {
 			//XGrabPointer can fail with AlreadyGrabbed - this can be normal, retry a few times
@@ -77,8 +78,9 @@ bool LinuxMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int32_
 			if(result != 0) {
 				std::string message = "XGrabPointer failed: ";
 				MessageManager::Log(message + std::to_string(result));
+				return false;
 			}
-			return false;
+			break;
 		}
 	}
 
@@ -87,13 +89,13 @@ bool LinuxMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int32_
 
 void LinuxMouseManager::ReleaseMouse()
 {
-	XUngrabPointer(_display, nullptr);
+	XUngrabPointer(_display, 0);
 	XFlush(_display);
 }
 
 void LinuxMouseManager::SetSystemMousePosition(int32_t x, int32_t y)
 {
-	XWarpPointer(_display, nullptr, _rootWindow, 0, 0, 0, 0, x, y);
+	XWarpPointer(_display, 0, _rootWindow, 0, 0, 0, 0, x, y);
 	XFlush(_display);
 }
 

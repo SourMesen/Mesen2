@@ -1,18 +1,26 @@
 #pragma once
+#include <X11/Xlib.h>
+#include <X11/cursorfont.h>
+
+//X11 defines global macros 'Button4' and 'Button5', colliding with the fields of SystemMouseState
+//Undefine them here, as they are not needed
+#undef Button4
+#undef Button5
+
 #include "Shared/Interfaces/IMouseManager.h"
 
 class LinuxMouseManager : public IMouseManager
 {
 private:
-	void* _mainWindow;
+	Window _mainWindow;
 
-	void* _display;
+	Display* _display;
 	int _defaultScreen;
-	void* _rootWindow;
+	Window _rootWindow;
 
-	void* _defaultCursor;
-	void* _crossCursor;
-	void* _hiddenCursor;
+	Cursor _defaultCursor;
+	Cursor _crossCursor;
+	Cursor _hiddenCursor;
 
 public:
 	LinuxMouseManager(void* windowHandle);
