@@ -117,7 +117,7 @@ extern "C" {
 					_mouseManager.reset(new MacOSMouseManager());
 				#else 
 					_keyManager.reset(new LinuxKeyManager(_emu.get()));
-					_mouseManager.reset(new LinuxMouseManager());
+					_mouseManager.reset(new LinuxMouseManager(_windowHandle));
 				#endif
 					
 				KeyManager::RegisterKeyManager(_keyManager.get());

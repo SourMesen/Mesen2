@@ -84,19 +84,19 @@ extern "C"
 		_emu->ResetLagCounter();
 	}
 
-	DllExport SystemMouseState __stdcall GetSystemMouseState(void* windowHandle)
+	DllExport SystemMouseState __stdcall GetSystemMouseState(void* rendererHandle)
 	{
 		if(_mouseManager) {
-			return _mouseManager->GetSystemMouseState(windowHandle);
+			return _mouseManager->GetSystemMouseState(rendererHandle);
 		}
 		SystemMouseState state = {};
 		return state;
 	}
 
-	DllExport bool __stdcall CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* windowHandle)
+	DllExport bool __stdcall CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* rendererHandle)
 	{
 		if(_mouseManager) {
-			return _mouseManager->CaptureMouse(x, y, width, height, windowHandle);
+			return _mouseManager->CaptureMouse(x, y, width, height, rendererHandle);
 		}
 		return false;
 	}

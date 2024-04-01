@@ -1,19 +1,19 @@
 #include "LinuxMouseManager.h"
 
-LinuxMouseManager::LinuxMouseManager()
+LinuxMouseManager::LinuxMouseManager(void* windowHandle)
 {
 
 }
 
 LinuxMouseManager::~LinuxMouseManager() {}
 
-SystemMouseState LinuxMouseManager::GetSystemMouseState(void* windowHandle)
+SystemMouseState LinuxMouseManager::GetSystemMouseState(void* rendererHandle)
 {
 	SystemMouseState state = {};
 	return state;
 }
 
-bool LinuxMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* windowHandle)
+bool LinuxMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* rendererHandle)
 {
 	return false;
 }

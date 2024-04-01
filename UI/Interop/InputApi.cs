@@ -24,8 +24,8 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool HasControlDevice(ControllerType type);
 
-		[DllImport(DllPath)] public static extern SystemMouseState GetSystemMouseState(IntPtr windowHandle);
-		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool CaptureMouse(Int32 x, Int32 y, Int32 width, Int32 height, IntPtr windowHandle);
+		[DllImport(DllPath)] public static extern SystemMouseState GetSystemMouseState(IntPtr rendererHandle);
+		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool CaptureMouse(Int32 x, Int32 y, Int32 width, Int32 height, IntPtr rendererHandle);
 		[DllImport(DllPath)] public static extern void ReleaseMouse();
 		[DllImport(DllPath)] public static extern void SetSystemMousePosition(Int32 x, Int32 y);
 		[DllImport(DllPath)] public static extern void SetCursorImage(CursorImage cursor);

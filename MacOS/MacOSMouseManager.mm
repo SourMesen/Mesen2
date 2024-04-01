@@ -9,11 +9,22 @@ MacOSMouseManager::MacOSMouseManager()
 	_relativeY = 0.0;
 	_mouseCaptured = false;
 	_cursorHidden = false;
+
+	NSEventMask eventMask = NSEventMaskMouseMoved | NSEventMaskLeftMouseDragged | NSEventMaskRightMouseDragged | NSEventMaskOtherMouseDragged;
+
+	_eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:eventMask handler:^ NSEvent* (NSEvent* event) {
+		//When mouse is captured on MacOS, absolute position is frozen and only deltaX/Y gives movement data
+		SetRelativeMovement([event deltaX], [event deltaY]);
+		return event;
+	}];
 }
 
-MacOSMouseManager::~MacOSMouseManager() {}
+MacOSMouseManager::~MacOSMouseManager()
+{
+	[NSEvent removeMonitor:(id) _eventMonitor];
+}
 
-SystemMouseState MacOSMouseManager::GetSystemMouseState(void* windowHandle)
+SystemMouseState MacOSMouseManager::GetSystemMouseState(void* rendererHandle)
 {
 	SystemMouseState state = {};
 	if(_mouseCaptured) {
@@ -33,7 +44,7 @@ SystemMouseState MacOSMouseManager::GetSystemMouseState(void* windowHandle)
 	return state;
 }
 
-bool MacOSMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* windowHandle)
+bool MacOSMouseManager::CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* rendererHandle)
 {
 	NSPoint location = [NSEvent mouseLocation];
 	CGAssociateMouseAndMouseCursorPosition(NO);
