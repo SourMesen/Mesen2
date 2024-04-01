@@ -4,6 +4,15 @@
 class LinuxMouseManager : public IMouseManager
 {
 private:
+	void* _mainWindow;
+
+	void* _display;
+	int _defaultScreen;
+	void* _rootWindow;
+
+	void* _defaultCursor;
+	void* _crossCursor;
+	void* _hiddenCursor;
 
 public:
 	LinuxMouseManager(void* windowHandle);

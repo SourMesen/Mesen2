@@ -94,6 +94,10 @@ ifneq ($(STATICLINK),false)
 	LINKOPTIONS += -static-libgcc -static-libstdc++ 
 endif
 
+ifeq ($(MESENOS),linux)
+	LINKOPTIONS += -lX11
+endif
+
 ifeq ($(MESENOS),osx)
 	LINKOPTIONS += -framework Foundation -framework Cocoa
 endif
