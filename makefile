@@ -102,7 +102,7 @@ ifeq ($(MESENOS),osx)
 	LINKOPTIONS += -framework Foundation -framework Cocoa
 endif
 
-CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux) -I $(realpath ./MacOS)
+CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Sdl) -I $(realpath ./Linux) -I $(realpath ./MacOS)
 OBJCXXFLAGS = $(CXXFLAGS) -framework Foundation -framework Cocoa
 CFLAGS = -fPIC -Wall $(MESENFLAGS)
 

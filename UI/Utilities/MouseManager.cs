@@ -234,13 +234,13 @@ namespace Mesen.Utilities
 		private void CaptureMouse()
 		{
 			if(!_mouseCaptured && AllowMouseCapture) {
-				DisplayMessageHelper.DisplayMessage("Input", ResourceHelper.GetMessage("MouseModeEnabled"));
-				_mouseCaptured = true;
-				
 				PixelPoint topLeft = _renderer.PointToScreen(new Point());
 				PixelRect rendererScreenRect = new PixelRect(topLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd)));
 				
-				InputApi.CaptureMouse(topLeft.X, topLeft.Y, rendererScreenRect.Width, rendererScreenRect.Height, GetRendererHandle());
+				if(InputApi.CaptureMouse(topLeft.X, topLeft.Y, rendererScreenRect.Width, rendererScreenRect.Height, GetRendererHandle())) {
+					DisplayMessageHelper.DisplayMessage("Input", ResourceHelper.GetMessage("MouseModeEnabled"));
+					_mouseCaptured = true;
+				}
 			}
 		}
 
