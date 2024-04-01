@@ -173,6 +173,20 @@
 					Content="{l:Translate chkGbBreakOnNopLoad}"
 				/>
 			</StackPanel>
+			<StackPanel IsVisible="{CompiledBinding IsGba}">
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Gba.BreakOnInvalidOpCode}"
+					Content="{l:Translate chkGbaBreakOnInvalidOpCode}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Gba.BreakOnNopLoad}"
+					Content="{l:Translate chkGbaBreakOnNopLoad}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Gba.BreakOnUnalignedMemAccess}"
+					Content="{l:Translate chkBreakOnUnalignedMemAccess}"
+				/>
+			</StackPanel>
 			<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
 			<CheckBox
 				IsChecked="{CompiledBinding Config.BreakOnUninitRead}"

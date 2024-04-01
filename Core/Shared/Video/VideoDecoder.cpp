@@ -76,7 +76,7 @@ void VideoDecoder::UpdateVideoFilter()
 		_consoleType = consoleType;
 
 		_videoFilter.reset(_emu->GetVideoFilter());
-		_scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType);
+		_scaleFilter = ScaleFilter::GetScaleFilter(_emu, _videoFilterType);
 		_forceFilterUpdate = false;
 	}
 

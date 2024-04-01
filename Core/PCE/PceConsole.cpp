@@ -158,6 +158,9 @@ void PceConsole::RunFrame()
 	while(frameCount == _vdc->GetFrameCount()) {
 		_cpu->Exec();
 	}
+	
+	_psg->Run();
+	_psg->PlayQueuedAudio();
 }
 
 void PceConsole::SaveBattery()

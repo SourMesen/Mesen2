@@ -189,6 +189,7 @@
     <ClInclude Include="Audio\Equalizer.h" />
     <ClInclude Include="Audio\HermiteResampler.h" />
     <ClInclude Include="Audio\LowPassFilter.h" />
+    <ClInclude Include="Audio\OnePoleLowPassFilter.h" />
     <ClInclude Include="Audio\orfanidis_eq.h" />
     <ClInclude Include="Audio\ReverbFilter.h" />
     <ClInclude Include="Audio\stb_vorbis.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="Audio\StereoPanningFilter.h" />
     <ClInclude Include="Audio\WavReader.h" />
     <ClInclude Include="Base64.h" />
+    <ClInclude Include="BitUtilities.h" />
     <ClInclude Include="CompressionHelper.h" />
     <ClInclude Include="CRC32.h" />
     <ClInclude Include="FastString.h" />
@@ -233,6 +235,7 @@
     <ClInclude Include="Serializer.h" />
     <ClInclude Include="sha1.h" />
     <ClInclude Include="spng.h" />
+    <ClInclude Include="StaticFor.h" />
     <ClInclude Include="StringUtilities.h" />
     <ClInclude Include="SZReader.h" />
     <ClInclude Include="UPnPPortMapper.h" />

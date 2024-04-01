@@ -91,7 +91,6 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	_rightSample = samples[1];
 
 	int16_t *out = _sampleBuffer;
-	memset(_sampleBuffer, 0, 0x10000 * 2);
 	uint32_t count = _resampler->Resample(samples, sampleCount, sourceRate, cfg.SampleRate, out, 0x10000);
 
 	uint32_t targetRate = (uint32_t)(cfg.SampleRate * _resampler->GetRateAdjustment());

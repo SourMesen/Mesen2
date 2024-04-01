@@ -1,0 +1,109 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="250"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:GbaConfigViewModel"
+	x:Class="Mesen.Views.GbaConfigView"
+>
+	<Design.DataContext>
+		<vm:GbaConfigViewModel />
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<Style Selector="dc|PaletteSelector">
+			<Setter Property="SelectionMode" Value="None" />
+			<Setter Property="ColumnCount" Value="4" />
+			<Setter Property="BlockSize" Value="20" />
+		</Style>
+	</UserControl.Styles>
+	
+	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
+		<TabItem Header="{l:Translate tpgGeneral}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<CheckBox IsChecked="{CompiledBinding Config.SkipBootScreen}" Content="{l:Translate chkSkipBootScreen}"/>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgAudio}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left">
+						<StackPanel Orientation="Horizontal" Height="150">
+							<StackPanel.Styles>
+								<Style Selector="c|MesenSlider">
+									<Setter Property="Minimum" Value="0" />
+									<Setter Property="Maximum" Value="100" />
+									<Setter Property="Orientation" Value="Vertical" />
+									<Setter Property="Margin" Value="5 0" />
+								</Style>
+							</StackPanel.Styles>
+
+							<c:MesenSlider Text="{l:Translate lblChannelA}" Value="{CompiledBinding Config.ChannelAVol}" />
+							<c:MesenSlider Text="{l:Translate lblChannelB}" Value="{CompiledBinding Config.ChannelBVol}" />
+							<c:MesenSlider Text="{l:Translate lblSquare1}" Value="{CompiledBinding Config.Square1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblSquare2}" Value="{CompiledBinding Config.Square2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblWave}" Value="{CompiledBinding Config.WaveVol}" />
+							<c:MesenSlider Text="{l:Translate lblNoise}" Value="{CompiledBinding Config.NoiseVol}" />
+						</StackPanel>
+					</c:GroupBox>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgEmulation}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<StackPanel Orientation="Horizontal" IsVisible="False">
+						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblSaveType}" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.SaveType}" MinWidth="150" />
+					</StackPanel>
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgInput}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblPlayer1}" />
+						<Button
+							Margin="10 0 0 0"
+							Command="{CompiledBinding SetupPlayer}"
+							CommandParameter="{Binding $self}"
+							Content="{l:Translate btnSetup}"
+						/>
+					</StackPanel>
+				</c:OptionSection>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgVideo}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblLcdSettings}" Margin="0">
+						<CheckBox IsChecked="{CompiledBinding Config.GbaAdjustColors}" Content="{l:Translate chkGbaAdjustColors}"/>
+						<CheckBox IsChecked="{CompiledBinding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer4}" Text="{l:Translate chkHideBgLayer4}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+	</TabControl>
+</UserControl>

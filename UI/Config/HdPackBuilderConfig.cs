@@ -40,6 +40,7 @@ namespace Mesen.Config
 		Super2xSai = 4,
 		SuperEagle = 5,
 		Prescale = 6,
+		LcdGrid = 7,
 	}
 
 	public struct HdPackBuilderOptions

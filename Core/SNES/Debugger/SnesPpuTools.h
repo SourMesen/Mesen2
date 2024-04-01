@@ -28,12 +28,13 @@ private:
 	uint16_t _mainScreenBuffer[256 * 239] = {};
 	uint16_t _subScreenBuffer[256 * 239] = {};
 
-	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, SnesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
+	void GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview, uint16_t spriteIndex, GetSpritePreviewOptions& options, SnesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 	
 	template<TileFormat format> void RenderMode7Tilemap(GetTilemapOptions& options, uint8_t* vram, uint32_t* outBuffer, const uint32_t* palette);
 	template<TileFormat format> void RenderTilemap(GetTilemapOptions& options, int rowCount, LayerConfig& layer, int columnCount, uint8_t* vram, int tileHeight, int tileWidth, bool largeTileHeight, bool largeTileWidth, uint8_t bpp, uint32_t* outBuffer, FrameInfo outputSize, const uint32_t* palette, uint16_t basePaletteOffset);
 	
 	DebugTilemapInfo RenderScreenView(uint8_t layer, uint32_t* outBuffer);
+	void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, DebugSpriteInfo* sprites, uint32_t* spritePreviews, uint32_t* palette, uint32_t* outBuffer);
 
 public:
 	SnesPpuTools(Debugger* debugger, Emulator *emu);
@@ -47,8 +48,7 @@ public:
 	FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) override;
 	DebugTilemapTileInfo GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState) override;
 
-	void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) override;
-	void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) override;
+	void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview) override;
 	DebugSpritePreviewInfo GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state) override;
 
 	DebugPaletteInfo GetPaletteInfo(GetPaletteInfoOptions options) override;

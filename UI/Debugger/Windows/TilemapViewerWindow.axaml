@@ -92,9 +92,14 @@
 			Padding="1"
 			DockPanel.Dock="Top"
 		>
+			<TabControl.Styles>
+				<Style Selector="TabItem">
+					<Setter Property="IsEnabled" Value="{Binding Enabled}" />
+				</Style>
+			</TabControl.Styles>
 			<TabControl.ItemTemplate>
 				<DataTemplate>
-					<TextBlock Text="{Binding Title}" IsVisible="{Binding Enabled}" />
+					<TextBlock Text="{Binding Title}" IsEnabled="{Binding Enabled}" />
 				</DataTemplate>
 			</TabControl.ItemTemplate>
 			<TabControl.ContentTemplate>

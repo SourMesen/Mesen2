@@ -15,6 +15,7 @@ namespace Mesen.Config
 		[Reactive] public bool AutoLoadMlbFiles { get; set; } = true;
 		[Reactive] public bool AutoLoadCdlFiles { get; set; } = false;
 		[Reactive] public bool AutoLoadSymFiles { get; set; } = true;
+		[Reactive] public bool AutoLoadElfFiles { get; set; } = true;
 		[Reactive] public bool AutoLoadFnsFiles { get; set; } = true;
 
 		[Reactive] public bool ResetLabelsOnImport { get; set; } = true;
@@ -39,6 +40,7 @@ namespace Mesen.Config
 				case MemoryType.NesPpuMemory:
 				case MemoryType.PceMemory:
 				case MemoryType.SmsMemory:
+				case MemoryType.GbaMemory:
 				case MemoryType.SnesVideoRam:
 				case MemoryType.SnesSpriteRam:
 				case MemoryType.SnesCgRam:
@@ -55,7 +57,10 @@ namespace Mesen.Config
 				case MemoryType.NesSecondarySpriteRam:
 				case MemoryType.NesPaletteRam:
 				case MemoryType.NesChrRam:
-				case MemoryType.NesChrRom: 
+				case MemoryType.NesChrRom:
+				case MemoryType.GbaVideoRam:
+				case MemoryType.GbaSpriteRam:
+				case MemoryType.GbaPaletteRam:
 					return ImportOtherLabels;
 
 				case MemoryType.SnesPrgRom:
@@ -67,6 +72,8 @@ namespace Mesen.Config
 				case MemoryType.DspProgramRom:
 				case MemoryType.DspDataRom:
 				case MemoryType.GbBootRom:
+				case MemoryType.GbaPrgRom:
+				case MemoryType.GbaBootRom:
 					return ImportPrgRomLabels;
 				
 				case MemoryType.SnesWorkRam:
@@ -86,6 +93,8 @@ namespace Mesen.Config
 				case MemoryType.NesWorkRam:
 				case MemoryType.SmsWorkRam:
 				case MemoryType.BsxPsRam:
+				case MemoryType.GbaIntWorkRam:
+				case MemoryType.GbaExtWorkRam:
 					return ImportWorkRamLabels;
 
 				case MemoryType.SnesSaveRam:
@@ -94,6 +103,7 @@ namespace Mesen.Config
 				case MemoryType.GbCartRam:
 				case MemoryType.SmsCartRam:
 				case MemoryType.BsxMemoryPack:
+				case MemoryType.GbaSaveRam:
 					return ImportSaveRamLabels;
 
 				default:

@@ -127,7 +127,7 @@ namespace Mesen.Debugger.Views
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditLabel),
 					HintText = () => GetHint(ActionLocation),
 					IsVisible = () => !IsMarginClick,
-					IsEnabled = () => ActionLocation.Label != null || ActionLocation.AbsAddress != null,
+					IsEnabled = () => ActionLocation.Label != null || ActionLocation.AbsAddress != null || (ActionLocation.RelAddress != null && ActionLocation.RelAddress.Value.Type.SupportsLabels()),
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
 						CodeLabel? label = loc.Label ?? (loc.AbsAddress.HasValue ? LabelManager.GetLabel(loc.AbsAddress.Value) : null);
@@ -135,6 +135,8 @@ namespace Mesen.Debugger.Views
 							LabelEditWindow.EditLabel(CpuType, this, label);
 						} else if(loc.AbsAddress != null) {
 							LabelEditWindow.EditLabel(CpuType, this, new CodeLabel(loc.AbsAddress.Value));
+						} else if(loc.RelAddress != null) {
+							LabelEditWindow.EditLabel(CpuType, this, new CodeLabel(loc.RelAddress.Value));
 						}
 					}
 				},
@@ -144,7 +146,7 @@ namespace Mesen.Debugger.Views
 					HintText = () => GetHint(ActionLocation),
 					IsVisible = () => false,
 					AllowedWhenHidden = true,
-					IsEnabled = () => ActionLocation.Label != null || ActionLocation.AbsAddress != null,
+					IsEnabled = () => ActionLocation.Label != null || ActionLocation.AbsAddress != null || (ActionLocation.RelAddress != null && ActionLocation.RelAddress.Value.Type.SupportsLabels()),
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
 						CodeLabel? label = loc.Label ?? (loc.AbsAddress.HasValue ? LabelManager.GetLabel(loc.AbsAddress.Value) : null);
@@ -152,6 +154,8 @@ namespace Mesen.Debugger.Views
 							CommentEditWindow.EditComment(this, label);
 						} else if(loc.AbsAddress != null) {
 							CommentEditWindow.EditComment(this, new CodeLabel(loc.AbsAddress.Value));
+						}else if(loc.RelAddress != null) {
+							CommentEditWindow.EditComment(this, new CodeLabel(loc.RelAddress.Value));
 						}
 					}
 				},

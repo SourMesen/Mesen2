@@ -167,6 +167,12 @@
 			<Control ID="trkNtscIFilterLength">I Filter (Horizontal Bleed)</Control>
 			<Control ID="trkNtscQFilterLength">Q Filter (Horizontal Bleed)</Control>
 
+			<Control ID="lblLcdGridSettings">LCD Grid Settings</Control>
+			<Control ID="trkLcdGridTopLeftBrightness">Brightness - Top Left</Control>
+			<Control ID="trkLcdGridTopRightBrightness">Brightness - Top Right</Control>
+			<Control ID="trkLcdGridBottomLeftBrightness">Brightness - Bottom Left</Control>
+			<Control ID="trkLcdGridBottomRightBrightness">Brightness - Bottom Right</Control>
+
 			<Control ID="grpScanlines">Scanlines</Control>
 			<Control ID="trkScanlines">Scanlines</Control>
 			<Control ID="btnResetPictureSettings">Reset</Control>
@@ -361,6 +367,44 @@
 			<Control ID="lblPlayer1">Player 1</Control>
 			<Control ID="btnSetup">Setup</Control>
 		</Form>
+		
+		<Form ID="GbaConfigView">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="chkSkipBootScreen">Skip boot screen</Control>
+
+			<Control ID="tpgEmulation">Emulation</Control>
+			<Control ID="lblSaveType">Save Type:</Control>
+			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
+			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
+
+			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblLcdSettings">LCD Settings</Control>
+			<Control ID="chkGbBlendFrames">Enable LCD frame blending</Control>
+			<Control ID="chkGbaAdjustColors">Enable LCD color emulation</Control>
+			<Control ID="chkHideBgLayer1">Hide background layer 1</Control>
+			<Control ID="chkHideBgLayer2">Hide background layer 2</Control>
+			<Control ID="chkHideBgLayer3">Hide background layer 3</Control>
+			<Control ID="chkHideBgLayer4">Hide background layer 4</Control>
+			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
+
+			<Control ID="chkDisableSprites">Disable sprites</Control>
+
+			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
+
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="grpVolume">Volume</Control>
+			<Control ID="lblChannelA">Channel A</Control>
+			<Control ID="lblChannelB">Channel B</Control>
+			<Control ID="lblSquare1">Square 1</Control>
+			<Control ID="lblSquare2">Square 2</Control>
+			<Control ID="lblWave">Wave</Control>
+			<Control ID="lblNoise">Noise</Control>
+
+			<Control ID="tpgInput">Input</Control>
+			<Control ID="grpControllers">Controllers</Control>
+			<Control ID="lblPlayer1">Player 1</Control>
+			<Control ID="btnSetup">Setup</Control>
+		</Form>
 
 		<Form ID="PceConfigView">
 			<Control ID="tpgGeneral">General</Control>
@@ -494,6 +538,7 @@
 			<Control ID="tabNes">NES</Control>
 			<Control ID="tabSnes">SNES</Control>
 			<Control ID="tabGameboy">Game Boy</Control>
+			<Control ID="tabGba">GBA</Control>
 			<Control ID="tabPcEngine">PC Engine</Control>
 			<Control ID="tabSms">SMS</Control>
 			<Control ID="tabPreferences">Preferences</Control>
@@ -543,6 +588,7 @@
 			<Control ID="chkNesMusicFiles">NES music: .nsf, .nsfe</Control>
 			<Control ID="chkGbRomFiles">Game Boy roms: .gb, .gbc</Control>
 			<Control ID="chkGbMusicFiles">Game Boy music: .gbs</Control>
+			<Control ID="chkGbaRomFiles">Game Boy Advance roms: .gba</Control>
 			<Control ID="chkPceRomFiles">PC Engine roms: .pce, .sgx</Control>
 			<Control ID="chkPceMusicFiles">PC Engine music: .hes</Control>
 			<Control ID="chkSmsRomFiles">SMS roms: .sms</Control>
@@ -843,6 +889,7 @@
 			<Control ID="lblNes">NES</Control>
 			<Control ID="lblSnes">SNES</Control>
 			<Control ID="lblGameboy">Game Boy</Control>
+			<Control ID="lblGba">GBA</Control>
 			<Control ID="lblPcEngine">PC Engine</Control>
 			<Control ID="lblSms">SMS</Control>
 		</Form>
@@ -1183,10 +1230,14 @@
 			<Control ID="chkGbBreakOnInvalidVramAccess">Break on invalid VRAM access</Control>
 			<Control ID="chkGbBreakOnDisableLcdOutsideVblank">Break on LCD disable outside vblank</Control>
 			<Control ID="chkGbBreakOnInvalidOpCode">Break on invalid instructions</Control>
-			<Control ID="chkGbBreakOnNopLoad">Break on LD B,B (nop)</Control>
+			<Control ID="chkGbBreakOnNopLoad">Break on LD B, B (nop)</Control>
 			<Control ID="chkGbBreakOnOamCorruption">Break on OAM corruption</Control>
 
 			<Control ID="chkPceBreakOnInvalidVramAddress">Break on invalid VRAM address</Control>
+
+			<Control ID="chkGbaBreakOnInvalidOpCode">Break on invalid instructions</Control>
+			<Control ID="chkGbaBreakOnNopLoad">Break on MOV R11, R11 (nop)</Control>
+			<Control ID="chkBreakOnUnalignedMemAccess">Break on unaligned access</Control>
 
 			<Control ID="lblMiscSettings">Misc. settings</Control>
 			<Control ID="chkBringToFrontOnBreak">Bring to front on break</Control>
@@ -1346,6 +1397,7 @@
 			<Control ID="lblAutoLoadHint">Automatically load the following file types when a matching file is found in the ROM's folder:</Control>
 			<Control ID="chkAutoLoadDbgFiles">.DBG files (CA65 debug symbols)</Control>
 			<Control ID="chkAutoLoadSymFiles">.SYM files (bass, RGBDS, WLA DX)</Control>
+			<Control ID="chkAutoLoadElfFiles">.ELF files (devkitARM - GBA)</Control>
 			<Control ID="chkAutoLoadMlbFiles">.MLB files (Mesen label file)</Control>
 			<Control ID="chkAutoLoadFnsFiles">.FNS files (NESASM)</Control>
 			<Control ID="chkAutoLoadCdlFiles">.CDL files (Code/data log)</Control>
@@ -1371,6 +1423,8 @@
 		<Form ID="ProfilerWindow">
 			<Control ID="wndTitle">Profiler</Control>
 			<Control ID="btnReset">Reset</Control>
+			<Control ID="btnRefresh">Refresh</Control>
+			<Control ID="chkRefreshOnBreakPause">Refresh on break</Control>
 
 			<Control ID="colFunction">Function (Entry Address)</Control>
 			<Control ID="colCallCount">Call Count</Control>
@@ -2108,7 +2162,7 @@ E
 		<Enum ID="SmsLightPhaserButtons">
 			<Value ID="Fire">Fire</Value>
 			<Value ID="AimOffscreen">Aim offscreen (hold)</Value>
-		</Enum>
+		</Enum>		
 		<Enum ID="NesConsoleType">
 			<Value ID="Nes001">NES - Front loader (NES-001)</Value>
 			<Value ID="Nes101">NES - Top loader (NES-101)</Value>
@@ -2170,6 +2224,7 @@ E
 			<Value ID="None">None</Value>
 			<Value ID="NtscBlargg">NTSC (blargg)</Value>
 			<Value ID="NtscBisqwit">NTSC (Bisqwit) (NES-only)</Value>
+			<Value ID="LcdGrid">LCD Grid</Value>
 			<Value ID="xBRZ2x">xBRZ 2x</Value>
 			<Value ID="xBRZ3x">xBRZ 3x</Value>
 			<Value ID="xBRZ4x">xBRZ 4x</Value>
@@ -2308,7 +2363,17 @@ E
 			<Value ID="Sms1">SMS 1</Value>
 			<Value ID="Sms2">SMS 2</Value>
 		</Enum>
-		
+
+		<Enum ID="GbaSaveType">
+			<Value ID="AutoDetect">Auto-detect</Value>
+			<Value ID="None">None</Value>
+			<Value ID="Sram">SRAM</Value>
+			<Value ID="Eeprom512">EEPROM (512 bytes)</Value>
+			<Value ID="Eeprom8192">EEPROM (8 KB)</Value>
+			<Value ID="Flash64">Flash (64 KB)</Value>
+			<Value ID="Flash128">Flash (128 KB)</Value>
+		</Enum>
+
 		<Enum ID="MemorySizes">
 			<Value ID="None">None</Value>
 			<Value ID="_128Bytes">128 bytes</Value>
@@ -2456,6 +2521,7 @@ E
 			<Value ID="Satellaview">Satellaview (BS-X)</Value>
 			<Value ID="Gameboy">Game Boy CPU</Value>
 			<Value ID="GameboyColor">Game Boy Color CPU</Value>
+			<Value ID="GameboyAdvance">Game Boy Advance Boot ROM</Value>
 			<Value ID="Sgb1GameboyCpu">SGB1 - Game Boy CPU</Value>
 			<Value ID="Sgb2GameboyCpu">SGB2 - Game Boy CPU</Value>
 			<Value ID="SGB1">SGB1</Value>
@@ -2477,6 +2543,7 @@ E
 			<Value ID="Nes">NES</Value>
 			<Value ID="Pce">PC Engine</Value>
 			<Value ID="Sms">SMS</Value>
+			<Value ID="Gba">GBA</Value>
 		</Enum>
 		
 		<Enum ID="MemoryType">
@@ -2549,7 +2616,17 @@ E
 			<Value ID="SmsVideoRam">Video RAM</Value>
 			<Value ID="SmsPaletteRam">Palette RAM</Value>
 			<Value ID="SmsPort">I/O Port</Value>
-			
+
+			<Value ID="GbaMemory">CPU Memory</Value>
+			<Value ID="GbaPrgRom">ROM</Value>
+			<Value ID="GbaIntWorkRam">Internal Work RAM</Value>
+			<Value ID="GbaExtWorkRam">External Work RAM</Value>
+			<Value ID="GbaSaveRam">Save RAM</Value>
+			<Value ID="GbaBootRom">BIOS ROM</Value>
+			<Value ID="GbaVideoRam">Video RAM</Value>
+			<Value ID="GbaSpriteRam">Sprite RAM</Value>
+			<Value ID="GbaPaletteRam">Palette RAM</Value>
+
 			<Value ID="None">None</Value>
 		</Enum>
 		<Enum ID="GameboyModel">
@@ -2580,6 +2657,8 @@ E
 			<Valid ID="PceBackgroundBpp2Cg1">2 bpp (background - CG1)</Valid>
 			<Value ID="SmsBpp4">4 bpp</Value>
 			<Value ID="SmsSgBpp1">1 bpp</Value>
+			<Value ID="GbaBpp4">4 bpp</Value>
+			<Value ID="GbaBpp8">8 bpp</Value>
 		</Enum>
 		<Enum ID="TileLayout">
 			<Value ID="Normal">Normal</Value>
@@ -2645,7 +2724,7 @@ E
 			<Value ID="GbInvalidVramAccess">Invalid VRAM access</Value>
 			<Value ID="GbDisableLcdOutsideVblank">Disabled LCD outside vblank</Value>
 			<Value ID="GbInvalidOpCode">Invalid instruction</Value>
-			<Value ID="GbNopLoad">LD B,B (NOP)</Value>
+			<Value ID="GbNopLoad">LD B, B (NOP)</Value>
 			<Value ID="GbOamCorruption">OAM corruption bug triggered</Value>
 
 			<Value ID="Irq">IRQ</Value>
@@ -2660,8 +2739,12 @@ E
 			<Value ID="NesBreakOnExtOutputMode">PPU EXT output mode</Value>
 			
 			<Value ID="PceBreakOnInvalidVramAddress">Invalid VRAM address (>= $8000)</Value>
+
+			<Value ID="SmsNopLoad">LD B, B (NOP)</Value>
 			
-			<Value ID="SmsNopLoad">LD B,B (NOP)</Value>
+			<Value ID="GbaNopLoad">MOV R11, R11 (NOP)</Value>
+			<Value ID="GbaInvalidOpCode">Invalid instruction</Value>
+			<Value ID="GbaUnalignedMemoryAccess">Unaligned memory access</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>
@@ -2759,6 +2842,11 @@ E
 			<Value ID="Number3">3</Value>
 			<Value ID="Foreground">Foreground</Value>
 			<Value ID="Background">Background</Value>
+		</Enum>
+		<Enum ID="SpriteVisibility">
+			<Value ID="Visible">Visible</Value>
+			<Value ID="Offscreen">Offscreen</Value>
+			<Value ID="Disabled">Disabled</Value>
 		</Enum>
 		<Enum ID="DebugEventType">
 			<Value ID="Register">Register</Value>
@@ -3043,9 +3131,11 @@ E
 			<Value ID="RowFormatHex8Bits">Hexadecimal (8-bit)</Value>
 			<Value ID="RowFormatHex16Bits">Hexadecimal (16-bit)</Value>
 			<Value ID="RowFormatHex24Bits">Hexadecimal (24-bit)</Value>
+			<Value ID="RowFormatHex32Bits">Hexadecimal (32-bit)</Value>
 			<Value ID="RowFormatSigned8Bits">Signed decimal (8-bit)</Value>
 			<Value ID="RowFormatSigned16Bits">Signed decimal (16-bit)</Value>
 			<Value ID="RowFormatSigned24Bits">Signed decimal (24-bit)</Value>
+			<Value ID="RowFormatSigned32Bits">Signed decimal (32-bit)</Value>
 			<Value ID="RowFormatUnsigned">Unsigned decimal</Value>
 			<Value ID="ClearFormat">Clear</Value>
 			
@@ -3193,6 +3283,7 @@ E
 			<Value ID="Nes">NES</Value>
 			<Value ID="Snes">SNES</Value>
 			<Value ID="Gameboy">Game Boy</Value>
+			<Value ID="Gba">GBA</Value>
 			<Value ID="PcEngine">PC Engine</Value>
 			<Value ID="Sms">SMS</Value>
 

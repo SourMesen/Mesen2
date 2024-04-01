@@ -14,43 +14,44 @@ class IDebugger;
 enum EvalOperators : int64_t
 {
 	//Binary operators
-	Multiplication = 20000000000,
-	Division = 20000000001,
-	Modulo = 20000000002,
-	Addition = 20000000003,
-	Substration = 20000000004,
-	ShiftLeft = 20000000005,
-	ShiftRight = 20000000006,
-	SmallerThan = 20000000007,
-	SmallerOrEqual = 20000000008,
-	GreaterThan = 20000000009,
-	GreaterOrEqual = 20000000010,
-	Equal = 20000000011,
-	NotEqual = 20000000012,
-	BinaryAnd = 20000000013,
-	BinaryXor = 20000000014,
-	BinaryOr = 20000000015,
-	LogicalAnd = 20000000016,
-	LogicalOr = 20000000017,
+	Multiplication = 2000000000000,
+	Division,
+	Modulo,
+	Addition,
+	Substration,
+	ShiftLeft,
+	ShiftRight,
+	SmallerThan,
+	SmallerOrEqual,
+	GreaterThan,
+	GreaterOrEqual,
+	Equal,
+	NotEqual,
+	BinaryAnd,
+	BinaryXor,
+	BinaryOr,
+	LogicalAnd,
+	LogicalOr,
 
 	//Unary operators
-	Plus = 20000000050,
-	Minus = 20000000051,
-	BinaryNot = 20000000052,
-	LogicalNot = 20000000053,
-	AbsoluteAddress = 20000000054,
+	Plus,
+	Minus,
+	BinaryNot,
+	LogicalNot,
+	AbsoluteAddress,
+	ReadDword, //Read dword (32-bit)
 
 	//Used to read ram address
-	Bracket = 20000000060, //Read byte
-	Braces = 20000000061, //Read word
+	Bracket, //Read byte (8-bit)
+	Braces, //Read word (16-bit)
 
 	//Special value, not used as an operator
-	Parenthesis = 20000000100,
+	Parenthesis,
 };
 
 enum EvalValues : int64_t
 {
-	RegA = 20000000100,
+	RegA = 3000000000000,
 	RegX,
 	RegY,
 
@@ -174,6 +175,8 @@ enum EvalValues : int64_t
 	SmsVdpAddressReg,
 	SmsVdpCodeReg,
 
+	CPSR,
+
 	FirstLabelIndex,
 };
 
@@ -252,6 +255,9 @@ private:
 	unordered_map<string, int64_t>& GetSmsTokens();
 	int64_t GetSmsTokenValue(int64_t token, EvalResultType& resultType);
 
+	unordered_map<string, int64_t>& GetGbaTokens();
+	int64_t GetGbaTokenValue(int64_t token, EvalResultType& resultType);
+
 	bool ReturnBool(int64_t value, EvalResultType& resultType);
 
 	int64_t ProcessSharedTokens(string token);
@@ -259,7 +265,7 @@ private:
 	string GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success, bool previousTokenIsOp);
 	bool ProcessSpecialOperator(EvalOperators evalOp, std::stack<EvalOperators> &opStack, std::stack<int> &precedenceStack, vector<int64_t> &outputQueue);
 	bool ToRpn(string expression, ExpressionData &data);
-	int32_t PrivateEvaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo, bool &success);
+	int64_t PrivateEvaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo, bool &success);
 	ExpressionData* PrivateGetRpnList(string expression, bool& success);
 
 protected:
@@ -267,8 +273,8 @@ protected:
 public:
 	ExpressionEvaluator(Debugger* debugger, IDebugger* cpuDebugger, CpuType cpuType);
 
-	int32_t Evaluate(ExpressionData &data, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo);
-	int32_t Evaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo);
+	int64_t Evaluate(ExpressionData &data, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo);
+	int64_t Evaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo);
 	ExpressionData GetRpnList(string expression, bool &success);
 
 	void GetTokenList(char* tokenList);

@@ -12,7 +12,8 @@ enum class CpuType : uint8_t
 	Gameboy,
 	Nes,
 	Pce,
-	Sms
+	Sms,
+	Gba
 };
 
 class CpuTypeUtilities

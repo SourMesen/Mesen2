@@ -22,45 +22,51 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 	}
 }
 
+template<uint8_t accessWidth>
 ReadResult MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint64_t masterClock)
 {
 	if(addressInfo.Address < 0) {
 		return ReadResult::Normal;
 	}
 
-	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
-	if(_enableBreakOnUninitRead && counts.WriteStamp == 0 && DebugUtilities::IsVolatileRam(addressInfo.Type)) {
-		ReadResult result = counts.ReadStamp == 0 ? ReadResult::FirstUninitRead : ReadResult::UninitRead;
+	ReadResult result = ReadResult::Normal;
+	for(int i = 0; i < accessWidth; i++) {
+		AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address+i];
+		if(_enableBreakOnUninitRead && counts.WriteStamp == 0 && DebugUtilities::IsVolatileRam(addressInfo.Type)) {
+			result = (ReadResult)((int)result | (int)(counts.ReadStamp == 0 ? ReadResult::FirstUninitRead : ReadResult::UninitRead));
+		}
 		counts.ReadStamp = masterClock;
 		counts.ReadCounter++;
-		return result;
 	}
-
-	counts.ReadStamp = masterClock;
-	counts.ReadCounter++;
-	return ReadResult::Normal;
+	return result;
 }
 
+template<uint8_t accessWidth>
 void MemoryAccessCounter::ProcessMemoryWrite(AddressInfo& addressInfo, uint64_t masterClock)
 {
 	if(addressInfo.Address < 0) {
 		return;
 	}
 
-	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
-	counts.WriteStamp = masterClock;
-	counts.WriteCounter++;
+	for(int i = 0; i < accessWidth; i++) {
+		AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address+i];
+		counts.WriteStamp = masterClock;
+		counts.WriteCounter++;
+	}
 }
 
+template<uint8_t accessWidth>
 void MemoryAccessCounter::ProcessMemoryExec(AddressInfo& addressInfo, uint64_t masterClock)
 {
 	if(addressInfo.Address < 0) {
 		return;
 	}
 
-	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
-	counts.ExecStamp = masterClock;
-	counts.ExecCounter++;
+	for(int i = 0; i < accessWidth; i++) {
+		AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address+i];
+		counts.ExecStamp = masterClock;
+		counts.ExecCounter++;
+	}
 }
 
 void MemoryAccessCounter::ResetCounts()
@@ -90,3 +96,15 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Memo
 		}
 	}
 }
+
+template ReadResult MemoryAccessCounter::ProcessMemoryRead<1>(AddressInfo& addressInfo, uint64_t masterClock);
+template ReadResult MemoryAccessCounter::ProcessMemoryRead<2>(AddressInfo& addressInfo, uint64_t masterClock);
+template ReadResult MemoryAccessCounter::ProcessMemoryRead<4>(AddressInfo& addressInfo, uint64_t masterClock);
+
+template void MemoryAccessCounter::ProcessMemoryWrite<1>(AddressInfo& addressInfo, uint64_t masterClock);
+template void MemoryAccessCounter::ProcessMemoryWrite<2>(AddressInfo& addressInfo, uint64_t masterClock);
+template void MemoryAccessCounter::ProcessMemoryWrite<4>(AddressInfo& addressInfo, uint64_t masterClock);
+
+template void MemoryAccessCounter::ProcessMemoryExec<1>(AddressInfo& addressInfo, uint64_t masterClock);
+template void MemoryAccessCounter::ProcessMemoryExec<2>(AddressInfo& addressInfo, uint64_t masterClock);
+template void MemoryAccessCounter::ProcessMemoryExec<4>(AddressInfo& addressInfo, uint64_t masterClock);

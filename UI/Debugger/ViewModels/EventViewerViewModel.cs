@@ -237,6 +237,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Gameboy => Config.GbConfig,
 				CpuType.Pce => Config.PceConfig,
 				CpuType.Sms => Config.SmsConfig,
+				CpuType.Gba => Config.GbaConfig,
 				_ => throw new Exception("Invalid cpu type")
 			};
 		}
@@ -291,6 +292,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Gameboy => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
 				CpuType.Pce => new PixelPoint(evt.Cycle, evt.Scanline * 2),
 				CpuType.Sms => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
+				CpuType.Gba => new PixelPoint(evt.Cycle, evt.Scanline * 4),
 				_ => throw new Exception("Invalid cpu type")
 			};
 		}
@@ -334,6 +336,10 @@ namespace Mesen.Debugger.ViewModels
 					result.DisplayValue = $"{result.X / 2}, {result.Y / 2}";
 					break;
 
+				case CpuType.Gba:
+					result.X = p.X;
+					result.DisplayValue = $"{result.X}, {result.Y / 4}";
+					break;
 				default:
 					throw new Exception("Invalid cpu type");
 			}
@@ -349,6 +355,8 @@ namespace Mesen.Debugger.ViewModels
 				DebugApi.SetEventViewerConfig(CpuType, nesCfg.ToInterop());
 			} else if(ConsoleConfig is GbEventViewerConfig gbCfg) {
 				DebugApi.SetEventViewerConfig(CpuType, gbCfg.ToInterop());
+			} else if(ConsoleConfig is GbaEventViewerConfig gbaCfg) {
+				DebugApi.SetEventViewerConfig(CpuType, gbaCfg.ToInterop());
 			} else if(ConsoleConfig is PceEventViewerConfig pceCfg) {
 				DebugApi.SetEventViewerConfig(CpuType, pceCfg.ToInterop());
 			} else if(ConsoleConfig is SmsEventViewerConfig smsCfg) {
@@ -380,7 +388,7 @@ namespace Mesen.Debugger.ViewModels
 			ListView,
 		}
 
-		public static string GetEventDetails(DebugEventInfo evt, bool singleLine)
+		public static string GetEventDetails(CpuType cpuType, DebugEventInfo evt, bool singleLine)
 		{
 			bool isDma = evt.DmaChannel >= 0 && (evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead);
 
@@ -418,40 +426,45 @@ namespace Mesen.Debugger.ViewModels
 
 			if(isDma) {
 				string dmaInfo = "";
-				bool indirectHdma = false;
-				if((evt.DmaChannel & EventViewerViewModel.HdmaChannelFlag) != 0) {
-					indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
-					dmaInfo += "HDMA #" + (evt.DmaChannel & 0x07);
-					dmaInfo += indirectHdma ? " (indirect)" : "";
+				if(cpuType == CpuType.Snes) {
+					bool indirectHdma = false;
+					if((evt.DmaChannel & EventViewerViewModel.HdmaChannelFlag) != 0) {
+						indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
+						dmaInfo += "HDMA #" + (evt.DmaChannel & 0x07);
+						dmaInfo += indirectHdma ? " (indirect)" : "";
+						dmaInfo += singleLine ? " - " : Environment.NewLine;
+						dmaInfo += "Line Counter: $" + evt.DmaChannelInfo.HdmaLineCounterAndRepeat.ToString("X2");
+					} else {
+						dmaInfo += "DMA #" + (evt.DmaChannel & 0x07);
+					}
+
 					dmaInfo += singleLine ? " - " : Environment.NewLine;
-					dmaInfo += "Line Counter: $" + evt.DmaChannelInfo.HdmaLineCounterAndRepeat.ToString("X2");
+					dmaInfo += "Mode: " + evt.DmaChannelInfo.TransferMode;
+					dmaInfo += singleLine ? " - " : Environment.NewLine;
+
+					int aBusAddress;
+					if(indirectHdma) {
+						aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.TransferSize;
+					} else {
+						aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.SrcAddress;
+					}
+
+					if(!evt.DmaChannelInfo.InvertDirection) {
+						dmaInfo += "$" + aBusAddress.ToString("X4") + " -> $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
+					} else {
+						dmaInfo += "$" + aBusAddress.ToString("X4") + " <- $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
+					}
 				} else {
-					dmaInfo += "DMA #" + (evt.DmaChannel & 0x07);
+					dmaInfo = "DMA Channel #" + evt.DmaChannel;
 				}
-
-				dmaInfo += singleLine ? " - " : Environment.NewLine;
-				dmaInfo += "Mode: " + evt.DmaChannelInfo.TransferMode;
-				dmaInfo += singleLine ? " - " : Environment.NewLine;
-
-				int aBusAddress;
-				if(indirectHdma) {
-					aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.TransferSize;
-				} else {
-					aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.SrcAddress;
-				}
-
-				if(!evt.DmaChannelInfo.InvertDirection) {
-					dmaInfo += "$" + aBusAddress.ToString("X4") + " -> $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
-				} else {
-					dmaInfo += "$" + aBusAddress.ToString("X4") + " <- $" + (0x2100 | evt.DmaChannelInfo.DestAddress).ToString("X4");
-				}
-
 				details.Add(dmaInfo.Trim());
 			}
 
 			if(singleLine) {
-				if(details.Count > 0) {
+				if(details.Count > 1) {
 					return "[" + string.Join("] [", details) + "]";
+				} else if(details.Count == 1) {
+					return details[0];
 				} else {
 					return "";
 				}
@@ -542,7 +555,7 @@ namespace Mesen.Debugger.ViewModels
 			if(evt.Type == DebugEventType.Register) {
 				Type += evt.Operation.Type.IsWrite() ? " (W)" : " (R)";
 			}
-			Details = EventViewerViewModel.GetEventDetails(evt, true);
+			Details = EventViewerViewModel.GetEventDetails(_cpuType, evt, true);
 		}
 	}
 }

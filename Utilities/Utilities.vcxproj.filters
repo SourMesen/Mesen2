@@ -183,6 +183,11 @@
     <ClInclude Include="NTSC\sms_ntsc_config.h">
       <Filter>NTSC</Filter>
     </ClInclude>
+    <ClInclude Include="BitUtilities.h" />
+    <ClInclude Include="StaticFor.h" />
+    <ClInclude Include="Audio\OnePoleLowPassFilter.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">

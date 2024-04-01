@@ -41,6 +41,9 @@
 		<DataTemplate DataType="{x:Type vm:GameboyConfigViewModel}">
 			<v:GameboyConfigView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:GbaConfigViewModel}">
+			<v:GbaConfigView />
+		</DataTemplate>
 		<DataTemplate DataType="{x:Type vm:PceConfigViewModel}">
 			<v:PceConfigView />
 		</DataTemplate>
@@ -126,6 +129,15 @@
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/GameboyIcon.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabGameboy}" />
+					</StackPanel>
+				</TabItem.Header>
+			</TabItem>
+
+			<TabItem Content="{CompiledBinding Gba}">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="/Assets/GbaIcon.png" Margin="0 0 10 0" />
+						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabGba}" />
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>

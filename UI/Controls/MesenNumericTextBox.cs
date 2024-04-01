@@ -95,17 +95,17 @@ namespace Mesen.Controls
 			UpdateText(true);
 		}
 
-		int? GetMin()
+		long? GetMin()
 		{
 			return GetConvertedMinMaxValue(Min);
 		}
 
-		int? GetMax()
+		long? GetMax()
 		{
 			return GetConvertedMinMaxValue(Max);
 		}
 
-		private int? GetConvertedMinMaxValue(string? valStr)
+		private long? GetConvertedMinMaxValue(string? valStr)
 		{
 			if(valStr != null) {
 				NumberStyles styles = NumberStyles.Integer;
@@ -113,7 +113,7 @@ namespace Mesen.Controls
 					valStr = valStr.Substring(2);
 					styles = NumberStyles.HexNumber;
 				}
-				if(int.TryParse(valStr, styles, null, out int val)) {
+				if(long.TryParse(valStr, styles, null, out long val)) {
 					return val;
 				}
 			}
@@ -127,7 +127,7 @@ namespace Mesen.Controls
 				return;
 			}
 
-			int? min = GetMin();
+			long? min = GetMin();
 			bool allowNegative = min != null && min.Value < 0;
 
 			if(Hex) {
@@ -159,7 +159,7 @@ namespace Mesen.Controls
 		private void UpdateValueFromText()
 		{
 			if(string.IsNullOrWhiteSpace(Text)) {
-				int? min = GetMin();
+				long? min = GetMin();
 				if(min != null) {
 					SetNewValue(Math.Min(0, min.Value));
 				} else {
@@ -191,7 +191,7 @@ namespace Mesen.Controls
 		private int GetMaxLength()
 		{
 			IFormattable max;
-			int? maxProp = GetMax();
+			long? maxProp = GetMax();
 			if(maxProp != null) {
 				max = maxProp.Value;
 			} else {
@@ -209,7 +209,7 @@ namespace Mesen.Controls
 			}
 
 			//Increase max length by 1 if minus signs are allowed
-			int? min = GetMin();
+			long? min = GetMin();
 			bool allowNegative = !Hex && min != null && min.Value < 0;
 			return max.ToString(Hex ? "X" : null, null).Length + (allowNegative ? 1 : 0);
 		}
@@ -220,8 +220,8 @@ namespace Mesen.Controls
 				return;
 			}
 
-			int? max = GetMax();
-			int? min = GetMin();
+			long? max = GetMax();
+			long? min = GetMin();
 			
 			if(max != null && val.CompareTo(Convert.ChangeType(max, val.GetType())) > 0) {
 				val = (IComparable)Convert.ChangeType(max, val.GetType());

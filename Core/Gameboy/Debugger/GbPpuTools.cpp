@@ -74,35 +74,29 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 	return result;
 }
 
-void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer)
+void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, DebugSpriteInfo* sprites, uint32_t* spritePreviews, uint32_t* palette, uint32_t* outBuffer)
 {
-	GbPpuState& state = (GbPpuState&)baseState;
+	uint32_t bgColor = GetSpriteBackgroundColor(options.Background, palette, false);
 
 	std::fill(outBuffer, outBuffer + 256 * 256, GetSpriteBackgroundColor(options.Background, palette, true));
 	for(int i = 16; i < 16 + 144; i++) {
-		std::fill(outBuffer + i * 256 + 8, outBuffer + i * 256 + 168, GetSpriteBackgroundColor(options.Background, palette, false));
+		std::fill(outBuffer + i * 256 + 8, outBuffer + i * 256 + 168, bgColor);
 	}
 
-	GetSpritePreviewOptions sprOptions = {};
-	sprOptions.Background = SpriteBackground::Transparent;
-
-	DebugSpriteInfo sprite;
-	for(int i = 0; i < 0xA0; i += 4) {
-		GetSpriteInfo(sprite, i / 4, sprOptions, state, vram, oamRam, palette);
+	for(int i = 0; i < 40; i++) {
+		DebugSpriteInfo& sprite = sprites[i];
+		uint32_t* spritePreview = spritePreviews + i * _spritePreviewSize;
 
 		for(int y = 0; y < sprite.Height; y++) {
-			if(sprite.Y + y >= 256) {
-				break;
-			}
-
 			for(int x = 0; x < sprite.Width; x++) {
-				if(sprite.X + x >= 256) {
-					break;
-				}
-
-				uint32_t color = sprite.SpritePreview[y * sprite.Width + x];
+				uint32_t color = spritePreview[y * sprite.Width + x];
 				if(color != 0) {
+					if(sprite.Y + y >= 256 || sprite.X + x >= 256) {
+						continue;
+					}
 					outBuffer[((sprite.Y + y) * 256) + sprite.X + x] = color;
+				} else {
+					spritePreview[y * sprite.Width + x] = bgColor;
 				}
 			}
 		}
@@ -181,7 +175,7 @@ DebugSpritePreviewInfo GbPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions 
 	return info;
 }
 
-void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview, uint16_t i, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	sprite.Bpp = 2;
 	sprite.Format = TileFormat::Bpp2;
@@ -199,9 +193,11 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 	bool useSecondTable = (state.CgbEnabled && (attributes & 0x08));
 	sprite.UseSecondTable = useSecondTable ? NullableBoolean::True : NullableBoolean::False;
 	sprite.Palette = state.CgbEnabled ? (attributes & 0x07) : ((attributes & 0x10) ? 1 : 0);
-	sprite.HorizontalMirror = (attributes & 0x20) != 0;
-	sprite.VerticalMirror = (attributes & 0x40) != 0;
-	sprite.Visible = sprite.X > 0 && sprite.Y > 0 && sprite.Y < 160 && sprite.X < 168;
+	bool horizontalMirror = (attributes & 0x20) != 0;
+	bool verticalMirror = (attributes & 0x40) != 0;
+	sprite.HorizontalMirror = horizontalMirror ? NullableBoolean::True : NullableBoolean::False;
+	sprite.VerticalMirror = verticalMirror ? NullableBoolean::True : NullableBoolean::False;
+	sprite.Visibility = sprite.X > 0 && sprite.Y > 0 && sprite.Y < 160 && sprite.X < 168 ? SpriteVisibility::Visible : SpriteVisibility::Offscreen;
 	sprite.Width = 8;
 	sprite.Height = state.LargeSprites ? 16 : 8;
 	sprite.Priority = (attributes & 0x80) ? DebugSpritePriority::Background : DebugSpritePriority::Foreground;
@@ -225,33 +221,35 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 	sprite.TileAddress = tileStart;
 
 	for(int y = 0; y < sprite.Height; y++) {
-		uint16_t pixelStart = tileStart + (sprite.VerticalMirror ? (sprite.Height - 1 - y) : y) * 2;
+		uint16_t pixelStart = tileStart + (verticalMirror ? (sprite.Height - 1 - y) : y) * 2;
 		bool isCgb = state.CgbEnabled;
 		for(int x = 0; x < 8; x++) {
-			uint8_t shift = sprite.HorizontalMirror ? (7 - x) : x;
+			uint8_t shift = horizontalMirror ? (7 - x) : x;
 			uint8_t color = GetTilePixelColor<TileFormat::Bpp2>(vram, 0x3FFF, pixelStart, shift);
 
 			uint32_t outOffset = (y * 8) + x;
 			if(color > 0) {
 				if(!isCgb) {
-					sprite.SpritePreview[outOffset] = palette[4 + (sprite.Palette * 4) + color];
+					spritePreview[outOffset] = palette[4 + (sprite.Palette * 4) + color];
 				} else {
-					sprite.SpritePreview[outOffset] = palette[32 + (sprite.Palette * 4) + color];
+					spritePreview[outOffset] = palette[32 + (sprite.Palette * 4) + color];
 				}
 			} else {
-				sprite.SpritePreview[outOffset] = GetSpriteBackgroundColor(options.Background, palette, false);
+				spritePreview[outOffset] = 0;
 			}
 		}
 	}
 }
 
-void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
+void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 	for(int i = 0; i < 40; i++) {
 		outBuffer[i].Init();
-		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
+		GetSpriteInfo(outBuffer[i], spritePreviews + (i * _spritePreviewSize), i, options, state, vram, oamRam, palette);
 	}
+
+	GetSpritePreview(options, baseState, outBuffer, spritePreviews, palette, screenPreview);
 }
 
 DebugPaletteInfo GbPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)

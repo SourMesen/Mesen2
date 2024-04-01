@@ -40,12 +40,27 @@
 		<TabControl.ContentTemplate>
 			<DataTemplate>
 				<DockPanel>
-					<Button 
-						DockPanel.Dock="Bottom"
-						HorizontalAlignment="Right"
-						Content="{l:Translate btnReset}" 
-						Click="OnResetClick"
-					/>
+					<DockPanel DockPanel.Dock="Bottom">
+						<Button 
+							DockPanel.Dock="Right"
+							HorizontalAlignment="Right"
+							Content="{l:Translate btnReset}" 
+							Click="OnResetClick"
+						/>
+
+						<Button
+							DockPanel.Dock="Left"
+							HorizontalAlignment="Left"
+							Content="{l:Translate btnRefresh}"
+							Click="OnRefreshClick"
+						/>
+						
+						<CheckBox
+							HorizontalAlignment="Left"
+							IsChecked="{Binding Config.RefreshOnBreakPause}"
+							Content="{l:Translate chkRefreshOnBreakPause}"
+						/>
+					</DockPanel>
 
 					<Border BorderBrush="Gray" BorderThickness="1">
 						<DataBox

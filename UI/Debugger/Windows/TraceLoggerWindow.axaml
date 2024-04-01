@@ -34,7 +34,7 @@
 		</Style>
 	</Window.Styles>
 
-	<DockPanel Margin="2">
+	<DockPanel>
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
 			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
 			<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{CompiledBinding DebugMenuItems}" />
@@ -147,9 +147,9 @@
 		</TabControl>
 
 		<Border BorderBrush="Gray" BorderThickness="1">
-			<DockPanel>
+			<Grid ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
 				<ScrollBar
-					DockPanel.Dock="Right"
+					Grid.Column="1"
 					Orientation="Vertical"
 					VerticalAlignment="Stretch"
 					AllowAutoHide="False"
@@ -157,6 +157,15 @@
 					Maximum="{CompiledBinding MaxScrollPosition}"
 					Value="{CompiledBinding ScrollPosition}"
 				/>
+				
+				<ScrollBar
+					Orientation="Horizontal"
+					Grid.Row="1"
+					Maximum="{CompiledBinding #disViewer.HorizontalScrollMaxPosition}"
+					Value="{CompiledBinding #disViewer.HorizontalScrollPosition}"
+				/>
+
+				<Panel Grid.Row="1" Grid.Column="1" Background="{DynamicResource ButtonBackground}" />
 
 				<Panel>
 					<dc:DisassemblyViewer
@@ -175,7 +184,7 @@
 						HorizontalAlignment="Right"
 					/>
 				</Panel>
-			</DockPanel>
+			</Grid>
 		</Border>
 	</DockPanel>
 </Window>

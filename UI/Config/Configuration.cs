@@ -31,6 +31,7 @@ namespace Mesen.Config
 		[Reactive] public GameboyConfig Gameboy { get; set; } = new();
 		[Reactive] public PcEngineConfig PcEngine { get; set; } = new();
 		[Reactive] public SmsConfig Sms { get; set; } = new();
+		[Reactive] public GbaConfig Gba { get; set; } = new();
 		[Reactive] public PreferencesConfig Preferences { get; set; } = new();
 		[Reactive] public AudioPlayerConfig AudioPlayer { get; set; } = new();
 		[Reactive] public DebugConfig Debug { get; set; } = new();
@@ -80,6 +81,7 @@ namespace Mesen.Config
 			Input.ApplyConfig();
 			Emulation.ApplyConfig();
 			Gameboy.ApplyConfig();
+			Gba.ApplyConfig();
 			PcEngine.ApplyConfig();
 			Nes.ApplyConfig();
 			Snes.ApplyConfig();
@@ -107,6 +109,10 @@ namespace Mesen.Config
 		{
 			if(ConfigUpgrade < (int)ConfigUpgradeHint.SmsInput) {
 				Sms.InitializeDefaults(DefaultKeyMappings);
+			} 
+			
+			if(ConfigUpgrade < (int)ConfigUpgradeHint.GbaInput) {
+				Gba.InitializeDefaults(DefaultKeyMappings);
 			}
 
 			ConfigUpgrade = (int)ConfigUpgradeHint.NextValue - 1;
@@ -118,6 +124,7 @@ namespace Mesen.Config
 				Snes.InitializeDefaults(DefaultKeyMappings);
 				Nes.InitializeDefaults(DefaultKeyMappings);
 				Gameboy.InitializeDefaults(DefaultKeyMappings);
+				Gba.InitializeDefaults(DefaultKeyMappings);
 				PcEngine.InitializeDefaults(DefaultKeyMappings);
 				Sms.InitializeDefaults(DefaultKeyMappings);
 				ConfigUpgrade = (int)ConfigUpgradeHint.NextValue - 1;
@@ -289,6 +296,7 @@ namespace Mesen.Config
 		Uninitialized = 0,
 		FirstRun,
 		SmsInput,
+		GbaInput,
 		NextValue,
 	}
 }

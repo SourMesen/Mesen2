@@ -34,6 +34,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public int ControllerIndex { get; }
 		public bool IsSnes { get; }
+		public bool HasShoulderButtons { get; }
 		public bool HasSelectButton { get; }
 		public bool HasStartButton { get; }
 
@@ -44,6 +45,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			ControllerIndex = index + 1;
 			IsSnes = consoleType == ConsoleType.Snes;
+			HasShoulderButtons = consoleType == ConsoleType.Snes || consoleType == ConsoleType.Gba;
 			HasSelectButton = consoleType != ConsoleType.Sms;
 			HasStartButton = consoleType != ConsoleType.Sms || index == 0;
 

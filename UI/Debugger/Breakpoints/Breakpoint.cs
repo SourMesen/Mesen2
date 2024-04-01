@@ -33,7 +33,7 @@ namespace Mesen.Debugger
 		}
 
 		public bool IsAbsoluteAddress { get { return !MemoryType.IsRelativeMemory(); } }
-		public bool IsCpuBreakpoint { get { return !MemoryType.IsPpuMemory(); } }
+		public bool SupportsExec { get { return MemoryType.SupportsExecBreakpoints(); } }
 		
 		public bool IsSingleAddress { get { return StartAddress == EndAddress; } }
 		public bool IsAddressRange { get { return StartAddress != EndAddress; } }
@@ -49,7 +49,7 @@ namespace Mesen.Debugger
 				if(BreakOnWrite) {
 					type |= BreakpointTypeFlags.Write;
 				}
-				if(BreakOnExec && IsCpuBreakpoint) {
+				if(BreakOnExec && SupportsExec) {
 					type |= BreakpointTypeFlags.Execute;
 				}
 				return type;
@@ -67,7 +67,7 @@ namespace Mesen.Debugger
 
 		public int GetRelativeAddress()
 		{
-			if(IsCpuBreakpoint && this.IsAbsoluteAddress) {
+			if(SupportsExec && this.IsAbsoluteAddress) {
 				return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)StartAddress, Type = this.MemoryType }, this.CpuType).Address;
 			} else {
 				return (int)StartAddress;
@@ -77,7 +77,7 @@ namespace Mesen.Debugger
 		private int GetRelativeAddressEnd()
 		{
 			if(StartAddress != EndAddress) {
-				if(IsCpuBreakpoint && this.IsAbsoluteAddress) {
+				if(SupportsExec && this.IsAbsoluteAddress) {
 					return DebugApi.GetRelativeAddress(new AddressInfo() { Address = (int)this.EndAddress, Type = this.MemoryType }, this.CpuType).Address;
 				} else {
 					return (int)this.EndAddress;
@@ -127,7 +127,7 @@ namespace Mesen.Debugger
 
 		public string GetAddressLabel()
 		{
-			if(IsCpuBreakpoint) {
+			if(MemoryType.SupportsLabels()) {
 				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)StartAddress, Type = MemoryType });
 				return label?.Label ?? string.Empty;
 			}
@@ -140,7 +140,7 @@ namespace Mesen.Debugger
 			type += ":";
 			type += BreakOnRead ? "R" : "‒";
 			type += BreakOnWrite ? "W" : "‒";
-			if(IsCpuBreakpoint) {
+			if(SupportsExec) {
 				type += BreakOnExec ? "X" : "‒";
 			}
 			return type;

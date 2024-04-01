@@ -127,16 +127,21 @@ void PcePsg::Run()
 	}
 
 	if(_clockCounter >= 20000) {
-		blip_end_frame(_leftChannel, _clockCounter);
-		blip_end_frame(_rightChannel, _clockCounter);
-
-		uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, PcePsg::MaxSamples, 1);
-		blip_read_samples(_rightChannel, _soundBuffer + 1, PcePsg::MaxSamples, 1);
-		_soundMixer->PlayAudioBuffer(_soundBuffer, sampleCount, PcePsg::SampleRate);
-		_clockCounter = 0;
+		PlayQueuedAudio();
 	}
 
 	_lastClock = clock - clocksToRun;
+}
+
+void PcePsg::PlayQueuedAudio()
+{
+	blip_end_frame(_leftChannel, _clockCounter);
+	blip_end_frame(_rightChannel, _clockCounter);
+
+	uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, PcePsg::MaxSamples, 1);
+	blip_read_samples(_rightChannel, _soundBuffer + 1, PcePsg::MaxSamples, 1);
+	_soundMixer->PlayAudioBuffer(_soundBuffer, sampleCount, PcePsg::SampleRate);
+	_clockCounter = 0;
 }
 
 void PcePsg::Serialize(Serializer& s)

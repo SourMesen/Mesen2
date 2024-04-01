@@ -17,6 +17,7 @@
 #include "NES/Debugger/NesDisUtils.h"
 #include "PCE/Debugger/PceDisUtils.h"
 #include "SMS/Debugger/SmsDisUtils.h"
+#include "GBA/Debugger/GbaDisUtils.h"
 #include "Shared/EmuSettings.h"
 
 DisassemblyInfo::DisassemblyInfo()
@@ -75,6 +76,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelMana
 		case CpuType::Nes: NesDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
 		case CpuType::Pce: PceDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
 		case CpuType::Sms: SmsDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
+		case CpuType::Gba: GbaDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
 
 		default:
 			throw std::runtime_error("GetDisassembly - Unsupported CPU type");
@@ -108,6 +110,7 @@ EffectiveAddressInfo DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, vo
 		case CpuType::Nes: return NesDisUtils::GetEffectiveAddress(*this, *(NesCpuState*)cpuState, debugger->GetMemoryDumper());
 		case CpuType::Pce: return PceDisUtils::GetEffectiveAddress(*this, (PceConsole*)debugger->GetConsole(), *(PceCpuState*)cpuState);
 		case CpuType::Sms: return SmsDisUtils::GetEffectiveAddress(*this, (SmsConsole*)debugger->GetConsole(), *(SmsCpuState*)cpuState);
+		case CpuType::Gba: return GbaDisUtils::GetEffectiveAddress(*this, (GbaConsole*)debugger->GetConsole(), *(GbaCpuState*)cpuState);
 	}
 
 	throw std::runtime_error("GetEffectiveAddress - Unsupported CPU type");
@@ -121,6 +124,17 @@ CpuType DisassemblyInfo::GetCpuType()
 uint8_t DisassemblyInfo::GetOpCode()
 {
 	return _byteCode[0];
+}
+
+template<CpuType type>
+uint32_t DisassemblyInfo::GetFullOpCode()
+{
+	switch(type) {
+		default: return _byteCode[0];
+		case CpuType::NecDsp: return _byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16);
+		case CpuType::Cx4: return _byteCode[1];
+		case CpuType::Gba: return _byteCode[0] | (_byteCode[1] << 8) | (_opSize == 4 ? ((_byteCode[2] << 16) | (_byteCode[3] << 24)) : 0);
+	}
 }
 
 uint8_t DisassemblyInfo::GetOpSize()
@@ -155,7 +169,7 @@ void DisassemblyInfo::GetByteCode(string &out)
 	out += str.ToString();
 }
 
-uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type, uint32_t cpuAddress, MemoryType memType, MemoryDumper* memoryDumper)
+uint8_t DisassemblyInfo::GetOpSize(uint32_t opCode, uint8_t flags, CpuType type, uint32_t cpuAddress, MemoryType memType, MemoryDumper* memoryDumper)
 {
 	switch(type) {
 		case CpuType::Snes: return SnesDisUtils::GetOpSize(opCode, flags);
@@ -168,6 +182,7 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type, 
 		case CpuType::Nes: return NesDisUtils::GetOpSize(opCode);
 		case CpuType::Pce: return PceDisUtils::GetOpSize(opCode);
 		case CpuType::Sms: return SmsDisUtils::GetOpSize(opCode, cpuAddress, memType, memoryDumper);
+		case CpuType::Gba: return GbaDisUtils::GetOpSize(opCode, flags);
 	}
 
 	throw std::runtime_error("GetOpSize - Unsupported CPU type");
@@ -178,14 +193,15 @@ bool DisassemblyInfo::IsJumpToSub()
 	switch(_cpuType) {
 		case CpuType::Snes: return SnesDisUtils::IsJumpToSub(GetOpCode());
 		case CpuType::Spc: return SpcDisUtils::IsJumpToSub(GetOpCode());
-		case CpuType::NecDsp: return NecDspDisUtils::IsJumpToSub(_byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16));
+		case CpuType::NecDsp: return NecDspDisUtils::IsJumpToSub(GetFullOpCode<CpuType::NecDsp>());
 		case CpuType::Sa1: return SnesDisUtils::IsJumpToSub(GetOpCode());
 		case CpuType::Gsu: return false; //GSU has no JSR op codes
-		case CpuType::Cx4: return Cx4DisUtils::IsJumpToSub(GetByteCode()[1]);
+		case CpuType::Cx4: return Cx4DisUtils::IsJumpToSub(GetFullOpCode<CpuType::Cx4>());
 		case CpuType::Gameboy: return GameboyDisUtils::IsJumpToSub(GetOpCode());
 		case CpuType::Nes: return NesDisUtils::IsJumpToSub(GetOpCode());
 		case CpuType::Pce: return PceDisUtils::IsJumpToSub(GetOpCode());
 		case CpuType::Sms: return SmsDisUtils::IsJumpToSub(GetOpCode());
+		case CpuType::Gba: return GbaDisUtils::IsJumpToSub(GetFullOpCode<CpuType::Gba>(), _flags);
 	}
 
 	throw std::runtime_error("IsJumpToSub - Unsupported CPU type");
@@ -196,14 +212,15 @@ bool DisassemblyInfo::IsReturnInstruction()
 	switch(_cpuType) {
 		case CpuType::Snes: return SnesDisUtils::IsReturnInstruction(GetOpCode());
 		case CpuType::Spc: return SpcDisUtils::IsReturnInstruction(GetOpCode());
-		case CpuType::NecDsp: return NecDspDisUtils::IsReturnInstruction(_byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16));
+		case CpuType::NecDsp: return NecDspDisUtils::IsReturnInstruction(GetFullOpCode<CpuType::NecDsp>());
 		case CpuType::Sa1: return SnesDisUtils::IsReturnInstruction(GetOpCode());
 		case CpuType::Gsu: return false; //GSU has no RTS/RTI op codes
-		case CpuType::Cx4: return Cx4DisUtils::IsReturnInstruction(GetByteCode()[1]);
+		case CpuType::Cx4: return Cx4DisUtils::IsReturnInstruction(GetFullOpCode<CpuType::Cx4>());
 		case CpuType::Gameboy: return GameboyDisUtils::IsReturnInstruction(GetOpCode());
 		case CpuType::Nes: return NesDisUtils::IsReturnInstruction(GetOpCode());
 		case CpuType::Pce: return PceDisUtils::IsReturnInstruction(GetOpCode());
 		case CpuType::Sms: return SmsDisUtils::IsReturnInstruction(_byteCode[0] | (_byteCode[1] << 8));
+		case CpuType::Gba: return GbaDisUtils::IsReturnInstruction(GetFullOpCode<CpuType::Gba>(), _flags);
 	}
 	
 	throw std::runtime_error("IsReturnInstruction - Unsupported CPU type");
@@ -229,14 +246,15 @@ bool DisassemblyInfo::IsUnconditionalJump()
 	switch(_cpuType) {
 		case CpuType::Snes: return SnesDisUtils::IsUnconditionalJump(GetOpCode());
 		case CpuType::Spc: return SpcDisUtils::IsUnconditionalJump(GetOpCode());
-		case CpuType::NecDsp: return NecDspDisUtils::IsUnconditionalJump(_byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16));
+		case CpuType::NecDsp: return NecDspDisUtils::IsUnconditionalJump(GetFullOpCode<CpuType::NecDsp>());
 		case CpuType::Sa1: return SnesDisUtils::IsUnconditionalJump(GetOpCode());
 		case CpuType::Gsu: return GsuDisUtils::IsUnconditionalJump(GetOpCode());
-		case CpuType::Cx4: return Cx4DisUtils::IsUnconditionalJump(GetByteCode()[1]);
+		case CpuType::Cx4: return Cx4DisUtils::IsUnconditionalJump(GetFullOpCode<CpuType::Cx4>());
 		case CpuType::Gameboy: return GameboyDisUtils::IsUnconditionalJump(GetOpCode());
 		case CpuType::Nes: return NesDisUtils::IsUnconditionalJump(GetOpCode());
 		case CpuType::Pce: return PceDisUtils::IsUnconditionalJump(GetOpCode());
 		case CpuType::Sms: return SmsDisUtils::IsUnconditionalJump(GetOpCode());
+		case CpuType::Gba: return GbaDisUtils::IsUnconditionalJump(GetFullOpCode<CpuType::Gba>(), _flags);
 	}
 
 	throw std::runtime_error("IsUnconditionalJump - Unsupported CPU type");
@@ -252,14 +270,15 @@ bool DisassemblyInfo::IsJump()
 	switch(_cpuType) {
 		case CpuType::Snes: return SnesDisUtils::IsConditionalJump(GetOpCode());
 		case CpuType::Spc: return SpcDisUtils::IsConditionalJump(GetOpCode());
-		case CpuType::NecDsp: return NecDspDisUtils::IsConditionalJump(_byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16));
+		case CpuType::NecDsp: return NecDspDisUtils::IsConditionalJump(GetFullOpCode<CpuType::NecDsp>());
 		case CpuType::Sa1: return SnesDisUtils::IsConditionalJump(GetOpCode());
 		case CpuType::Gsu: return GsuDisUtils::IsConditionalJump(GetOpCode());
-		case CpuType::Cx4: return Cx4DisUtils::IsConditionalJump(GetByteCode()[1], GetByteCode()[0]);
+		case CpuType::Cx4: return Cx4DisUtils::IsConditionalJump(GetFullOpCode<CpuType::Cx4>(), GetByteCode()[0]);
 		case CpuType::Gameboy: return GameboyDisUtils::IsConditionalJump(GetOpCode());
 		case CpuType::Nes: return NesDisUtils::IsConditionalJump(GetOpCode());
 		case CpuType::Pce: return PceDisUtils::IsConditionalJump(GetOpCode());
 		case CpuType::Sms: return SmsDisUtils::IsConditionalJump(GetOpCode());
+		case CpuType::Gba: return GbaDisUtils::IsConditionalJump(GetFullOpCode<CpuType::Gba>(), _flags);
 	}
 
 	throw std::runtime_error("IsJump - Unsupported CPU type");
@@ -275,12 +294,13 @@ void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 	}
 }
 
-uint16_t DisassemblyInfo::GetMemoryValue(EffectiveAddressInfo effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType)
+uint32_t DisassemblyInfo::GetMemoryValue(EffectiveAddressInfo effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType)
 {
-	MemoryType effectiveMemType = effectiveAddress.Address.Type == MemoryType::None ? memType : effectiveAddress.Address.Type;
-	if(effectiveAddress.ValueSize == 2) {
-		return memoryDumper->GetMemoryValueWord(effectiveMemType, effectiveAddress.Address.Address);
-	} else {
-		return memoryDumper->GetMemoryValue(effectiveMemType, effectiveAddress.Address.Address);
+	MemoryType effectiveMemType = effectiveAddress.Type == MemoryType::None ? memType : effectiveAddress.Type;
+	switch(effectiveAddress.ValueSize) {
+		default:
+		case 1: return memoryDumper->GetMemoryValue(effectiveMemType, effectiveAddress.Address);
+		case 2: return memoryDumper->GetMemoryValue16(effectiveMemType, effectiveAddress.Address);
+		case 4: return memoryDumper->GetMemoryValue32(effectiveMemType, effectiveAddress.Address);
 	}
 }

@@ -11,7 +11,7 @@ public:
 
 	static uint32_t Rgb555ToArgb(uint16_t rgb555)
 	{
-		uint8_t b = Convert5BitTo8Bit(rgb555 >> 10);
+		uint8_t b = Convert5BitTo8Bit((rgb555 >> 10) & 0x1F);
 		uint8_t g = Convert5BitTo8Bit((rgb555 >> 5) & 0x1F);
 		uint8_t r = Convert5BitTo8Bit(rgb555 & 0x1F);
 
@@ -44,5 +44,14 @@ public:
 	static uint32_t Rgb444ToArgb(uint16_t rgb444)
 	{
 		return Rgb555ToArgb(Rgb444To555(rgb444));
+	}
+
+	static uint16_t Rgb888To555(uint32_t rgb888)
+	{
+		uint8_t r = (rgb888 >> 19) & 0x1F;
+		uint8_t g = (rgb888 >> 11) & 0x1F;
+		uint8_t b = (rgb888 >> 3) & 0x1F;
+
+		return (b << 10) | (g << 5) | r;
 	}
 };

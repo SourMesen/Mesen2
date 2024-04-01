@@ -81,6 +81,11 @@ string HexUtilities::ToHex24(int32_t value)
 	return _hexCache[(value >> 16) & 0xFF] + _hexCache[(value >> 8) & 0xFF] + _hexCache[value & 0xFF];
 }
 
+string HexUtilities::ToHex32(uint32_t value)
+{
+	return _hexCache[value >> 24] + _hexCache[(value >> 16) & 0xFF] + _hexCache[(value >> 8) & 0xFF] + _hexCache[value & 0xFF];
+}
+
 string HexUtilities::ToHex(uint32_t value, bool fullSize)
 {
 	if(fullSize || value > 0xFFFFFF) {

@@ -75,13 +75,28 @@ void GbApu::Run()
 	uint32_t clocksToRun = (uint32_t)(clockCount - _prevClockCount);
 	_prevClockCount = clockCount;
 
-	GameboyConfig cfg = _settings->GetGameboyConfig();
+	GameboyConfig& cfg = _settings->GetGameboyConfig();
 
 	if(!_state.ApuEnabled) {
 		_clockCounter += clocksToRun;
 	} else {
 		while(clocksToRun > 0) {
-			uint32_t minTimer = std::min<uint32_t>({ 250, clocksToRun, _square1->GetState().Timer, _square2->GetState().Timer, _wave->GetState().Timer, _noise->GetState().Timer });
+			uint32_t minTimer = 250;
+			if(clocksToRun < minTimer) {
+				minTimer = clocksToRun;
+			}
+			if(_square1->GetState().Timer < minTimer) {
+				minTimer = _square1->GetState().Timer;
+			}
+			if(_square2->GetState().Timer < minTimer) {
+				minTimer = _square2->GetState().Timer;
+			}
+			if(_wave->GetState().Timer < minTimer) {
+				minTimer = _wave->GetState().Timer;
+			}
+			if(_noise->GetState().Timer < minTimer) {
+				minTimer = _noise->GetState().Timer;
+			}
 
 			clocksToRun -= minTimer;
 			_square1->Exec(minTimer);
@@ -118,14 +133,19 @@ void GbApu::Run()
 	}
 
 	if(!_gameboy->IsSgb() && _clockCounter >= 20000) {
-		blip_end_frame(_leftChannel, _clockCounter);
-		blip_end_frame(_rightChannel, _clockCounter);
-
-		uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, GbApu::MaxSamples, 1);
-		blip_read_samples(_rightChannel, _soundBuffer + 1, GbApu::MaxSamples, 1);
-		_soundMixer->PlayAudioBuffer(_soundBuffer, sampleCount, GbApu::SampleRate);
-		_clockCounter = 0;
+		PlayQueuedAudio();
 	}
+}
+
+void GbApu::PlayQueuedAudio()
+{
+	blip_end_frame(_leftChannel, _clockCounter);
+	blip_end_frame(_rightChannel, _clockCounter);
+
+	uint32_t sampleCount = (uint32_t)blip_read_samples(_leftChannel, _soundBuffer, GbApu::MaxSamples, 1);
+	blip_read_samples(_rightChannel, _soundBuffer + 1, GbApu::MaxSamples, 1);
+	_soundMixer->PlayAudioBuffer(_soundBuffer, sampleCount, GbApu::SampleRate);
+	_clockCounter = 0;
 }
 
 void GbApu::GetSoundSamples(int16_t* &samples, uint32_t& sampleCount)

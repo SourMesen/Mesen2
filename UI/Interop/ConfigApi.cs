@@ -22,6 +22,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetEmulationConfig(InteropEmulationConfig config);
 		
 		[DllImport(DllPath)] public static extern void SetGameboyConfig(InteropGameboyConfig config);
+		[DllImport(DllPath)] public static extern void SetGbaConfig(InteropGbaConfig config);
 		[DllImport(DllPath)] public static extern void SetPcEngineConfig(InteropPcEngineConfig config);
 		[DllImport(DllPath)] public static extern void SetNesConfig(InteropNesConfig config);
 		[DllImport(DllPath)] public static extern void SetSnesConfig(InteropSnesConfig config);
@@ -68,6 +69,7 @@ namespace Mesen.Interop
 		NesDebuggerEnabled = (1 << 7),
 		PceDebuggerEnabled = (1 << 8),
 		SmsDebuggerEnabled = (1 << 9),
+		GbaDebuggerEnabled = (1 << 10),
 	}
 
 	public struct InteropShortcutKeyInfo

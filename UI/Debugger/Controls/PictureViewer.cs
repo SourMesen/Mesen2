@@ -397,6 +397,10 @@ namespace Mesen.Debugger.Controls
 				int height = (int)(Source.Size.Height * Zoom);
 				int gridSizeX = (int)(gridDef.SizeX * Zoom);
 				int gridSizeY = (int)(gridDef.SizeY * Zoom);
+				if(gridSizeX <= 1 || gridSizeY <= 1) {
+					return;
+				}
+
 				double gridRestartY = (int)(gridDef.RestartY * Zoom) + 0.5;
 
 				Pen pen = new Pen(gridDef.Color.ToUInt32(), 1);

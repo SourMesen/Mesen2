@@ -49,6 +49,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="Assets\MsgBoxInfo.png" />
+	  <None Remove="Debugger\Documentation\GbaDocumentation.json" />
 	  <None Remove="Debugger\Documentation\GbDocumentation.json" />
 	  <None Remove="Debugger\Documentation\NesDocumentation.json" />
 	  <None Remove="Debugger\Documentation\PceDocumentation.json" />
@@ -99,6 +100,7 @@
     <PackageReference Include="Dock.Avalonia" Version="11.0.0.5" />
     <PackageReference Include="Dock.Model.Mvvm" Version="11.0.0.5" />
     <PackageReference Include="Dotnet.Bundle" Version="*" />
+    <PackageReference Include="ELFSharp" Version="2.17.3" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="19.5.39" />
    </ItemGroup>
@@ -144,6 +146,9 @@
     </Compile>
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\StatusViews\GbaStatusView.axaml.cs">
+      <DependentUpon>GbaStatusView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\StatusViews\SmsStatusView.axaml.cs">
       <DependentUpon>SmsStatusView.axaml</DependentUpon>
@@ -213,6 +218,9 @@
     </Compile>
     <Compile Update="Debugger\Views\FunctionListView.axaml.cs">
       <DependentUpon>FunctionListView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\GbaEventViewerConfigView.axaml.cs">
+      <DependentUpon>GbaEventViewerConfigView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\SmsEventViewerConfigView.axaml.cs">
       <DependentUpon>SmsEventViewerConfigView.axaml</DependentUpon>
@@ -348,6 +356,12 @@
     </Compile>
     <Compile Update="Views\BandaiHypershotControllerView.axaml.cs">
       <DependentUpon>BandaiHypershotControllerView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\GbaConfigView.axaml.cs">
+      <DependentUpon>GbaConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\GbaControllerView.axaml.cs">
+      <DependentUpon>GbaControllerView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\PceAvenuePad6View.axaml.cs">
       <DependentUpon>PceAvenuePad6View.axaml</DependentUpon>
@@ -556,6 +570,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Debugger\Documentation\SmsDocumentation.json" />
+    <EmbeddedResource Include="Debugger\Documentation\GbaDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\SpcDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\PceDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\GbDocumentation.json" />

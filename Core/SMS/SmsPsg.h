@@ -36,6 +36,7 @@ public:
 	SmsPsgState& GetState() { return _state; }
 
 	void Run();
+	void PlayQueuedAudio();
 
 	void Write(uint8_t value);
 	void WritePanningReg(uint8_t value);

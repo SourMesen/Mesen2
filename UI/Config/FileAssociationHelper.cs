@@ -79,6 +79,7 @@ namespace Mesen.Config
 			CreateMimeType("x-mesen-gb", "gb", "Game Boy ROM", mimeTypes, cfg.AssociateGbRomFiles);
 			CreateMimeType("x-mesen-gbc", "gbc", "Game Boy Color ROM", mimeTypes, cfg.AssociateGbRomFiles);
 			CreateMimeType("x-mesen-gbs", "gbs", "Game Boy Sound File", mimeTypes, cfg.AssociateGbMusicFiles);
+			CreateMimeType("x-mesen-gba", "gba", "Game Boy Advance ROM", mimeTypes, cfg.AssociateGbaRomFiles);
 
 			CreateMimeType("x-mesen-pce", "pce", "PC Engine ROM", mimeTypes, cfg.AssociatePceRomFiles);
 			CreateMimeType("x-mesen-sgx", "sgx", "PC Engine SuperGrafx ROM", mimeTypes, cfg.AssociatePceRomFiles);
@@ -194,6 +195,8 @@ namespace Mesen.Config
 			FileAssociationHelper.UpdateFileAssociation("gb", cfg.AssociateGbRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("gbc", cfg.AssociateGbRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("gbs", cfg.AssociateGbMusicFiles);
+			
+			FileAssociationHelper.UpdateFileAssociation("gba", cfg.AssociateGbaRomFiles);
 
 			FileAssociationHelper.UpdateFileAssociation("pce", cfg.AssociatePceRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("sgx", cfg.AssociatePceRomFiles);

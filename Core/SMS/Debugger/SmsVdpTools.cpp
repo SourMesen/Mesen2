@@ -183,13 +183,13 @@ DebugTilemapTileInfo SmsVdpTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	return result;
 }
 
-void SmsVdpTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer)
+void SmsVdpTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, DebugSpriteInfo* sprites, uint32_t* spritePreviews, uint32_t* palette, uint32_t* outBuffer)
 {
 	SmsVdpState& state = (SmsVdpState&)baseState;
+	
+	uint32_t bgColor = GetSpriteBackgroundColor(options.Background, palette, false);
 
-	uint8_t* oam = oamRam ? oamRam : (vram + (state.SpriteTableAddress & (state.UseMode4 ? 0x3F00 : 0x3FFF)));
-
-	std::fill(outBuffer, outBuffer + 256 * state.VisibleScanlineCount, GetSpriteBackgroundColor(options.Background, palette, false));
+	std::fill(outBuffer, outBuffer + 256 * state.VisibleScanlineCount, bgColor);
 	std::fill(outBuffer + 256 * state.VisibleScanlineCount, outBuffer + 256 * 256, GetSpriteBackgroundColor(options.Background, palette, true));
 
 	if(_console->GetModel() == SmsModel::GameGear) {
@@ -201,38 +201,29 @@ void SmsVdpTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 		}
 	}
 
-	GetSpritePreviewOptions sprOptions = {};
-	sprOptions.Background = SpriteBackground::Transparent;
-	
 	int spriteCount = state.UseMode4 ? 64 : 32;
-	int lastSpriteToProcess = spriteCount - 1;
-	for(int i = 0; i < spriteCount; i++) {
-		uint8_t y = state.UseMode4 ? oam[i] : oam[i * 4];
-		if(y == 0xD0) {
-			lastSpriteToProcess = i - 1;
-			break;
-		}
-	}
+	for(int i = spriteCount - 1; i >= 0; i--) {
+		DebugSpriteInfo& sprite = sprites[i];
+		uint32_t* spritePreview = spritePreviews + i * _spritePreviewSize;
 
-	DebugSpriteInfo sprite;
-	for(int i = lastSpriteToProcess; i >= 0; i--) {
-		GetSpriteInfo(sprite, i, sprOptions, state, vram, oam, palette);
 		int spritePosY = sprite.Y + 1;
 
 		for(int y = 0; y < sprite.Height; y++) {
-			if(spritePosY + y >= 256) {
-				spritePosY -= 256;
-			}
-
 			for(int x = 0; x < sprite.Width; x++) {
-				if(sprite.X + x >= 256) {
-					break;
+				if(spritePosY + y >= 256) {
+					spritePosY -= 256;
 				}
 
-				uint32_t color = sprite.SpritePreview[y * sprite.Width + x];
+				uint32_t color = spritePreview[y * sprite.Width + x];
 				if(color != 0) {
+					if(sprite.X + x >= 256 || sprite.Visibility == SpriteVisibility::Disabled) {
+						continue;
+					}
+
 					//TODOSMS zoomed sprites support
 					outBuffer[((spritePosY + y) * 256) + sprite.X + x] = color;
+				} else {
+					spritePreview[y * sprite.Width + x] = bgColor;
 				}
 			}
 		}
@@ -266,7 +257,7 @@ DebugSpritePreviewInfo SmsVdpTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 	return info;
 }
 
-void SmsVdpTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePreviewOptions& options, SmsVdpState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+void SmsVdpTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview, uint16_t i, GetSpritePreviewOptions& options, SmsVdpState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	uint8_t* oam = oamRam ? oamRam : (vram + (state.SpriteTableAddress & (state.UseMode4 ? 0x3F00 : 0x3FFF)));
 
@@ -294,10 +285,8 @@ void SmsVdpTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePr
 
 	sprite.Palette = state.UseMode4 ? 0 : (oam[i*4+3] & 0x0F);
 	sprite.PaletteAddress = state.UseMode4 ? 0x10 : -1;
-	sprite.HorizontalMirror = false;
-	sprite.VerticalMirror = false;
 	sprite.Priority = DebugSpritePriority::Undefined;
-	sprite.Visible = sprite.Y < state.VisibleScanlineCount;
+	sprite.Visibility = sprite.Y < state.VisibleScanlineCount ? SpriteVisibility::Visible : SpriteVisibility::Offscreen;
 	
 	bool largeSprites = state.UseLargeSprites;
 	sprite.Width = 8;
@@ -340,22 +329,31 @@ void SmsVdpTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePr
 
 			uint32_t outOffset = (y * sprite.Width) + x;
 			if(color > 0) {
-				sprite.SpritePreview[outOffset] = state.UseMode4 ? palette[0x10 + color] : palette[sprite.Palette];
+				spritePreview[outOffset] = state.UseMode4 ? palette[0x10 + color] : palette[sprite.Palette];
 			} else {
-				sprite.SpritePreview[outOffset] = GetSpriteBackgroundColor(options.Background, palette, false);
+				spritePreview[outOffset] = 0;
 			}
 		}
 	}
 }
 
-void SmsVdpTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
+void SmsVdpTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	SmsVdpState& state = (SmsVdpState&)baseState;
 	int spriteCount = state.UseMode4 ? 64 : 32;
+
+	bool disableSprites = false;
 	for(int i = 0; i < spriteCount; i++) {
 		outBuffer[i].Init();
-		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
+		GetSpriteInfo(outBuffer[i], spritePreviews + (i * _spritePreviewSize), i, options, state, vram, oamRam, palette);
+
+		disableSprites |= outBuffer[i].RawY == 0xD0;
+		if(disableSprites) {
+			outBuffer[i].Visibility = SpriteVisibility::Disabled;
+		}
 	}
+
+	GetSpritePreview(options, baseState, outBuffer, spritePreviews, palette, screenPreview);
 }
 
 DebugPaletteInfo SmsVdpTools::GetPaletteInfo(GetPaletteInfoOptions options)

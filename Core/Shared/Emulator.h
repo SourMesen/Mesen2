@@ -250,17 +250,17 @@ public:
 		}
 	}
 
-	template<CpuType type, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> __forceinline void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType)
+	template<CpuType type, uint8_t accessWidth = 1, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> __forceinline void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType)
 	{
 		if(_debugger) {
-			_debugger->ProcessMemoryRead<type, flags>(addr, value, opType);
+			_debugger->ProcessMemoryRead<type, accessWidth, flags>(addr, value, opType);
 		}
 	}
 
-	template<CpuType type, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> __forceinline bool ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
+	template<CpuType type, uint8_t accessWidth = 1, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> __forceinline bool ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 	{
 		if(_debugger) {
-			return _debugger->ProcessMemoryWrite<type, flags>(addr, value, opType);
+			return _debugger->ProcessMemoryWrite<type, accessWidth, flags>(addr, value, opType);
 		}
 		return true;
 	}

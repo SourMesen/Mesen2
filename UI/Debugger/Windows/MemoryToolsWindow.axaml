@@ -42,6 +42,7 @@
 				<c:EnumComboBox
 					SelectedItem="{CompiledBinding Config.MemoryType}"
 					AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+					Width="150"
 				/>
 				<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
 			</StackPanel>

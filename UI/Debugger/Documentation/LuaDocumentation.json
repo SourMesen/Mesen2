@@ -247,7 +247,7 @@
 	"returnValue": { "type": "Int", "description": "An 8-bit (signed or unsigned) value." }
 },
 {
-	"name": "readWord",
+	"name": "read16",
 	"description": "Reads a 16-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to read from" },
@@ -255,6 +255,16 @@
 		{ "name": "signed", "type": "Bool", "description": "When true, the return value is a 16-bit signed value." }
 	],
 	"returnValue": { "type": "Int", "description": "A 16-bit (signed or unsigned) value." }
+},
+{
+	"name": "read32",
+	"description": "Reads a 32-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
+	"parameters": [
+		{ "name": "address", "type": "Int", "description": "Address to read from" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type to read from" },
+		{ "name": "signed", "type": "Bool", "description": "When true, the return value is a 32-bit signed value." }
+	],
+	"returnValue": { "type": "Int", "description": "A 32-bit (signed or unsigned) value." }
 },
 {
 	"name": "reset",
@@ -357,11 +367,20 @@
 	]
 },
 {
-	"name": "writeWord",
+	"name": "write16",
 	"description": "Writes a 16-bit value to the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from writing a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to write to" },
 		{ "name": "value", "type": "Int", "description": "16-bit value to write" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type to write to" }
+	]
+},
+{
+	"name": "write32",
+	"description": "Writes a 32-bit value to the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from writing a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
+	"parameters": [
+		{ "name": "address", "type": "Int", "description": "Address to write to" },
+		{ "name": "value", "type": "Int", "description": "32-bit value to write" },
 		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type to write to" }
 	]
 },
@@ -386,7 +405,9 @@
 		{ "name": "snesGameGenie", "description": "Game Genie (SNES)" },
 		{ "name": "snesProActionReplay", "description": "Pro Action Replay (SNES)" },
 		{ "name": "pceRaw", "description": "24-bit address format (PC Engine)" },
-		{ "name": "pceAddress", "description": "21-bit address format (PC Engine)" }
+		{ "name": "pceAddress", "description": "21-bit address format (PC Engine)" },
+		{ "name": "smsProActionReplay", "description": "Pro Action Replay (SMS)" },
+		{ "name": "smsGameGenie", "description": "Game Genie (SMS)" }
 	]
 },
 {
@@ -412,7 +433,9 @@
 		{ "name": "cx4", "description": "SNES - CX4" },
 		{ "name": "gameboy", "description": "Game Boy - Main CPU (can also be used in SGB mode)" },
 		{ "name": "nes", "description": "NES - Main CPU - 2A03 (6502)" },
-		{ "name": "pce", "description": "PC Engine - Main CPU - HuC6280" }
+		{ "name": "pce", "description": "PC Engine - Main CPU - HuC6280" },
+		{ "name": "sms", "description": "SMS - Main CPU - Z80" },
+		{ "name": "gba", "description": "GBA - Main CPU - ARM7TDMI" }
 	]
 },
 {
@@ -453,6 +476,8 @@
 		{ "name": "nesMemory", "description": "NES - CPU memory" },
 		{ "name": "nesPpuMemory", "description": "NES - PPU memory" },
 		{ "name": "pceMemory", "description": "PC Engine - CPU memory" },
+		{ "name": "smsMemory", "description": "SMS - CPU memory" },
+		{ "name": "gbaMemory", "description": "GBA - CPU memory" },
 
 		{ "name": "snesDebug", "description": "SNES - S-CPU memory (no read/write side-effects)" },
 		{ "name": "spcDebug", "description": "SNES - SPC memory (no read/write side-effects)" },
@@ -464,6 +489,8 @@
 		{ "name": "nesDebug", "description": "NES - CPU memory (no read/write side-effects)" },
 		{ "name": "nesPpuDebug", "description": "NES - PPU memory (no read/write side-effects)" },
 		{ "name": "pceDebug", "description": "PC Engine - CPU memory (no read/write side-effects)" },
+		{ "name": "smsDebug", "description": "SMS - CPU memory (no read/write side-effects)" },
+		{ "name": "gbaDebug", "description": "GBA - CPU memory (no read/write side-effects)" },
 
 		{ "name": "snesPrgRom", "description": "SNES - PRG ROM" },
 		{ "name": "snesWorkRam", "description": "SNES - Work RAM" },
@@ -512,7 +539,24 @@
 		{ "name": "pceVideoRamVdc2", "description": "PC Engine - Video RAM (VDC2 - SuperGrafx only)" },
 		{ "name": "pceSpriteRam", "description": "PC Engine - Sprite RAM (VDC)" },
 		{ "name": "pceSpriteRamVdc2", "description": "PC Engine - Sprite RAM (VDC2 - SuperGrafx only)" },
-		{ "name": "pcePaletteRam", "description": "PC Engine - Palette RAM (VCE)" }
+		{ "name": "pcePaletteRam", "description": "PC Engine - Palette RAM (VCE)" },
+
+		{ "name": "smsPrgRom", "description": "SMS - ROM" },
+		{ "name": "smsWorkRam", "description": "SMS - System RAM" },
+		{ "name": "smsCartRam", "description": "SMS - Cart RAM" },
+		{ "name": "smsBootRom", "description": "SMS - BIOS ROM" },
+		{ "name": "smsVideoRam", "description": "SMS - Video RAM" },
+		{ "name": "smsPaletteRam", "description": "SMS - Palette RAM" },
+		{ "name": "smsPort", "description": "SMS - I/O Port" },
+
+		{ "name": "gbaPrgRom", "description": "GBA - ROM" },
+		{ "name": "gbaIntWorkRam", "description": "GBA - Internal Work RAM" },
+		{ "name": "gbaExtWorkRam", "description": "GBA - External Work RAM" },
+		{ "name": "gbaSaveRam", "description": "GBA - Save RAM/Flash/EEPROM" },
+		{ "name": "gbaBootRom", "description": "GBA - BIOS ROM" },
+		{ "name": "gbaVideoRam", "description": "GBA - Video RAM" },
+		{ "name": "gbaSpriteRam", "description": "GBA - Sprite RAM" },
+		{ "name": "gbaPaletteRam", "description": "GBA - Palette RAM" }
 	]
 },
 {

@@ -17,9 +17,9 @@
 		<vm:DisassemblyViewModel />
 	</Design.DataContext>
 
-	<DockPanel>
+	<Grid ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
 		<dc:CodeScrollBar
-			DockPanel.Dock="Right"
+			Grid.Column="1"
 			VerticalAlignment="Stretch"
 			Maximum="{CompiledBinding MaxScrollPosition}"
 			Value="{CompiledBinding ScrollPosition}"
@@ -29,6 +29,15 @@
 				<dc:BreakpointBar />
 			</dc:CodeScrollBar.BreakpointBar>
 		</dc:CodeScrollBar>
+
+		<ScrollBar
+			Orientation="Horizontal"
+			Grid.Row="1"
+			Maximum="{CompiledBinding #disViewer.HorizontalScrollMaxPosition}"
+			Value="{CompiledBinding #disViewer.HorizontalScrollPosition}"
+		/>
+
+		<Panel Grid.Row="1" Grid.Column="1" Background="{DynamicResource ButtonBackground}" />
 
 		<Panel>
 			<dc:DisassemblyViewer
@@ -48,5 +57,5 @@
 				HorizontalAlignment="Right"
 			/>
 		</Panel>
-	</DockPanel>
+	</Grid>
 </UserControl>

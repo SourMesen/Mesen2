@@ -90,6 +90,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public MesenList<ProfiledFunctionViewModel> GridData { get; private set; } = new();
 		[Reactive] public SelectionModel<ProfiledFunctionViewModel> Selection { get; set; } = new();
 		[Reactive] public SortState SortState { get; set; } = new();
+		public ProfilerConfig Config => ConfigManager.Config.Debug.Profiler;
 		public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.Profiler.ColumnWidths;
 
 		private object _updateLock = new();		
