@@ -9,9 +9,10 @@
 #include "Shared/SettingTypes.h"
 #include "Shared/ColorUtilities.h"
 
-GbDefaultVideoFilter::GbDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(emu)
+GbDefaultVideoFilter::GbDefaultVideoFilter(Emulator* emu, bool applyNtscFilter) : BaseVideoFilter(emu), _ntscFilter(emu)
 {
 	InitLookupTable();
+	_applyNtscFilter = applyNtscFilter;
 	_prevFrame = new uint16_t[160 * 144];
 	memset(_prevFrame, 0, 160 * 144 * sizeof(uint16_t));
 }
@@ -30,6 +31,12 @@ FrameInfo GbDefaultVideoFilter::GetFrameInfo()
 		frame.Height = 240;
 		return frame;
 	} else {
+		if(_applyNtscFilter) {
+			FrameInfo frameInfo;
+			frameInfo.Width = SNES_NTSC_OUT_WIDTH(_baseFrameInfo.Width);
+			frameInfo.Height = _baseFrameInfo.Height;
+			return frameInfo;
+		}
 		return BaseVideoFilter::GetFrameInfo();
 	}
 }
@@ -93,21 +100,19 @@ void GbDefaultVideoFilter::ApplyFilter(uint16_t* ppuOutputBuffer)
 	}
 
 	uint32_t* out = GetOutputBuffer();
-	FrameInfo frameInfo = _frameInfo;
-	OverscanDimensions overscan = GetOverscan();
-
-	uint32_t width = _baseFrameInfo.Width;
-	uint32_t xOffset = overscan.Left;
-	uint32_t yOffset = overscan.Top;
-
-	for(uint32_t i = 0; i < frameInfo.Height; i++) {
-		for(uint32_t j = 0; j < frameInfo.Width; j++) {
-			out[i * frameInfo.Width + j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
+	
+	for(uint32_t i = 0; i < GbConstants::ScreenHeight; i++) {
+		for(uint32_t j = 0; j < GbConstants::ScreenWidth; j++) {
+			out[i * GbConstants::ScreenWidth + j] = GetPixel(ppuOutputBuffer, i * GbConstants::ScreenWidth + j);
 		}
 	}
 
 	if(_blendFrames) {
 		std::copy(ppuOutputBuffer, ppuOutputBuffer + GbConstants::PixelCount, _prevFrame);
+	}
+
+	if(_applyNtscFilter) {
+		_ntscFilter.ApplyFilter(out, GbConstants::ScreenWidth, GbConstants::ScreenHeight, 0);
 	}
 }
 

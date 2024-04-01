@@ -3,6 +3,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
+#include "Shared/Video/GenericNtscFilter.h"
 
 SnesNtscFilter::SnesNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 {
@@ -41,8 +42,8 @@ HudScaleFactors SnesNtscFilter::GetScaleFactor()
 
 void SnesNtscFilter::OnBeforeApplyFilter()
 {
-	if(NtscFilterOptionsChanged(_ntscSetup)) {
-		InitNtscFilter(_ntscSetup);
+	if(GenericNtscFilter::NtscFilterOptionsChanged(_ntscSetup, _emu->GetSettings()->GetVideoConfig())) {
+		GenericNtscFilter::InitNtscFilter(_ntscSetup, _emu->GetSettings()->GetVideoConfig());
 		snes_ntsc_init(&_ntscData, &_ntscSetup);
 	}
 }

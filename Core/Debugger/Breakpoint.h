@@ -6,14 +6,13 @@ enum class MemoryType;
 struct AddressInfo;
 enum class BreakpointType;
 enum class BreakpointTypeFlags;
-enum class BreakpointCategory;
 enum class MemoryOperationType;
 struct MemoryOperationInfo;
 
 class Breakpoint
 {
 public:
-	bool Matches(MemoryOperationInfo &opInfo, AddressInfo &info);
+	template<uint8_t accessWidth = 1> bool Matches(MemoryOperationInfo &opInfo, AddressInfo &info);
 	bool HasBreakpointType(BreakpointType type);
 	string GetCondition();
 	bool HasCondition();

@@ -175,7 +175,9 @@ namespace Mesen.Interop
 
 		Sms,
 		GameGear,
-		Sg
+		Sg,
+
+		Gba
 	}
 
 	public enum ConsoleType
@@ -184,7 +186,8 @@ namespace Mesen.Interop
 		Gameboy = 1,
 		Nes = 2,
 		PcEngine = 3,
-		Sms = 4
+		Sms = 4,
+		Gba = 5,
 	}
 
 	public struct InteropDipSwitchInfo
@@ -253,6 +256,7 @@ namespace Mesen.Interop
 		Satellaview,
 		Gameboy,
 		GameboyColor,
+		GameboyAdvance,
 		Sgb1GameboyCpu,
 		Sgb2GameboyCpu,
 		SGB1,

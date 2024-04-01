@@ -77,6 +77,13 @@ namespace Mesen.Debugger.Utilities
 				}
 			}
 
+			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadElfFiles) {
+				string? symPath = GetMatchingFile(FileDialogHelper.ElfFileExt);
+				if(symPath != null) {
+					LoadElfFile(symPath, false);
+				}
+			}
+
 			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadMlbFiles) {
 				string? mlbPath = GetMatchingFile(FileDialogHelper.MesenLabelExt);
 				if(mlbPath != null) {
@@ -114,6 +121,14 @@ namespace Mesen.Debugger.Utilities
 			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.DbgFileExt) {
 				ResetLabels();
 				SymbolProvider = DbgImporter.Import(_romInfo.Format, path, ConfigManager.Config.Debug.Integration.ImportComments, showResult);
+			}
+		}
+
+		public static void LoadElfFile(string path, bool showResult)
+		{
+			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.ElfFileExt) {
+				ResetLabels();
+				ElfImporter.Import(path, showResult, _romInfo.ConsoleType.GetMainCpuType());
 			}
 		}
 
@@ -189,6 +204,7 @@ namespace Mesen.Debugger.Utilities
 			switch(Path.GetExtension(filename).ToLower().Substring(1)) {
 				case FileDialogHelper.DbgFileExt: LoadDbgSymbolFile(filename, showResult); break;
 				case FileDialogHelper.SymFileExt: LoadSymFile(filename, showResult); break;
+				case FileDialogHelper.ElfFileExt: LoadElfFile(filename, showResult); break;
 				case FileDialogHelper.MesenLabelExt: LoadMesenLabelFile(filename, showResult); break;
 				case FileDialogHelper.NesAsmLabelExt: LoadNesAsmLabelFile(filename, showResult); break;
 				case FileDialogHelper.CdlExt: LoadCdlFile(filename); break;

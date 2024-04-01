@@ -161,6 +161,13 @@
 								<c:MesenSlider Value="{CompiledBinding Config.NtscIFilterLength}" Text="{l:Translate trkNtscIFilterLength}" Minimum="0" Maximum="400" TickFrequency="20" />
 								<c:MesenSlider Value="{CompiledBinding Config.NtscQFilterLength}" Text="{l:Translate trkNtscQFilterLength}" Minimum="0" Maximum="400" TickFrequency="20" />
 							</c:OptionSection>
+
+							<c:OptionSection Header="{l:Translate lblLcdGridSettings}" IsVisible="{CompiledBinding ShowLcdGridSettings}">
+								<c:MesenSlider Value="{CompiledBinding Config.LcdGridTopLeftBrightness}" Text="{l:Translate trkLcdGridTopLeftBrightness}" Minimum="0" Maximum="100" TickFrequency="10" />
+								<c:MesenSlider Value="{CompiledBinding Config.LcdGridTopRightBrightness}" Text="{l:Translate trkLcdGridTopRightBrightness}" Minimum="0" Maximum="100" TickFrequency="10" />
+								<c:MesenSlider Value="{CompiledBinding Config.LcdGridBottomLeftBrightness}" Text="{l:Translate trkLcdGridBottomLeftBrightness}" Minimum="0" Maximum="100" TickFrequency="10" />
+								<c:MesenSlider Value="{CompiledBinding Config.LcdGridBottomRightBrightness}" Text="{l:Translate trkLcdGridBottomRightBrightness}" Minimum="0" Maximum="100" TickFrequency="10" />
+							</c:OptionSection>
 						</StackPanel>
 					</c:GroupBox>
 				</Grid>

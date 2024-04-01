@@ -33,6 +33,8 @@ void EmuSettings::CopySettings(EmuSettings& src)
 	SetGameboyConfig(src._gameboy);
 	SetNesConfig(src._nes);
 	SetPcEngineConfig(src._pce);
+	SetSmsConfig(src._sms);
+	SetGbaConfig(src._gba);
 }
 
 void EmuSettings::Serialize(Serializer& s)
@@ -110,6 +112,11 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_sms.Region);
 			SV(_sms.Revision);
 			SV(_sms.EnableFmAudio);
+			break;
+
+		case ConsoleType::Gba:
+			SV(_gba.RamPowerOnState);
+			SV(_gba.Controller.Type);
 			break;
 
 		default:
@@ -212,6 +219,16 @@ void EmuSettings::SetGameboyConfig(GameboyConfig& config)
 GameboyConfig& EmuSettings::GetGameboyConfig()
 {
 	return _gameboy;
+}
+
+void EmuSettings::SetGbaConfig(GbaConfig& config)
+{
+	_gba = config;
+}
+
+GbaConfig& EmuSettings::GetGbaConfig()
+{
+	return _gba;
 }
 
 void EmuSettings::SetPcEngineConfig(PcEngineConfig& config)
@@ -363,7 +380,8 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case RomFormat::Nsf:
 		case RomFormat::PceHes:
 		case RomFormat::GameGear:
-			//No overscan for music players
+		case RomFormat::Gba:
+			//No overscan for music players/GG/GBA
 			return OverscanDimensions {};
 
 		case RomFormat::Gb:
@@ -389,6 +407,7 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case ConsoleType::Sms: return  _emu->GetRegion() == ConsoleRegion::Ntsc ? _sms.NtscOverscan : _sms.PalOverscan;
 
 		case ConsoleType::Gameboy:
+		case ConsoleType::Gba:
 			break;
 	}
 
@@ -417,7 +436,7 @@ double EmuSettings::GetAspectRatio(ConsoleRegion region, FrameInfo baseFrameSize
 		
 		//For auto, ntsc and pal, these are PAR ratios, so multiply them with the base screen's aspect ratio to get the expected screen aspect ratio
 		case VideoAspectRatio::Auto:
-			if(_emu->GetConsoleType() == ConsoleType::Gameboy) {
+			if(_emu->GetConsoleType() == ConsoleType::Gameboy || _emu->GetConsoleType() == ConsoleType::Gba) {
 				//GB shouldn't use NTSC/PAL aspect ratio when in auto mode
 				return screenAspectRatio;
 			}
@@ -493,6 +512,7 @@ bool EmuSettings::HasRandomPowerOnState(ConsoleType consoleType)
 		case ConsoleType::Nes: return _nes.RamPowerOnState == RamState::Random || _nes.RandomizeCpuPpuAlignment || _nes.RandomizeMapperPowerOnState;
 		case ConsoleType::PcEngine: return _pce.RamPowerOnState == RamState::Random || _pce.EnableRandomPowerOnState;
 		case ConsoleType::Sms: return _sms.RamPowerOnState == RamState::Random;
+		case ConsoleType::Gba: return _gba.RamPowerOnState == RamState::Random;
 	}
 
 	return false;

@@ -127,60 +127,55 @@ DebugTilemapInfo PceVdcTools::InternalGetTilemap(GetTilemapOptions options, PceV
 	return result;
 }
 
-void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer)
+void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, DebugSpriteInfo* sprites, uint32_t* spritePreviews, uint32_t* palette, uint32_t* outBuffer)
 {
 	PceVdcState& state = ((PceVideoState&)baseState).Vdc;
 
+	uint32_t bgColor = GetSpriteBackgroundColor(options.Background, palette, false);
 	uint32_t screenWidth = std::min<uint32_t>(PceConstants::MaxScreenWidth, (state.HvLatch.HorizDisplayWidth + 1) * 8);
 	std::fill(outBuffer, outBuffer + 1024*1024, GetSpriteBackgroundColor(options.Background, palette, true));
 	for(int i = 64; i < state.HvLatch.VertDisplayWidth + 64; i++) {
-		std::fill(outBuffer + i * 1024 + 32, outBuffer + i * 1024 + 32 + screenWidth, GetSpriteBackgroundColor(options.Background, palette, false));
+		std::fill(outBuffer + i * 1024 + 32, outBuffer + i * 1024 + 32 + screenWidth, bgColor);
 	}
 
 	int spriteCount = _console->IsSuperGrafx() ? 128 : 64;
 
-	GetSpritePreviewOptions sprOptions = {};
-	sprOptions.Background = SpriteBackground::Transparent;
-
-	DebugSpriteInfo sprite;
 	for(int i = spriteCount - 1; i >= 0; i--) {
-		GetSpriteInfo(state, sprite, i, sprOptions, vram, oamRam, palette);
+		DebugSpriteInfo& sprite = sprites[i];
+		uint32_t* spritePreview = spritePreviews + i * _spritePreviewSize;
 
 		for(int y = 0; y < sprite.Height; y++) {
-			if(sprite.Y + y >= 1024) {
-				break;
-			}
-
 			for(int x = 0; x < sprite.Width; x++) {
-				if(sprite.X + x >= 1024) {
-					break;
-				}
-
-				uint32_t color = sprite.SpritePreview[y * sprite.Width + x];
+				uint32_t color = spritePreview[y * sprite.Width + x];
 				if(color != 0) {
+					if(sprite.Y + y >= 1024 || sprite.X + x >= 1024) {
+						continue;
+					}
 					outBuffer[((sprite.Y + y) * 1024) + sprite.X + x] = color;
+				} else {
+					spritePreview[y * sprite.Width + x] = bgColor;
 				}
 			}
 		}
 	}
 }
 
-void PceVdcTools::GetSpriteInfo(PceVdcState& state, DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+void PceVdcTools::GetSpriteInfo(PceVdcState& state, DebugSpriteInfo& sprite, uint32_t* spritePreview, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	if(state.SpriteAccessMode == 1) {
 		uint16_t loadSp23 = oamRam[spriteIndex * 8 + 4] & 0x01;
 		if(loadSp23) {
-			InternalGetSpriteInfo<TileFormat::PceSpriteBpp2Sp23>(sprite, spriteIndex, options, vram, oamRam, palette);
+			InternalGetSpriteInfo<TileFormat::PceSpriteBpp2Sp23>(sprite, spritePreview, spriteIndex, options, vram, oamRam, palette);
 		} else {
-			InternalGetSpriteInfo<TileFormat::PceSpriteBpp2Sp01>(sprite, spriteIndex, options, vram, oamRam, palette);
+			InternalGetSpriteInfo<TileFormat::PceSpriteBpp2Sp01>(sprite, spritePreview, spriteIndex, options, vram, oamRam, palette);
 		}
 	} else {
-		InternalGetSpriteInfo<TileFormat::PceSpriteBpp4>(sprite, spriteIndex, options, vram, oamRam, palette);
+		InternalGetSpriteInfo<TileFormat::PceSpriteBpp4>(sprite, spritePreview, spriteIndex, options, vram, oamRam, palette);
 	}
 }
 
 template<TileFormat format>
-void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	uint16_t addr = (spriteIndex * 8);
 
@@ -222,9 +217,11 @@ void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint16_t sprite
 	sprite.Palette = (flags & 0x0F);
 	sprite.PaletteAddress = (sprite.Palette + 16) * 16;
 	sprite.Priority = (flags & 0x80) ? DebugSpritePriority::Foreground : DebugSpritePriority::Background;
-	sprite.HorizontalMirror = (flags & 0x800) != 0;
-	sprite.VerticalMirror = (flags & 0x8000) != 0;
-	sprite.Visible = visible;
+	bool horizontalMirror = (flags & 0x800) != 0;
+	bool verticalMirror = (flags & 0x8000) != 0;
+	sprite.HorizontalMirror = horizontalMirror ? NullableBoolean::True : NullableBoolean::False;
+	sprite.VerticalMirror = verticalMirror ? NullableBoolean::True : NullableBoolean::False;
+	sprite.Visibility = visible ? SpriteVisibility::Visible : SpriteVisibility::Offscreen;
 	sprite.UseSecondTable = NullableBoolean::Undefined;
 
 	if(sprite.UseExtendedVram) {
@@ -254,7 +251,7 @@ void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint16_t sprite
 	int rowOffset;
 
 	for(int y = 0; y < sprite.Height; y++) {
-		if(sprite.VerticalMirror) {
+		if(verticalMirror) {
 			yOffset = (sprite.Height - y - 1) & 0x0F;
 			rowOffset = (sprite.Height - y - 1) >> 4;
 		} else {
@@ -269,7 +266,7 @@ void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint16_t sprite
 
 			uint8_t xOffset;
 			int columnOffset;
-			if(sprite.HorizontalMirror) {
+			if(horizontalMirror) {
 				xOffset = (sprite.Width - x - 1) & 0x0F;
 				columnOffset = (sprite.Width - x - 1) >> 4;
 			} else {
@@ -291,21 +288,23 @@ void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint16_t sprite
 			}			
 
 			if(color != 0) {
-				sprite.SpritePreview[outOffset] = palette[color + sprite.Palette * 16 + 16*16];
+				spritePreview[outOffset] = palette[color + sprite.Palette * 16 + 16*16];
 			} else {
-				sprite.SpritePreview[outOffset] = GetSpriteBackgroundColor(options.Background, palette, false);
+				spritePreview[outOffset] = 0;
 			}
 		}
 	}
 }
 
-void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
+void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	PceVdcState& state = ((PceVideoState&)baseState).Vdc;
 	for(int i = 0, len = _console->IsSuperGrafx() ? 128 : 64; i < len; i++) {
 		outBuffer[i].Init();
-		GetSpriteInfo(state, outBuffer[i], i, options, vram, oamRam, palette);
+		GetSpriteInfo(state, outBuffer[i], spritePreviews + (i * _spritePreviewSize), i, options, vram, oamRam, palette);
 	}
+
+	GetSpritePreview(options, baseState, outBuffer, spritePreviews, palette, screenPreview);
 }
 
 DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState)

@@ -64,6 +64,8 @@ void SnesConsole::RunFrame()
 	while(_frameRunning) {
 		_cpu->Exec();
 	}
+
+	_spc->ProcessEndFrame();
 }
 
 void SnesConsole::ProcessEndOfFrame()

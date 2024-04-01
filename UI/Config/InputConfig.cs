@@ -338,6 +338,9 @@ namespace Mesen.Config
 		//SMS
 		SmsController,
 		SmsLightPhaser,
+
+		//GBA
+		GbaController
 	}
 
 	public static class ControllerTypeExtensions
@@ -350,6 +353,7 @@ namespace Mesen.Config
 				case ControllerType.FamicomController:
 				case ControllerType.FamicomControllerP2:
 				case ControllerType.GameboyController:
+				case ControllerType.GbaController:
 				case ControllerType.PceController:
 				case ControllerType.PceAvenuePad6:
 				case ControllerType.HoriTrack:
@@ -369,6 +373,7 @@ namespace Mesen.Config
 				case ControllerType.FamicomController:
 				case ControllerType.FamicomControllerP2:
 				case ControllerType.GameboyController:
+				case ControllerType.GbaController:
 				case ControllerType.PceController:
 				case ControllerType.PceAvenuePad6:
 				case ControllerType.Pachinko:
@@ -400,6 +405,7 @@ namespace Mesen.Config
 				case ControllerType.JissenMahjong:
 				case ControllerType.ExcitingBoxing:
 				case ControllerType.GameboyController:
+				case ControllerType.GbaController:
 				case ControllerType.PceController:
 				case ControllerType.PceAvenuePad6:
 				case ControllerType.HoriTrack:

@@ -26,6 +26,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<AddressDisplayType> AddressDisplayTypeProperty = AvaloniaProperty.Register<DisassemblyViewer, AddressDisplayType>(nameof(AddressDisplayType), AddressDisplayType.CpuAddress);
 		
 		public static readonly StyledProperty<int> VisibleRowCountProperty = AvaloniaProperty.Register<DisassemblyViewer, int>(nameof(VisibleRowCount), 0);
+		public static readonly StyledProperty<double> HorizontalScrollPositionProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(HorizontalScrollPosition), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+		public static readonly StyledProperty<double> HorizontalScrollMaxPositionProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(HorizontalScrollMaxPosition), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
 		private static readonly PolylineGeometry ArrowShape = new PolylineGeometry(new List<Point> {
 			new Point(0, 5), new Point(8, 5), new Point(8, 0), new Point(15, 7), new Point(15, 8), new Point(8, 15), new Point(8, 10), new Point(0, 10),
@@ -47,6 +49,18 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(VisibleRowCountProperty); }
 			set { SetValue(VisibleRowCountProperty, value); }
+		}
+
+		public double HorizontalScrollPosition
+		{
+			get { return GetValue(HorizontalScrollPositionProperty); }
+			set { SetValue(HorizontalScrollPositionProperty, value); }
+		}
+
+		public double HorizontalScrollMaxPosition
+		{
+			get { return GetValue(HorizontalScrollMaxPositionProperty); }
+			set { SetValue(HorizontalScrollMaxPositionProperty, value); }
 		}
 
 		public ILineStyleProvider StyleProvider
@@ -95,7 +109,10 @@ namespace Mesen.Debugger.Controls
 
 		static DisassemblyViewer()
 		{
-			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty, LinesProperty, SearchStringProperty, AddressDisplayTypeProperty);
+			AffectsRender<DisassemblyViewer>(
+				FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty,
+				LinesProperty, SearchStringProperty, AddressDisplayTypeProperty, HorizontalScrollPositionProperty
+			);
 		}
 
 		public DisassemblyViewer()
@@ -247,6 +264,8 @@ namespace Mesen.Debugger.Controls
 
 			//Draw code
 			int lineCount = Math.Min(VisibleRowCount, lines.Length);
+			double maxWidth = 0;
+
 			for(int i = 0; i < lineCount; i++) {
 				CodeLineData line = lines[i];
 				string addrFormat = baseFormat + line.CpuType.GetAddressSize();
@@ -306,40 +325,46 @@ namespace Mesen.Debugger.Controls
 						context.DrawText(smallText, new Point(textPosX, textPosY));
 					}
 				} else {
-					if(lineStyle.TextBgColor.HasValue || lineStyle.OutlineColor.HasValue) {
-						text = FormatText(GetHighlightedText(line, lineParts, out double leftMargin));
+					using(var clip = context.PushClip(new Rect(x, 0, Bounds.Width, Bounds.Height))) {
+						using(var translation = context.PushTransform(Matrix.CreateTranslation(-HorizontalScrollPosition*10, 0))) {
+							if(lineStyle.TextBgColor.HasValue || lineStyle.OutlineColor.HasValue) {
+								text = FormatText(GetHighlightedText(line, lineParts, out double leftMargin));
 
-						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUInt32()) : null;
-						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUInt32()) : null;
-						if(b != null) {
-							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin) - 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
+								Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUInt32()) : null;
+								Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUInt32()) : null;
+								if(b != null) {
+									context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin) - 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
+								}
+								if(p != null) {
+									context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin) - 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
+								}
+							}
+
+							double indent = codeIndent;
+							if(lineParts.Count == 1 && (lineParts[0].Type == CodeSegmentType.LabelDefinition || lineParts[0].Type == CodeSegmentType.Comment)) {
+								//Don't indent multi-line comments/label definitions
+								indent = 0.5;
+							}
+
+							double xStart = x + indent;
+							foreach(CodeColor part in lineParts) {
+								Point pos = new Point(x + indent, y);
+								SolidColorBrush brush = part.Type switch {
+									CodeSegmentType.Comment or CodeSegmentType.EffectiveAddress or CodeSegmentType.MemoryValue => ColorHelper.GetBrush(part.Color),
+									_ => lineStyle.TextBgColor.HasValue ? new SolidColorBrush(part.Color) : ColorHelper.GetBrush(part.Color)
+								};
+								text = FormatText(part.Text, brush);
+								context.DrawText(text, pos);
+								_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, new Rect(pos, new Size(text.WidthIncludingTrailingWhitespace, text.Height)), line, part.OriginalIndex));
+								x += text.WidthIncludingTrailingWhitespace;
+							}
+
+							maxWidth = Math.Max(maxWidth, x + indent);
+
+							if(!string.IsNullOrWhiteSpace(searchString)) {
+								DrawSearchHighlight(context, y, searchString, line, lineParts, xStart);
+							}
 						}
-						if(p != null) {
-							context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin) - 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
-						}
-					}
-
-					double indent = codeIndent;
-					if(lineParts.Count == 1 && (lineParts[0].Type == CodeSegmentType.LabelDefinition || lineParts[0].Type == CodeSegmentType.Comment)) {
-						//Don't indent multi-line comments/label definitions
-						indent = 0.5;
-					}
-
-					double xStart = x + indent;
-					foreach(CodeColor part in lineParts) {
-						Point pos = new Point(x + indent, y);
-						SolidColorBrush brush = part.Type switch {
-							CodeSegmentType.Comment or CodeSegmentType.EffectiveAddress or CodeSegmentType.MemoryValue => ColorHelper.GetBrush(part.Color),
-							_ => lineStyle.TextBgColor.HasValue ? new SolidColorBrush(part.Color) : ColorHelper.GetBrush(part.Color)
-						};
-						text = FormatText(part.Text, brush);
-						context.DrawText(text, pos);
-						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, new Rect(pos, new Size(text.WidthIncludingTrailingWhitespace, text.Height)), line, part.OriginalIndex));
-						x += text.WidthIncludingTrailingWhitespace;
-					}
-
-					if(!string.IsNullOrWhiteSpace(searchString)) {
-						DrawSearchHighlight(context, y, searchString, line, lineParts, xStart);
 					}
 
 					if(lineStyle.Progress != null) {
@@ -360,6 +385,10 @@ namespace Mesen.Debugger.Controls
 				}
 				y += LetterSize.Height;
 			}
+
+			Dispatcher.UIThread.Post(() => {
+				HorizontalScrollMaxPosition = Math.Max(1, (maxWidth - Bounds.Width + 10) / 10);
+			});
 		}
 
 		private string GetHighlightedText(CodeLineData line, List<CodeColor> lineParts, out double leftMargin)

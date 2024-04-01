@@ -66,7 +66,7 @@
 				<Button CommandParameter="B" Canvas.Top="16" Canvas.Left="8" Classes.selected="{CompiledBinding ButtonB}" CornerRadius="6" Width="9" Height="9" />
 				<Button CommandParameter="A" Canvas.Top="8" Canvas.Left="16" Classes.selected="{CompiledBinding ButtonA}" CornerRadius="6" Width="9" Height="9" />
 			</Canvas>
-			<Canvas IsVisible="{CompiledBinding IsSnes}" Width="86" Height="4" Margin="0 -1 0 0" VerticalAlignment="Top">
+			<Canvas IsVisible="{CompiledBinding HasShoulderButtons}" Width="86" Height="4" Margin="0 -1 0 0" VerticalAlignment="Top">
 				<Button CommandParameter="L" Canvas.Top="-1" Canvas.Left="6" Height="4" Width="16" Classes.selected="{CompiledBinding ButtonL}" />
 				<Button CommandParameter="R" Canvas.Top="-1" Canvas.Left="64" Height="4" Width="16" Classes.selected="{CompiledBinding ButtonR}" />
 			</Canvas>

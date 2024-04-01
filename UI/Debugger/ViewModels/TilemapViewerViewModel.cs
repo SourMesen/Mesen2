@@ -377,6 +377,20 @@ namespace Mesen.Debugger.ViewModels
 						new() { Title = "$9C00", Layer = 1 }
 					};
 					break;
+
+				case CpuType.Gba: {
+					Tabs = new() {
+						new() { Title = "BG0", Layer = 0 },
+						new() { Title = "BG1", Layer = 1 },
+						new() { Title = "BG2", Layer = 2 },
+						new() { Title = "BG3", Layer = 3 },
+						new() { Title = "Mem Access", Layer = 4 }
+					};
+					break;
+				}
+
+				default:
+					throw new Exception("unsupported cpu type");
 			}
 		}
 
@@ -483,7 +497,12 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				if(!SelectedTab.Enabled) {
-					SelectedTab = Tabs[0];
+					foreach(TilemapViewerTab tab in Tabs) {
+						if(tab.Enabled) {
+							SelectedTab = tab;
+							break;
+						}
+					}
 				}
 
 				options = GetOptions(SelectedTab, _data.PrevVram, _data.AccessCounters);
@@ -543,6 +562,9 @@ namespace Mesen.Debugger.ViewModels
 			if(info.Mirroring != TilemapMirroring.None) {
 				entries.AddEntry("Mirroring", info.Mirroring);
 			}
+			if(info.Priority >= 0) {
+				entries.AddEntry("Priority", info.Priority);
+			}
 			entries.EndUpdate();
 			TilemapInfoPanel.Items = entries;
 		}
@@ -565,7 +587,11 @@ namespace Mesen.Debugger.ViewModels
 
 			entries.StartUpdate();
 
-			entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
+			if(tileInfo.Width == 1 && tileInfo.Height == 1) {
+				entries.AddPicture("Tile", ViewerBitmap, 32, cropRect);
+			} else {
+				entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
+			}
 
 			if(_data.TilemapInfo.Bpp >= 2 && _data.TilemapInfo.Bpp <= 4) {
 				int paletteSize = (int)Math.Pow(2, _data.TilemapInfo.Bpp);
@@ -573,7 +599,9 @@ namespace Mesen.Debugger.ViewModels
 				entries.AddEntry("Palette", new TooltipPaletteEntry(paletteIndex, paletteSize, _data.RgbPalette, _data.RawPalette, _data.RawFormat));
 			}
 
-			entries.AddEntry("Column, Row", $"{tileInfo.Column}, {tileInfo.Row}");
+			if(tileInfo.Width != 1 || tileInfo.Height != 1) {
+				entries.AddEntry("Column, Row", $"{tileInfo.Column}, {tileInfo.Row}");
+			}
 			entries.AddEntry("X, Y", $"{tileInfo.Column*tileInfo.Width}, {tileInfo.Row*tileInfo.Height}");
 			entries.AddEntry("Size", tileInfo.Width + "x" + tileInfo.Height);
 
@@ -608,15 +636,12 @@ namespace Mesen.Debugger.ViewModels
 			if(tileInfo.AttributeData >= 0) {
 				entries.AddEntry("Attribute data", "$" + tileInfo.AttributeData.ToString("X2"));
 			}
-			if(tileInfo.HorizontalMirroring != NullableBoolean.Undefined) {
-				entries.AddEntry("Horizontal mirror", tileInfo.HorizontalMirroring == NullableBoolean.True);
+			if(tileInfo.PixelData >= 0) {
+				entries.AddEntry("Pixel data", "$" + tileInfo.PixelData.ToString("X2"));
 			}
-			if(tileInfo.VerticalMirroring != NullableBoolean.Undefined) {
-				entries.AddEntry("Vertical mirror", tileInfo.VerticalMirroring == NullableBoolean.True);
-			}
-			if(tileInfo.HighPriority != NullableBoolean.Undefined) {
-				entries.AddEntry("High priority", tileInfo.HighPriority == NullableBoolean.True);
-			}
+			entries.AddEntry("Horizontal mirror", tileInfo.HorizontalMirroring);
+			entries.AddEntry("Vertical mirror", tileInfo.VerticalMirroring);
+			entries.AddEntry("High priority", tileInfo.HighPriority);
 
 			entries.EndUpdate();
 

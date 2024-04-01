@@ -211,23 +211,29 @@ namespace Mesen.Debugger.ViewModels
 
 			InitForCpuType();
 
-			AddDisposable(this.WhenAnyValue(x => x.Config.Format).Subscribe(x => {
-				PaletteSelectionMode = x.GetBitsPerPixel() switch {
+			AddDisposable(this.WhenAnyValue(x => x.Config.Format, x => x.RawPalette).Subscribe(x => {
+				PaletteSelectionMode selMode = PaletteSelectionMode;
+				selMode = x.Item1.GetBitsPerPixel() switch {
 					1 => PaletteSelectionMode.TwoColors,
 					2 => PaletteSelectionMode.FourColors,
 					4 => PaletteSelectionMode.SixteenColors,
+					8 => RawPalette.Length >= 512 ? PaletteSelectionMode._256Colors : PaletteSelectionMode.None,
 					_ => PaletteSelectionMode.None
 				};
 
-				PixelSize tileSize = x.GetTileSize();
-				if(GridSizeX != tileSize.Width || GridSizeY != tileSize.Height) {
-					GridSizeX = tileSize.Width;
-					GridSizeY = tileSize.Height;
-					SelectionRect = default;
-					PreviewPanel = null;
-				}
+				if(selMode != PaletteSelectionMode) {
+					PaletteSelectionMode = selMode;
 
-				RefreshPalette();
+					PixelSize tileSize = x.Item1.GetTileSize();
+					if(GridSizeX != tileSize.Width || GridSizeY != tileSize.Height) {
+						GridSizeX = tileSize.Width;
+						GridSizeY = tileSize.Height;
+						SelectionRect = default;
+						PreviewPanel = null;
+					}
+
+					RefreshPalette();
+				}
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Layout).Subscribe(x => {
@@ -284,6 +290,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Gameboy => new Enum[] { TileFormat.Bpp2 },
 				CpuType.Pce => new Enum[] { TileFormat.Bpp4, TileFormat.PceSpriteBpp4, TileFormat.PceSpriteBpp2Sp01, TileFormat.PceSpriteBpp2Sp23, TileFormat.PceBackgroundBpp2Cg0, TileFormat.PceBackgroundBpp2Cg1 },
 				CpuType.Sms => new Enum[] { TileFormat.SmsBpp4, TileFormat.SmsSgBpp1 },
+				CpuType.Gba => new Enum[] { TileFormat.GbaBpp4, TileFormat.GbaBpp8 },
 				_ => throw new Exception("Unsupported CPU type")
 			};
 
@@ -763,6 +770,17 @@ namespace Mesen.Debugger.ViewModels
 						CreatePreset(0, "ROM", () => ApplyPrgPreset())
 					};
 
+				case CpuType.Gba:
+					return new() {
+						CreatePreset(0, "VRAM", () => ApplyPpuPreset()),
+						CreatePreset(0, "ROM", () => ApplyPrgPreset()),
+						CreatePreset(1, "BG1", () => ApplyBgPreset(0)),
+						CreatePreset(1, "BG2", () => ApplyBgPreset(1)),
+						CreatePreset(1, "BG3", () => ApplyBgPreset(2)),
+						CreatePreset(1, "BG4", () => ApplyBgPreset(3)),
+						CreatePreset(2, "Sprites", () => ApplySpritePreset(0)),
+					};
+
 				default:
 					throw new Exception("Unsupported CPU type");
 			}
@@ -843,6 +861,16 @@ namespace Mesen.Debugger.ViewModels
 					if(!vdp.UseMode4) {
 						preset.SelectedPalette = 1;
 					}
+					break;
+				}
+
+				case CpuType.Gba: {
+					preset.Source = MemoryType.GbaVideoRam;
+					preset.StartAddress = 0;
+					preset.ColumnCount = 16;
+					preset.RowCount = 128;
+					preset.Layout = TileLayout.Normal;
+					preset.Format = TileFormat.GbaBpp4;
 					break;
 				}
 			}
@@ -928,6 +956,20 @@ namespace Mesen.Debugger.ViewModels
 					}
 					break;
 				}
+
+				case CpuType.Gba: {
+					GbaPpuState ppu = (GbaPpuState)state;
+					preset.Source = MemoryType.GbaVideoRam;
+					preset.ColumnCount = 16;
+					preset.RowCount = 64;
+					preset.Layout = TileLayout.Normal;
+					preset.StartAddress = ppu.BgLayers[layer].TilesetAddr;
+					preset.Format = ppu.BgLayers[layer].Bpp8Mode ? TileFormat.GbaBpp8 : TileFormat.GbaBpp4;
+					if(preset.Format == TileFormat.GbaBpp8 || preset.Format == TileFormat.GbaBpp4 && preset.SelectedPalette > 16) {
+						preset.SelectedPalette = 0;
+					}
+					break;
+				}
 			}
 
 			return preset;
@@ -1001,6 +1043,20 @@ namespace Mesen.Debugger.ViewModels
 					preset.RowCount = 64;
 					preset.Layout = TileLayout.Normal;
 					preset.Format = TileFormat.PceSpriteBpp4;
+					preset.Background = TileBackground.Default;
+					if(SelectedPalette < 16) {
+						preset.SelectedPalette = 16;
+					}
+					break;
+				}
+
+				case CpuType.Gba: {
+					preset.Source = MemoryType.GbaVideoRam;
+					preset.StartAddress = 0x10000;
+					preset.ColumnCount = 32;
+					preset.RowCount = 32;
+					preset.Layout = TileLayout.Normal;
+					preset.Format = TileFormat.GbaBpp4;
 					preset.Background = TileBackground.Default;
 					if(SelectedPalette < 16) {
 						preset.SelectedPalette = 16;

@@ -147,7 +147,7 @@ namespace Mesen.Debugger.Windows
 					break;
 			}
 
-			string details = EventViewerViewModel.GetEventDetails(evt, false);
+			string details = EventViewerViewModel.GetEventDetails(_model.CpuType, evt, false);
 			if(details.Length > 0) {
 				entries.AddEntry("Details", details);
 			}

@@ -362,9 +362,11 @@ namespace Mesen.Debugger.Utilities
 		RowFormatHex8Bits,
 		RowFormatHex16Bits,
 		RowFormatHex24Bits,
+		RowFormatHex32Bits,
 		RowFormatSigned8Bits,
 		RowFormatSigned16Bits,
 		RowFormatSigned24Bits,
+		RowFormatSigned32Bits,
 		RowFormatUnsigned,
 
 		[IconFile("Close")]
@@ -660,6 +662,8 @@ namespace Mesen.Debugger.Utilities
 		Snes,
 		[IconFile("GameboyIcon")]
 		Gameboy,
+		[IconFile("GbaIcon")]
+		Gba,
 		[IconFile("PceIcon")]
 		PcEngine,
 		[IconFile("SmsIcon")]

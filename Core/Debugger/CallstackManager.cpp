@@ -48,7 +48,7 @@ void CallstackManager::Pop(AddressInfo& dest, uint32_t destAddress)
 	uint32_t returnAddr = prevFrame.Return;
 
 	if(!_callstack.empty() && destAddress != returnAddr) {
-		//Mismatch, pop that stack frame and add the new one
+		//Mismatch, try to find a matching address higher in the stack
 		bool foundMatch = false;
 		for(int i = (int)_callstack.size() - 1; i >= 0; i--) {
 			if(destAddress == _callstack[i].Return) {

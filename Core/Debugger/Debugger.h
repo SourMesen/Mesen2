@@ -105,8 +105,8 @@ public:
 	void Release();
 
 	template<CpuType type> void ProcessInstruction();
-	template<CpuType type, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType);
-	template<CpuType type, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> bool ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType);
+	template<CpuType type, uint8_t accessWidth = 1, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType);
+	template<CpuType type, uint8_t accessWidth = 1, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> bool ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType);
 
 	template<CpuType cpuType, MemoryType memType, MemoryOperationType opType, typename T> void ProcessMemoryAccess(uint32_t addr, T& value);
 
@@ -124,7 +124,7 @@ public:
 	void ProcessConfigChange();
 
 	void GetTokenList(CpuType cpuType, char* tokenList);
-	int32_t EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache);
+	int64_t EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache);
 
 	void Run();
 	void PauseOnNextFrame();
@@ -139,8 +139,9 @@ public:
 
 	__noinline void BreakImmediately(CpuType sourceCpu, BreakSource source);
 
-	void ProcessPredictiveBreakpoint(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
-	void ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+	template<uint8_t accessWidth = 1> void ProcessPredictiveBreakpoint(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+	template<uint8_t accessWidth = 1> void ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+
 	void SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOperationInfo* operation = nullptr, int breakpointId = -1);
 
 	void GetCpuState(BaseState& dstState, CpuType cpuType);
@@ -154,6 +155,7 @@ public:
 
 	DebuggerFeatures GetDebuggerFeatures(CpuType cpuType);
 	uint32_t GetProgramCounter(CpuType cpuType, bool forInstStart);
+	uint8_t GetCpuFlags(CpuType cpuType);
 	CpuInstructionProgress GetInstructionProgress(CpuType cpuType);
 	void SetProgramCounter(CpuType cpuType, uint32_t addr);
 

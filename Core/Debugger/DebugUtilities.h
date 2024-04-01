@@ -20,6 +20,7 @@ public:
 			case CpuType::Nes: return MemoryType::NesMemory;
 			case CpuType::Pce: return MemoryType::PceMemory;
 			case CpuType::Sms: return MemoryType::SmsMemory;
+			case CpuType::Gba: return MemoryType::GbaMemory;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -38,6 +39,7 @@ public:
 			case CpuType::Nes: return 4;
 			case CpuType::Pce: return 4;
 			case CpuType::Sms: return 4;
+			case CpuType::Gba: return 8;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -131,6 +133,17 @@ public:
 			case MemoryType::SmsPort:
 				return CpuType::Sms;
 
+			case MemoryType::GbaMemory:
+			case MemoryType::GbaPrgRom:
+			case MemoryType::GbaBootRom:
+			case MemoryType::GbaSaveRam:
+			case MemoryType::GbaIntWorkRam:
+			case MemoryType::GbaExtWorkRam:
+			case MemoryType::GbaVideoRam:
+			case MemoryType::GbaSpriteRam:
+			case MemoryType::GbaPaletteRam:
+				return CpuType::Gba;
+
 			default:
 				throw std::runtime_error("Invalid CPU type");
 		}
@@ -143,7 +156,7 @@ public:
 
 	static constexpr MemoryType GetLastCpuMemoryType()
 	{
-		return MemoryType::SmsMemory;
+		return MemoryType::GbaMemory;
 	}
 
 	static constexpr bool IsPpuMemory(MemoryType memType)
@@ -175,6 +188,11 @@ public:
 			case MemoryType::SmsPaletteRam:
 				return true;
 
+			case MemoryType::GbaVideoRam:
+			case MemoryType::GbaSpriteRam:
+			case MemoryType::GbaPaletteRam:
+				return true;
+
 			default: 
 				return false;
 		}
@@ -194,6 +212,8 @@ public:
 			case MemoryType::SpcRom:
 			case MemoryType::SmsPrgRom:
 			case MemoryType::SmsBootRom:
+			case MemoryType::GbaPrgRom:
+			case MemoryType::GbaBootRom:
 				return true;
 
 			default:
@@ -214,6 +234,7 @@ public:
 			case MemoryType::PceSaveRam:
 			case MemoryType::SnesRegister:
 			case MemoryType::SmsCartRam:
+			case MemoryType::GbaSaveRam:
 				return false;
 
 			default:
@@ -223,7 +244,7 @@ public:
 
 	static constexpr CpuType GetLastCpuType()
 	{
-		return CpuType::Sms;
+		return CpuType::Gba;
 	}
 
 	static string AddressToHex(CpuType cpuType, int32_t address)
