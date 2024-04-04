@@ -98,6 +98,7 @@
 						Grid.Column="1" Grid.Row="3"
 						Value="{CompiledBinding Config.StartAddress}"
 						LargeIncrement="{CompiledBinding AddressIncrement}"
+						MediumIncrement="{CompiledBinding TileIncrement}"
 						SmallIncrement="1"
 						Minimum="0"
 						Maximum="{CompiledBinding MaximumAddress}"

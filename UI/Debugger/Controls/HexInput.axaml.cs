@@ -13,6 +13,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int?> MaximumProperty = AvaloniaProperty.Register<HexInput, int?>(nameof(Maximum));
 		public static readonly StyledProperty<int?> MinimumProperty = AvaloniaProperty.Register<HexInput, int?>(nameof(Minimum));
 		public static readonly StyledProperty<int> SmallIncrementProperty = AvaloniaProperty.Register<HexInput, int>(nameof(SmallIncrement));
+		public static readonly StyledProperty<int> MediumIncrementProperty = AvaloniaProperty.Register<HexInput, int>(nameof(MediumIncrement));
 		public static readonly StyledProperty<int> LargeIncrementProperty = AvaloniaProperty.Register<HexInput, int>(nameof(LargeIncrement));
 
 		public int Value
@@ -37,6 +38,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(SmallIncrementProperty); }
 			set { SetValue(SmallIncrementProperty, value); }
+		}
+
+		public int MediumIncrement
+		{
+			get { return GetValue(MediumIncrementProperty); }
+			set { SetValue(MediumIncrementProperty, value); }
 		}
 
 		public int LargeIncrement
@@ -70,6 +77,11 @@ namespace Mesen.Debugger.Controls
 			SetValue(LargeIncrement);
 		}
 
+		private void OnNextMediumClick(object sender, RoutedEventArgs e)
+		{
+			SetValue(MediumIncrement);
+		}
+
 		private void OnNextSmallClick(object sender, RoutedEventArgs e)
 		{
 			SetValue(SmallIncrement);
@@ -97,6 +109,17 @@ namespace Mesen.Debugger.Controls
 			return Value > 0;
 		}
 
+		public void DecrementMedium(object parameter)
+		{
+			SetValue(-MediumIncrement);
+		}
+
+		[DependsOn(nameof(Value))]
+		public bool CanDecrementMedium(object parameter)
+		{
+			return Value >= MediumIncrement;
+		}
+
 		public void IncrementLarge(object parameter)
 		{
 			SetValue(LargeIncrement);
@@ -108,6 +131,19 @@ namespace Mesen.Debugger.Controls
 		public bool CanIncrementLarge(object parameter)
 		{
 			return Value < Maximum && Value < Maximum - LargeIncrement + 1;
+		}
+
+		public void IncrementMedium(object parameter)
+		{
+			SetValue(MediumIncrement);
+		}
+
+		[DependsOn(nameof(Value))]
+		[DependsOn(nameof(Maximum))]
+		[DependsOn(nameof(MediumIncrement))]
+		public bool CanIncrementMedium(object parameter)
+		{
+			return Value < Maximum && Value < Maximum - MediumIncrement + 1;
 		}
 
 		public void IncrementSmall(object parameter)
