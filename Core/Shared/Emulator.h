@@ -116,6 +116,7 @@ private:
 	
 	uint32_t _autoSaveStateFrameCounter = 0;
 	int32_t _stopCode = 0;
+	bool _stopRequested = false;
 
 	void WaitForLock();
 	void WaitForPauseEnd();
