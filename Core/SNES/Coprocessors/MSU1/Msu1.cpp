@@ -71,7 +71,7 @@ void Msu1::Write(uint16_t addr, uint8_t value)
 			if(!_audioBusy) {
 				_repeat = (value & 0x02) != 0;
 				_paused = (value & 0x01) == 0;
-				_pcmReader.SetLoopFlag(_repeat);
+				_soundReader.SetLoopFlag(_repeat);
 			}
 			break;
 	}
@@ -106,21 +106,21 @@ uint8_t Msu1::Read(uint16_t addr)
 void Msu1::MixAudio(int16_t* buffer, uint32_t sampleCount, uint32_t sampleRate)
 {
 	if(!_paused) {
-		_pcmReader.SetSampleRate(sampleRate);
-		_pcmReader.ApplySamples(buffer, (size_t)sampleCount, _spc->IsMuted() ? 0 : _volume);
+		_soundReader.SetSampleRate(sampleRate);
+		_soundReader.ApplySamples(buffer, (size_t)sampleCount, _spc->IsMuted() ? 0 : _volume);
 
-		_paused |= _pcmReader.IsPlaybackOver();
+		_paused |= _soundReader.IsPlaybackOver();
 	}
 }
 
 void Msu1::LoadTrack(uint32_t startOffset)
 {
-	_trackMissing = !_pcmReader.Init(_trackPath + "-" + std::to_string(_trackSelect) + ".pcm", _repeat, startOffset);
+	_trackMissing = !_soundReader.Init(_trackPath + "-" + std::to_string(_trackSelect), _repeat, startOffset);
 }
 
 void Msu1::Serialize(Serializer &s)
 {
-	uint32_t offset = _pcmReader.GetOffset();
+	uint32_t offset = _soundReader.GetOffset();
 	SV(_trackSelect); SV(_tmpDataPointer); SV(_dataPointer); SV(_repeat); SV(_paused); SV(_volume); SV(_trackMissing); SV(_audioBusy); SV(_dataBusy); SV(offset);
 	if(!s.IsSaving()) {
 		_dataFile.seekg(_dataPointer, ios::beg);

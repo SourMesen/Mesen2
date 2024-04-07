@@ -14,6 +14,7 @@ private:
 
 	HermiteResampler _resampler;
 
+	bool _loaded = false;
 	bool _loop = false;
 	bool _done = false;
 	
