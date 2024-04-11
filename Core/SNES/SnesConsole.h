@@ -66,13 +66,14 @@ private:
 	bool _frameRunning = false;
 
 	void UpdateRegion();
+	LoadRomResult InnerLoadRom(VirtualFile& romFile);
 	bool LoadSpcFile(VirtualFile& romFile);
 
 public:
 	SnesConsole(Emulator* emu);
 	~SnesConsole();
 	
-	static vector<string> GetSupportedExtensions() { return { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" }; }
+	static vector<string> GetSupportedExtensions() { return { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc", ".msu1" }; }
 	static vector<string> GetSupportedSignatures() { return { "SNES-SPC700 Sound File Data" }; }
 
 	void Initialize();

@@ -11,7 +11,7 @@ namespace Mesen.Utilities
 	public static class FolderHelper
 	{
 		private static HashSet<string> _romExtensions = new HashSet<string>() {
-			".sfc", ".smc", ".fig", ".swc", ".bs",
+			".sfc", ".smc", ".fig", ".swc", ".bs", ".msu1",
 			".gb", ".gbc",
 			".nes", ".unif", ".unf", ".fds", ".studybox",
 			".pce", ".sgx", ".cue",

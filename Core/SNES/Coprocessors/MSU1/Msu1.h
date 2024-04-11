@@ -6,6 +6,8 @@
 #include "Shared/Audio/OggReader.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/VirtualFile.h"
+#include "Utilities/StringUtilities.h"
+#include "Utilities/ArchiveReader.h"
 
 class Spc;
 class Emulator;
@@ -17,36 +19,12 @@ private:
 	bool _usingOgg = false;
 
 public:
-	void SetLoopFlag(bool loop) {
-		if (_usingOgg) { _oggReader.SetLoopFlag(loop); }
-		else { _pcmReader.SetLoopFlag(loop); }
-	}
-	void SetSampleRate(uint32_t sampleRate) {
-		if (_usingOgg) { _oggReader.SetSampleRate(sampleRate); }
-		else { _pcmReader.SetSampleRate(sampleRate); }
-	}
-	void ApplySamples(int16_t* buffer, size_t sampleCount, uint8_t volume) {
-		if (_usingOgg) { _oggReader.ApplySamples(buffer, sampleCount, volume); } 
-		else { _pcmReader.ApplySamples(buffer, sampleCount, volume); }
-	}
-	bool IsPlaybackOver() {
-		return _usingOgg ? _oggReader.IsPlaybackOver() : _pcmReader.IsPlaybackOver();
-	}
-	uint32_t GetOffset() {
-		return _usingOgg ? _oggReader.GetOffset() * 4 : _pcmReader.GetOffset();
-	}
-	bool Init(string filenameNoExt, bool loop, uint32_t startOffset) {
-		if (_pcmReader.Init(filenameNoExt + ".pcm", loop, startOffset)) {
-			_usingOgg = false;
-			return true;
-		}
-		if (_oggReader.Init(filenameNoExt + ".ogg", loop, 44100, startOffset / 4)) {
-			_usingOgg = true;
-			return true;
-		}
-		_usingOgg = false;
-		return false;
-	}
+	void SetLoopFlag(bool loop);
+	void SetSampleRate(uint32_t sampleRate);
+	void ApplySamples(int16_t* buffer, size_t sampleCount, uint8_t volume);
+	bool IsPlaybackOver();
+	uint32_t GetOffset();
+	bool Init(string base, size_t track, bool loop, uint32_t startOffset);
 };
 
 class Msu1 final : public ISerializable, public IAudioProvider
@@ -69,7 +47,7 @@ private:
 	bool _dataBusy = false; //Always false
 	bool _trackMissing = false;
 
-	ifstream _dataFile;
+	unique_ptr<istream> _dataFile;
 	uint32_t _dataSize;
 	
 	void LoadTrack(uint32_t startOffset = 8);

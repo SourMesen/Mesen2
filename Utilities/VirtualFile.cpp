@@ -13,7 +13,7 @@
 
 const std::initializer_list<string> VirtualFile::RomExtensions = {
 	".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox",
-	".sfc", ".swc", ".fig", ".smc", ".bs", ".spc",
+	".sfc", ".swc", ".fig", ".smc", ".bs", ".spc", ".msu1",
 	".gb", ".gbc", ".gbs",
 	".pce", ".sgx", ".cue", ".hes",
 	".sms", ".gg", ".sg",
@@ -263,6 +263,21 @@ bool VirtualFile::ReadFile(uint8_t* out, uint32_t expectedSize)
 		return true;
 	}
 	return false;
+}
+
+std::unique_ptr<std::istream> VirtualFile::Stream()
+{
+	if(!_innerFile.empty()) {
+		auto out = std::make_unique<std::stringstream>();
+		ReadFile(*out);
+		return out;
+	} else {
+		auto ret = std::make_unique<std::ifstream>(_path, std::ios::in | std::ios::binary);
+		if(ret) {
+			return ret;
+		}
+	}
+	return std::make_unique<std::istream>(nullptr);
 }
 
 uint8_t VirtualFile::ReadByte(uint32_t offset)
