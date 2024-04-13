@@ -1063,8 +1063,14 @@ bool Emulator::IsEmulationThread()
 
 void Emulator::SetStopCode(int32_t stopCode)
 {
+	if(_stopCode != 0) {
+		//If a non-0 code was already set, keep the previous value
+		return;
+	}
+
 	_stopCode = stopCode;
-	if(!_stopFlag) {
+	if(!_stopFlag && !_stopRequested) {
+		_stopRequested = true;
 		thread stopEmuTask([this]() {
 			Stop(true);
 		});
