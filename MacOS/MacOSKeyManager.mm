@@ -10,7 +10,6 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyDefinitions.h"
 #include "Shared/SettingTypes.h"
-#include "MacOS/MacOSMouseManager.h"
 #undef Debugger
 
 MacOSKeyManager::MacOSKeyManager(Emulator* emu)
