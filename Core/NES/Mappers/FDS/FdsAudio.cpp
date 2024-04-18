@@ -45,7 +45,7 @@ void FdsAudio::ClockAudio()
 			if(++_waveM2Counter == 16) {
 				_waveAccumulator += (frequency * _mod.GetOutput()) & 0xFFFFF;
 				if(_waveAccumulator > 0xFFFFFF) {
-					_waveAccumulator &= 0xFFFFFF;
+					_waveAccumulator -= 0x1000000;
 				}
 
 				_wavePosition = (_waveAccumulator >> 18) & 0x3F;

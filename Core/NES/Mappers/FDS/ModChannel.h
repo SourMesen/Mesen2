@@ -14,7 +14,7 @@ private:
 
 	uint32_t _modAccumulator = 0;		//18-bit accumulator
 	uint8_t _modM2Counter = 0;
-	uint8_t _modTable[64] = {};
+	uint8_t _modTable[32] = {};
 	uint8_t _modTablePosition = 0;
 	int32_t _output = 0;
 
@@ -23,7 +23,7 @@ protected:
 	{
 		BaseFdsChannel::Serialize(s);
 		
-		SVArray(_modTable, 64);
+		SVArray(_modTable, 32);
 		SV(_counter); SV(_modulationDisabled); SV(_forceCarryOut); SV(_modTablePosition); SV(_modAccumulator); SV(_modM2Counter); SV(_output);
 	}
 
@@ -75,10 +75,10 @@ public:
 		if(_modulationDisabled) {
 			// "ghost" modtable address bit(0) makes mod unit step thru each entry twice
 			_modTable[_modTablePosition] = value & 0x07;
-			_modTable[(_modTablePosition + 1) & 0x3F] = value & 0x07;
+			_modTable[_modTablePosition] = value & 0x07;
 			// "Writing $4088 increments the address (bits 13-17) when 4087.7=1."
 			_modAccumulator += 0x2000;
-			_modTablePosition = (_modAccumulator >> 12) & 0x3F;
+			_modTablePosition = (_modAccumulator >> 13) & 0x1F;
 		}
 	}
 
@@ -103,7 +103,7 @@ public:
 			if(++_modM2Counter == 16) {
 				_modAccumulator += _frequency;
 				if(_modAccumulator > 0x3FFFF) {
-					_modAccumulator &= 0x3FFFF;
+					_modAccumulator -= 0x40000;
 				}
 
 				// "On a carry out from bit 11, update the mod counter (increment $4085 with modtable)."
@@ -111,7 +111,7 @@ public:
 				if((_modAccumulator & 0xFFF) < _frequency || _forceCarryOut) {
 					int32_t offset = _modLut[_modTable[_modTablePosition]];
 					UpdateCounter(offset == ModReset ? 0 : _counter + offset);
-					_modTablePosition = (_modAccumulator >> 12) & 0x3F;
+					_modTablePosition = (_modAccumulator >> 13) & 0x1F;
 				}
 
 				_modM2Counter = 0;
