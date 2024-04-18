@@ -102,7 +102,19 @@ uint8_t FdsAudio::ReadRegister(uint16_t addr)
 	} else if(addr == 0x4093) {
 		// Mod accumulator
 		value &= 0xC0;
-		value |= _mod.GetModAccumulator() & 0x7F;
+		value |= (_mod.GetModAccumulator() >> 5) & 0x7F;
+	} else if(addr == 0x4094) {
+		// wave pitch intermediate result
+		value &= 0xC0;
+		value |= (_mod.GetOutput() >> 4) & 0xFF;
+	} else if(addr == 0x4096) {
+		// wavetable position
+		value &= 0xC0;
+		value |= _wavePosition & 0x3F;
+	} else if(addr == 0x4097) {
+		// mod counter value
+		value &= 0xC0;
+		value |= _mod.GetCounter() & 0x7F;
 	}
 
 	return value;
