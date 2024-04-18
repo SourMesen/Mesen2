@@ -55,19 +55,22 @@ public:
 		}
 	}
 
-	bool TickEnvelope()
+	virtual bool TickEnvelope(uint8_t wavePosition)
 	{
-		if(!_envelopeOff && _masterSpeed > 0) {
-			_timer--;
-			if(_timer == 0) {
-				ResetTimer();
-
-				if(_volumeIncrease && _gain < 32) {
-					_gain++;
-				} else if(!_volumeIncrease && _gain > 0) {
-					_gain--;
+		// "Changes to the volume envelope only take effect while the wavetable
+		// pointer (top 6 bits of wave accumulator) is 0."
+		if(wavePosition == 0) {
+			if(!_envelopeOff && _masterSpeed > 0) {
+				_timer--;
+				if(_timer == 0) {
+					ResetTimer();
+					if(_volumeIncrease && _gain < 32) {
+						_gain++;
+					} else if(!_volumeIncrease && _gain > 0) {
+						_gain--;
+					}
+					return true;
 				}
-				return true;
 			}
 		}
 		return false;

@@ -10,10 +10,12 @@ private:
 
 	int8_t _counter = 0;
 	bool _modulationDisabled = false;
+	bool _forceCarryOut = false;
 
+	uint32_t _modAccumulator = 0;		//18-bit accumulator
+	uint8_t _modM2Counter = 0;
 	uint8_t _modTable[64] = {};
 	uint8_t _modTablePosition = 0;
-	uint16_t _overflowCounter = 0;
 	int32_t _output = 0;
 
 protected:
@@ -22,7 +24,7 @@ protected:
 		BaseFdsChannel::Serialize(s);
 		
 		SVArray(_modTable, 64);
-		SV(_counter); SV(_modulationDisabled); SV(_modTablePosition); SV(_overflowCounter); SV(_output);
+		SV(_counter); SV(_modulationDisabled); SV(_forceCarryOut); SV(_modTablePosition); SV(_modAccumulator); SV(_modM2Counter); SV(_output);
 	}
 
 public:
@@ -39,20 +41,44 @@ public:
 			case 0x4087:
 				BaseFdsChannel::WriteReg(addr, value);
 				_modulationDisabled = (value & 0x80) == 0x80;
+				// "4087.6 forces a carry out from bit 11."
+				_forceCarryOut = (value & 0x40) == 0x40;
 				if(_modulationDisabled) {
-					_overflowCounter = 0;
+					// "Bits 0-12 are reset by 4087.7=1. Bits 13-17 have no reset."
+					_modAccumulator &= 0x3F000;
 				}
 				break;
 		}
+	}
+
+	virtual bool TickEnvelope(uint8_t wavePosition) override
+	{
+		if(!_envelopeOff && _masterSpeed > 0) {
+			_timer--;
+			if(_timer == 0) {
+				ResetTimer();
+
+				if(_volumeIncrease && _gain < 32) {
+					_gain++;
+				} else if(!_volumeIncrease && _gain > 0) {
+					_gain--;
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void WriteModTable(uint8_t value)
 	{
 		//"This register has no effect unless the mod unit is disabled via the high bit of $4087."
 		if(_modulationDisabled) {
-			_modTable[_modTablePosition & 0x3F] = value & 0x07;
+			// "ghost" modtable address bit(0) makes mod unit step thru each entry twice
+			_modTable[_modTablePosition] = value & 0x07;
 			_modTable[(_modTablePosition + 1) & 0x3F] = value & 0x07;
-			_modTablePosition = (_modTablePosition + 2) & 0x3F;
+			// "Writing $4088 increments the address (bits 13-17) when 4087.7=1."
+			_modAccumulator += 0x2000;
+			_modTablePosition = (_modAccumulator >> 12) & 0x3F;
 		}
 	}
 
@@ -74,15 +100,21 @@ public:
 	bool TickModulator()
 	{
 		if(IsEnabled()) {
-			_overflowCounter += _frequency;
+			if(++_modM2Counter == 16) {
+				_modAccumulator += _frequency;
+				if(_modAccumulator > 0x3FFFF) {
+					_modAccumulator &= 0x3FFFF;
+				}
 
-			if(_overflowCounter < _frequency) {
-				//Overflowed, tick the modulator
-				int32_t offset = _modLut[_modTable[_modTablePosition]];
-				UpdateCounter(offset == ModReset ? 0 : _counter + offset);
+				// "On a carry out from bit 11, update the mod counter (increment $4085 with modtable)."
+				// "4087.6 forces a carry out from bit 11."
+				if((_modAccumulator & 0xFFF) < _frequency || _forceCarryOut) {
+					int32_t offset = _modLut[_modTable[_modTablePosition]];
+					UpdateCounter(offset == ModReset ? 0 : _counter + offset);
+					_modTablePosition = (_modAccumulator >> 12) & 0x3F;
+				}
 
-				_modTablePosition = (_modTablePosition + 1) & 0x3F;
-
+				_modM2Counter = 0;
 				return true;
 			}
 		}
@@ -91,36 +123,17 @@ public:
 
 	void UpdateOutput(uint16_t volumePitch)
 	{
-		//Code from NesDev Wiki
-
+		// code from new info by loopy
+		// https://forums.nesdev.org/viewtopic.php?p=232662#p232662
 		// pitch   = $4082/4083 (12-bit unsigned pitch value)
 		// counter = $4085 (7-bit signed mod counter)
 		// gain    = $4084 (6-bit unsigned mod gain)
 
-		// 1. multiply counter by gain, lose lowest 4 bits of result but "round" in a strange way
 		int32_t temp = _counter * _gain;
-		int32_t remainder = temp & 0xF;
-		temp >>= 4;
-		if(remainder > 0 && (temp & 0x80) == 0) {
-			temp += _counter < 0 ? -1 : 2;
-		}
-
-		// 2. wrap if a certain range is exceeded
-		if(temp >= 192) {
-			temp -= 256;
-		} else if(temp < -64) {
-			temp += 256;
-		}
-
-		// 3. multiply result by pitch, then round to nearest while dropping 6 bits
-		temp = volumePitch * temp;
-		remainder = temp & 0x3F;
-		temp >>= 6;
-		if(remainder >= 32) {
-			temp += 1;
-		}
-
-		// final mod result is in temp
+		if((temp & 0x0f) && !(temp & 0x800))
+			temp += 0x20;
+		temp += 0x400;
+		temp = (temp >> 4) & 0xff;
 		_output = temp;
 	}
 
@@ -132,6 +145,16 @@ public:
 	int8_t GetCounter()
 	{
 		return _counter;
+	}
+
+	uint32_t GetModAccumulator()
+	{
+		return _modAccumulator;
+	}
+
+	bool GetForceCarryOut()
+	{
+		return _forceCarryOut;
 	}
 
 	bool IsModulationDisabled()

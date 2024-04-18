@@ -17,15 +17,15 @@ void FdsAudio::Serialize(Serializer& s)
 	SVArray(_waveTable, 64);
 	SV(_volume);
 	SV(_mod);
-	SV(_waveWriteEnabled); SV(_disableEnvelopes); SV(_haltWaveform); SV(_masterVolume); SV(_waveOverflowCounter); SV(_wavePitch); SV(_wavePosition); SV(_lastOutput);
+	SV(_waveWriteEnabled); SV(_disableEnvelopes); SV(_haltWaveform); SV(_masterVolume); SV(_waveAccumulator); SV(_waveM2Counter); SV(_wavePitch); SV(_wavePosition); SV(_lastOutput);
 }
 
 void FdsAudio::ClockAudio()
 {
 	int frequency = _volume.GetFrequency();
 	if(!_haltWaveform && !_disableEnvelopes) {
-		_volume.TickEnvelope();
-		if(_mod.TickEnvelope()) {
+		_volume.TickEnvelope(_wavePosition);
+		if(_mod.TickEnvelope(_wavePosition)) {
 			_mod.UpdateOutput(frequency);
 		}
 	}
@@ -36,15 +36,20 @@ void FdsAudio::ClockAudio()
 	}
 
 	if(_haltWaveform) {
-		_wavePosition = 0;
+		_waveAccumulator = 0;
 		UpdateOutput();
 	} else {
 		UpdateOutput();
 
-		if(frequency + _mod.GetOutput() > 0 && !_waveWriteEnabled) {
-			_waveOverflowCounter += frequency + _mod.GetOutput();
-			if(_waveOverflowCounter < frequency + _mod.GetOutput()) {
-				_wavePosition = (_wavePosition + 1) & 0x3F;
+		if(!_waveWriteEnabled) {
+			if(++_waveM2Counter == 16) {
+				_waveAccumulator += (frequency * _mod.GetOutput()) & 0xFFFFF;
+				if(_waveAccumulator > 0xFFFFFF) {
+					_waveAccumulator &= 0xFFFFFF;
+				}
+
+				_wavePosition = (_waveAccumulator >> 18) & 0x3F;
+				_waveM2Counter = 0;
 			}
 		}
 	}
@@ -87,9 +92,17 @@ uint8_t FdsAudio::ReadRegister(uint16_t addr)
 	} else if(addr == 0x4090) {
 		value &= 0xC0;
 		value |= _volume.GetGain();
+	} else if(addr == 0x4091) {
+		// Wave accumulator
+		value &= 0xC0;
+		value |= (_waveAccumulator >> 12) & 0xFF;
 	} else if(addr == 0x4092) {
 		value &= 0xC0;
 		value |= _mod.GetGain();
+	} else if(addr == 0x4093) {
+		// Mod accumulator
+		value &= 0xC0;
+		value |= _mod.GetModAccumulator() & 0x7F;
 	}
 
 	return value;
@@ -158,8 +171,7 @@ void FdsAudio::GetMapperStateEntries(vector<MapperStateEntry>& entries)
 	entries.push_back(MapperStateEntry("$4082/3.0-11", "Frequency", _volume.GetFrequency(), MapperStateValueType::Number16));
 	entries.push_back(MapperStateEntry("$4083.6", "Volume/Mod Envelopes Disabled", _disableEnvelopes, MapperStateValueType::Bool));
 	
-	//todo emulation logic + this based on new info
-	//entries.push_back(MapperStateEntry("$4083.7", "Halt Wave Form", _haltWaveform, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4083.7", "Halt Wave Form", _haltWaveform, MapperStateValueType::Bool));
 
 	entries.push_back(MapperStateEntry("", "Gain", _volume.GetGain(), MapperStateValueType::Number8));
 
@@ -173,8 +185,7 @@ void FdsAudio::GetMapperStateEntries(vector<MapperStateEntry>& entries)
 
 	entries.push_back(MapperStateEntry("$4086/7.0-11", "Frequency", _mod.GetFrequency(), MapperStateValueType::Number16));
 	
-	//todo emulation logic + this based on new info
-	//entries.push_back(MapperStateEntry("$4087.6", "???", false, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4087.6", "Force Tick Modulator", _mod.GetForceCarryOut(), MapperStateValueType::Bool));
 
 	entries.push_back(MapperStateEntry("$4087.7", "Disabled", _mod.IsModulationDisabled(), MapperStateValueType::Bool));
 	entries.push_back(MapperStateEntry("", "Gain", _mod.GetGain(), MapperStateValueType::Number8));
