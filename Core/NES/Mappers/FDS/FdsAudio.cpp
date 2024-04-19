@@ -17,14 +17,14 @@ void FdsAudio::Serialize(Serializer& s)
 	SVArray(_waveTable, 64);
 	SV(_volume);
 	SV(_mod);
-	SV(_waveWriteEnabled); SV(_disableEnvelopes); SV(_haltWaveform); SV(_masterVolume); SV(_waveAccumulator); SV(_waveM2Counter); SV(_wavePitch); SV(_wavePosition); SV(_lastOutput);
+	SV(_waveWriteEnabled); SV(_disableEnvelopes); SV(_haltWaveform); SV(_masterVolume); SV(_waveAccumulator); SV(_waveM2Counter); SV(_wavePitch); SV(_wavePosition); SV(_lastOutput); SV(_lastGain);
 }
 
 void FdsAudio::ClockAudio()
 {
 	uint16_t frequency = _volume.GetFrequency();
 	if(!_haltWaveform && !_disableEnvelopes) {
-		_volume.TickEnvelope(_wavePosition);
+		_volume.TickEnvelope();
 		if(_mod.TickEnvelope()) {
 			_mod.UpdateOutput(frequency);
 		}
@@ -57,9 +57,15 @@ void FdsAudio::ClockAudio()
 
 void FdsAudio::UpdateOutput()
 {
-	uint32_t level = std::min((int)_volume.GetGain(), 32);
-	uint8_t outputLevel = uint8_t(DACTable[_waveTable[_wavePosition]][_masterVolume] * level);
+	// "Changes to the volume envelope only take effect while the wavetable
+	// pointer (top 6 bits of wave accumulator) is 0."
+	if(_wavePosition == 0) {
+		_lastGain = _volume.GetGain();
+	}
+	uint8_t level = std::min(_lastGain, uint8_t(32));
 
+	// volume level is PWM, but can be approximated linearly
+	uint8_t outputLevel = uint8_t(DACTable[_waveTable[_wavePosition]][_masterVolume] * float(level));
 
 	if(_lastOutput != outputLevel) {
 		_console->GetApu()->AddExpansionAudioDelta(AudioChannel::FDS, outputLevel - _lastOutput);
@@ -72,10 +78,12 @@ FdsAudio::FdsAudio(NesConsole* console) : BaseExpansionAudio(console)
 	// initialize DAC LUT
 	// data comes from plgDavid's DC capture of an FDS's DAC output
 	// data capture shared from the NESDev server
-
-	for(int masterlevel = 0; masterlevel < 4; masterlevel++)
-		for(int wavelevel = 0; wavelevel < 64; wavelevel++)
+	// TODO: generate data based from FDS decap DAC schematics
+	for(int masterlevel = 0; masterlevel < 4; masterlevel++) {
+		for(int wavelevel = 0; wavelevel < 64; wavelevel++) {
 			DACTable[wavelevel][masterlevel] = (FDS_LUT_norm[wavelevel] * 64.0 * float(WaveVolumeTable[masterlevel])) / 1152.0;
+		}
+	}
 }
 
 uint8_t FdsAudio::ReadRegister(uint16_t addr)

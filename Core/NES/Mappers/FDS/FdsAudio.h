@@ -34,6 +34,7 @@ private:
 	uint8_t _wavePosition = 0;
 	
 	uint8_t _lastOutput = 0;
+	uint8_t _lastGain = 0;
 
 protected:
 	void Serialize(Serializer& s) override;

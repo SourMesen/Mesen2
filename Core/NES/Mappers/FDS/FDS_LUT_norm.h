@@ -1,4 +1,4 @@
-const float FDS_LUT_norm[64] = {
+constexpr float FDS_LUT_norm[64] = {
                      0.0,
     0.011465572752058506,
       0.0233255997300148,
