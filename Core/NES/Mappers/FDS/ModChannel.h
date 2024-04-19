@@ -5,8 +5,8 @@
 class ModChannel : public BaseFdsChannel
 {
 private:
-	const int32_t ModReset = 0xFF;
-	const int32_t _modLut[8] = { 0,1,2,4,ModReset,-4,-2,-1 };
+	const int16_t ModReset = 0xFF;
+	const int16_t _modLut[8] = { 0,1,2,4,ModReset,-4,-2,-1 };
 
 	int8_t _counter = 0;
 	bool _modulationDisabled = false;
@@ -16,7 +16,7 @@ private:
 	uint8_t _modM2Counter = 0;
 	uint8_t _modTable[32] = {};
 	uint8_t _modTablePosition = 0;
-	int32_t _output = 0;
+	uint8_t _output = 0;
 
 protected:
 	void Serialize(Serializer& s) override
@@ -25,6 +25,19 @@ protected:
 		
 		SVArray(_modTable, 32);
 		SV(_counter); SV(_modulationDisabled); SV(_forceCarryOut); SV(_modTablePosition); SV(_modAccumulator); SV(_modM2Counter); SV(_output);
+	}
+
+	void IncrementAccumulator(uint32_t value)
+	{
+		_modAccumulator += value;
+		if(_modAccumulator > 0x3FFFF) {
+			_modAccumulator -= 0x40000;
+		}
+	}
+
+	void UpdateModPosition()
+	{
+		_modTablePosition = (_modAccumulator >> 13) & 0x1F;
 	}
 
 public:
@@ -45,13 +58,13 @@ public:
 				_forceCarryOut = (value & 0x40) == 0x40;
 				if(_modulationDisabled) {
 					// "Bits 0-12 are reset by 4087.7=1. Bits 13-17 have no reset."
-					_modAccumulator &= 0x3F000;
+					_modAccumulator &= 0x3E000;
 				}
 				break;
 		}
 	}
 
-	virtual bool TickEnvelope(uint8_t wavePosition) override
+	bool TickEnvelope()
 	{
 		if(!_envelopeOff && _masterSpeed > 0) {
 			_timer--;
@@ -73,12 +86,10 @@ public:
 	{
 		//"This register has no effect unless the mod unit is disabled via the high bit of $4087."
 		if(_modulationDisabled) {
-			// "ghost" modtable address bit(0) makes mod unit step thru each entry twice
-			_modTable[_modTablePosition] = value & 0x07;
-			_modTable[_modTablePosition] = value & 0x07;
 			// "Writing $4088 increments the address (bits 13-17) when 4087.7=1."
-			_modAccumulator += 0x2000;
-			_modTablePosition = (_modAccumulator >> 13) & 0x1F;
+			_modTable[_modTablePosition] = value & 0x07;
+			IncrementAccumulator(0x2000);
+			UpdateModPosition();
 		}
 	}
 
@@ -101,17 +112,14 @@ public:
 	{
 		if(IsEnabled()) {
 			if(++_modM2Counter == 16) {
-				_modAccumulator += _frequency;
-				if(_modAccumulator > 0x3FFFF) {
-					_modAccumulator -= 0x40000;
-				}
+				IncrementAccumulator(_frequency);
 
 				// "On a carry out from bit 11, update the mod counter (increment $4085 with modtable)."
 				// "4087.6 forces a carry out from bit 11."
 				if((_modAccumulator & 0xFFF) < _frequency || _forceCarryOut) {
-					int32_t offset = _modLut[_modTable[_modTablePosition]];
+					int16_t offset = _modLut[_modTable[_modTablePosition]];
 					UpdateCounter(offset == ModReset ? 0 : _counter + offset);
-					_modTablePosition = (_modAccumulator >> 13) & 0x1F;
+					UpdateModPosition();
 				}
 
 				_modM2Counter = 0;
@@ -137,7 +145,7 @@ public:
 		_output = temp;
 	}
 
-	int32_t GetOutput()
+	uint8_t GetOutput()
 	{
 		return _output;
 	}

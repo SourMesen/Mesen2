@@ -22,10 +22,10 @@ void FdsAudio::Serialize(Serializer& s)
 
 void FdsAudio::ClockAudio()
 {
-	int frequency = _volume.GetFrequency();
+	uint16_t frequency = _volume.GetFrequency();
 	if(!_haltWaveform && !_disableEnvelopes) {
 		_volume.TickEnvelope(_wavePosition);
-		if(_mod.TickEnvelope(_wavePosition)) {
+		if(_mod.TickEnvelope()) {
 			_mod.UpdateOutput(frequency);
 		}
 	}

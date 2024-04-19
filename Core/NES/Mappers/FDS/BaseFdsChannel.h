@@ -55,7 +55,7 @@ public:
 		}
 	}
 
-	virtual bool TickEnvelope(uint8_t wavePosition)
+	bool TickEnvelope(uint8_t wavePosition)
 	{
 		// "Changes to the volume envelope only take effect while the wavetable
 		// pointer (top 6 bits of wave accumulator) is 0."
