@@ -30,29 +30,29 @@ void FdsAudio::ClockAudio()
 		}
 	}
 
-	if(_mod.TickModulator()) {
+	// TODO: check if modulator and wave units are ticked on the same M2 cycle
+	if(_mod.TickModulator(_haltWaveform)) {
 		//Modulator was ticked, update wave pitch
 		_mod.UpdateOutput(frequency);
 	}
 
-	if(_haltWaveform) {
-		_waveAccumulator = 0;
-		UpdateOutput();
-	} else {
-		UpdateOutput();
+	if(++_waveM2Counter == 16) {
+		if(_haltWaveform) {
+			_waveAccumulator = 0;
+		} else {
 
-		if(!_waveWriteEnabled) {
-			if(++_waveM2Counter == 16) {
+			if(!_waveWriteEnabled) {
 				_waveAccumulator += (frequency * _mod.GetOutput()) & 0xFFFFF;
 				if(_waveAccumulator > 0xFFFFFF) {
 					_waveAccumulator -= 0x1000000;
 				}
 
 				_wavePosition = (_waveAccumulator >> 18) & 0x3F;
-				_waveM2Counter = 0;
 			}
 		}
+		_waveM2Counter = 0;
 	}
+	UpdateOutput();
 }
 
 void FdsAudio::UpdateOutput()
@@ -207,7 +207,7 @@ void FdsAudio::GetMapperStateEntries(vector<MapperStateEntry>& entries)
 	
 	entries.push_back(MapperStateEntry("$4087.6", "Force Tick Modulator", _mod.GetForceCarryOut(), MapperStateValueType::Bool));
 
-	entries.push_back(MapperStateEntry("$4087.7", "Disabled", _mod.IsModulationDisabled(), MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4087.7", "Counter Disabled", _mod.IsModulationCounterDisabled(), MapperStateValueType::Bool));
 	entries.push_back(MapperStateEntry("", "Gain", _mod.GetGain(), MapperStateValueType::Number8));
 	entries.push_back(MapperStateEntry("", "Mod Output", std::to_string(_mod.GetOutput())));
 
