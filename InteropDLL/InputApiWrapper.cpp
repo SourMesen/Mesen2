@@ -4,7 +4,7 @@
 #include "Core/Shared/KeyManager.h"
 #include "Core/Shared/ShortcutKeyHandler.h"
 #include "Utilities/StringUtilities.h"
-#include "MacOS/MacOSMouseManager.h"
+#include "Core/Shared/Interfaces/IMouseManager.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
 extern unique_ptr<IMouseManager> _mouseManager;
