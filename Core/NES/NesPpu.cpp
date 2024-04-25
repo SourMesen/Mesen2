@@ -913,13 +913,18 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 				//copy vertical scrolling value from t
 				_videoRamAddr = (_videoRamAddr & ~0x7BE0) | (_tmpVideoRamAddr & 0x7BE0);
 			}
+			// Load the extra sprites before tile loading starts (which matters for MMC5)
+			// The CHR banks are switched back to the bg tileset in LoadTileInfo on cycle 321
+			// and the extra sprites will potentially read from the wrong banks
+			if(_cycle == 320) {
+				LoadExtraSprites();
+			}
 		}
 	} else if(_cycle >= 321 && _cycle <= 336) {
 		LoadTileInfo();
 
 		if(_cycle == 321) {
 			if(IsRenderingEnabled()) {
-				LoadExtraSprites();
 				_oamCopybuffer = _secondarySpriteRam[0];
 			}
 		} else if(_prevRenderingEnabled && (_cycle == 328 || _cycle == 336)) {
