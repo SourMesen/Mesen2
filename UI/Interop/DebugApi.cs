@@ -1097,6 +1097,7 @@ namespace Mesen.Interop
 
 		public Int32 PaletteIndex;
 		public Int32 PaletteAddress;
+		public Int32 BasePaletteIndex;
 
 		public Int32 AttributeAddress;
 		public Int16 AttributeData;

@@ -464,11 +464,6 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 		return result;
 	}
 
-	uint16_t basePaletteOffset = 0;
-	if(state.BgMode == 0) {
-		basePaletteOffset = options.Layer * 32;
-	}
-
 	uint32_t row;
 	uint32_t column;
 
@@ -499,13 +494,18 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 		result.HorizontalMirroring = (NullableBoolean)((vram[addr + 1] & 0x40) != 0);
 		result.HighPriority = (NullableBoolean)((vram[addr + 1] & 0x20) != 0);
 		result.PaletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
+		if(state.BgMode == 0) {
+			result.BasePaletteIndex = result.PaletteIndex;
+			result.PaletteIndex += options.Layer * 8;
+		}
+		result.PaletteAddress = result.PaletteIndex * (1 << bpp);
+
 		result.TileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
 		result.TileMapAddress = addr;
 		
 		uint16_t tileStart = (layer.ChrAddress << 1) + result.TileIndex * 8 * bpp;
 		result.TileAddress = tileStart;
 
-		result.PaletteAddress = basePaletteOffset + (result.PaletteIndex * (1 << bpp));
 	}
 
 	result.Row = row;

@@ -151,6 +151,7 @@ struct DebugTilemapTileInfo
 
 	int32_t PaletteIndex = -1;
 	int32_t PaletteAddress = -1;
+	int32_t BasePaletteIndex = -1;
 
 	int32_t AttributeAddress = -1;
 	int16_t AttributeData = -1;
