@@ -616,30 +616,31 @@ namespace Mesen.Debugger.ViewModels
 
 			void addRow(string text) { panel.Children.Add(new TextBlock() { Text = text }); }
 			void addBoldRow(string text) { panel.Children.Add(new TextBlock() { Text = text, FontWeight = Avalonia.Media.FontWeight.Bold }); }
+			string getResourceString(string id) { return ResourceHelper.GetViewLabel(nameof(TraceLoggerWindow), "tipFormat" + id); }
 
-			addBoldRow("Notes");
-			addRow("You can customize the output by enabling the 'Use custom format' option and manually editing the format.");
+			addBoldRow(getResourceString("NotesLine"));
+			addRow(getResourceString("CustomFormatDescLine"));
 			addRow(" ");
-			addRow("Tags can have their display format configured by using a comma and specifying the format options. e.g:");
-			addRow("  [Scanline,3] - display scanline in decimal, pad to always be 3 characters wide");
-			addRow("  [Scanline,h] - display scanline in hexadecimal");
-			addRow("  [Scanline,3h] - display scanline in decimal, pad to always be 3 characters wide");
+			addRow(getResourceString("TagDisplayFormatDescLine"));
+			addRow("  [Scanline,3] - " + getResourceString("TagDisplayDecimalPaddedDesc"));
+			addRow("  [Scanline,h] - " + getResourceString("TagDisplayHexadecimalDesc"));
+			addRow("  [Scanline,3h] - " + getResourceString("TagDisplayHexadecimalPaddedDesc"));
 			addRow(" ");
-			addBoldRow("Common tags (all CPUs)");
-			addRow("  [ByteCode] - byte code for the instruction (1 to 3 bytes)");
-			addRow("  [Disassembly] - disassembly for the current instruction");
-			addRow("  [EffectiveAddress] - effective address used for indirect addressing modes");
-			addRow("  [MemoryValue] - value stored at the memory location referred to by the instruction");
-			addRow("  [PC] - program counter");
-			addRow("  [Cycle] - current horizontal cycle (H)");
-			addRow("  [HClock] - current horizontal cycle (H, in master clocks)");
-			addRow("  [Scanline] - current scanline (V)");
-			addRow("  [FrameCount] - current frame number");
-			addRow("  [CycleCount] - current CPU cycle (64-bit unsigned value)");
-			addRow("  [Align,X] - add spaces to ensure the line is X characters long");
+			addBoldRow(getResourceString("CommonTagsDescLine"));
+			addRow("  [ByteCode] - " + getResourceString("ByteCodeTagDesc"));
+			addRow("  [Disassembly] - " + getResourceString("DisassemblyTagDesc"));
+			addRow("  [EffectiveAddress] - " + getResourceString("EffectiveAddressTagDesc"));
+			addRow("  [MemoryValue] - " + getResourceString("MemoryValueTagDesc"));
+			addRow("  [PC] - " + getResourceString("PCTagDesc"));
+			addRow("  [Cycle] - " + getResourceString("CycleTagDesc"));
+			addRow("  [HClock] - " + getResourceString("HClockTagDesc"));
+			addRow("  [Scanline] - " + getResourceString("ScanlineTagDesc"));
+			addRow("  [FrameCount] - " + getResourceString("FrameCountTagDesc"));
+			addRow("  [CycleCount] - " + getResourceString("CycleCountTagDesc"));
+			addRow("  [Align,X] - " + getResourceString("AlignXTagDesc"));
 			addRow(" ");
 
-			addBoldRow("CPU-specific tags (" + ResourceHelper.GetEnumText(CpuType) + ")");
+			addBoldRow(getResourceString("CpuSpecificTagsDesc") + " (" + ResourceHelper.GetEnumText(CpuType) + ")");
 
 			string[] tokens = CpuType switch {
 				CpuType.Snes or CpuType.Sa1 => new string[] { "A", "X", "Y", "D", "DB", "P", "SP" },
