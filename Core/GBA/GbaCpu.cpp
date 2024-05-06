@@ -84,18 +84,16 @@ void GbaCpu::SwitchMode(GbaCpuMode mode)
 
 	_state.CPSR.Mode = mode;
 
-	switch(mode) {
-		default:
-		case GbaCpuMode::System:
-		case GbaCpuMode::User:
-			memcpy(&_state.R[8], _state.UserRegs, 7 * sizeof(uint32_t));
-			break;
-
-		case GbaCpuMode::Fiq: memcpy(&_state.R[8], _state.FiqRegs, 7 * sizeof(uint32_t)); break;
-		case GbaCpuMode::Irq: memcpy(&_state.R[13], _state.IrqRegs, 2 * sizeof(uint32_t)); break;
-		case GbaCpuMode::Supervisor: memcpy(&_state.R[13], _state.SupervisorRegs, 2 * sizeof(uint32_t)); break;
-		case GbaCpuMode::Abort: memcpy(&_state.R[13], _state.AbortRegs, 2 * sizeof(uint32_t)); break;
-		case GbaCpuMode::Undefined: memcpy(&_state.R[13], _state.UndefinedRegs, 2 * sizeof(uint32_t)); break;
+	if(mode != GbaCpuMode::Fiq) {
+		memcpy(&_state.R[8], _state.UserRegs, 7 * sizeof(uint32_t));
+		switch(mode) {
+			case GbaCpuMode::Irq: memcpy(&_state.R[13], _state.IrqRegs, 2 * sizeof(uint32_t)); break;
+			case GbaCpuMode::Supervisor: memcpy(&_state.R[13], _state.SupervisorRegs, 2 * sizeof(uint32_t)); break;
+			case GbaCpuMode::Abort: memcpy(&_state.R[13], _state.AbortRegs, 2 * sizeof(uint32_t)); break;
+			case GbaCpuMode::Undefined: memcpy(&_state.R[13], _state.UndefinedRegs, 2 * sizeof(uint32_t)); break;
+		}
+	} else {
+		memcpy(&_state.R[8], _state.FiqRegs, 7 * sizeof(uint32_t));
 	}
 }
 
