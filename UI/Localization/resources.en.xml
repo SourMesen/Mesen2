@@ -1721,6 +1721,10 @@ E
 			<Value ID="ToggleAudio">Enable/Disable Audio</Value>
 			<Value ID="IncreaseVolume">Increase Volume</Value>
 			<Value ID="DecreaseVolume">Decrease Volume</Value>
+
+			<Value ID="PreviousTrack">Audio Player - Previous Track</Value>
+			<Value ID="NextTrack">Audio Player - Next Track</Value>
+
 			<Value ID="RunSingleFrame">Run Single Frame</Value>
 
 			<Value ID="SetScale1x">Set Scale 1x</Value>

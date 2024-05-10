@@ -857,6 +857,9 @@ enum class EmulatorShortcut
 	IncreaseVolume,
 	DecreaseVolume,
 
+	PreviousTrack,
+	NextTrack,
+
 	ToggleBgLayer1,
 	ToggleBgLayer2,
 	ToggleBgLayer3,

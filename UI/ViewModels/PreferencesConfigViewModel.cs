@@ -83,6 +83,9 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.IncreaseVolume,
 				EmulatorShortcut.DecreaseVolume,
 
+				EmulatorShortcut.PreviousTrack,
+				EmulatorShortcut.NextTrack,
+
 				EmulatorShortcut.MaxSpeed,
 				EmulatorShortcut.IncreaseSpeed,
 				EmulatorShortcut.DecreaseSpeed,

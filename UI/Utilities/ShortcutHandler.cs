@@ -46,6 +46,9 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.IncreaseVolume: IncreaseVolume(); break;
 				case EmulatorShortcut.DecreaseVolume: DecreaseVolume(); break;
 
+				case EmulatorShortcut.PreviousTrack: GoToPreviousTrack(); break;
+				case EmulatorShortcut.NextTrack: GoToNextTrack(); break;
+
 				case EmulatorShortcut.ToggleFps: ToggleFps(); break;
 				case EmulatorShortcut.ToggleGameTimer: ToggleGameTimer(); break;
 				case EmulatorShortcut.ToggleFrameCounter: ToggleFrameCounter(); break;
@@ -436,14 +439,38 @@ namespace Mesen.Utilities
 
 		private void IncreaseVolume()
 		{
-			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Min(100, (int)ConfigManager.Config.Audio.MasterVolume + 5);
-			ConfigManager.Config.Audio.ApplyConfig();
+			if(MainWindowModel.AudioPlayer == null) {
+				ConfigManager.Config.Audio.MasterVolume = (uint)Math.Min(100, (int)ConfigManager.Config.Audio.MasterVolume + 5);
+				ConfigManager.Config.Audio.ApplyConfig();
+			} else {
+				ConfigManager.Config.AudioPlayer.Volume = (uint)Math.Min(100, (int)ConfigManager.Config.AudioPlayer.Volume + 5);
+				ConfigManager.Config.AudioPlayer.ApplyConfig();
+			}
 		}
 
 		private void DecreaseVolume()
 		{
-			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Max(0, (int)ConfigManager.Config.Audio.MasterVolume - 5);
-			ConfigManager.Config.Audio.ApplyConfig();
+			if(MainWindowModel.AudioPlayer == null) {
+				ConfigManager.Config.Audio.MasterVolume = (uint)Math.Max(0, (int)ConfigManager.Config.Audio.MasterVolume - 5);
+				ConfigManager.Config.Audio.ApplyConfig();
+			} else {
+				ConfigManager.Config.AudioPlayer.Volume = (uint)Math.Max(0, (int)ConfigManager.Config.AudioPlayer.Volume - 5);
+				ConfigManager.Config.AudioPlayer.ApplyConfig();
+			}
+		}
+
+		private void GoToPreviousTrack()
+		{
+			if(MainWindowModel.AudioPlayer != null) {
+				EmuApi.ProcessAudioPlayerAction(new AudioPlayerActionParams() { Action = AudioPlayerAction.PrevTrack });
+			}
+		}
+
+		private void GoToNextTrack()
+		{
+			if(MainWindowModel.AudioPlayer != null) {
+				EmuApi.ProcessAudioPlayerAction(new AudioPlayerActionParams() { Action = AudioPlayerAction.NextTrack });
+			}
 		}
 
 		private void ToggleFrameCounter()
