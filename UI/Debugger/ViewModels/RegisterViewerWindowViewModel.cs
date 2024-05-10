@@ -2020,7 +2020,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$00.7", "Vertical scroll lock", vdp.VerticalScrollLock),
 				
 				new RegEntry("$01.0", "Zoom sprites (2x size)", vdp.EnableDoubleSpriteSize),
-				new RegEntry("$01.1", "8x16 sprites", vdp.UseLargeSprites),
+				new RegEntry("$01.1", "Large sprites (8x16 or 16x16)", vdp.UseLargeSprites),
 				new RegEntry("$01.3", "M3 - 240-line output", vdp.M3_Use240LineMode),
 				new RegEntry("$01.4", "M1 - 224-line output", vdp.M1_Use224LineMode),
 				new RegEntry("$01.5", "Vertical blank IRQ enabled", vdp.EnableVerticalBlankIrq),
@@ -2028,6 +2028,8 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$01.7", "SG-1000 - 16K VRAM Mode", vdp.RenderingEnabled),
 
 				new RegEntry("$02", "Nametable address", vdp.NametableAddress),
+				new RegEntry("$03", "Pattern table address", vdp.BgPatternTableAddress),
+				new RegEntry("$04", "Color table address", vdp.ColorTableAddress),
 				new RegEntry("$05", "Sprite table address", vdp.SpriteTableAddress),
 				new RegEntry("$06", "Sprite tileset address", vdp.SpritePatternSelector),
 				new RegEntry("$07", "Background color index", vdp.BackgroundColorIndex),
