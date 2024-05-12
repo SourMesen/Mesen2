@@ -236,7 +236,7 @@ void GbPpu::ProcessVblankScanline()
 				_state.Scanline = 0;
 				_state.Ly = 0;
 				_state.LyForCompare = 0;
-				_wyEnableFlag = false;
+				_wyEnableFlag = _state.Scanline == _state.WindowY && _state.WindowEnabled;
 
 				if(!_gameboy->IsCgb()) {
 					//On scanline 0, hblank gets set here (not on CGB)
@@ -275,22 +275,19 @@ void GbPpu::ProcessFirstScanlineAfterPowerOn()
 		case 91:
 			if(_gameboy->IsCgb()) {
 				_rendererIdle = false;
-				//"at some point in this frame the value of WY was equal to LY"
-				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			}
 			break;
 
 		case 92:
 			if(!_gameboy->IsCgb()) {
 				_rendererIdle = false;
-				//"at some point in this frame the value of WY was equal to LY"
-				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			}
 			break;
 
 		case 456:
 			_state.Cycle = 0;
 			_state.Scanline++;
+			_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			_drawnPixels = 0;
 			_state.Ly = _state.Scanline;
 			_drawnPixels = 0;
@@ -346,16 +343,12 @@ void GbPpu::ProcessVisibleScanline()
 		case 88:
 			if(_gameboy->IsCgb()) {
 				_rendererIdle = false;
-				//"at some point in this frame the value of WY was equal to LY"
-				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			}
 			break;
 
 		case 89:
 			if(!_gameboy->IsCgb()) {
 				_rendererIdle = false;
-				//"at some point in this frame the value of WY was equal to LY"
-				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			}
 			break;
 
@@ -363,6 +356,7 @@ void GbPpu::ProcessVisibleScanline()
 			_state.Cycle = 0;
 			_state.Scanline++;
 			_state.Ly = _state.Scanline;
+			_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			_drawnPixels = 0;
 			if(_state.Scanline == 144) {
 				_state.LyForCompare = -1;
@@ -952,6 +946,8 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			_state.LargeSprites = (value & 0x04) != 0;
 			_state.SpritesEnabled = (value & 0x02) != 0;
 			_state.BgEnabled = (value & 0x01) != 0;
+
+			_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			break;
 
 		case 0xFF41:
