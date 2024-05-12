@@ -33,7 +33,7 @@ public class NesasmFnsImporter
 
 			uint address;
 			if(UInt32.TryParse(rowData[1].Trim().Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out address)) {
-				string labelName = rowData[0].Trim();
+				string labelName = LabelManager.InvalidLabelRegex.Replace(rowData[0].Trim(), "_");
 				if(!LabelManager.LabelRegex.IsMatch(labelName)) {
 					//Reject labels that don't respect the label naming restrictions
 					errorCount++;

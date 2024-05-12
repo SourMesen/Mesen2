@@ -41,7 +41,8 @@ public class BassLabelFile
 				label.Address = (UInt32)absAddress.Address;
 				label.MemoryType = absAddress.Type;
 				label.Comment = "";
-				string labelName = lineData.Substring(splitIndex + 1).Replace('.', '_');
+
+				string labelName = LabelManager.InvalidLabelRegex.Replace(lineData.Substring(splitIndex + 1), "_");
 				if(string.IsNullOrEmpty(labelName) || !LabelManager.LabelRegex.IsMatch(labelName)) {
 					errorCount++;
 				} else {

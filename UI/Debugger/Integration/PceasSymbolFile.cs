@@ -52,7 +52,7 @@ public class PceasSymbolFile
 			return false;
 		}
 
-		labelName = rowData[labelIndex].Replace('.', '_');
+		labelName = LabelManager.InvalidLabelRegex.Replace(rowData[labelIndex], "_");
 		if(string.IsNullOrEmpty(labelName) || !LabelManager.LabelRegex.IsMatch(labelName)) {
 			return false;
 		}
