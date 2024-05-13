@@ -489,15 +489,10 @@ void GbMemoryManager::ProcessCpuWrite(uint16_t addr, uint8_t value)
 		case 0xFF47:
 			//BGP writes appear to be effective slightly earlier than other writes?
 			//This allows the ppu_scanline_bgp and m3_bgp_change tests to display properly
-			if(!_gameboy->IsCgb()) {
-				ExecMasterCycle();
-			}
+			ExecMasterCycle();
 			ExecMasterCycle();
 			ExecMasterCycle();
 			Write(addr, value);
-			if(_gameboy->IsCgb()) {
-				ExecMasterCycle();
-			}
 			ExecMasterCycle();
 			break;
 
@@ -507,19 +502,12 @@ void GbMemoryManager::ProcessCpuWrite(uint16_t addr, uint8_t value)
 			//the tile data is replaced with the tile index (loaded at the first step of the fetching process)
 			//This needs to be triggered before running the last dot to get the correct result (cgb-acid-hell test)
 			Exec();
-			if(_gameboy->IsCgb()) {
-				ExecMasterCycle();
-				if((_ppu->GetState().Control & 0x10) && !(value & 0x10)) {
-					//Trigger GBC fetch glitch at the same time as the write occurs
-					_ppu->SetTileFetchGlitchState(true);
-				}
-				ExecMasterCycle();
-				Write(addr, value);
-				_ppu->SetTileFetchGlitchState(false);
-			} else {
-				Exec();
-				Write(addr, value);
+			Exec();
+			if(_gameboy->IsCgb() && (_ppu->GetState().Control & 0x10) && !(value & 0x10)) {
+				//Trigger GBC fetch glitch at the same time as the write occurs
+				_ppu->SetTileFetchGlitchState();
 			}
+			Write(addr, value);
 			break;
 	}
 }

@@ -272,16 +272,8 @@ void GbPpu::ProcessFirstScanlineAfterPowerOn()
 			_rendererIdle = true;
 			break;
 
-		case 91:
-			if(_gameboy->IsCgb()) {
-				_rendererIdle = false;
-			}
-			break;
-
 		case 92:
-			if(!_gameboy->IsCgb()) {
-				_rendererIdle = false;
-			}
+			_rendererIdle = false;
 			break;
 
 		case 456:
@@ -339,17 +331,9 @@ void GbPpu::ProcessVisibleScanline()
 			_rendererIdle = true;
 			ResetRenderer();
 			break;
-		
-		case 88:
-			if(_gameboy->IsCgb()) {
-				_rendererIdle = false;
-			}
-			break;
 
 		case 89:
-			if(!_gameboy->IsCgb()) {
-				_rendererIdle = false;
-			}
+			_rendererIdle = false;
 			break;
 
 		case 456:
@@ -367,6 +351,8 @@ void GbPpu::ProcessVisibleScanline()
 
 void GbPpu::ProcessPpuCycle()
 {
+	_gbcTileGlitch = false;
+
 	if(_emu->IsDebugging()) {
 		_emu->ProcessPpuCycle<CpuType::Gameboy>();
 		if(_state.Mode != PpuMode::Drawing) {
@@ -1003,9 +989,9 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 	}
 }
 
-void GbPpu::SetTileFetchGlitchState(bool enabled)
+void GbPpu::SetTileFetchGlitchState()
 {
-	_gbcTileGlitch = enabled;
+	_gbcTileGlitch = true;
 }
 
 bool GbPpu::IsVramReadAllowed()
