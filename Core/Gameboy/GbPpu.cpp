@@ -50,6 +50,22 @@ void GbPpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 
 	Write(0xFF48, 0xFF);
 	Write(0xFF49, 0xFF);
+
+	//Reset state to ensure powering off and then back on works properly for SGB
+	ResetRenderer();
+	_wyEnableFlag = false;
+	_wxEnableFlag = false;	
+	_lcdDisabled = true;
+	_stopOamBlocked = false;
+	_stopVramBlocked = false;
+	_stopPaletteBlocked = false;
+	_oamReadBlocked = false;
+	_oamWriteBlocked = false;
+	_vramReadBlocked = false;
+	_vramWriteBlocked = false;
+	_isFirstFrame = true;
+	_forceBlankFrame = true;
+	_rendererIdle = false;
 }
 
 GbPpu::~GbPpu()
