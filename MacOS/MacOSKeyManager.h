@@ -1,8 +1,6 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
-#include <thread>
-#include "Utilities/AutoResetEvent.h"
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/KeyDefinitions.h"
 

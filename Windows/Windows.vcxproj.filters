@@ -23,6 +23,9 @@
     <ClInclude Include="WindowsKeyManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WindowsMouseManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="XInputManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -68,6 +71,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WindowsKeyManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsMouseManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="XInputManager.cpp">

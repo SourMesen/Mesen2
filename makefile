@@ -98,7 +98,7 @@ ifeq ($(MESENOS),osx)
 	LINKOPTIONS += -framework Foundation -framework Cocoa
 endif
 
-CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux) -I $(realpath ./MacOS)
+CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Sdl) -I $(realpath ./Linux) -I $(realpath ./MacOS)
 OBJCXXFLAGS = $(CXXFLAGS) -framework Foundation -framework Cocoa
 CFLAGS = -fPIC -Wall $(MESENFLAGS)
 
@@ -121,14 +121,21 @@ COREOBJ := $(CORESRC:.cpp=.o)
 UTILSRC := $(shell find Utilities -name '*.cpp' -o -name '*.c')
 UTILOBJ := $(addsuffix .o,$(basename $(UTILSRC)))
 
-LINUXSRC := $(shell find Linux -name '*.cpp')
-LINUXOBJ := $(LINUXSRC:.cpp=.o)
+SDLSRC := $(shell find Sdl -name '*.cpp')
+SDLOBJ := $(SDLSRC:.cpp=.o)
 
 SEVENZIPSRC := $(shell find SevenZip -name '*.c')
 SEVENZIPOBJ := $(SEVENZIPSRC:.c=.o)
 
 LUASRC := $(shell find Lua -name '*.c')
 LUAOBJ := $(LUASRC:.c=.o)
+
+ifeq ($(MESENOS),linux)
+	LINUXSRC := $(shell find Linux -name '*.cpp')
+else
+	LINUXSRC :=
+endif
+LINUXOBJ := $(LINUXSRC:.cpp=.o)
 
 ifeq ($(MESENOS),osx)
 	MACOSSRC := $(shell find MacOS -name '*.mm')
@@ -147,6 +154,12 @@ else
 	LIBEVDEVSRC := $(shell find Linux/libevdev -name '*.c')
 	LIBEVDEVOBJ := $(LIBEVDEVSRC:.c=.o)
 	LIBEVDEVINC := -I../
+endif
+
+ifeq ($(MESENOS),linux)
+	X11LIB := -lX11
+else
+	X11LIB :=
 endif
 
 FSLIB := -lstdc++fs
@@ -172,7 +185,7 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
 pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
-	mkdir -p PGOHelper/$(OBJFOLDER) && cd PGOHelper/$(OBJFOLDER) && $(CXX) $(CXXFLAGS) $(LINKCHECKUNRESOLVED) -o pgohelper ../PGOHelper.cpp ../../bin/pgohelperlib.so -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	mkdir -p PGOHelper/$(OBJFOLDER) && cd PGOHelper/$(OBJFOLDER) && $(CXX) $(CXXFLAGS) $(LINKCHECKUNRESOLVED) -o pgohelper ../PGOHelper.cpp ../../bin/pgohelperlib.so -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB) $(X11LIB)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -183,10 +196,10 @@ pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 %.o: %.mm
 	$(CXX) $(OBJCXXFLAGS) -c $< -o $@
 
-InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ) $(MACOSOBJ)
+InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(SDLOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ) $(MACOSOBJ)
 	mkdir -p bin
 	mkdir -p InteropDLL/$(OBJFOLDER)
-	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) $(LINKCHECKUNRESOLVED) -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(MACOSOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) $(LINKCHECKUNRESOLVED) -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(MACOSOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(SDLOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB) $(X11LIB)
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
 
@@ -200,6 +213,7 @@ clean:
 	rm -r -f $(COREOBJ)
 	rm -r -f $(UTILOBJ)
 	rm -r -f $(LINUXOBJ) $(LIBEVDEVOBJ)
+	rm -r -f $(SDLOBJ)
 	rm -r -f $(SEVENZIPOBJ)
 	rm -r -f $(LUAOBJ)
 	rm -r -f $(MACOSOBJ)

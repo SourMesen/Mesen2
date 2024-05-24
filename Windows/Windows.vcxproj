@@ -182,6 +182,7 @@
     <ClInclude Include="WindowsKeyManager.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SoundManager.h" />
+    <ClInclude Include="WindowsMouseManager.h" />
     <ClInclude Include="Common.h" />
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +197,7 @@
     </ClCompile>
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SoundManager.cpp" />
+    <ClCompile Include="WindowsMouseManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTK\SpriteEffect_SpritePixelShader.inc" />

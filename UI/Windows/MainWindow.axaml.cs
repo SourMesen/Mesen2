@@ -48,6 +48,7 @@ namespace Mesen.Windows
 		private NativeRenderer _renderer;
 		private SoftwareRendererView _softwareRenderer;
 		private Size _rendererSize;
+		private bool _usesSoftwareRenderer;
 
 		private Size _originalSize;
 		private PixelPoint _originalPos;
@@ -67,6 +68,7 @@ namespace Mesen.Windows
 		{
 			_testModeEnabled = System.Diagnostics.Debugger.IsAttached;
 			_isLinux = OperatingSystem.IsLinux();
+			_usesSoftwareRenderer = ConfigManager.Config.Video.UseSoftwareRenderer || OperatingSystem.IsMacOS();
 
 			_model = new MainWindowViewModel();
 			DataContext = _model;
@@ -94,7 +96,7 @@ namespace Mesen.Windows
 			_softwareRenderer = this.GetControl<SoftwareRendererView>("SoftwareRenderer");
 			_audioPlayer = this.GetControl<ContentControl>("AudioPlayer");
 			_mainMenu = this.GetControl<MainMenuView>("MainMenu");
-			_mouseManager = new MouseManager(this, _renderer, _mainMenu);
+			_mouseManager = new MouseManager(this, _usesSoftwareRenderer ? _softwareRenderer : _renderer, _mainMenu, _usesSoftwareRenderer);
 			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
 
 #if DEBUG
@@ -214,7 +216,7 @@ namespace Mesen.Windows
 					ConfigManager.HomeFolder,
 					TryGetPlatformHandle()?.Handle ?? IntPtr.Zero,
 					_renderer.Handle,
-					ConfigManager.Config.Video.UseSoftwareRenderer || OperatingSystem.IsMacOS(),
+					_usesSoftwareRenderer,
 					cmdLine.NoAudio,
 					cmdLine.NoVideo,
 					cmdLine.NoInput
