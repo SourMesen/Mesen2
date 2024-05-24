@@ -457,10 +457,10 @@ void GbPpu::RunDrawCycle()
 					if(_state.CgbEnabled) {
 						WriteBgPixel(entry.Color | ((entry.Attributes & 0x07) << 2));
 					} else {
-						WriteBgPixel(_state.BgEnabled ? ((_state.BgPalette >> (entry.Color * 2)) & 0x03) : 0);
+						WriteBgPixel(_state.BgEnabled ? ((_state.BgPalette >> (entry.Color * 2)) & 0x03) : (_state.BgPalette & 0x03));
 					}
 				} else {
-					WriteBgPixel(0);
+					WriteBgPixel(_state.BgPalette & 0x03);
 				}
 				_lastPixelType = GbPixelType::Background;
 				_lastBgColor = entry.Color;
