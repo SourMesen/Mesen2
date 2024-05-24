@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Threading;
 using Mesen.Config;
@@ -92,7 +93,7 @@ namespace Mesen.Utilities
 				SetMouseOffScreen();
 				ReleaseMouse();
 				if(rendererScreenRect.Contains(mousePos)) {
-					InputApi.SetCursorImage(CursorImage.Arrow);
+					SetMouseCursor(CursorImage.Arrow);
 				}
 				return;
 			}
@@ -117,7 +118,7 @@ namespace Mesen.Utilities
 
 				if(_mouseCaptured) {
 					if(AllowMouseCapture) {
-						InputApi.SetCursorImage(CursorImage.Hidden);
+						SetMouseCursor(CursorImage.Hidden);
 						InputApi.SetSystemMousePosition(rendererTopLeft.X + rendererScreenRect.Width / 2, rendererTopLeft.Y + rendererScreenRect.Height / 2);
 						SystemMouseState newState = InputApi.GetSystemMouseState(GetRendererHandle());
 						_prevPositionX = newState.XPosition;
@@ -128,10 +129,18 @@ namespace Mesen.Utilities
 				}
 
 				if(!_mouseCaptured) {
-					InputApi.SetCursorImage(MouseIcon);
+					SetMouseCursor(MouseIcon);
 				}
 			} else {
 				SetMouseOffScreen();
+			}
+		}
+
+		private void SetMouseCursor(CursorImage icon)
+		{
+			InputApi.SetCursorImage(icon);
+			if(_usesSoftwareRenderer) {
+				_renderer.Cursor = new Cursor(icon.ToStandardCursorType());
 			}
 		}
 
