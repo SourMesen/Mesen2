@@ -659,7 +659,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("$FF40", "LCD Control (LCDC)"),
 				new RegEntry("$FF40.0", "Background Enabled", ppu.BgEnabled),
-				new RegEntry("$FF40.1", "Sprites Enabled", ppu.BgEnabled),
+				new RegEntry("$FF40.1", "Sprites Enabled", ppu.SpritesEnabled),
 				new RegEntry("$FF40.2", "Sprite size", ppu.LargeSprites ? "8x16" : "8x8", ppu.LargeSprites),
 				new RegEntry("$FF40.3", "BG Tilemap Select", ppu.BgTilemapSelect ? 0x9C00 : 0x9800, Format.X16),
 				new RegEntry("$FF40.4", "BG Tile Select", ppu.BgTileSelect ? "$8000-$8FFF" : "$8800-$97FF", ppu.BgTileSelect),
