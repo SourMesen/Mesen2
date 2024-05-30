@@ -139,7 +139,8 @@ namespace Mesen.Utilities
 		private void SetMouseCursor(CursorImage icon)
 		{
 			InputApi.SetCursorImage(icon);
-			if(_usesSoftwareRenderer) {
+			if(_usesSoftwareRenderer && !OperatingSystem.IsMacOS()) {
+				//On MacOS, also setting the cursor on the renderer causes the cursor visibility to act oddly
 				_renderer.Cursor = new Cursor(icon.ToStandardCursorType());
 			}
 		}
