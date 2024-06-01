@@ -40,6 +40,7 @@ namespace Mesen.Config
 		[Reactive][MinMax(0, 100)] public UInt32 Channel6Vol { get; set; } = 100;
 		[Reactive][MinMax(0, 100)] public UInt32 CdAudioVolume { get; set; } = 100;
 		[Reactive][MinMax(0, 100)] public UInt32 AdpcmVolume { get; set; } = 100;
+		[Reactive] public bool UseHuC6280aAudio { get; set; } = true;
 
 		[Reactive] public bool RemoveSpriteLimit { get; set; } = false;
 		[Reactive] public bool DisableSprites { get; set; } = false;
@@ -81,6 +82,7 @@ namespace Mesen.Config
 				Channel6Vol = Channel6Vol,
 				CdAudioVolume = CdAudioVolume,
 				AdpcmVolume = AdpcmVolume,
+				UseHuC6280aAudio = UseHuC6280aAudio,
 
 				RemoveSpriteLimit = RemoveSpriteLimit,
 				DisableBackground = DisableBackground,
@@ -166,6 +168,7 @@ namespace Mesen.Config
 		public UInt32 Channel6Vol;
 		public UInt32 CdAudioVolume;
 		public UInt32 AdpcmVolume;
+		[MarshalAs(UnmanagedType.I1)] public bool UseHuC6280aAudio;
 
 		[MarshalAs(UnmanagedType.I1)] public bool RemoveSpriteLimit;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableSprites;

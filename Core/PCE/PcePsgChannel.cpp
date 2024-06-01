@@ -14,6 +14,11 @@ void PcePsgChannel::Init(uint8_t index, PcePsg* psg)
 	_psg = psg;
 }
 
+void PcePsgChannel::SetOutputOffset(uint8_t offset)
+{
+	_outputOffset = offset;
+}
+
 uint32_t PcePsgChannel::GetNoisePeriod()
 {
 	if(_state.NoiseFrequency == 0x1F) {
@@ -64,7 +69,7 @@ void PcePsgChannel::Run(uint32_t clocks)
 			uint32_t v = _state.NoiseLfsr;
 			uint32_t bit = ((v >> 0) ^ (v >> 1) ^ (v >> 11) ^ (v >> 12) ^ (v >> 17)) & 0x01;
 
-			_state.NoiseOutput = (int8_t)((_state.NoiseLfsr & 0x01) ? 0x0F : -0x10);
+			_state.NoiseOutput = (int8_t)((_state.NoiseLfsr & 0x01) ? 0x1F : 0);
 			_state.NoiseLfsr >>= 1;
 			_state.NoiseLfsr |= (bit << 17);
 		} else {
@@ -74,7 +79,7 @@ void PcePsgChannel::Run(uint32_t clocks)
 
 	if(_state.Enabled) {
 		if(_state.DdaEnabled) {
-			_state.CurrentOutput = (int8_t)_state.DdaOutputValue - 0x10;
+			_state.CurrentOutput = (int8_t)_state.DdaOutputValue - _outputOffset;
 		} else if(!_state.NoiseEnabled) {
 			_state.Timer -= clocks;
 
@@ -83,9 +88,9 @@ void PcePsgChannel::Run(uint32_t clocks)
 				_state.ReadAddr = (_state.ReadAddr + 1) & 0x1F;
 			}
 
-			_state.CurrentOutput = (int8_t)_state.WaveData[_state.ReadAddr] - 0x10;
+			_state.CurrentOutput = (int8_t)_state.WaveData[_state.ReadAddr] - _outputOffset;
 		} else {
-			_state.CurrentOutput = _state.NoiseOutput;
+			_state.CurrentOutput = _state.NoiseOutput - _outputOffset;
 		}
 	} else {
 		_state.CurrentOutput = 0;

@@ -21,6 +21,8 @@ PcePsg::PcePsg(Emulator* emu, PceConsole* console)
 		_channels[i].Init(i, this);
 	}
 
+	UpdateSoundOffset();
+
 	_leftChannel = blip_new(PcePsg::MaxSamples);
 	_rightChannel = blip_new(PcePsg::MaxSamples);
 
@@ -133,6 +135,14 @@ void PcePsg::Run()
 	_lastClock = clock - clocksToRun;
 }
 
+void PcePsg::UpdateSoundOffset()
+{
+	uint8_t offset = _emu->GetSettings()->GetPcEngineConfig().UseHuC6280aAudio ? 0x10 : 0;
+	for(int i = 0; i < 6; i++) {
+		_channels[i].SetOutputOffset(offset);
+	}
+}
+
 void PcePsg::PlayQueuedAudio()
 {
 	blip_end_frame(_leftChannel, _clockCounter);
@@ -142,6 +152,8 @@ void PcePsg::PlayQueuedAudio()
 	blip_read_samples(_rightChannel, _soundBuffer + 1, PcePsg::MaxSamples, 1);
 	_soundMixer->PlayAudioBuffer(_soundBuffer, sampleCount, PcePsg::SampleRate);
 	_clockCounter = 0;
+	
+	UpdateSoundOffset();
 }
 
 void PcePsg::Serialize(Serializer& s)

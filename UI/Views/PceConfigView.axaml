@@ -57,6 +57,12 @@
 							<c:MesenSlider Text="{l:Translate lblAdpcm}" Value="{CompiledBinding Config.AdpcmVolume}" />
 						</StackPanel>
 					</c:GroupBox>
+
+					<c:OptionSection Header="{l:Translate tpgGeneral}">
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding Config.UseHuC6280aAudio}" Content="{l:Translate chkUseHuC6280aAudio}" />
+						</StackPanel>
+					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>

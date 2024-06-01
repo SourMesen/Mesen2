@@ -428,6 +428,7 @@
 			<Control ID="chkRandomPowerOnState">Randomize power-on state</Control>
 			<Control ID="chkEnableCdRomForHuCardGames">Enable CD-ROM emulation when running HuCard games</Control>
 			<Control ID="chkDisableCdRomSaveRamForHuCardGames">Disable CD-ROM save RAM when running HuCard games</Control>
+			<Control ID="chkUseHuC6280aAudio">Use HuC6280A audio (reduces popping)</Control>
 			
 			<Control ID="tpgInput">Input</Control>
 			
