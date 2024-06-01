@@ -336,7 +336,9 @@ DebuggerFeatures GbDebugger::GetSupportedFeatures()
 	features.RunToNmi = false;
 	features.StepOver = true;
 	features.StepOut = true;
-	features.StepBack = true;
+	if(_emu->GetConsoleType() == ConsoleType::Gameboy) {
+		features.StepBack = true;
+	}
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
 
