@@ -136,48 +136,48 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 		}
+	}
 
-		public class FunctionViewModel : INotifyPropertyChanged
-		{
-			private string _format;
+	public class FunctionViewModel : INotifyPropertyChanged
+	{
+		private string _format;
 
-			public AddressInfo FuncAddr { get; private set; }
-			public CpuType _cpuType;
+		public AddressInfo FuncAddr { get; private set; }
+		public CpuType _cpuType;
 			
-			public string AbsAddressDisplay { get; }
-			public int AbsAddress => FuncAddr.Address;
-			public int RelAddress { get; private set; }
-			public string RelAddressDisplay => RelAddress >= 0 ? ("$" + RelAddress.ToString(_format)) : "<unavailable>";
-			public object RowBrush => RelAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
-			public FontStyle RowStyle => RelAddress >= 0 ? FontStyle.Normal : FontStyle.Italic;
+		public string AbsAddressDisplay { get; }
+		public int AbsAddress => FuncAddr.Address;
+		public int RelAddress { get; private set; }
+		public string RelAddressDisplay => RelAddress >= 0 ? ("$" + RelAddress.ToString(_format)) : "<unavailable>";
+		public object RowBrush => RelAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
+		public FontStyle RowStyle => RelAddress >= 0 ? FontStyle.Normal : FontStyle.Italic;
 
-			public CodeLabel? Label => LabelManager.GetLabel(FuncAddr);
-			public string LabelName => Label?.Label ?? "<no label>";
+		public CodeLabel? Label => LabelManager.GetLabel(FuncAddr);
+		public string LabelName => Label?.Label ?? "<no label>";
 
-			public event PropertyChangedEventHandler? PropertyChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
 
-			public void Refresh()
-			{
-				int addr = DebugApi.GetRelativeAddress(FuncAddr, _cpuType).Address;
-				if(addr != RelAddress) {
-					RelAddress = addr;
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowBrush)));
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowStyle)));
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RelAddressDisplay)));
-				}
-
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LabelName)));
+		public void Refresh()
+		{
+			int addr = DebugApi.GetRelativeAddress(FuncAddr, _cpuType).Address;
+			if(addr != RelAddress) {
+				RelAddress = addr;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowBrush)));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowStyle)));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RelAddressDisplay)));
 			}
 
-			public FunctionViewModel(AddressInfo funcAddr, CpuType cpuType)
-			{
-				FuncAddr = funcAddr;
-				_cpuType = cpuType;
-				RelAddress = DebugApi.GetRelativeAddress(FuncAddr, _cpuType).Address;
-				_format = "X" + cpuType.GetAddressSize();
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LabelName)));
+		}
 
-				AbsAddressDisplay = "$" + FuncAddr.Address.ToString(_format);
-			}
+		public FunctionViewModel(AddressInfo funcAddr, CpuType cpuType)
+		{
+			FuncAddr = funcAddr;
+			_cpuType = cpuType;
+			RelAddress = DebugApi.GetRelativeAddress(FuncAddr, _cpuType).Address;
+			_format = "X" + cpuType.GetAddressSize();
+
+			AbsAddressDisplay = "$" + FuncAddr.Address.ToString(_format);
 		}
 	}
 }

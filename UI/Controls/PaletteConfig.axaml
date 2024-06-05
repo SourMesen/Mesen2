@@ -4,6 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="400"
 	x:Name="root"
@@ -13,12 +14,12 @@
 		<Border BorderBrush="#555" BorderThickness="1">
 			<ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" Height="96" AllowAutoHide="False">
 				<dc:PaletteSelector
-					PaletteColors="{CompiledBinding Palette, ElementName=root}"
+					PaletteColors="{Binding Palette, ElementName=root}"
 					SelectionMode="None"
-					ColumnCount="{CompiledBinding ColumnCount, ElementName=root}"
-					BlockSize="{CompiledBinding BlockSize, ElementName=root}"
+					ColumnCount="{Binding ColumnCount, ElementName=root}"
+					BlockSize="{Binding BlockSize, ElementName=root}"
 					ColorClick="PaletteColor_OnClick"
-					ShowIndexes="{CompiledBinding ShowIndexes, ElementName=root}"
+					ShowIndexes="{Binding ShowIndexes, ElementName=root}"
 				/>
 			</ScrollViewer>
 		</Border>
@@ -32,12 +33,12 @@
 				Click="btnSelectPalette_OnClick"
 			>
 				<Button.ContextMenu>
-					<ContextMenu Name="Preset" PlacementMode="Bottom" ItemsSource="{CompiledBinding PalettePresets, ElementName=root}">
+					<ContextMenu Name="Preset" PlacementMode="Bottom" ItemsSource="{Binding PalettePresets, ElementName=root}">
 						<ContextMenu.Styles>
 							<Style Selector="MenuItem">
-								<Setter Property="Header" Value="{Binding Name}" />
-								<Setter Property="Command" Value="{Binding $parent[UserControl].SelectPreset}" />
-								<Setter Property="CommandParameter" Value="{Binding Palette}" />
+								<Setter Property="Header" Value="{Binding Name, DataType={x:Type c:PalettePreset}}" />
+								<Setter Property="Command" Value="{Binding $parent[c:PaletteConfig].SelectPreset, DataType={x:Type c:PaletteConfig}}" />
+								<Setter Property="CommandParameter" Value="{Binding Palette, DataType={x:Type c:PalettePreset}}" />
 							</Style>
 						</ContextMenu.Styles>
 					</ContextMenu>

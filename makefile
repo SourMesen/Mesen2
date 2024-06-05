@@ -113,7 +113,13 @@ else
 	BUILD_TYPE = Debug
 endif
 
-PUBLISHFLAGS ?=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
+
+ifeq ($(USE_AOT),true)
+	PUBLISHFLAGS ?=  -r $(MESENPLATFORM) -p:PublishSingleFile=false -p:PublishAot=true -p:SelfContained=true
+else
+	PUBLISHFLAGS ?=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
+endif
+
 
 CORESRC := $(shell find Core -name '*.cpp')
 COREOBJ := $(CORESRC:.cpp=.o)

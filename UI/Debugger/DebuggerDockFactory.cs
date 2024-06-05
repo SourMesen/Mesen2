@@ -258,12 +258,12 @@ namespace Mesen.Debugger
 
 	public class DockEntryDefinition
 	{
-		public DockEntryType Type;
-		public double Proportion = 0;
-		public Orientation Orientation = Orientation.Horizontal;
-		public string Name = "";
-		public string ToolTypeName = "";
-		public int SelectedIndex = 0;
-		public List<DockEntryDefinition>? Children;
+		public DockEntryType Type { get; set; }
+		public double Proportion { get; set; } = 0;
+		public Orientation Orientation { get; set; } = Orientation.Horizontal;
+		public string Name { get; set; } = "";
+		public string ToolTypeName { get; set; } = "";
+		public int SelectedIndex { get; set; } = 0;
+		public List<DockEntryDefinition>? Children { get; set; }
 	}
 }

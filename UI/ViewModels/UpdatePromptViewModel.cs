@@ -51,7 +51,7 @@ namespace Mesen.ViewModels
 					}
 					 
 					string updateData = await client.GetStringAsync("https://www.mesen.ca/Services/v2/latestversion." + platform + ".json");
-					updateInfo = JsonSerializer.Deserialize<UpdateInfo>(updateData);
+					updateInfo = (UpdateInfo?)JsonSerializer.Deserialize(updateData, typeof(UpdateInfo), MesenSerializerContext.Default);
 
 					if(updateInfo == null || (!updateInfo.DownloadUrl.StartsWith("https://www.mesen.ca/") && !updateInfo.DownloadUrl.StartsWith("https://github.com/SourMesen/"))) {
 						return null;

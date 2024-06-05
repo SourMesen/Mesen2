@@ -26,18 +26,18 @@
 					<c:InputComboBox
 						Grid.Row="0" Grid.Column="1"
 						Port="0"
-						Config="{CompiledBinding Config.Port1}"
-						ControllerType="{CompiledBinding Config.Port1.Type}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
+						Config="{Binding Config.Port1}"
+						ControllerType="{Binding Config.Port1.Type}"
+						AvailableValues="{Binding AvailableControllerTypesP12}"
 					/>
 					
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblController2}" />
 					<c:InputComboBox
 						Grid.Row="1" Grid.Column="1"
 						Port="1"
-						Config="{CompiledBinding Config.Port2}"
-						ControllerType="{CompiledBinding Config.Port2.Type}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
+						Config="{Binding Config.Port2}"
+						ControllerType="{Binding Config.Port2.Type}"
+						AvailableValues="{Binding AvailableControllerTypesP12}"
 					/>
 				</Grid>
 			</c:OptionSection>

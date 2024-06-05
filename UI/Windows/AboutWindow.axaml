@@ -5,6 +5,7 @@
 	xmlns:m="clr-namespace:Mesen"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:c="using:Mesen.Controls"
+	xmlns:w="using:Mesen.Windows"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:v="using:Mesen.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,7 +23,7 @@
 		</Style>
 		<Style Selector="ListBox">
 			<Setter Property="ItemTemplate">
-				<DataTemplate>
+				<DataTemplate DataType="w:AboutListEntry">
 					<Grid ColumnDefinitions="Auto,*,80">
 						<TextBlock
 							Text="{Binding Name}"
@@ -58,15 +59,15 @@
 				<TextBlock Text="{l:Translate lblName}" FontSize="20" Margin="0 4 0 0" />
 				<StackPanel Orientation="Horizontal" Margin="3">
 					<TextBlock Text="{l:Translate lblVersion}" Margin="0 0 5 0" />
-					<TextBlock Text="{CompiledBinding Version, ElementName=root}" />
+					<TextBlock Text="{Binding Version, ElementName=root}" />
 				</StackPanel>
 				<StackPanel Orientation="Horizontal" Margin="3">
 					<TextBlock Text="{l:Translate lblBuildDate}" Margin="0 0 5 0" />
-					<TextBlock Text="{CompiledBinding BuildDate, ElementName=root}" />
+					<TextBlock Text="{Binding BuildDate, ElementName=root}" />
 				</StackPanel>
 				<StackPanel Orientation="Horizontal" Margin="3">
 					<TextBlock Text="{l:Translate lblRuntimeVersion}" Margin="0 0 5 0" />
-					<TextBlock Text="{CompiledBinding RuntimeVersion, ElementName=root}" />
+					<TextBlock Text="{Binding RuntimeVersion, ElementName=root}" />
 				</StackPanel>
 				<TextBlock Name="lblCopyright" Margin="3" />
 				<StackPanel Orientation="Horizontal" Margin="3">
@@ -92,7 +93,7 @@
 					<TextBlock Text="{l:Translate lblAcknowledgeList}" Margin="0 5 0 5" TextWrapping="Wrap" />
 					<Border BorderBrush="Gray" BorderThickness="1">
 						<ListBox
-							ItemsSource="{CompiledBinding AcknowledgeList, ElementName=root}"
+							ItemsSource="{Binding AcknowledgeList, ElementName=root}"
 							Background="Transparent"
 							ScrollViewer.AllowAutoHide="False"
 						/>
@@ -103,7 +104,7 @@
 
 				<Border BorderBrush="Gray" BorderThickness="1">
 					<ListBox
-						ItemsSource="{CompiledBinding LibraryList, ElementName=root}"
+						ItemsSource="{Binding LibraryList, ElementName=root}"
 						Background="Transparent"
 					/>
 				</Border>

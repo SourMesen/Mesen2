@@ -32,19 +32,19 @@
 
 	<DockPanel>
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuItems}" />
-			<MenuItem Header="{l:Translate mnuSearch}" ItemsSource="{CompiledBinding SearchMenuItems}" />
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuItems}" />
+			<MenuItem Header="{l:Translate mnuSearch}" ItemsSource="{Binding SearchMenuItems}" />
 		</c:MesenMenu>
 		<DockPanel DockPanel.Dock="Top" Margin="3 2">
 			<StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
 				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblMemoryType}" />
 				<c:EnumComboBox
-					SelectedItem="{CompiledBinding Config.MemoryType}"
-					AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+					SelectedItem="{Binding Config.MemoryType}"
+					AvailableValues="{Binding AvailableMemoryTypes}"
 					Width="150"
 				/>
-				<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
+				<dc:ActionToolbar Items="{Binding ToolbarItems}" />
 			</StackPanel>
 			
 			<c:IconButton
@@ -55,19 +55,19 @@
 				Icon="Assets/Settings.png"
 			/>
 		</DockPanel>
-		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowOptionPanel}" Margin="3 0">
-			<dv:MemoryToolsDisplayOptionsView DataContext="{CompiledBinding Options}" />
+		<Panel DockPanel.Dock="Right" IsVisible="{Binding Config.ShowOptionPanel}" Margin="3 0">
+			<dv:MemoryToolsDisplayOptionsView DataContext="{Binding Options}" />
 		</Panel>
 		<Panel DockPanel.Dock="Bottom" Margin="3 0">
 			<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-				<TextBlock Text="{CompiledBinding LocationText}" Margin="0 2" />
+				<TextBlock Text="{Binding LocationText}" Margin="0 2" />
 				<Border
 					BorderThickness="1 0 0 0"
 					Margin="5 0 0 0"
 					BorderBrush="{DynamicResource MesenGrayBorderColor}"
-					IsVisible="{CompiledBinding LengthText.Length}"
+					IsVisible="{Binding LengthText.Length}"
 				>
-					<TextBlock Text="{CompiledBinding LengthText}" Margin="5 2 0 2" />
+					<TextBlock Text="{Binding LengthText}" Margin="5 2 0 2" />
 				</Border>
 			</StackPanel>
 		</Panel>
@@ -77,22 +77,22 @@
 					DockPanel.Dock="Right"
 					AllowAutoHide="False"
 					Minimum="0"
-					Maximum="{CompiledBinding MaxScrollValue}"
+					Maximum="{Binding MaxScrollValue}"
 					SmallChange="1"
 					LargeChange="10"
-					Value="{CompiledBinding ScrollPosition}"
+					Value="{Binding ScrollPosition}"
 				/>
 				<dc:HexEditor
 					Name="Hex"
-					DataProvider="{CompiledBinding DataProvider}"
-					BytesPerRow="{CompiledBinding Config.BytesPerRow}"
-					HighDensityMode="{CompiledBinding Config.HighDensityTextMode}"
-					SelectionStart="{CompiledBinding SelectionStart}"
-					SelectionLength="{CompiledBinding SelectionLength}"
-					TopRow="{CompiledBinding ScrollPosition}"
+					DataProvider="{Binding DataProvider}"
+					BytesPerRow="{Binding Config.BytesPerRow}"
+					HighDensityMode="{Binding Config.HighDensityTextMode}"
+					SelectionStart="{Binding SelectionStart}"
+					SelectionLength="{Binding SelectionLength}"
+					TopRow="{Binding ScrollPosition}"
 					FontFamily="{DynamicResource MesenMemoryViewerFont}"
 					FontSize="{DynamicResource MesenMemoryViewerFontSize}"
-					ShowStringView="{CompiledBinding Config.ShowCharacters}"
+					ShowStringView="{Binding Config.ShowCharacters}"
 				/>
 			</DockPanel>
 		</Border>

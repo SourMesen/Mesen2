@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -95,9 +96,9 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] private static extern void GetCpuState(IntPtr state, CpuType cpuType);
-		public unsafe static T GetCpuState<T>(CpuType cpuType) where T : struct, BaseState
+		public unsafe static T GetCpuState<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T>(CpuType cpuType) where T : struct, BaseState
 		{
-			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			byte* ptr = stackalloc byte[Marshal.SizeOf<T>()];
 			DebugApi.GetCpuState((IntPtr)ptr, cpuType);
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
@@ -120,9 +121,9 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] private static extern void GetPpuState(IntPtr state, CpuType cpuType);
-		public unsafe static T GetPpuState<T>(CpuType cpuType) where T : struct, BaseState
+		public unsafe static T GetPpuState<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T>(CpuType cpuType) where T : struct, BaseState
 		{
-			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			byte* ptr = stackalloc byte[Marshal.SizeOf<T>()];
 			DebugApi.GetPpuState((IntPtr)ptr, cpuType);
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
@@ -141,9 +142,9 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] private static extern void GetPpuToolsState(CpuType cpuType, IntPtr state);
-		public unsafe static T GetPpuToolsState<T>(CpuType cpuType) where T : struct, BaseState
+		public unsafe static T GetPpuToolsState<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T>(CpuType cpuType) where T : struct, BaseState
 		{
-			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			byte* ptr = stackalloc byte[Marshal.SizeOf<T>()];
 			DebugApi.GetPpuToolsState(cpuType, (IntPtr)ptr);
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
@@ -162,31 +163,31 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] private static extern void SetPpuState(IntPtr state, CpuType cpuType);
-		public unsafe static void SetPpuState(BaseState state, CpuType cpuType)
+		public unsafe static void SetPpuState<T>(T state, CpuType cpuType) where T : BaseState
 		{
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
-			byte* stateBuffer = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			byte* stateBuffer = stackalloc byte[Marshal.SizeOf<T>()];
 			Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
 			DebugApi.SetPpuState((IntPtr)stateBuffer, cpuType);
 		}
 
 		[DllImport(DllPath)] private static extern void SetCpuState(IntPtr state, CpuType cpuType);
-		public unsafe static void SetCpuState(BaseState state, CpuType cpuType)
+		public unsafe static void SetCpuState<T>(T state, CpuType cpuType) where T : BaseState
 		{
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidCpuState(ref state, cpuType));
 
-			byte* stateBuffer = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			byte* stateBuffer = stackalloc byte[Marshal.SizeOf<T>()];
 			Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
 			DebugApi.SetCpuState((IntPtr)stateBuffer, cpuType);
 		}
 
 		[DllImport(DllPath)] private static extern void GetConsoleState(IntPtr state, ConsoleType consoleType);
-		public unsafe static T GetConsoleState<T>(ConsoleType consoleType) where T : struct, BaseState
+		public unsafe static T GetConsoleState<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T>(ConsoleType consoleType) where T : struct, BaseState
 		{
-			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			byte* ptr = stackalloc byte[Marshal.SizeOf<T>()];
 			DebugApi.GetConsoleState((IntPtr)ptr, consoleType);
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
@@ -291,7 +292,7 @@ namespace Mesen.Interop
 
 			fixed(byte* compareVramPtr = options.CompareVram) {
 				fixed(AddressCounters* accessCounters = options.AccessCounters) {
-					byte* stateBuffer = stackalloc byte[Marshal.SizeOf(state.GetType())];
+					byte* stateBuffer = stackalloc byte[GetStateSize(state)];
 					Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
 					InteropGetTilemapOptions interopOptions = options.ToInterop();
 					interopOptions.CompareVram = (IntPtr)compareVramPtr;
@@ -307,7 +308,7 @@ namespace Mesen.Interop
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
-			byte* ptr = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			byte* ptr = stackalloc byte[GetStateSize(state)];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
 			return DebugApi.GetTilemapSize(cpuType, options.ToInterop(), (IntPtr)ptr);
 		}
@@ -318,7 +319,7 @@ namespace Mesen.Interop
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
-			byte* ptr = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			byte* ptr = stackalloc byte[GetStateSize(state)];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
 			DebugTilemapTileInfo info = DebugApi.GetTilemapTileInfo(x, y, cpuType, options.ToInterop(), vram, (IntPtr)ptr);
 			return info.Row >= 0 ? info : null;
@@ -332,7 +333,7 @@ namespace Mesen.Interop
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
-			byte* ptr = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			byte* ptr = stackalloc byte[GetStateSize(state)];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
 			return DebugApi.GetSpritePreviewInfo(cpuType, options, (IntPtr)ptr);
 		}
@@ -343,7 +344,7 @@ namespace Mesen.Interop
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
-			byte* statePtr = stackalloc byte[Marshal.SizeOf(state.GetType())];
+			byte* statePtr = stackalloc byte[GetStateSize(state)];
 			Marshal.StructureToPtr(state, (IntPtr)statePtr, false);
 
 			int count = (int)GetSpritePreviewInfo(cpuType, options, (IntPtr)statePtr).SpriteCount;
@@ -523,7 +524,7 @@ namespace Mesen.Interop
 			return assembledCode;
 		}
 
-		private static bool IsValidCpuState(ref BaseState state, CpuType cpuType)
+		private static bool IsValidCpuState<T>(ref T state, CpuType cpuType) where T : BaseState
 		{
 			return cpuType switch {
 				CpuType.Snes => state is SnesCpuState,
@@ -541,7 +542,7 @@ namespace Mesen.Interop
 			};
 		}
 
-		private static bool IsValidPpuState(ref BaseState state, CpuType cpuType)
+		private static bool IsValidPpuState<T>(ref T state, CpuType cpuType) where T : BaseState
 		{
 			return cpuType.GetConsoleType() switch {
 				ConsoleType.Snes => state is SnesPpuState,
@@ -553,6 +554,14 @@ namespace Mesen.Interop
 				_ => false
 			};
 		}
+
+		private static int GetStateSize(BaseState state)
+		{
+#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+			return Marshal.SizeOf(state.GetType());
+#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+		}
+
 	}
 
 	public enum MemoryType

@@ -61,28 +61,28 @@
 	</UserControl.Styles>
 	
 	<Panel>
-		<DockPanel Classes.visibleText="{CompiledBinding Text.Length, ElementName=root}">
+		<DockPanel Classes.visibleText="{Binding Text.Length, ElementName=root}">
 			<TextBlock
 				DockPanel.Dock="Bottom"
 				Classes="VerticalText"
-				Text="{CompiledBinding Text, ElementName=root}"
+				Text="{Binding Text, ElementName=root}"
 			/>
 			
 			<c:MesenNumericTextBox
-				Min="{CompiledBinding Minimum, ElementName=root}"
-				Max="{CompiledBinding Maximum, ElementName=root}"
-				Value="{CompiledBinding Value, ElementName=root}"
+				Min="{Binding Minimum, ElementName=root}"
+				Max="{Binding Maximum, ElementName=root}"
+				Value="{Binding Value, ElementName=root}"
 				HorizontalContentAlignment="Center"
-				IsVisible="{CompiledBinding !HideValue, ElementName=root}"
+				IsVisible="{Binding !HideValue, ElementName=root}"
 			/>
 
 			<Slider
-				Minimum="{CompiledBinding Minimum, ElementName=root}"
-				Maximum="{CompiledBinding Maximum, ElementName=root}"
-				Orientation="{CompiledBinding Orientation, ElementName=root}"
-				Value="{CompiledBinding Value, ElementName=root, Mode=TwoWay}"
+				Minimum="{Binding Minimum, ElementName=root}"
+				Maximum="{Binding Maximum, ElementName=root}"
+				Orientation="{Binding Orientation, ElementName=root}"
+				Value="{Binding Value, ElementName=root, Mode=TwoWay}"
 				TickPlacement="BottomRight"
-				TickFrequency="{CompiledBinding TickFrequency, ElementName=root}"
+				TickFrequency="{Binding TickFrequency, ElementName=root}"
 				PropertyChanged="Slider_OnPropertyChanged"
 				LargeChange="5"
 				SmallChange="1"
@@ -90,7 +90,7 @@
 		</DockPanel>
 		<TextBlock
 			Classes="HorizontalText"
-			Text="{CompiledBinding Text, ElementName=root}"
+			Text="{Binding Text, ElementName=root}"
 		/>
 	</Panel>
 </UserControl>

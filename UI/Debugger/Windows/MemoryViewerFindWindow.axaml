@@ -26,7 +26,7 @@
 	
 	<DockPanel Margin="3">
 		<StackPanel DockPanel.Dock="Bottom">
-			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" IsVisible="{CompiledBinding ShowNotFoundError}">
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" IsVisible="{Binding ShowNotFoundError}">
 				<Image Source="/Assets/Warning.png" Stretch="None" />
 				<TextBlock Text="{l:Translate lblNoMatchFound}" Padding="3" />
 			</StackPanel>
@@ -38,7 +38,7 @@
 					HorizontalContentAlignment="Center"
 					Click="FindPrev_OnClick"
 					Text="{l:Translate btnFindPrev}"
-					IsEnabled="{CompiledBinding IsValid}"
+					IsEnabled="{Binding IsValid}"
 				/>
 				<c:ButtonWithIcon
 					Icon="Assets/NextArrow.png"
@@ -47,7 +47,7 @@
 					IsDefault="True"
 					Click="FindNext_OnClick"
 					Text="{l:Translate btnFindNext}"
-					IsEnabled="{CompiledBinding IsValid}"
+					IsEnabled="{Binding IsValid}"
 				/>
 				<Button
 					MinWidth="70"
@@ -69,7 +69,7 @@
 				Grid.Column="1"
 				Name="txtValue"
 				HorizontalAlignment="Stretch"
-				Text="{CompiledBinding SearchString}"
+				Text="{Binding SearchString}"
 				MaxLength="300"
 			/>
 			<Image
@@ -91,11 +91,11 @@
 				Grid.Row="1"
 				Grid.Column="1"
 				Grid.ColumnSpan="2"
-				SelectedItem="{CompiledBinding DataType}"
+				SelectedItem="{Binding DataType}"
 		  />
 			<TextBlock
 				Grid.Row="2"
-				IsVisible="{CompiledBinding IsInteger}"
+				IsVisible="{Binding IsInteger}"
 				Text="{l:Translate lblIntType}"
 				VerticalAlignment="Center"
 				Margin="0 0 5 0"
@@ -104,42 +104,42 @@
 				Grid.Row="2"
 				Grid.Column="1"
 				Grid.ColumnSpan="2"
-				IsVisible="{CompiledBinding IsInteger}"
-				SelectedItem="{CompiledBinding IntType}"
+				IsVisible="{Binding IsInteger}"
+				SelectedItem="{Binding IntType}"
 		  />
 			<CheckBox
 				Grid.Row="3"
 				Grid.ColumnSpan="3"
-				IsVisible="{CompiledBinding IsString}"
-				IsChecked="{CompiledBinding CaseSensitive}"
+				IsVisible="{Binding IsString}"
+				IsChecked="{Binding CaseSensitive}"
 				Content="{l:Translate chkCaseSensitive}"
 		  />
 			<CheckBox
 				Grid.Row="4"
 				Grid.ColumnSpan="3"
-				IsVisible="{CompiledBinding IsString}"
-				IsChecked="{CompiledBinding UseTblMappings}"
+				IsVisible="{Binding IsString}"
+				IsChecked="{Binding UseTblMappings}"
 				Content="{l:Translate chkUseTblMappings}"
 		  />
 		</Grid>
 
 		<Grid ColumnDefinitions="1*,1*" RowDefinitions="Auto" >
 			<c:OptionSection Header="{l:Translate lblAccessFilters}">
-				<CheckBox Content="{l:Translate chkFilterNotAccessed}" IsChecked="{CompiledBinding FilterNotAccessed}" />
-				<CheckBox Content="{l:Translate chkFilterRead}" IsChecked="{CompiledBinding FilterRead}" />
-				<CheckBox Content="{l:Translate chkFilterWrite}" IsChecked="{CompiledBinding FilterWrite}" />
-				<CheckBox Content="{l:Translate chkFilterExec}" IsChecked="{CompiledBinding FilterExec}" />
+				<CheckBox Content="{l:Translate chkFilterNotAccessed}" IsChecked="{Binding FilterNotAccessed}" />
+				<CheckBox Content="{l:Translate chkFilterRead}" IsChecked="{Binding FilterRead}" />
+				<CheckBox Content="{l:Translate chkFilterWrite}" IsChecked="{Binding FilterWrite}" />
+				<CheckBox Content="{l:Translate chkFilterExec}" IsChecked="{Binding FilterExec}" />
 				<StackPanel Orientation="Horizontal">
-					<CheckBox Content="{l:Translate chkFilterTimeSpan}" IsChecked="{CompiledBinding FilterTimeSpanEnabled}" />
-					<c:MesenNumericTextBox MinWidth="35" Margin="5 0" Min="1" Max="9999" Value="{CompiledBinding FilterTimeSpan}" IsEnabled="{CompiledBinding FilterTimeSpanEnabled}" />
+					<CheckBox Content="{l:Translate chkFilterTimeSpan}" IsChecked="{Binding FilterTimeSpanEnabled}" />
+					<c:MesenNumericTextBox MinWidth="35" Margin="5 0" Min="1" Max="9999" Value="{Binding FilterTimeSpan}" IsEnabled="{Binding FilterTimeSpanEnabled}" />
 					<TextBlock Text="{l:Translate lblFrames}" />
 				</StackPanel>
 			</c:OptionSection>
 
 			<c:OptionSection Header="{l:Translate lblDataTypeFilters}" Grid.Column="1">
-				<CheckBox Content="{l:Translate chkFilterCode}" IsChecked="{CompiledBinding FilterCode}" />
-				<CheckBox Content="{l:Translate chkFilterData}" IsChecked="{CompiledBinding FilterData}" />
-				<CheckBox Content="{l:Translate chkFilterUnidentified}" IsChecked="{CompiledBinding FilterUnidentified}" />
+				<CheckBox Content="{l:Translate chkFilterCode}" IsChecked="{Binding FilterCode}" />
+				<CheckBox Content="{l:Translate chkFilterData}" IsChecked="{Binding FilterData}" />
+				<CheckBox Content="{l:Translate chkFilterUnidentified}" IsChecked="{Binding FilterUnidentified}" />
 			</c:OptionSection>
 		</Grid>
 	</DockPanel>

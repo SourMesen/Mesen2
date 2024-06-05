@@ -22,20 +22,20 @@
 	
 	<DockPanel>
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="{l:Translate mnuOptions}" ItemsSource="{CompiledBinding OptionsMenuItems}" />
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuOptions}" ItemsSource="{Binding OptionsMenuItems}" />
 		</c:MesenMenu>
 
 		<Border Name="ControlBar" BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="0 1 0 0" DockPanel.Dock="Bottom">
 			<DockPanel HorizontalAlignment="Stretch" Margin="5 0 5 0">
-				<c:IconButton DockPanel.Dock="Left" Icon="Assets/MediaPlay.png" Width="40" Height="30" Margin="0 0 10 0" IsVisible="{CompiledBinding IsPaused}" Command="{Binding TogglePause}" />
-				<c:IconButton DockPanel.Dock="Left" Icon="Assets/MediaPause.png" Width="40" Height="30" Margin="0 0 10 0" IsVisible="{CompiledBinding !IsPaused}" Command="{Binding TogglePause}" />
+				<c:IconButton DockPanel.Dock="Left" Icon="Assets/MediaPlay.png" Width="40" Height="30" Margin="0 0 10 0" IsVisible="{Binding IsPaused}" Command="{Binding TogglePause}" />
+				<c:IconButton DockPanel.Dock="Left" Icon="Assets/MediaPause.png" Width="40" Height="30" Margin="0 0 10 0" IsVisible="{Binding !IsPaused}" Command="{Binding TogglePause}" />
 
 				<StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="15 0 0 0">
 					<c:MesenSlider
 					  Minimum="0"
 					  Maximum="100"
-					  Value="{CompiledBinding Config.Volume}"
+					  Value="{Binding Config.Volume}"
 						Width="100"
 						TickFrequency="10"
 						HideValue="True"
@@ -44,14 +44,14 @@
 					<TextBlock Text="{l:Translate lblVolume}" HorizontalAlignment="Center" Margin="0 -4 0 0" />
 				</StackPanel>
 			
-				<TextBlock MinWidth="30" Text="{CompiledBinding TotalTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="5 0 10 0" />
+				<TextBlock MinWidth="30" Text="{Binding TotalTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="5 0 10 0" />
 				<TextBlock Text=" / " DockPanel.Dock="Right" VerticalAlignment="Center" />
-				<TextBlock MinWidth="30" Text="{CompiledBinding CurrentTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="20 0 5 0" />
+				<TextBlock MinWidth="30" Text="{Binding CurrentTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="20 0 5 0" />
 
 				<Slider
 					Minimum="0"
-					Maximum="{CompiledBinding MaxPosition}"
-					Value="{CompiledBinding CurrentPosition}"
+					Maximum="{Binding MaxPosition}"
+					Value="{Binding CurrentPosition}"
 					Margin="0 10 0 0"
 					VerticalAlignment="Center"
 				/>
@@ -59,14 +59,14 @@
 		</Border>
 
 		<Panel Name="RendererPanel" Background="Black">
-			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{CompiledBinding !IsSoftwareRendererVisible}" />
+			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsSoftwareRendererVisible}" />
 			
-			<Panel IsVisible="{CompiledBinding IsSoftwareRendererVisible}">
+			<Panel IsVisible="{Binding IsSoftwareRendererVisible}">
 				<c:SoftwareRendererView
 					Name="SoftwareRenderer"
-					DataContext="{CompiledBinding SoftwareRenderer}"
-					Width="{CompiledBinding Width}"
-					Height="{CompiledBinding Height}"
+					DataContext="{Binding SoftwareRenderer}"
+					Width="{Binding Width}"
+					Height="{Binding Height}"
 			  />
 			</Panel>
 		</Panel>

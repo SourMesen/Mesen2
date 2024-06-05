@@ -21,16 +21,16 @@
 	<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
 		<DataBox
 			Name="lstRegisterTab"
-			Items="{CompiledBinding Data}"
-			Selection="{CompiledBinding Selection}"
+			Items="{Binding Data}"
+			Selection="{Binding Selection}"
 			GridLinesVisibility="All"
-			ColumnWidths="{CompiledBinding ColumnWidths}"
+			ColumnWidths="{Binding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" CanUserResize="True" InitialWidth="92" />
-				<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" CanUserResize="True" InitialWidth="173" />
-				<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" CanUserResize="True" InitialWidth="63" />
-				<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" CanUserResize="True" InitialWidth="67" />
+				<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address, DataType={x:Type vm:RegEntry}}" CanUserResize="True" InitialWidth="92" />
+				<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name, DataType={x:Type vm:RegEntry}}" CanUserResize="True" InitialWidth="173" />
+				<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value, DataType={x:Type vm:RegEntry}}" CanUserResize="True" InitialWidth="63" />
+				<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex, DataType={x:Type vm:RegEntry}}" CanUserResize="True" InitialWidth="67" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

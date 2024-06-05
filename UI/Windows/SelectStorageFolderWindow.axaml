@@ -20,14 +20,14 @@
 	</Design.DataContext>
 
 	<Panel>
-		<DockPanel Margin="2" IsVisible="{CompiledBinding IsCopying}">
+		<DockPanel Margin="2" IsVisible="{Binding IsCopying}">
 			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 				<TextBlock Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{l:Translate lblCopyingFiles}" />
-				<ProgressBar Minimum="0" Maximum="100" Height="20" Value="{CompiledBinding CopyProgress}" />
+				<ProgressBar Minimum="0" Maximum="100" Height="20" Value="{Binding CopyProgress}" />
 			</StackPanel>
 		</DockPanel>
 		
-		<DockPanel Margin="2" IsVisible="{CompiledBinding !IsCopying}">
+		<DockPanel Margin="2" IsVisible="{Binding !IsCopying}">
 			<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
 				<Button MinWidth="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
 				<Button MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
@@ -36,12 +36,12 @@
 			<StackPanel Margin="5">
 				<TextBlock Text="{l:Translate lblStorageHint}" />
 				<StackPanel Margin="5 5 0 0">
-					<RadioButton Content="{l:Translate radStorageDocuments}" IsChecked="{CompiledBinding StoreInUserProfile}" />
-					<RadioButton Content="{l:Translate radStoragePortable}" IsChecked="{CompiledBinding !StoreInUserProfile}" />
+					<RadioButton Content="{l:Translate radStorageDocuments}" IsChecked="{Binding StoreInUserProfile}" />
+					<RadioButton Content="{l:Translate radStoragePortable}" IsChecked="{Binding !StoreInUserProfile}" />
 				</StackPanel>
 				<DockPanel>
 					<TextBlock Text="{l:Translate lblFolder}" DockPanel.Dock="Left" VerticalAlignment="Center" />
-					<TextBox IsReadOnly="True" Text="{CompiledBinding DestinationFolder}" />
+					<TextBox IsReadOnly="True" Text="{Binding DestinationFolder}" />
 				</DockPanel>
 			</StackPanel>
 		</DockPanel>

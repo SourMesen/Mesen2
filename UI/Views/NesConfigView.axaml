@@ -54,7 +54,7 @@
 		</Style>
 	</UserControl.Styles>
 
-	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
+	<TabControl TabStripPlacement="Top" SelectedIndex="{Binding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
@@ -63,17 +63,17 @@
 						<c:EnumComboBox
 							Grid.Column="1"
 							Width="130"
-							SelectedItem="{CompiledBinding Config.Region}"
-							AvailableValues="{CompiledBinding AvailableRegions}"
+							SelectedItem="{Binding Config.Region}"
+							AvailableValues="{Binding AvailableRegions}"
 						/>
 					</StackPanel>
-					<CheckBox IsChecked="{CompiledBinding Config.EnableHdPacks}" Content="{l:Translate chkEnableHdPacks}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameDatabase}" Text="{l:Translate chkDisableGameDatabase}" />
+					<CheckBox IsChecked="{Binding Config.EnableHdPacks}" Content="{l:Translate chkEnableHdPacks}" />
+					<c:CheckBoxWarning IsChecked="{Binding Config.DisableGameDatabase}" Text="{l:Translate chkDisableGameDatabase}" />
 
 					<c:OptionSection Header="{l:Translate lblFdsSettings}">
-						<CheckBox IsChecked="{CompiledBinding Config.FdsAutoLoadDisk}" Content="{l:Translate chkFdsAutoLoadDisk}" />
-						<CheckBox IsChecked="{CompiledBinding Config.FdsFastForwardOnLoad}" Content="{l:Translate chkFdsFastForwardOnLoad}" />
-						<CheckBox IsChecked="{CompiledBinding Config.FdsAutoInsertDisk}" Content="{l:Translate chkFdsAutoInsertDisk}" />
+						<CheckBox IsChecked="{Binding Config.FdsAutoLoadDisk}" Content="{l:Translate chkFdsAutoLoadDisk}" />
+						<CheckBox IsChecked="{Binding Config.FdsFastForwardOnLoad}" Content="{l:Translate chkFdsFastForwardOnLoad}" />
+						<CheckBox IsChecked="{Binding Config.FdsAutoInsertDisk}" Content="{l:Translate chkFdsAutoInsertDisk}" />
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblVsDualSystem}">
@@ -82,7 +82,7 @@
 							<c:EnumComboBox
 								Grid.Column="1"
 								Width="130"
-								SelectedItem="{CompiledBinding Config.VsDualAudioOutput}"
+								SelectedItem="{Binding Config.VsDualAudioOutput}"
 							/>
 
 							<TextBlock Grid.Row="1" Text="{l:Translate lblVsDualShowVideo}" />
@@ -90,7 +90,7 @@
 								Grid.Row="1"
 								Grid.Column="1"
 								Width="130"
-								SelectedItem="{CompiledBinding Config.VsDualVideoOutput}"
+								SelectedItem="{Binding Config.VsDualVideoOutput}"
 							/>
 						</Grid>
 					</c:OptionSection>
@@ -102,10 +102,10 @@
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate grpGeneral}" Margin="0">
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding Config.ReduceDmcPopping}" Content="{l:Translate chkReduceDmcPopping}" />
-							<CheckBox IsChecked="{CompiledBinding Config.SilenceTriangleHighFreq}" Content="{l:Translate chkSilenceTriangleHighFreq}" />
-							<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableNoiseModeFlag}" Text="{l:Translate chkDisableNoiseModeFlag}" />
-							<c:CheckBoxWarning IsChecked="{CompiledBinding Config.SwapDutyCycles}" Text="{l:Translate chkSwapDutyCycles}" />
+							<CheckBox IsChecked="{Binding Config.ReduceDmcPopping}" Content="{l:Translate chkReduceDmcPopping}" />
+							<CheckBox IsChecked="{Binding Config.SilenceTriangleHighFreq}" Content="{l:Translate chkSilenceTriangleHighFreq}" />
+							<c:CheckBoxWarning IsChecked="{Binding Config.DisableNoiseModeFlag}" Text="{l:Translate chkDisableNoiseModeFlag}" />
+							<c:CheckBoxWarning IsChecked="{Binding Config.SwapDutyCycles}" Text="{l:Translate chkSwapDutyCycles}" />
 						</StackPanel>
 					</c:OptionSection>
 
@@ -113,24 +113,24 @@
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblStereoEffect}" />
 							<c:EnumComboBox
-								SelectedItem="{CompiledBinding Config.StereoFilter}"
+								SelectedItem="{Binding Config.StereoFilter}"
 								Width="100"
 							/>
-							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsDelayStereoEffect}">
-								<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoDelay}" />
+							<StackPanel Orientation="Horizontal" IsVisible="{Binding IsDelayStereoEffect}">
+								<NumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoDelay}" />
 								<TextBlock Text="{l:Translate lblMs}" Margin="5 0 0 0" />
 							</StackPanel>
-							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsPanningStereoEffect}">
-								<NumericUpDown Minimum="0" Maximum="180" Value="{CompiledBinding Config.StereoPanningAngle}" />
+							<StackPanel Orientation="Horizontal" IsVisible="{Binding IsPanningStereoEffect}">
+								<NumericUpDown Minimum="0" Maximum="180" Value="{Binding Config.StereoPanningAngle}" />
 								<TextBlock Text="{l:Translate lblAngle}" Margin="5 0 0 0" />
 							</StackPanel>
-							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding IsCombStereoEffect}" Margin="10 0">
+							<StackPanel Orientation="Horizontal" IsVisible="{Binding IsCombStereoEffect}" Margin="10 0">
 								<TextBlock Text="{l:Translate lblDelay}" />
-								<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoCombFilterDelay}" />
+								<NumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoCombFilterDelay}" />
 								<TextBlock Text="{l:Translate lblMs}" Margin="5 0" />
 
 								<TextBlock Text="{l:Translate lblStrength}" Margin="10 0 0 0" />
-								<NumericUpDown Minimum="0" Maximum="100" Value="{CompiledBinding Config.StereoCombFilterStrength}" />
+								<NumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoCombFilterStrength}" />
 								<TextBlock Text="%" Margin="5 0 0 0" />
 							</StackPanel>
 						</StackPanel>
@@ -142,72 +142,72 @@
 								<Grid Classes="Volume" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 									<StackPanel Grid.Row="0" >
 										<TextBlock Text="Square 1" />
-										<TextBlock Text="{CompiledBinding Config.Square1Volume}" />
+										<TextBlock Text="{Binding Config.Square1Volume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="0" Value="{CompiledBinding Config.Square1Volume}" />
+									<c:MesenSlider Grid.Row="0" Value="{Binding Config.Square1Volume}" />
 
 									<StackPanel Grid.Row="1" >
 										<TextBlock Text="Square 2" />
-										<TextBlock Text="{CompiledBinding Config.Square2Volume}" />
+										<TextBlock Text="{Binding Config.Square2Volume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="1" Value="{CompiledBinding Config.Square2Volume}" />
+									<c:MesenSlider Grid.Row="1" Value="{Binding Config.Square2Volume}" />
 
 									<StackPanel Grid.Row="2" >
 										<TextBlock Text="Triangle" />
-										<TextBlock Text="{CompiledBinding Config.TriangleVolume}" />
+										<TextBlock Text="{Binding Config.TriangleVolume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="2" Value="{CompiledBinding Config.TriangleVolume}" />
+									<c:MesenSlider Grid.Row="2" Value="{Binding Config.TriangleVolume}" />
 
 									<StackPanel Grid.Row="3" >
 										<TextBlock Text="Noise" />
-										<TextBlock Text="{CompiledBinding Config.NoiseVolume}" />
+										<TextBlock Text="{Binding Config.NoiseVolume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="3" Value="{CompiledBinding Config.NoiseVolume}" />
+									<c:MesenSlider Grid.Row="3" Value="{Binding Config.NoiseVolume}" />
 
 									<StackPanel Grid.Row="4" >
 										<TextBlock Text="DMC" />
-										<TextBlock Text="{CompiledBinding Config.DmcVolume}" />
+										<TextBlock Text="{Binding Config.DmcVolume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="4" Value="{CompiledBinding Config.DmcVolume}" />
+									<c:MesenSlider Grid.Row="4" Value="{Binding Config.DmcVolume}" />
 								</Grid>
 							</StackPanel>
 							<StackPanel Grid.Column="1" Margin="4 0 0 0">
 								<Grid Classes="Volume" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 									<StackPanel Grid.Row="0" >
 										<TextBlock Text="FDS" />
-										<TextBlock Text="{CompiledBinding Config.FdsVolume}" />
+										<TextBlock Text="{Binding Config.FdsVolume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="0" Value="{CompiledBinding Config.FdsVolume}" />
+									<c:MesenSlider Grid.Row="0" Value="{Binding Config.FdsVolume}" />
 
 									<StackPanel Grid.Row="1" >
 										<TextBlock Text="MMC5" />
-										<TextBlock Text="{CompiledBinding Config.Mmc5Volume}" />
+										<TextBlock Text="{Binding Config.Mmc5Volume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="1" Value="{CompiledBinding Config.Mmc5Volume}" />
+									<c:MesenSlider Grid.Row="1" Value="{Binding Config.Mmc5Volume}" />
 
 									<StackPanel Grid.Row="2" >
 										<TextBlock Text="VRC6" />
-										<TextBlock Text="{CompiledBinding Config.Vrc6Volume}" />
+										<TextBlock Text="{Binding Config.Vrc6Volume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="2" Value="{CompiledBinding Config.Vrc6Volume}" />
+									<c:MesenSlider Grid.Row="2" Value="{Binding Config.Vrc6Volume}" />
 
 									<StackPanel Grid.Row="3" >
 										<TextBlock Text="VRC7" />
-										<TextBlock Text="{CompiledBinding Config.Vrc7Volume}" />
+										<TextBlock Text="{Binding Config.Vrc7Volume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="3" Value="{CompiledBinding Config.Vrc7Volume}" />
+									<c:MesenSlider Grid.Row="3" Value="{Binding Config.Vrc7Volume}" />
 
 									<StackPanel Grid.Row="4" >
 										<TextBlock Text="Namco" />
-										<TextBlock Text="{CompiledBinding Config.Namco163Volume}" />
+										<TextBlock Text="{Binding Config.Namco163Volume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="4" Value="{CompiledBinding Config.Namco163Volume}" />
+									<c:MesenSlider Grid.Row="4" Value="{Binding Config.Namco163Volume}" />
 
 									<StackPanel Grid.Row="5" >
 										<TextBlock Text="Sunsoft" />
-										<TextBlock Text="{CompiledBinding Config.Sunsoft5bVolume}" />
+										<TextBlock Text="{Binding Config.Sunsoft5bVolume}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="5" Value="{CompiledBinding Config.Sunsoft5bVolume}" />
+									<c:MesenSlider Grid.Row="5" Value="{Binding Config.Sunsoft5bVolume}" />
 								</Grid>
 							</StackPanel>
 						</Grid>
@@ -218,72 +218,72 @@
 								<Grid Classes="Panning" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 									<StackPanel Grid.Row="0" >
 										<TextBlock Text="Square 1" />
-										<TextBlock Text="{CompiledBinding Config.Square1Panning}" />
+										<TextBlock Text="{Binding Config.Square1Panning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="0" Value="{CompiledBinding Config.Square1Panning}" />
+									<c:MesenSlider Grid.Row="0" Value="{Binding Config.Square1Panning}" />
 
 									<StackPanel Grid.Row="1" >
 										<TextBlock Text="Square 2" />
-										<TextBlock Text="{CompiledBinding Config.Square2Panning}" />
+										<TextBlock Text="{Binding Config.Square2Panning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="1" Value="{CompiledBinding Config.Square2Panning}" />
+									<c:MesenSlider Grid.Row="1" Value="{Binding Config.Square2Panning}" />
 
 									<StackPanel Grid.Row="2" >
 										<TextBlock Text="Triangle" />
-										<TextBlock Text="{CompiledBinding Config.TrianglePanning}" />
+										<TextBlock Text="{Binding Config.TrianglePanning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="2" Value="{CompiledBinding Config.TrianglePanning}" />
+									<c:MesenSlider Grid.Row="2" Value="{Binding Config.TrianglePanning}" />
 
 									<StackPanel Grid.Row="3" >
 										<TextBlock Text="Noise" />
-										<TextBlock Text="{CompiledBinding Config.NoisePanning}" />
+										<TextBlock Text="{Binding Config.NoisePanning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="3" Value="{CompiledBinding Config.NoisePanning}" />
+									<c:MesenSlider Grid.Row="3" Value="{Binding Config.NoisePanning}" />
 
 									<StackPanel Grid.Row="4" >
 										<TextBlock Text="DMC" />
-										<TextBlock Text="{CompiledBinding Config.DmcPanning}" />
+										<TextBlock Text="{Binding Config.DmcPanning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="4" Value="{CompiledBinding Config.DmcPanning}" />
+									<c:MesenSlider Grid.Row="4" Value="{Binding Config.DmcPanning}" />
 								</Grid>
 							</StackPanel>
 							<StackPanel Grid.Column="1">
 								<Grid Classes="Panning" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 									<StackPanel Grid.Row="0" Margin="4 0 0 0">
 										<TextBlock Text="FDS" />
-										<TextBlock Text="{CompiledBinding Config.FdsPanning}" />
+										<TextBlock Text="{Binding Config.FdsPanning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="0" Value="{CompiledBinding Config.FdsPanning}" />
+									<c:MesenSlider Grid.Row="0" Value="{Binding Config.FdsPanning}" />
 
 									<StackPanel Grid.Row="1" >
 										<TextBlock Text="MMC5" />
-										<TextBlock Text="{CompiledBinding Config.Mmc5Panning}" />
+										<TextBlock Text="{Binding Config.Mmc5Panning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="1" Value="{CompiledBinding Config.Mmc5Panning}" />
+									<c:MesenSlider Grid.Row="1" Value="{Binding Config.Mmc5Panning}" />
 
 									<StackPanel Grid.Row="2" >
 										<TextBlock Text="VRC6" />
-										<TextBlock Text="{CompiledBinding Config.Vrc6Panning}" />
+										<TextBlock Text="{Binding Config.Vrc6Panning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="2" Value="{CompiledBinding Config.Vrc6Panning}" />
+									<c:MesenSlider Grid.Row="2" Value="{Binding Config.Vrc6Panning}" />
 
 									<StackPanel Grid.Row="3" >
 										<TextBlock Text="VRC7" />
-										<TextBlock Text="{CompiledBinding Config.Vrc7Panning}" />
+										<TextBlock Text="{Binding Config.Vrc7Panning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="3" Value="{CompiledBinding Config.Vrc7Panning}" />
+									<c:MesenSlider Grid.Row="3" Value="{Binding Config.Vrc7Panning}" />
 
 									<StackPanel Grid.Row="4" >
 										<TextBlock Text="Namco" />
-										<TextBlock Text="{CompiledBinding Config.Namco163Panning}" />
+										<TextBlock Text="{Binding Config.Namco163Panning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="4" Value="{CompiledBinding Config.Namco163Panning}" />
+									<c:MesenSlider Grid.Row="4" Value="{Binding Config.Namco163Panning}" />
 
 									<StackPanel Grid.Row="5" >
 										<TextBlock Text="Sunsoft" />
-										<TextBlock Text="{CompiledBinding Config.Sunsoft5bPanning}" />
+										<TextBlock Text="{Binding Config.Sunsoft5bPanning}" />
 									</StackPanel>
-									<c:MesenSlider Grid.Row="5" Value="{CompiledBinding Config.Sunsoft5bPanning}" />
+									<c:MesenSlider Grid.Row="5" Value="{Binding Config.Sunsoft5bPanning}" />
 								</Grid>
 							</StackPanel>
 						</Grid>
@@ -298,39 +298,39 @@
 					<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-							<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+							<c:EnumComboBox SelectedItem="{Binding Config.RamPowerOnState}" Width="200" />
 						</StackPanel>
 
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeMapperPowerOnState}" Text="{l:Translate chkMapperRandomPowerOnState}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeCpuPpuAlignment}" Text="{l:Translate chkRandomizeCpuPpuAlignment}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableOamDecay}" Text="{l:Translate chkEnableOamDecay}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpuOamRowCorruption}" Text="{l:Translate chkEnablePpuOamRowCorruption}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpu2000ScrollGlitch}" Text="{l:Translate chkEnablePpu2000ScrollGlitch}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpu2006ScrollGlitch}" Text="{l:Translate chkEnablePpu2006ScrollGlitch}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RestrictPpuAccessOnFirstFrame}" Text="{l:Translate chkRestrictPpuAccessOnFirstFrame}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.RandomizeMapperPowerOnState}" Text="{l:Translate chkMapperRandomPowerOnState}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.RandomizeCpuPpuAlignment}" Text="{l:Translate chkRandomizeCpuPpuAlignment}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.EnableOamDecay}" Text="{l:Translate chkEnableOamDecay}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.EnablePpuOamRowCorruption}" Text="{l:Translate chkEnablePpuOamRowCorruption}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.EnablePpu2000ScrollGlitch}" Text="{l:Translate chkEnablePpu2000ScrollGlitch}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.EnablePpu2006ScrollGlitch}" Text="{l:Translate chkEnablePpu2006ScrollGlitch}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.RestrictPpuAccessOnFirstFrame}" Text="{l:Translate chkRestrictPpuAccessOnFirstFrame}" />
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblMiscSettings}">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblConsoleType}" Margin="0 0 5 0" />
-							<c:EnumComboBox SelectedItem="{CompiledBinding Config.ConsoleType}" MinWidth="200" />
+							<c:EnumComboBox SelectedItem="{Binding Config.ConsoleType}" MinWidth="200" />
 						</StackPanel>
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpuReset}" Text="{l:Translate chkDisablePpuReset}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisablePpuReset}" Text="{l:Translate chkDisablePpuReset}" />
 
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableOamAddrBug}" Text="{l:Translate chkDisableOamAddrBug}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePaletteRead}" Text="{l:Translate chkDisablePaletteRead}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameGenieBusConflicts}" Text="{l:Translate chkDisableGameGenieBusConflicts}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFlashSaves}" Text="{l:Translate chkDisableFlashSaves}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableOamAddrBug}" Text="{l:Translate chkDisableOamAddrBug}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisablePaletteRead}" Text="{l:Translate chkDisablePaletteRead}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableGameGenieBusConflicts}" Text="{l:Translate chkDisableGameGenieBusConflicts}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableFlashSaves}" Text="{l:Translate chkDisableFlashSaves}" />
 
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgInput}">
-			<v:NesInputConfigView DataContext="{CompiledBinding Input}" />
+			<v:NesInputConfigView DataContext="{Binding Input}" />
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgOverclocking}">
@@ -346,9 +346,9 @@
 					<c:OptionSection Header="{l:Translate grpPpuTiming}">
 						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
 							<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
-							<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+							<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{Binding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
 							<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
-							<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
+							<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
 						</Grid>
 					</c:OptionSection>
 				</StackPanel>
@@ -359,14 +359,14 @@
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
-						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
-						<CheckBox Margin="10 0 0 0" IsChecked="{CompiledBinding Config.AdaptiveSpriteLimit}" Content="{l:Translate chkAdaptiveSpriteLimit}" IsEnabled="{CompiledBinding Config.RemoveSpriteLimit}" />
-						<CheckBox IsChecked="{CompiledBinding Config.EnablePalBorders}" Content="{l:Translate chkEnablePalBorders}" />
+						<CheckBox IsChecked="{Binding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
+						<CheckBox Margin="10 0 0 0" IsChecked="{Binding Config.AdaptiveSpriteLimit}" Content="{l:Translate chkAdaptiveSpriteLimit}" IsEnabled="{Binding Config.RemoveSpriteLimit}" />
+						<CheckBox IsChecked="{Binding Config.EnablePalBorders}" Content="{l:Translate chkEnablePalBorders}" />
 
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceBackgroundFirstColumn}" Text="{l:Translate chkForceBackgroundFirstColumn}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceSpritesFirstColumn}" Text="{l:Translate chkForceSpritesFirstColumn}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.ForceBackgroundFirstColumn}" Text="{l:Translate chkForceBackgroundFirstColumn}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.ForceSpritesFirstColumn}" Text="{l:Translate chkForceSpritesFirstColumn}" />
 					</c:OptionSection>
 					
 					<c:OptionSection Header="{l:Translate lblPalette}">
@@ -375,22 +375,22 @@
 							BlockSize="24"
 							SmallPaletteSize="64"
 							LargePaletteSize="512"
-							Palette="{CompiledBinding Config.UserPalette}"
-							PalettePresets="{CompiledBinding PalettePresets}"
-							ShowIndexes="{CompiledBinding ShowColorIndexes}"
+							Palette="{Binding Config.UserPalette}"
+							PalettePresets="{Binding PalettePresets}"
+							ShowIndexes="{Binding ShowColorIndexes}"
 						/>
-						<CheckBox IsChecked="{CompiledBinding ShowColorIndexes}" Content="{l:Translate chkShowColorIndexes}" />
-						<CheckBox IsChecked="{CompiledBinding Config.UseCustomVsPalette}" Content="{l:Translate chkUseCustomVsPalette}" />
+						<CheckBox IsChecked="{Binding ShowColorIndexes}" Content="{l:Translate chkShowColorIndexes}" />
+						<CheckBox IsChecked="{Binding Config.UseCustomVsPalette}" Content="{l:Translate chkUseCustomVsPalette}" />
 					</c:OptionSection>
 					
 					<c:OptionSection Header="{l:Translate lblOverscan}" HorizontalAlignment="Left">
 						<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 0 0 5">
 							<TabControl>
 								<TabItem Header="{l:Translate lblOverscanNtsc}">
-									<c:OverscanInput Overscan="{CompiledBinding Config.NtscOverscan}" Margin="5" />
+									<c:OverscanInput Overscan="{Binding Config.NtscOverscan}" Margin="5" />
 								</TabItem>
 								<TabItem Header="{l:Translate lblOverscanPal}">
-									<c:OverscanInput Overscan="{CompiledBinding Config.PalOverscan}" Margin="5" />
+									<c:OverscanInput Overscan="{Binding Config.PalOverscan}" Margin="5" />
 								</TabItem>
 							</TabControl>
 						</Border>

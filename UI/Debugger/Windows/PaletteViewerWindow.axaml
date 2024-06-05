@@ -26,8 +26,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
-				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuActions}" />
+				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuActions}" />
+				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuActions}" />
 			</c:MesenMenu>
 			<c:IconButton
 				HorizontalAlignment="Right"
@@ -38,18 +38,18 @@
 			/>
 		</Panel>
 
-		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
+		<dv:RefreshTimingView DataContext="{Binding RefreshTiming}" DockPanel.Dock="Bottom" />
 
-		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+		<ScrollViewer DockPanel.Dock="Right" IsVisible="{Binding Config.ShowSettingsPanel}">
 			<StackPanel Margin="3">
-				<CheckBox Content="{l:Translate chkShowPaletteIndexes}" IsChecked="{CompiledBinding Config.ShowPaletteIndexes}" />
+				<CheckBox Content="{l:Translate chkShowPaletteIndexes}" IsChecked="{Binding Config.ShowPaletteIndexes}" />
 				
 				<c:GroupBox
 					Header="{l:Translate lblSelectedColor}"
 					Margin="0 5 0 0"
 					MinWidth="200"
 				>
-					<ContentControl Content="{CompiledBinding PreviewPanel}" />
+					<ContentControl Content="{Binding PreviewPanel}" />
 				</c:GroupBox>
 			</StackPanel>
 		</ScrollViewer>
@@ -62,13 +62,13 @@
 			>
 				<dc:PaletteSelector
 					Name="palSelector"
-					PaletteColors="{CompiledBinding PaletteColors}"
-					PaletteIndexValues="{CompiledBinding PaletteValues}"
-					ColumnCount="{CompiledBinding PaletteColumnCount}"
-					SelectedPalette="{CompiledBinding SelectedPalette}"
+					PaletteColors="{Binding PaletteColors}"
+					PaletteIndexValues="{Binding PaletteValues}"
+					ColumnCount="{Binding PaletteColumnCount}"
+					SelectedPalette="{Binding SelectedPalette}"
 					SelectionMode="SingleColor"
-					BlockSize="{CompiledBinding BlockSize}"
-					ShowIndexes="{CompiledBinding Config.ShowPaletteIndexes}"
+					BlockSize="{Binding BlockSize}"
+					ShowIndexes="{Binding Config.ShowPaletteIndexes}"
 				/>
 			</ScrollViewer>
 		</Border>

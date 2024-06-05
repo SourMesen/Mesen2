@@ -45,16 +45,16 @@
 					<TextBlock Text="{l:Translate lblMemType}" />
 					<c:EnumComboBox
 						Grid.Column="1"
-						SelectedItem="{CompiledBinding MemoryType}"
-						AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+						SelectedItem="{Binding MemoryType}"
+						AvailableValues="{Binding AvailableMemoryTypes}"
 						MinWidth="120"
 				  />
 
 					<TextBlock Grid.Row="1" Text="{l:Translate lblFormat}" />
-					<c:EnumComboBox Grid.Column="1" Grid.Row="1" SelectedItem="{CompiledBinding Format}" />
+					<c:EnumComboBox Grid.Column="1" Grid.Row="1" SelectedItem="{Binding Format}" />
 
 					<TextBlock Grid.Row="2" Text="{l:Translate lblValueSize}" />
-					<c:EnumComboBox Grid.Column="1" Grid.Row="2" SelectedItem="{CompiledBinding ValueSize}" />
+					<c:EnumComboBox Grid.Column="1" Grid.Row="2" SelectedItem="{Binding ValueSize}" />
 				</Grid>
 
 				<c:OptionSection Header="{l:Translate lblSearchFilter}">
@@ -62,71 +62,71 @@
 						<Grid ColumnDefinitions="Auto,5,*" RowDefinitions="Auto,Auto,Auto,Auto">
 							<c:EnumRadioButton
 								Grid.ColumnSpan="3"
-								Value="{CompiledBinding CompareTo}"
+								Value="{Binding CompareTo}"
 								CheckedWhen="{x:Static dvm:MemorySearchCompareTo.PreviousSearchValue}"
 							/>
 							<c:EnumRadioButton
 								Grid.ColumnSpan="3"
 								Grid.Row="1"
-								Value="{CompiledBinding CompareTo}"
+								Value="{Binding CompareTo}"
 								CheckedWhen="{x:Static dvm:MemorySearchCompareTo.PreviousRefreshValue}"
 							/>
 							<c:EnumRadioButton
 								Grid.Row="2"
-								Value="{CompiledBinding CompareTo}"
+								Value="{Binding CompareTo}"
 								CheckedWhen="{x:Static dvm:MemorySearchCompareTo.SpecificValue}"
 							/>
 							<c:MesenNumericTextBox
 								Grid.Row="2"
 								Grid.Column="2"
-								IsEnabled="{CompiledBinding IsSpecificValueEnabled}"
-								Value="{CompiledBinding SpecificValue}"
+								IsEnabled="{Binding IsSpecificValueEnabled}"
+								Value="{Binding SpecificValue}"
 								MinWidth="60"
-								Min="{CompiledBinding MinValue}"
-								Max="{CompiledBinding MaxValue}"
-								Hex="{CompiledBinding IsValueHex}"
+								Min="{Binding MinValue}"
+								Max="{Binding MaxValue}"
+								Hex="{Binding IsValueHex}"
 							/>
 							<c:EnumRadioButton
 								Grid.Row="3"
-								Value="{CompiledBinding CompareTo}"
+								Value="{Binding CompareTo}"
 								CheckedWhen="{x:Static dvm:MemorySearchCompareTo.SpecificAddress}"
 							/>
 							<c:MesenNumericTextBox
 								Grid.Row="3"
 								Grid.Column="2"
-								IsEnabled="{CompiledBinding IsSpecificAddressEnabled}"
-								Value="{CompiledBinding SpecificAddress}"
+								IsEnabled="{Binding IsSpecificAddressEnabled}"
+								Value="{Binding SpecificAddress}"
 								Hex="True"
 								MinWidth="60"
 								Min="0"
-								Max="{CompiledBinding MaxAddress}"
+								Max="{Binding MaxAddress}"
 							/>
 						</Grid>
 					</c:GroupBox>
 					<c:GroupBox Header="{l:Translate lblOperator}">
 						<StackPanel>
 							<c:EnumRadioButton 
-								Value="{CompiledBinding Operator}"
+								Value="{Binding Operator}"
 								CheckedWhen="{x:Static dvm:MemorySearchOperator.Equal}"
 							/>
 							<c:EnumRadioButton
-								Value="{CompiledBinding Operator}"
+								Value="{Binding Operator}"
 								CheckedWhen="{x:Static dvm:MemorySearchOperator.NotEqual}"
 							/>
 							<c:EnumRadioButton
-								Value="{CompiledBinding Operator}"
+								Value="{Binding Operator}"
 								CheckedWhen="{x:Static dvm:MemorySearchOperator.LessThan}"
 							/>
 							<c:EnumRadioButton
-								Value="{CompiledBinding Operator}"
+								Value="{Binding Operator}"
 								CheckedWhen="{x:Static dvm:MemorySearchOperator.LessThanOrEqual}"
 							/>
 							<c:EnumRadioButton
-								Value="{CompiledBinding Operator}"
+								Value="{Binding Operator}"
 								CheckedWhen="{x:Static dvm:MemorySearchOperator.GreaterThan}"
 							/>
 							<c:EnumRadioButton
-								Value="{CompiledBinding Operator}"
+								Value="{Binding Operator}"
 								CheckedWhen="{x:Static dvm:MemorySearchOperator.GreaterThanOrEqual}"
 							/>
 						</StackPanel>
@@ -146,7 +146,7 @@
 								Icon="Assets/Undo.png"
 								HorizontalAlignment="Right"
 								Text="{l:Translate btnUndo}"
-								IsEnabled="{CompiledBinding IsUndoEnabled}"
+								IsEnabled="{Binding IsUndoEnabled}"
 								Command="{Binding Undo}"
 							/>
 							<c:ButtonWithIcon
@@ -172,15 +172,15 @@
 				ColumnWidths="{Binding ColumnWidths}"
 			>
 				<DataBox.Columns>
-					<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressString}" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="Value" Header="{l:Translate colValue}" Binding="{Binding Value}" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="PrevValue" Header="{l:Translate colPrevValue}" Binding="{Binding PrevValue}" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="ReadCount" Header="{l:Translate colReadCount}" Binding="{Binding ReadCount}" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="LastRead" Header="{l:Translate colLastRead}" Binding="{Binding LastRead}" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="WriteCount" Header="{l:Translate colWriteCount}" Binding="{Binding WriteCount}" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="LastWrite" Header="{l:Translate colLastWrite}" Binding="{Binding LastWrite}" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="ExecCount" Header="{l:Translate colExecCount}" Binding="{Binding ExecCount}" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="LastExec" Header="{l:Translate colLastExec}" Binding="{Binding LastExec}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressString, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="Value" Header="{l:Translate colValue}" Binding="{Binding Value, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="PrevValue" Header="{l:Translate colPrevValue}" Binding="{Binding PrevValue, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="ReadCount" Header="{l:Translate colReadCount}" Binding="{Binding ReadCount, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastRead" Header="{l:Translate colLastRead}" Binding="{Binding LastRead, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="WriteCount" Header="{l:Translate colWriteCount}" Binding="{Binding WriteCount, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastWrite" Header="{l:Translate colLastWrite}" Binding="{Binding LastWrite, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="ExecCount" Header="{l:Translate colExecCount}" Binding="{Binding ExecCount, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastExec" Header="{l:Translate colLastExec}" Binding="{Binding LastExec, DataType={x:Type dvm:MemoryAddressViewModel}}" CanUserResize="True" />
 					<DataBoxTemplateColumn
 						ColumnName="Match"
 						CanUserSort="False"
@@ -188,7 +188,7 @@
 						InitialWidth="22"
 					>
 						<DataTemplate>
-							<CheckBox IsChecked="{Binding IsMatch}" IsHitTestVisible="False" Classes.isNotMatch="{Binding !IsMatch}" />
+							<CheckBox IsChecked="{Binding IsMatch, DataType={x:Type dvm:MemoryAddressViewModel}}" IsHitTestVisible="False" Classes.isNotMatch="{Binding !IsMatch, DataType={x:Type dvm:MemoryAddressViewModel}}" />
 						</DataTemplate>
 					</DataBoxTemplateColumn>
 				</DataBox.Columns>

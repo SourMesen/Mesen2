@@ -21,13 +21,13 @@ namespace Mesen
 
 		public override void Initialize()
 		{
-			AvaloniaXamlLoader.Load(this);
-			StyleHelper.LoadStartupStyles();
-			if(Design.IsDesignMode) {
-				StyleHelper.ApplyTheme(MesenTheme.Light);
+			if(Design.IsDesignMode || ShowConfigWindow) {
 				RequestedThemeVariant = ThemeVariant.Light;
-				StyleHelper.LoadDebuggerStyles();
+			} else {
+				RequestedThemeVariant = ConfigManager.Config.Preferences.Theme == MesenTheme.Dark ? ThemeVariant.Dark : ThemeVariant.Light;
 			}
+
+			AvaloniaXamlLoader.Load(this);
 			ResourceHelper.LoadResources();
 		}
 
@@ -35,12 +35,9 @@ namespace Mesen
 		{
 			if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				if(ShowConfigWindow) {
-					StyleHelper.ApplyTheme(MesenTheme.Light);
 					new PreferencesConfig().InitializeFontDefaults();
-					RequestedThemeVariant = ThemeVariant.Light;
 					desktop.MainWindow = new SetupWizardWindow();
 				} else {
-					RequestedThemeVariant = ConfigManager.Config.Preferences.Theme == MesenTheme.Dark ? ThemeVariant.Dark : ThemeVariant.Light;
 					desktop.MainWindow = new MainWindow();
 				}
 			}

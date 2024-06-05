@@ -196,6 +196,7 @@ public class CommandLineHelper
 	{
 		StringBuilder sb = new();
 
+#pragma warning disable IL2070 // 'this' argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The parameter of method does not have matching annotations.
 		foreach(PropertyInfo info in type.GetProperties()) {
 			if(!info.CanWrite) {
 				continue;
@@ -225,6 +226,7 @@ public class CommandLineHelper
 				}
 			}
 		}
+#pragma warning restore IL2070 // 'this' argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The parameter of method does not have matching annotations.
 
 		return sb.ToString();
 	}

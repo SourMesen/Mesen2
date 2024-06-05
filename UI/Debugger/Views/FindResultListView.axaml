@@ -19,19 +19,29 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
-			Items="{CompiledBinding FindResults}"
-			Selection="{CompiledBinding Selection}"
+			Items="{Binding FindResults}"
+			Selection="{Binding Selection}"
 			CellDoubleClick="OnCellDoubleClick"
 			SelectionMode="Single"
 			SortMode="Multiple"
 			SortCommand="{Binding Sort}"
-			SortState="{CompiledBinding SortState}"
+			SortState="{Binding SortState}"
 			GridLinesVisibility="All"
-			ColumnWidths="{CompiledBinding ColumnWidths}"
+			ColumnWidths="{Binding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding Address}" InitialWidth="100" />
-				<DataBoxTextColumn ColumnName="Result" Header="{l:Translate colResult}" Binding="{Binding Text}" InitialWidth="300" />
+				<DataBoxTextColumn
+					ColumnName="Address"
+					Header="{l:Translate colAddress}"
+					Binding="{Binding Address, DataType={x:Type vm:FindResultViewModel}}"
+					InitialWidth="100"
+				/>
+				<DataBoxTextColumn
+					ColumnName="Result"
+					Header="{l:Translate colResult}"
+					Binding="{Binding Text, DataType={x:Type vm:FindResultViewModel}}"
+					InitialWidth="300"
+				/>
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

@@ -161,25 +161,25 @@ namespace Mesen.Debugger.ViewModels
 				}
 			});
 		}
+	}
 
-		public class BreakpointViewModel : INotifyPropertyChanged
+	public class BreakpointViewModel : INotifyPropertyChanged
+	{
+		public Breakpoint Breakpoint { get; set; }
+		public string TypeDisplay => Breakpoint.ToReadableType();
+		public string AddressDisplay => Breakpoint.GetAddressString(true);
+
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		public void Refresh()
 		{
-			public Breakpoint Breakpoint { get; set; }
-			public string TypeDisplay => Breakpoint.ToReadableType();
-			public string AddressDisplay => Breakpoint.GetAddressString(true);
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TypeDisplay)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AddressDisplay)));
+		}
 
-			public event PropertyChangedEventHandler? PropertyChanged;
-
-			public void Refresh()
-			{
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TypeDisplay)));
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AddressDisplay)));
-			}
-
-			public BreakpointViewModel(Breakpoint bp)
-			{
-				Breakpoint = bp;
-			}
+		public BreakpointViewModel(Breakpoint bp)
+		{
+			Breakpoint = bp;
 		}
 	}
 }

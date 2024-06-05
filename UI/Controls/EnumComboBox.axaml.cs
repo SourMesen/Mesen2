@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Mesen.Localization;
 using System;
 using System.Collections;
 using System.Linq;
@@ -99,7 +100,7 @@ namespace Mesen.Controls
 			Dispatcher.UIThread.Post(() => {
 				if(updateAvailableValues) {
 					if(AvailableValues == null || AvailableValues.Length == 0) {
-						InternalItems = Enum.GetValues(_enumType);
+						InternalItems = ResourceHelper.GetEnumValues(_enumType);
 					} else {
 						InternalItems = AvailableValues;
 					}

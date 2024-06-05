@@ -36,7 +36,7 @@
 			MinHeight="21"
 			MaxHeight="200"
 			VerticalContentAlignment="Top"
-			Text="{CompiledBinding Label.Comment}"
+			Text="{Binding Label.Comment}"
 		/>
 	</DockPanel>
 </Window>

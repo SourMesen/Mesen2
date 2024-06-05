@@ -2267,18 +2267,6 @@ E
 			<Value ID="Light">Light</Value>
 			<Value ID="Dark">Dark</Value>
 		</Enum>
-		<Enum ID="Language">
-			<Value ID="SystemDefault">User Account Default</Value>
-			<Value ID="English">English</Value>
-			<Value ID="French">Français</Value>
-			<Value ID="Japanese">日本語</Value>
-			<Value ID="Portuguese">Português</Value>
-			<Value ID="Russian">Русский</Value>
-			<Value ID="Spanish">Español</Value>
-			<Value ID="Ukrainian">Українська</Value>
-			<Value ID="Catalan">Català</Value>
-			<Value ID="Chinese">中文</Value>
-		</Enum>
 		<Enum ID="PceConsoleType">
 			<Value ID="Auto">Auto (recommended)</Value>
 			<Value ID="PcEngine">PC Engine (JP)</Value>
@@ -2294,18 +2282,6 @@ E
 			<Value ID="Random">Random Values (default)</Value>
 			<Value ID="AllZeros">All 0s</Value>
 			<Value ID="AllOnes">All 1s</Value>
-		</Enum>
-		<Enum ID="CheatCurrentFilterType">
-			<Value ID="Smaller">Smaller than</Value>
-			<Value ID="Equal">Equal to</Value>
-			<Value ID="NotEqual">Not equal to</Value>
-			<Value ID="Greater">Greater than</Value>
-		</Enum>
-		<Enum ID="CheatPrevFilterType">
-			<Value ID="Smaller">Smaller</Value>
-			<Value ID="Equal">Equal</Value>
-			<Value ID="NotEqual">Not equal</Value>
-			<Value ID="Greater">Greater</Value>
 		</Enum>
 		<Enum ID="FontAntialiasing">
 			<Value ID="Disabled">Disabled</Value>

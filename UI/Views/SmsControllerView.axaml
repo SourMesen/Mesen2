@@ -23,10 +23,10 @@
 			<Panel Canvas.Top="10" >
 				<Ellipse Width="200" Height="200" Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="2" />
 				<Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" Width="200" Height="200">
-					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Up}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
-					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Left}" Grid.Row="1" Grid.Column="0" Width="80" Height="40" HorizontalAlignment="Center" />
-					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Right}" Grid.Row="1" Grid.Column="1" Width="80" Height="40" HorizontalAlignment="Center" />
-					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Down}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Up}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Left}" Grid.Row="1" Grid.Column="0" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Right}" Grid.Row="1" Grid.Column="1" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Down}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
 				</Grid>
 			</Panel>
 
@@ -36,20 +36,20 @@
 					<c:ControllerButton
 						Margin="10 0 0 0"
 						Label="1"
-						KeyBinding="{CompiledBinding Mapping.B}"
-						TurboKeyBinding="{CompiledBinding Mapping.TurboB}"
+						KeyBinding="{Binding Mapping.B}"
+						TurboKeyBinding="{Binding Mapping.TurboB}"
 					/>
 					<c:ControllerButton
 						Margin="55 0 0 0"
 						Label="2"
-						KeyBinding="{CompiledBinding Mapping.A}"
-						TurboKeyBinding="{CompiledBinding Mapping.TurboA}"
+						KeyBinding="{Binding Mapping.A}"
+						TurboKeyBinding="{Binding Mapping.TurboA}"
 					/>
 				</StackPanel>
 			</Panel>
 
-			<Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto,Auto" Width="580" Canvas.Bottom="30" IsVisible="{CompiledBinding !Port}">
-				<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Start}" Grid.Column="1" Width="80" />
+			<Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto,Auto" Width="580" Canvas.Bottom="30" IsVisible="{Binding !Port}">
+				<c:KeyBindingButton KeyBinding="{Binding Mapping.Start}" Grid.Column="1" Width="80" />
 				<TextBlock
 					Grid.Column="1"
 					Grid.Row="1"

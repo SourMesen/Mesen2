@@ -61,12 +61,12 @@
 				<c:OptionSection Header="{l:Translate lblStorageLocation}">
 					<TextBlock Text="{l:Translate lblStorageHint}" />
 					<StackPanel Margin="5 5 0 0">
-						<RadioButton Content="{l:Translate radStorageDocuments}" IsChecked="{CompiledBinding StoreInUserProfile}" />
-						<RadioButton Content="{l:Translate radStoragePortable}" IsChecked="{CompiledBinding !StoreInUserProfile}" />
+						<RadioButton Content="{l:Translate radStorageDocuments}" IsChecked="{Binding StoreInUserProfile}" />
+						<RadioButton Content="{l:Translate radStoragePortable}" IsChecked="{Binding !StoreInUserProfile}" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal" Margin="0 10 0 10">
 						<TextBlock Text="{l:Translate lblDataLocation}" />
-						<TextBlock Foreground="CornflowerBlue" Margin="5 0 0 0" Text="{CompiledBinding InstallLocation}" />
+						<TextBlock Foreground="CornflowerBlue" Margin="5 0 0 0" Text="{Binding InstallLocation}" />
 					</StackPanel>
 				</c:OptionSection>
 
@@ -77,16 +77,16 @@
 						<Image Source="/Assets/PsIcon.png" Stretch="None" Grid.Column="1" Tapped="PsIcon_Tapped" Cursor="Hand" />
 						<Image Source="/Assets/WasdKeys.png" Stretch="None" Grid.Column="2" Tapped="WasdIcon_Tapped" Cursor="Hand" />
 						<Image Source="/Assets/ArrowKeys.png" Stretch="None" Grid.Column="3" Tapped="ArrowIcon_Tapped" Cursor="Hand" />
-						<CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" IsChecked="{CompiledBinding EnableXboxMappings}" />
-						<CheckBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" IsChecked="{CompiledBinding EnablePsMappings}" />
-						<CheckBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" IsChecked="{CompiledBinding EnableWasdMappings}" />
-						<CheckBox Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" IsChecked="{CompiledBinding EnableArrowMappings}" />
+						<CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" IsChecked="{Binding EnableXboxMappings}" />
+						<CheckBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" IsChecked="{Binding EnablePsMappings}" />
+						<CheckBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" IsChecked="{Binding EnableWasdMappings}" />
+						<CheckBox Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" IsChecked="{Binding EnableArrowMappings}" />
 					</Grid>
 				</c:OptionSection>
 
-				<c:OptionSection Header="{l:Translate lblMiscOptions}" Margin="0 25 0 0" IsVisible="{CompiledBinding !IsOsx}">
-					<CheckBox Content="{l:Translate chkCreateShortcut}" IsChecked="{CompiledBinding CreateShortcut}" />
-					<CheckBox Content="{l:Translate chkCheckForUpdates}" IsChecked="{CompiledBinding CheckForUpdates}" />
+				<c:OptionSection Header="{l:Translate lblMiscOptions}" Margin="0 25 0 0" IsVisible="{Binding !IsOsx}">
+					<CheckBox Content="{l:Translate chkCreateShortcut}" IsChecked="{Binding CreateShortcut}" />
+					<CheckBox Content="{l:Translate chkCheckForUpdates}" IsChecked="{Binding CheckForUpdates}" />
 				</c:OptionSection>
 			</StackPanel>
 		</DockPanel>

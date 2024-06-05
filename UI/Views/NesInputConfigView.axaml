@@ -25,23 +25,23 @@
 					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPlayer1}" />
 					<c:InputComboBox
 						Grid.Row="0" Grid.Column="1"
-						Config="{CompiledBinding Config.Port1}"
-						ControllerType="{CompiledBinding Config.Port1.Type}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesP1}"
+						Config="{Binding Config.Port1}"
+						ControllerType="{Binding Config.Port1.Type}"
+						AvailableValues="{Binding AvailableControllerTypesP1}"
 					/>
 
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblPlayer2}" />
 					<c:InputComboBox
 						Grid.Row="1" Grid.Column="1"
-						Config="{CompiledBinding Config.Port2}"
-						IsEnabled="{CompiledBinding !HasFourScore}"
-						ControllerType="{CompiledBinding Config.Port2.Type}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesP2}"
+						Config="{Binding Config.Port2}"
+						IsEnabled="{Binding !HasFourScore}"
+						ControllerType="{Binding Config.Port2.Type}"
+						AvailableValues="{Binding AvailableControllerTypesP2}"
 					/>
 
 					<c:GroupBox
 						Header="{l:Translate lblFourScoreConfig}"
-						IsVisible="{CompiledBinding HasFourScore}"
+						IsVisible="{Binding HasFourScore}"
 						HorizontalAlignment="Right"
 						Margin="0 5 -6 5"
 						Grid.Row="2"
@@ -52,33 +52,33 @@
 							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPort1A}" />
 							<c:InputComboBox
 								Grid.Row="0" Grid.Column="1"
-								Config="{CompiledBinding Config.Port1}"
-								ControllerType="{CompiledBinding Config.Port1A.Type}"
-								AvailableValues="{CompiledBinding AvailableControllerTypesFourPlayer}"
+								Config="{Binding Config.Port1}"
+								ControllerType="{Binding Config.Port1A.Type}"
+								AvailableValues="{Binding AvailableControllerTypesFourPlayer}"
 							/>
 
 							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblPort1B}" />
 							<c:InputComboBox
 								Grid.Row="1" Grid.Column="1"
-								Config="{CompiledBinding Config.Port2}"
-								ControllerType="{CompiledBinding Config.Port1B.Type}"
-								AvailableValues="{CompiledBinding AvailableControllerTypesFourPlayer}"
+								Config="{Binding Config.Port2}"
+								ControllerType="{Binding Config.Port1B.Type}"
+								AvailableValues="{Binding AvailableControllerTypesFourPlayer}"
 							/>
 
 							<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblPort1C}" />
 							<c:InputComboBox
 								Grid.Row="2" Grid.Column="1"
-								Config="{CompiledBinding Config.Port1C}"
-								ControllerType="{CompiledBinding Config.Port1C.Type}"
-								AvailableValues="{CompiledBinding AvailableControllerTypesFourPlayer}"
+								Config="{Binding Config.Port1C}"
+								ControllerType="{Binding Config.Port1C.Type}"
+								AvailableValues="{Binding AvailableControllerTypesFourPlayer}"
 							/>
 
 							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblPort1D}" />
 							<c:InputComboBox
 								Grid.Row="3" Grid.Column="1"
-								Config="{CompiledBinding Config.Port1D}"
-								ControllerType="{CompiledBinding Config.Port1D.Type}"
-								AvailableValues="{CompiledBinding AvailableControllerTypesFourPlayer}"
+								Config="{Binding Config.Port1D}"
+								ControllerType="{Binding Config.Port1D.Type}"
+								AvailableValues="{Binding AvailableControllerTypesFourPlayer}"
 							/>
 						</Grid>
 					</c:GroupBox>
@@ -87,14 +87,14 @@
 					<c:InputComboBox
 						Margin="0 10 0 0"
 						Grid.Row="3" Grid.Column="1"
-						Config="{CompiledBinding Config.ExpPort}"
-						ControllerType="{CompiledBinding Config.ExpPort.Type}"
-						AvailableValues="{CompiledBinding AvailableExpansionTypes}"
+						Config="{Binding Config.ExpPort}"
+						ControllerType="{Binding Config.ExpPort.Type}"
+						AvailableValues="{Binding AvailableExpansionTypes}"
 					/>
 
 					<c:GroupBox
-						Header="{CompiledBinding ExpConfigLabel}"
-						IsVisible="{CompiledBinding HasExpansionHub}"
+						Header="{Binding ExpConfigLabel}"
+						IsVisible="{Binding HasExpansionHub}"
 						HorizontalAlignment="Right"
 						Margin="0 5 -6 5"
 						Grid.Row="4"
@@ -105,60 +105,60 @@
 							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblExpPortA}" />
 							<c:InputComboBox
 								Grid.Row="0" Grid.Column="1"
-								Config="{CompiledBinding Config.ExpPort}"
-								ControllerType="{CompiledBinding Config.ExpPortA.Type}"
-								AvailableValues="{CompiledBinding AvailableControllerTypesExpansionHub}"
+								Config="{Binding Config.ExpPort}"
+								ControllerType="{Binding Config.ExpPortA.Type}"
+								AvailableValues="{Binding AvailableControllerTypesExpansionHub}"
 							/>
 
 							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblExpPortB}" />
 							<c:InputComboBox
 								Grid.Row="1" Grid.Column="1"
-								Config="{CompiledBinding Config.ExpPortB}"
-								ControllerType="{CompiledBinding Config.ExpPortB.Type}"
-								AvailableValues="{CompiledBinding AvailableControllerTypesExpansionHub}"
+								Config="{Binding Config.ExpPortB}"
+								ControllerType="{Binding Config.ExpPortB.Type}"
+								AvailableValues="{Binding AvailableControllerTypesExpansionHub}"
 							/>
 
 							<TextBlock
 								Grid.Row="2" Grid.Column="0"
 								Text="{l:Translate lblExpPortC}"
-								IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+								IsVisible="{Binding HasFourPlayerAdapter}"
 							/>
 							<c:InputComboBox
 								Grid.Row="2" Grid.Column="1"
-								IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-								Config="{CompiledBinding Config.ExpPortC}"
-								ControllerType="{CompiledBinding Config.ExpPortC.Type}"
-								AvailableValues="{CompiledBinding AvailableControllerTypesExpansionHub}"
+								IsVisible="{Binding HasFourPlayerAdapter}"
+								Config="{Binding Config.ExpPortC}"
+								ControllerType="{Binding Config.ExpPortC.Type}"
+								AvailableValues="{Binding AvailableControllerTypesExpansionHub}"
 							/>
 
 							<TextBlock
 								Grid.Row="3" Grid.Column="0"
 								Text="{l:Translate lblExpPortD}"
-								IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+								IsVisible="{Binding HasFourPlayerAdapter}"
 							/>
 							<c:InputComboBox
 								Grid.Row="3" Grid.Column="1"
-								IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-								Config="{CompiledBinding Config.ExpPortD}"
-								ControllerType="{CompiledBinding Config.ExpPortD.Type}"
-								AvailableValues="{CompiledBinding AvailableControllerTypesExpansionHub}"
+								IsVisible="{Binding HasFourPlayerAdapter}"
+								Config="{Binding Config.ExpPortD}"
+								ControllerType="{Binding Config.ExpPortD.Type}"
+								AvailableValues="{Binding AvailableControllerTypesExpansionHub}"
 							/>
 						</Grid>
 					</c:GroupBox>
 
-					<TextBlock Grid.Row="5" Grid.Column="0" Text="{l:Translate lblMapperInput}" Margin="0 10 0 0" IsVisible="{CompiledBinding ShowMapperInput}" />
+					<TextBlock Grid.Row="5" Grid.Column="0" Text="{l:Translate lblMapperInput}" Margin="0 10 0 0" IsVisible="{Binding ShowMapperInput}" />
 					<c:InputComboBox
 						Margin="0 10 0 0"
 						Grid.Row="5" Grid.Column="1"
-						Config="{CompiledBinding Config.MapperInput}"
-						ControllerType="{CompiledBinding Config.MapperInput.Type}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesMapperInput}"
-						IsVisible="{CompiledBinding ShowMapperInput}"
+						Config="{Binding Config.MapperInput}"
+						ControllerType="{Binding Config.MapperInput.Type}"
+						AvailableValues="{Binding AvailableControllerTypesMapperInput}"
+						IsVisible="{Binding ShowMapperInput}"
 					/>
 				</Grid>
 			</c:OptionSection>
 			<c:OptionSection Header="{l:Translate grpGeneral}">
-				<CheckBox IsChecked="{CompiledBinding Config.AutoConfigureInput}" Content="{l:Translate chkAutoConfigureInput}" />
+				<CheckBox IsChecked="{Binding Config.AutoConfigureInput}" Content="{l:Translate chkAutoConfigureInput}" />
 
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
 					<TextBlock Grid.Row="0" Text="{l:Translate lblLightDetectionRadius}" VerticalAlignment="Top" Margin="0 15 5 0" />
@@ -172,7 +172,7 @@
 						TickFrequency="1"
 						Width="100"
 						HideValue="True"
-						Value="{CompiledBinding Config.LightDetectionRadius}"
+						Value="{Binding Config.LightDetectionRadius}"
 					/>
 
 					<Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="115" HorizontalAlignment="Left" Margin="5 0 5 0">

@@ -7,6 +7,7 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:v="using:Mesen.Views"
+	xmlns:w="using:Mesen.Windows"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	x:Class="Mesen.Windows.CommandLineHelpWindow"
@@ -30,15 +31,15 @@
 			/>
 		</StackPanel>
 
-		<TabControl ItemsSource="{CompiledBinding HelpTabs, ElementName=root}">
+		<TabControl ItemsSource="{Binding HelpTabs, ElementName=root}">
 			<TabControl.ItemTemplate>
-				<DataTemplate>
+				<DataTemplate DataType="w:CommandLineTabEntry">
 					<TextBlock Text="{Binding Name}" />
 				</DataTemplate>
 			</TabControl.ItemTemplate>
 
 			<TabControl.ContentTemplate>
-				<DataTemplate>
+				<DataTemplate DataType="w:CommandLineTabEntry">
 					<TextBox ScrollViewer.HorizontalScrollBarVisibility="Auto" AcceptsReturn="True" VerticalAlignment="Stretch" Height="NaN" IsReadOnly="True" Text="{Binding Content}" />
 				</DataTemplate>
 			</TabControl.ContentTemplate>

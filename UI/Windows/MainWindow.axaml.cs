@@ -199,14 +199,6 @@ namespace Mesen.Windows
 			_timerBackgroundFlag.Interval = TimeSpan.FromMilliseconds(200);
 			_timerBackgroundFlag.Tick += timerUpdateBackgroundFlag;
 			_timerBackgroundFlag.Start();
-
-			Task.Run(() => {
-				//Load all styles after 15ms to let the UI refresh once with the startup styles
-				System.Threading.Thread.Sleep(15);
-				Dispatcher.UIThread.Post(() => {
-					StyleHelper.ApplyTheme(ConfigManager.ActiveTheme);
-				});
-			});
 			
 			Task.Run(() => {
 				CommandLineHelper cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
@@ -248,9 +240,6 @@ namespace Mesen.Windows
 				Dispatcher.UIThread.Post(() => {
 					cmdLine.LoadFiles();
 					cmdLine.OnAfterInit(this);
-
-					//Load the debugger window styles once everything else is done
-					StyleHelper.LoadDebuggerStyles();
 
 					if(ConfigManager.Config.Preferences.AutomaticallyCheckForUpdates) {
 						_model.MainMenu.CheckForUpdate(this, true);

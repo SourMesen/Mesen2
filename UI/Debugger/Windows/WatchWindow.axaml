@@ -32,7 +32,7 @@
 	</Window.Styles>
 	
 	<Panel>
-		<TabControl ItemsSource="{CompiledBinding WatchTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
+		<TabControl ItemsSource="{Binding WatchTabs}" SelectedItem="{Binding SelectedTab}" Padding="1">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<TextBlock Text="{Binding TabName}" />
@@ -40,7 +40,7 @@
 			</TabControl.ItemTemplate>
 
 			<TabControl.ContentTemplate>
-				<DataTemplate>
+				<DataTemplate DataType="dvm:WatchTab">
 					<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1 0 1 1">
 						<dv:WatchListView DataContext="{Binding WatchList}" />
 					</Border>
@@ -53,7 +53,7 @@
 			Margin="4 4"
 			VerticalAlignment="Top"
 			HorizontalAlignment="Right"
-			ToolTip.Tip="{CompiledBinding SelectedTab.WatchList.HelpTooltip}"
+			ToolTip.Tip="{Binding SelectedTab.WatchList.HelpTooltip}"
 			ToolTip.ShowDelay="0"
 			ToolTip.HorizontalOffset="10"
 		/>

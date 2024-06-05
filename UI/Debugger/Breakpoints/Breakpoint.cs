@@ -149,7 +149,7 @@ namespace Mesen.Debugger
 		public Color GetColor()
 		{
 			DebuggerConfig config = ConfigManager.Config.Debug.Debugger;
-			return BreakOnExec? config.CodeExecBreakpointColor: (BreakOnWrite ? config.CodeWriteBreakpointColor : config.CodeReadBreakpointColor);
+			return Color.FromUInt32(BreakOnExec ? config.CodeExecBreakpointColor: (BreakOnWrite ? config.CodeWriteBreakpointColor : config.CodeReadBreakpointColor));
 		}
 
 		public Breakpoint Clone()

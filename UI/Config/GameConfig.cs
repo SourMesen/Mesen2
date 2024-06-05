@@ -38,7 +38,7 @@ namespace Mesen.Config
 				string? fileData = FileHelper.ReadAllText(path);
 				if(fileData != null) {
 					try {
-						cfg = JsonSerializer.Deserialize<GameConfig>(fileData, JsonHelper.Options);
+						cfg = (GameConfig?)JsonSerializer.Deserialize(fileData, typeof(GameConfig), MesenSerializerContext.Default);
 						if(cfg != null) {
 							return cfg;
 						}
@@ -55,7 +55,7 @@ namespace Mesen.Config
 		{
 			string romName = MainWindowViewModel.Instance.RomInfo.GetRomName();
 			string path = Path.Combine(ConfigManager.GameConfigFolder, romName + ".json");
-			FileHelper.WriteAllText(path, JsonSerializer.Serialize(this, JsonHelper.Options));
+			FileHelper.WriteAllText(path, JsonSerializer.Serialize(this, typeof(GameConfig), MesenSerializerContext.Default));
 		}
 	}
 

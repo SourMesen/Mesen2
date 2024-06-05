@@ -8,6 +8,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -103,7 +104,7 @@ namespace Mesen.Debugger.ViewModels
 			);
 		}
 
-		private void RevertChanges<T>(T current, T original) where T : ReactiveObject
+		private void RevertChanges<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] T>(T current, T original) where T : ReactiveObject
 		{
 			if(_changes.TryGetValue(current, out HashSet<string>? changes)) {
 				foreach(string propertyName in changes) {

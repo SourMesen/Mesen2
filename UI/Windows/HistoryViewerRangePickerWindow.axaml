@@ -25,18 +25,18 @@
 			<TextBlock Text="{l:Translate lblStartTime}" VerticalAlignment="Center" Margin="0 0 5 0" />
 			<NumericUpDown
 				Grid.Column="1"
-				Value="{CompiledBinding StartTime, ElementName=root}"
-				Minimum="{CompiledBinding MinValue, ElementName=root}"
-				Maximum="{CompiledBinding MaxValue, ElementName=root}"
+				Value="{Binding StartTime, ElementName=root}"
+				Minimum="{Binding MinValue, ElementName=root}"
+				Maximum="{Binding MaxValue, ElementName=root}"
 		  />
 			<TextBlock Grid.Column="2" Text="{l:Translate lblSeconds}" />
 			<TextBlock Grid.Row="1" Text="{l:Translate lblEndTime}" VerticalAlignment="Center" Margin="0 0 5 0" />
 			<NumericUpDown
 				Grid.Column="1"
 				Grid.Row="1"
-				Value="{CompiledBinding EndTime, ElementName=root}"
-				Minimum="{CompiledBinding MinValue, ElementName=root}"
-				Maximum="{CompiledBinding MaxValue, ElementName=root}"
+				Value="{Binding EndTime, ElementName=root}"
+				Minimum="{Binding MinValue, ElementName=root}"
+				Maximum="{Binding MaxValue, ElementName=root}"
 		  />			
 			<TextBlock Grid.Row="1" Grid.Column="2" Text="{l:Translate lblSeconds}" />
 		</Grid>

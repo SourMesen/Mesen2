@@ -19,41 +19,41 @@
 >
 	<DockPanel Margin="5">
 		<Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
-			<c:ButtonWithIcon Icon="Assets/Folder.png" Command="{Binding OpenFolder}" Text="{l:Translate btnOpenFolder}" IsEnabled="{CompiledBinding IsOpenFolderEnabled}" />
+			<c:ButtonWithIcon Icon="Assets/Folder.png" Command="{Binding OpenFolder}" Text="{l:Translate btnOpenFolder}" IsEnabled="{Binding IsOpenFolderEnabled}" />
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
-				<c:ButtonWithIcon Icon="Assets/Record.png" Command="{Binding StartRecording}" Text="{l:Translate btnStartRecording}" IsVisible="{CompiledBinding !IsRecording}" />
-				<c:ButtonWithIcon Icon="Assets/MediaStop.png" Command="{Binding StopRecording}" Text="{l:Translate btnStopRecording}" IsVisible="{CompiledBinding IsRecording}" />
+				<c:ButtonWithIcon Icon="Assets/Record.png" Command="{Binding StartRecording}" Text="{l:Translate btnStartRecording}" IsVisible="{Binding !IsRecording}" />
+				<c:ButtonWithIcon Icon="Assets/MediaStop.png" Command="{Binding StopRecording}" Text="{l:Translate btnStopRecording}" IsVisible="{Binding IsRecording}" />
 			</StackPanel>
 		</Grid>
 
 		<Grid ColumnDefinitions="Auto,1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 			<TextBlock Text="{l:Translate lblSaveTo}" />
-			<c:PathSelector Grid.Column="1" Path="{CompiledBinding SaveFolder}" Editable="True" />
+			<c:PathSelector Grid.Column="1" Path="{Binding SaveFolder}" Editable="True" />
 
 			<c:OptionSection Grid.Row="1" Grid.ColumnSpan="2" Header="{l:Translate grpOptions}">
 				<Grid ColumnDefinitions="Auto,150,Auto" RowDefinitions="Auto,Auto">
 					<TextBlock VerticalAlignment="Center" Text="{l:Translate lblScale}" />
-					<ComboBox Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{CompiledBinding Filters}" SelectedItem="{CompiledBinding SelectedFilter}" />
+					<ComboBox Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}" />
 					<Image Grid.Column="2" Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblScaleHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 
-					<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{l:Translate lblBankSize}" IsVisible="{CompiledBinding IsBankSizeVisible}" />
-					<ComboBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" ItemsSource="{CompiledBinding BankSizes}" SelectedItem="{CompiledBinding SelectedBankSize}" IsVisible="{CompiledBinding IsBankSizeVisible}" />
-					<Image Grid.Column="2" Grid.Row="1" Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblBankSizeHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" IsVisible="{CompiledBinding IsBankSizeVisible}" />
+					<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{l:Translate lblBankSize}" IsVisible="{Binding IsBankSizeVisible}" />
+					<ComboBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" ItemsSource="{Binding BankSizes}" SelectedItem="{Binding SelectedBankSize}" IsVisible="{Binding IsBankSizeVisible}" />
+					<Image Grid.Column="2" Grid.Row="1" Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblBankSizeHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" IsVisible="{Binding IsBankSizeVisible}" />
 				</Grid>
 				<WrapPanel>
-					<CheckBox Content="{l:Translate chkGroupBlankTiles}" IsChecked="{CompiledBinding Config.GroupBlankTiles}" />
+					<CheckBox Content="{l:Translate chkGroupBlankTiles}" IsChecked="{Binding Config.GroupBlankTiles}" />
 					<Image Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblGroupBlankTilesHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 				</WrapPanel>
 				<WrapPanel>
-					<CheckBox Content="{l:Translate chkSortByUsageFrequency}" IsChecked="{CompiledBinding Config.SortByUsageFrequency}" />
+					<CheckBox Content="{l:Translate chkSortByUsageFrequency}" IsChecked="{Binding Config.SortByUsageFrequency}" />
 					<Image Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblSortByUsageFrequencyHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 				</WrapPanel>
 				<WrapPanel>
-					<CheckBox Content="{l:Translate chkUseLargeSprites}" IsChecked="{CompiledBinding Config.UseLargeSprites}" />
+					<CheckBox Content="{l:Translate chkUseLargeSprites}" IsChecked="{Binding Config.UseLargeSprites}" />
 					<Image Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblUseLargeSpritesHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 				</WrapPanel>
 				<WrapPanel>
-					<CheckBox Content="{l:Translate chkIgnoreOverscan}" IsChecked="{CompiledBinding Config.IgnoreOverscan}" />
+					<CheckBox Content="{l:Translate chkIgnoreOverscan}" IsChecked="{Binding Config.IgnoreOverscan}" />
 					<Image Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblIgnoreOverscanHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 				</WrapPanel>
 			</c:OptionSection>

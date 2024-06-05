@@ -19,9 +19,9 @@
 		<c:OptionSection Header="{l:Translate lblNewVersionAvailable}" DockPanel.Dock="Top" Margin="0 5 0 0">
 			<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" DockPanel.Dock="Top">
 				<TextBlock Margin="2" Text="{l:Translate lblLatestVersion}" />
-				<TextBlock Margin="2" Grid.Column="1" Text="{CompiledBinding LatestVersion}" />
+				<TextBlock Margin="2" Grid.Column="1" Text="{Binding LatestVersion}" />
 				<TextBlock Margin="2" Grid.Row="1" Text="{l:Translate lblInstalledVersion}" />
-				<TextBlock Margin="2" Grid.Column="1" Grid.Row="1" Text="{CompiledBinding InstalledVersion}" />
+				<TextBlock Margin="2" Grid.Column="1" Grid.Row="1" Text="{Binding InstalledVersion}" />
 			</Grid>
 		</c:OptionSection>
 		
@@ -33,14 +33,14 @@
 					<Setter Property="HorizontalContentAlignment" Value="Center"/>
 				</Style>
 			</Grid.Styles>
-			<ProgressBar Margin="2" Maximum="100" Value="{CompiledBinding Progress}" ShowProgressText="True" IsVisible="{CompiledBinding IsUpdating}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-			<Button Grid.Column="1" Content="{l:Translate btnUpdate}" Click="OnUpdateClick" IsEnabled="{CompiledBinding !IsUpdating}" />
-			<Button Grid.Column="2" Content="{l:Translate btnCancel}" IsCancel="True" Click="OnCancelClick" IsEnabled="{CompiledBinding !IsUpdating}" />
+			<ProgressBar Margin="2" Maximum="100" Value="{Binding Progress}" ShowProgressText="True" IsVisible="{Binding IsUpdating}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+			<Button Grid.Column="1" Content="{l:Translate btnUpdate}" Click="OnUpdateClick" IsEnabled="{Binding !IsUpdating}" />
+			<Button Grid.Column="2" Content="{l:Translate btnCancel}" IsCancel="True" Click="OnCancelClick" IsEnabled="{Binding !IsUpdating}" />
 		</Grid>
 
 		<c:OptionSection Header="{l:Translate lblReleaseNotes}" DockPanel.Dock="Top" />
 		<TextBox
-			Text="{CompiledBinding Changelog}"
+			Text="{Binding Changelog}"
 			IsReadOnly="True"
 			TextWrapping="Wrap"
 			AcceptsReturn="True"

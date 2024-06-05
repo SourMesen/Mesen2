@@ -240,7 +240,7 @@ namespace Mesen.Debugger.Utilities
 	public class DebugWorkspace
 	{
 		public Dictionary<CpuType, CpuDebugWorkspace> WorkspaceByCpu { get; set; } = new();
-		public string[] TblMappings = Array.Empty<string>();
+		public string[] TblMappings { get; set; } = Array.Empty<string>();
 
 		public static DebugWorkspace Load(string path)
 		{
@@ -248,7 +248,7 @@ namespace Mesen.Debugger.Utilities
 			if(File.Exists(path)) {
 				try {
 					string fileData = File.ReadAllText(path);
-					dbgWorkspace = JsonSerializer.Deserialize<DebugWorkspace>(fileData, JsonHelper.Options) ?? new DebugWorkspace();
+					dbgWorkspace = (DebugWorkspace?)JsonSerializer.Deserialize(fileData, typeof(DebugWorkspace), MesenSerializerContext.Default) ?? new DebugWorkspace();
 				} catch {
 				}
 			}
@@ -279,7 +279,7 @@ namespace Mesen.Debugger.Utilities
 				WorkspaceByCpu[cpuType] = workspace;
 			}
 
-			FileHelper.WriteAllText(path, JsonSerializer.Serialize(this, typeof(DebugWorkspace), JsonHelper.Options));
+			FileHelper.WriteAllText(path, JsonSerializer.Serialize(this, typeof(DebugWorkspace), MesenSerializerContext.Default));
 		}
 
 		public void Reset()

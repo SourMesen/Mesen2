@@ -176,49 +176,49 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 		}
+	}
 
-		public class LabelViewModel : INotifyPropertyChanged
+	public class LabelViewModel : INotifyPropertyChanged
+	{
+		private string _format;
+
+		public CodeLabel Label { get; set; }
+		public CpuType CpuType { get; }
+		public string AbsAddressDisplay { get; }
+
+		public string LabelText { get; private set; }
+		public string LabelComment { get; private set; }
+		public int RelAddress { get; private set; }
+		public string RelAddressDisplay => RelAddress >= 0 ? ("$" + RelAddress.ToString(_format)) : "<unavailable>";
+		public object RowBrush => RelAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
+		public FontStyle RowStyle => RelAddress >= 0 ? FontStyle.Normal : FontStyle.Italic;
+
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		public void Refresh()
 		{
-			private string _format;
-
-			public CodeLabel Label { get; set; }
-			public CpuType CpuType { get; }
-			public string AbsAddressDisplay { get; }
-
-			public string LabelText { get; private set; }
-			public string LabelComment { get; private set; }
-			public int RelAddress { get; private set; }
-			public string RelAddressDisplay => RelAddress >= 0 ? ("$" + RelAddress.ToString(_format)) : "<unavailable>";
-			public object RowBrush => RelAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
-			public FontStyle RowStyle => RelAddress >= 0 ? FontStyle.Normal : FontStyle.Italic;
-
-			public event PropertyChangedEventHandler? PropertyChanged;
-
-			public void Refresh()
-			{
-				int addr = Label.GetRelativeAddress(CpuType).Address;
-				if(addr != RelAddress) {
-					RelAddress = addr;
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowBrush)));
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowStyle)));
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RelAddressDisplay)));
-				}
+			int addr = Label.GetRelativeAddress(CpuType).Address;
+			if(addr != RelAddress) {
+				RelAddress = addr;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowBrush)));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowStyle)));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RelAddressDisplay)));
 			}
+		}
 
-			public LabelViewModel(CodeLabel label, CpuType cpuType)
-			{
-				Label = label;
-				LabelText = label.Label;
-				LabelComment = label.Comment;
-				CpuType = cpuType;
-				RelAddress = Label.GetRelativeAddress(CpuType).Address;
-				_format = "X" + cpuType.GetAddressSize();
+		public LabelViewModel(CodeLabel label, CpuType cpuType)
+		{
+			Label = label;
+			LabelText = label.Label;
+			LabelComment = label.Comment;
+			CpuType = cpuType;
+			RelAddress = Label.GetRelativeAddress(CpuType).Address;
+			_format = "X" + cpuType.GetAddressSize();
 
-				if(Label.MemoryType.IsRelativeMemory()) {
-					AbsAddressDisplay = "";
-				} else {
-					AbsAddressDisplay = "$" + label.Address.ToString(label.MemoryType.GetFormatString()) + " [" + label.MemoryType.GetShortName() + "]";
-				}
+			if(Label.MemoryType.IsRelativeMemory()) {
+				AbsAddressDisplay = "";
+			} else {
+				AbsAddressDisplay = "$" + label.Address.ToString(label.MemoryType.GetFormatString()) + " [" + label.MemoryType.GetShortName() + "]";
 			}
 		}
 	}

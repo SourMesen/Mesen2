@@ -30,20 +30,20 @@
 			<TabItem Header="{l:Translate tabOverscan}">
 				<c:GroupBox>
 					<c:GroupBox.Header>
-						<CheckBox Content="{l:Translate chkOverrideOverscan}" IsChecked="{CompiledBinding Config.OverrideOverscan}" Margin="0 -3 0 0" />
+						<CheckBox Content="{l:Translate chkOverrideOverscan}" IsChecked="{Binding Config.OverrideOverscan}" Margin="0 -3 0 0" />
 					</c:GroupBox.Header>
 
 					<c:OverscanInput
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
-						IsEnabled="{CompiledBinding Config.OverrideOverscan}"
-						Overscan="{CompiledBinding Config.Overscan}"
+						IsEnabled="{Binding Config.OverrideOverscan}"
+						Overscan="{Binding Config.Overscan}"
 					/>
 				</c:GroupBox>
 			</TabItem>
-			<TabItem Header="{l:Translate tabDipSwitches}" IsVisible="{CompiledBinding DipSwitches.DipSwitches.Count}">
+			<TabItem Header="{l:Translate tabDipSwitches}" IsVisible="{Binding DipSwitches.DipSwitches.Count}">
 				<ScrollViewer>
-					<ItemsControl ItemsSource="{CompiledBinding DipSwitches.DipSwitches}">
+					<ItemsControl ItemsSource="{Binding DipSwitches.DipSwitches}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<Grid ColumnDefinitions="1*, 1*" RowDefinitions="Auto">

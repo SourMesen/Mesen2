@@ -11,6 +11,7 @@
 	VerticalAlignment="Top"
 	HorizontalAlignment="Stretch"
 	x:Name="root"
+	x:DataType="vm:PreferencesConfigViewModel"
 	x:Class="Mesen.Views.ShortcutKeysTabView"
 >
 	<Design.DataContext>

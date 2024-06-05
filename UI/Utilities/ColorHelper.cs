@@ -134,6 +134,16 @@ namespace Mesen.Utilities
 			}
 		}
 
+		public static Color GetColor(UInt32 u32Color)
+		{
+			Color color = Color.FromUInt32(u32Color);
+			if(ConfigManager.ActiveTheme == MesenTheme.Dark) {
+				return InvertBrightness(color);
+			} else {
+				return color;
+			}
+		}
+
 		private static double GetColorLuminance(Color color)
 		{
 			double r = color.R / 255.0;

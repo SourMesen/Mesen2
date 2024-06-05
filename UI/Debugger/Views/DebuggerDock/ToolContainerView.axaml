@@ -9,5 +9,5 @@
 	xmlns:dvm="using:Mesen.Debugger.ViewModels.DebuggerDock"
 	x:Class="Mesen.Debugger.Views.DebuggerDock.ToolContainerView"
 >
-	<ContentControl Content="{Binding Model}" />
+	<ContentControl Content="{ReflectionBinding Model}" />
 </UserControl>

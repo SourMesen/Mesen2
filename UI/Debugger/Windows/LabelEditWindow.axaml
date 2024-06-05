@@ -29,8 +29,8 @@
 	<DockPanel>
 		<DockPanel DockPanel.Dock="Bottom">
 			<Button DockPanel.Dock="Right" MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
-			<Button DockPanel.Dock="Right" MinWidth="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{CompiledBinding OkEnabled}" />
-			<c:ButtonWithIcon Icon="Assets/Close.png" Text="{l:Translate btnDelete}" Click="Delete_OnClick" IsVisible="{CompiledBinding AllowDelete}" />
+			<Button DockPanel.Dock="Right" MinWidth="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{Binding OkEnabled}" />
+			<c:ButtonWithIcon Icon="Assets/Close.png" Text="{l:Translate btnDelete}" Click="Delete_OnClick" IsVisible="{Binding AllowDelete}" />
 		</DockPanel>
 
 		<Grid
@@ -42,22 +42,22 @@
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblMemoryType}" />
 			<c:EnumComboBox 
 				Grid.Column="1" Grid.Row="0"
-				SelectedItem="{CompiledBinding Label.MemoryType}"
-				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+				SelectedItem="{Binding Label.MemoryType}"
+				AvailableValues="{Binding AvailableMemoryTypes}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblAddress}" />
 			<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
 				<TextBlock Margin="0 0 3 0">$</TextBlock>
-				<c:MesenNumericTextBox Value="{CompiledBinding Label.Address}" Hex="True" Trim="True" Width="60" />
-				<TextBlock Margin="3 0 0 0" Text="{CompiledBinding MaxAddress}" Foreground="Gray" />
+				<c:MesenNumericTextBox Value="{Binding Label.Address}" Hex="True" Trim="True" Width="60" />
+				<TextBlock Margin="3 0 0 0" Text="{Binding MaxAddress}" Foreground="Gray" />
 			</StackPanel>
 
 			<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblLabel}" />
 			<TextBox
 				Grid.Column="1" Grid.Row="2"
 				Name="txtLabel"
-				Text="{CompiledBinding Label.Label}"
+				Text="{Binding Label.Label}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblComment}" />
@@ -68,7 +68,7 @@
 				Height="NaN"
 				MinHeight="100"
 				VerticalContentAlignment="Top"
-				Text="{CompiledBinding Label.Comment}"
+				Text="{Binding Label.Comment}"
 				FontFamily="{DynamicResource MesenMonospaceFont}"
 				FontSize="{DynamicResource MesenMonospaceFontSize}"
 			/>
@@ -76,16 +76,16 @@
 			<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblLength}" />
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="4">
 				<NumericUpDown
-					Value="{CompiledBinding Label.Length}"
+					Value="{Binding Label.Length}"
 					Minimum="1"
 					Maximum="65536"
 				/>
 				<TextBlock Text="{l:Translate lblBytes}" Margin="3 0" />
 			</StackPanel>
 
-			<Grid Grid.Row="5" Margin="0 5" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto" IsVisible="{CompiledBinding ErrorMessage.Length}" >
+			<Grid Grid.Row="5" Margin="0 5" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto" IsVisible="{Binding ErrorMessage.Length}" >
 				<Image Source="/Assets/Warning.png" Stretch="None" />
-				<TextBlock Grid.Column="1" Text="{CompiledBinding ErrorMessage}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="3 0 0 0" />
+				<TextBlock Grid.Column="1" Text="{Binding ErrorMessage}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="3 0 0 0" />
 			</Grid>
 		</Grid>
 	</DockPanel>

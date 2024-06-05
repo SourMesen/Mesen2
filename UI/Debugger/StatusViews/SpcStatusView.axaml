@@ -23,9 +23,9 @@
 	<ScrollViewer>
 		<DockPanel>
 			<StackPanel DockPanel.Dock="Right">
-				<StackPanel Orientation="Horizontal" IsEnabled="{CompiledBinding EditAllowed}">
+				<StackPanel Orientation="Horizontal" IsEnabled="{Binding EditAllowed}">
 					<TextBlock Margin="0">SP:</TextBlock>
-					<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Hex="True" Max="0xFF" />
+					<c:MesenNumericTextBox Value="{Binding RegSP}" Hex="True" Max="0xFF" />
 				</StackPanel>
 				<TextBox
 					TextWrapping="Wrap"
@@ -34,31 +34,31 @@
 					AcceptsReturn="True"
 					IsReadOnly="True"
 					ScrollViewer.VerticalScrollBarVisibility="Visible"
-					Text="{CompiledBinding StackPreview}"
+					Text="{Binding StackPreview}"
 				/>
 			</StackPanel>
 
-			<StackPanel DockPanel.Dock="Top" IsEnabled="{CompiledBinding EditAllowed}">
+			<StackPanel DockPanel.Dock="Top" IsEnabled="{Binding EditAllowed}">
 				<WrapPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>A:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Hex="True" Max="0xFF" />
+						<c:MesenNumericTextBox Value="{Binding RegA}" Hex="True" Max="0xFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>X:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegX}" Hex="True" Max="0xFF" />
+						<c:MesenNumericTextBox Value="{Binding RegX}" Hex="True" Max="0xFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>Y:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegY}" Hex="True" Max="0xFF" />
+						<c:MesenNumericTextBox Value="{Binding RegY}" Hex="True" Max="0xFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>PC:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegPC}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>Cycle:</TextBlock>
-						<c:MesenNumericTextBox Width="70" Value="{CompiledBinding CycleCount}" IsEnabled="False" />
+						<c:MesenNumericTextBox Width="70" Value="{Binding CycleCount}" IsEnabled="False" />
 					</StackPanel>
 				</WrapPanel>
 
@@ -67,25 +67,25 @@
 				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 					<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
 						<TextBlock>P:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegPS}" Hex="True" Max="0xFF" />
+						<c:MesenNumericTextBox Value="{Binding RegPS}" Hex="True" Max="0xFF" />
 					</StackPanel>
 
 					<WrapPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagC}" Content="Carry" />
-							<CheckBox IsChecked="{CompiledBinding FlagZ}" Content="Zero" />
+							<CheckBox IsChecked="{Binding FlagC}" Content="Carry" />
+							<CheckBox IsChecked="{Binding FlagZ}" Content="Zero" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagI}" Content="IRQ" />
-							<CheckBox IsChecked="{CompiledBinding FlagH}" Content="Half" />
+							<CheckBox IsChecked="{Binding FlagI}" Content="IRQ" />
+							<CheckBox IsChecked="{Binding FlagH}" Content="Half" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagB}" Content="Break" />
-							<CheckBox IsChecked="{CompiledBinding FlagP}" Content="Dir. Page" />
+							<CheckBox IsChecked="{Binding FlagB}" Content="Break" />
+							<CheckBox IsChecked="{Binding FlagP}" Content="Dir. Page" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagV}" Content="Overflow" />
-							<CheckBox IsChecked="{CompiledBinding FlagN}" Content="Negative" />
+							<CheckBox IsChecked="{Binding FlagV}" Content="Overflow" />
+							<CheckBox IsChecked="{Binding FlagN}" Content="Negative" />
 						</StackPanel>
 					</WrapPanel>
 				</WrapPanel>

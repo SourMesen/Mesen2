@@ -62,15 +62,15 @@ namespace Mesen.Debugger.Disassembly
 				while(codeString.Length > 0) {
 					Match m;
 					if((m = _comment.Match(codeString)).Success) {
-						colors.Add(new CodeColor(m.Value, textColor ?? cfg.CodeCommentColor, CodeSegmentType.Comment, pos));
+						colors.Add(new CodeColor(m.Value, textColor ?? Color.FromUInt32(cfg.CodeCommentColor), CodeSegmentType.Comment, pos));
 					} else if((m = _number.Match(codeString)).Success) {
-						colors.Add(new CodeColor(m.Value, textColor ?? cfg.CodeImmediateColor, CodeSegmentType.ImmediateValue, pos));
+						colors.Add(new CodeColor(m.Value, textColor ?? Color.FromUInt32(cfg.CodeImmediateColor), CodeSegmentType.ImmediateValue, pos));
 					} else if((m = _keywords.Match(codeString)).Success) {
-						colors.Add(new CodeColor(m.Groups[1].Value, textColor ?? cfg.CodeAddressColor, CodeSegmentType.OpCode, pos));
+						colors.Add(new CodeColor(m.Groups[1].Value, textColor ?? Color.FromUInt32(cfg.CodeAddressColor), CodeSegmentType.OpCode, pos));
 					} else if((m = _text.Match(codeString)).Success) {
 						colors.Add(new CodeColor(m.Groups[1].Value, textColor ?? defaultColor, CodeSegmentType.OpCode, pos));
 					} else if((m = _syntax.Match(codeString)).Success) {
-						colors.Add(new CodeColor(m.Value, textColor ?? cfg.CodeEffectiveAddressColor, CodeSegmentType.Syntax, pos));
+						colors.Add(new CodeColor(m.Value, textColor ?? Color.FromUInt32(cfg.CodeEffectiveAddressColor), CodeSegmentType.Syntax, pos));
 					} else if((m = _space.Match(codeString)).Success) {
 						colors.Add(new CodeColor(m.Value, textColor ?? defaultColor, CodeSegmentType.None, pos));
 					}
