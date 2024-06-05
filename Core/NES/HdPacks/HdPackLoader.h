@@ -15,6 +15,8 @@ public:
 private:
 	HdPackData* _data = nullptr;
 	bool _loadFromZip = false;
+	int _currentLine = 0;
+	int _errorCount = 0;
 	ZipReader _reader;
 	string _hdPackDefinitionFile;
 	string _hdPackFolder;
@@ -54,4 +56,5 @@ private:
 	void ProcessSfxTag(vector<string> &tokens);
 
 	vector<HdPackCondition*> ParseConditionString(string conditionString);
+	bool ParseBooleanValue(string value);
 };
