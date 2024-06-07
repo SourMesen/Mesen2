@@ -94,7 +94,7 @@ void PceCdAudioPlayer::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sam
 	double volume = _cdrom->GetAudioFader().GetVolume(PceAudioFaderTarget::CdAudio);
 	_resampler.SetVolume(_emu->GetSettings()->GetPcEngineConfig().CdAudioVolume / 100.0 * volume);
 	_resampler.SetSampleRates(44100, sampleRate);
-	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount);
+	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount, _state.Status == CdAudioStatus::Playing);
 	_samplesToPlay.clear();
 }
 

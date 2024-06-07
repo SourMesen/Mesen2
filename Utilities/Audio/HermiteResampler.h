@@ -10,6 +10,9 @@ private:
 	double _rateRatio = 1.0;
 	double _fraction = 0.0;
 
+	int16_t _left = 0;
+	int16_t _right = 0;
+
 	vector<int16_t> _pendingSamples;
 
 	__forceinline int16_t HermiteInterpolate(double values[4], double mu);
@@ -26,5 +29,5 @@ public:
 	uint32_t GetPendingCount();
 
 	template<bool addMode>
-	uint32_t Resample(int16_t* in, uint32_t inSampleCount, int16_t* out, size_t maxOutSampleCount);
+	uint32_t Resample(int16_t* in, uint32_t inSampleCount, int16_t* out, size_t maxOutSampleCount, bool fillToMax = false);
 };
