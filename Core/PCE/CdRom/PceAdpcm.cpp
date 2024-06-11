@@ -324,7 +324,7 @@ void PceAdpcm::PlaySample()
 	int8_t sign = data & 0x08 ? -1 : 1;
 
 	int16_t adjustment = _stepSize[(_magnitude << 3) | value] * sign;
-	_currentOutput = std::clamp(_currentOutput + adjustment, 0, 4095);
+	_currentOutput += adjustment;
 	
 	_magnitude = std::clamp(_magnitude + _stepFactor[value], 0, 48);
 
@@ -333,7 +333,7 @@ void PceAdpcm::PlaySample()
 		SetEndReached(true);
 	}
 
-	int16_t out = (_currentOutput - 2048) * 10;
+	int16_t out = (std::clamp<int16_t>(_currentOutput, 0, 4095) - 2048) * 10;
 	_samplesToPlay.push_back(out);
 	_samplesToPlay.push_back(out);
 }
@@ -344,7 +344,7 @@ void PceAdpcm::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 	double volume = _cdrom->GetAudioFader().GetVolume(PceAudioFaderTarget::Adpcm);
 	_resampler.SetVolume(_emu->GetSettings()->GetPcEngineConfig().AdpcmVolume / 100.0 * volume);
 	_resampler.SetSampleRates(freq, sampleRate);
-	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount);
+	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount, _state.Playing);
 	_samplesToPlay.clear();
 }
 

@@ -48,6 +48,7 @@ namespace Mesen.Windows
 		private NativeRenderer _renderer;
 		private SoftwareRendererView _softwareRenderer;
 		private Size _rendererSize;
+		private bool _usesSoftwareRenderer;
 
 		private Size _originalSize;
 		private PixelPoint _originalPos;
@@ -67,6 +68,7 @@ namespace Mesen.Windows
 		{
 			_testModeEnabled = System.Diagnostics.Debugger.IsAttached;
 			_isLinux = OperatingSystem.IsLinux();
+			_usesSoftwareRenderer = ConfigManager.Config.Video.UseSoftwareRenderer || OperatingSystem.IsMacOS();
 
 			_model = new MainWindowViewModel();
 			DataContext = _model;
@@ -94,7 +96,7 @@ namespace Mesen.Windows
 			_softwareRenderer = this.GetControl<SoftwareRendererView>("SoftwareRenderer");
 			_audioPlayer = this.GetControl<ContentControl>("AudioPlayer");
 			_mainMenu = this.GetControl<MainMenuView>("MainMenu");
-			_mouseManager = new MouseManager(this, _renderer, _mainMenu);
+			_mouseManager = new MouseManager(this, _usesSoftwareRenderer ? _softwareRenderer : _renderer, _mainMenu, _usesSoftwareRenderer);
 			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
 
 #if DEBUG
@@ -197,14 +199,6 @@ namespace Mesen.Windows
 			_timerBackgroundFlag.Interval = TimeSpan.FromMilliseconds(200);
 			_timerBackgroundFlag.Tick += timerUpdateBackgroundFlag;
 			_timerBackgroundFlag.Start();
-
-			Task.Run(() => {
-				//Load all styles after 15ms to let the UI refresh once with the startup styles
-				System.Threading.Thread.Sleep(15);
-				Dispatcher.UIThread.Post(() => {
-					StyleHelper.ApplyTheme(ConfigManager.ActiveTheme);
-				});
-			});
 			
 			Task.Run(() => {
 				CommandLineHelper cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
@@ -214,7 +208,7 @@ namespace Mesen.Windows
 					ConfigManager.HomeFolder,
 					TryGetPlatformHandle()?.Handle ?? IntPtr.Zero,
 					_renderer.Handle,
-					ConfigManager.Config.Video.UseSoftwareRenderer || OperatingSystem.IsMacOS(),
+					_usesSoftwareRenderer,
 					cmdLine.NoAudio,
 					cmdLine.NoVideo,
 					cmdLine.NoInput
@@ -246,9 +240,6 @@ namespace Mesen.Windows
 				Dispatcher.UIThread.Post(() => {
 					cmdLine.LoadFiles();
 					cmdLine.OnAfterInit(this);
-
-					//Load the debugger window styles once everything else is done
-					StyleHelper.LoadDebuggerStyles();
 
 					if(ConfigManager.Config.Preferences.AutomaticallyCheckForUpdates) {
 						_model.MainMenu.CheckForUpdate(this, true);

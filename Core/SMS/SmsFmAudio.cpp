@@ -77,12 +77,13 @@ void SmsFmAudio::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRat
 
 	if(_audioControl == 0 || _audioControl == 2) {
 		//FM audio is muted when 0 or 2
+		_samplesToPlay.clear();
 		return;
 	}
 
 	_resampler.SetSampleRates(_console->GetMasterClockRate() / 72.0, sampleRate);
 	_resampler.SetVolume(_emu->GetSettings()->GetSmsConfig().FmAudioVolume * 1.5 / 100.0);
-	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount);
+	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount, true);
 	_samplesToPlay.clear();
 }
 

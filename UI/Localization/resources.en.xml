@@ -428,6 +428,7 @@
 			<Control ID="chkRandomPowerOnState">Randomize power-on state</Control>
 			<Control ID="chkEnableCdRomForHuCardGames">Enable CD-ROM emulation when running HuCard games</Control>
 			<Control ID="chkDisableCdRomSaveRamForHuCardGames">Disable CD-ROM save RAM when running HuCard games</Control>
+			<Control ID="chkUseHuC6280aAudio">Use HuC6280A audio (reduces popping)</Control>
 			
 			<Control ID="tpgInput">Input</Control>
 			
@@ -710,6 +711,7 @@
 			<Control ID="lblLink">www.mesen.ca</Control>
 			<Control ID="lblVersion">Version:</Control>
 			<Control ID="lblBuildDate">Build Date:</Control>
+			<Control ID="lblRuntimeVersion">Runtime:</Control>
 
 			<Control ID="grpAcknowledgements">Acknowledgements</Control>
 			<Control ID="lblAcknowledgeList">Thank you to the following people/projects for their direct and indirect help in making Mesen possible:</Control>
@@ -1721,6 +1723,10 @@ E
 			<Value ID="ToggleAudio">Enable/Disable Audio</Value>
 			<Value ID="IncreaseVolume">Increase Volume</Value>
 			<Value ID="DecreaseVolume">Decrease Volume</Value>
+
+			<Value ID="PreviousTrack">Audio Player - Previous Track</Value>
+			<Value ID="NextTrack">Audio Player - Next Track</Value>
+
 			<Value ID="RunSingleFrame">Run Single Frame</Value>
 
 			<Value ID="SetScale1x">Set Scale 1x</Value>
@@ -2261,18 +2267,6 @@ E
 			<Value ID="Light">Light</Value>
 			<Value ID="Dark">Dark</Value>
 		</Enum>
-		<Enum ID="Language">
-			<Value ID="SystemDefault">User Account Default</Value>
-			<Value ID="English">English</Value>
-			<Value ID="French">Français</Value>
-			<Value ID="Japanese">日本語</Value>
-			<Value ID="Portuguese">Português</Value>
-			<Value ID="Russian">Русский</Value>
-			<Value ID="Spanish">Español</Value>
-			<Value ID="Ukrainian">Українська</Value>
-			<Value ID="Catalan">Català</Value>
-			<Value ID="Chinese">中文</Value>
-		</Enum>
 		<Enum ID="PceConsoleType">
 			<Value ID="Auto">Auto (recommended)</Value>
 			<Value ID="PcEngine">PC Engine (JP)</Value>
@@ -2288,18 +2282,6 @@ E
 			<Value ID="Random">Random Values (default)</Value>
 			<Value ID="AllZeros">All 0s</Value>
 			<Value ID="AllOnes">All 1s</Value>
-		</Enum>
-		<Enum ID="CheatCurrentFilterType">
-			<Value ID="Smaller">Smaller than</Value>
-			<Value ID="Equal">Equal to</Value>
-			<Value ID="NotEqual">Not equal to</Value>
-			<Value ID="Greater">Greater than</Value>
-		</Enum>
-		<Enum ID="CheatPrevFilterType">
-			<Value ID="Smaller">Smaller</Value>
-			<Value ID="Equal">Equal</Value>
-			<Value ID="NotEqual">Not equal</Value>
-			<Value ID="Greater">Greater</Value>
 		</Enum>
 		<Enum ID="FontAntialiasing">
 			<Value ID="Disabled">Disabled</Value>

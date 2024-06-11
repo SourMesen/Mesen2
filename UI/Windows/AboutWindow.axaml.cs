@@ -15,24 +15,9 @@ namespace Mesen.Windows
 {
 	public class AboutWindow : MesenWindow
 	{
-		public class AboutListEntry
-		{
-			public AboutListEntry(string name, string author, string note, string url)
-			{
-				Name = name;
-				Author = author;
-				Note = note;
-				Url = url;
-			}
-
-			public string Name { get; set; } = "";
-			public string Author { get; set; } = "";
-			public string Note { get; set; } = "";
-			public string Url { get; set; } = "";
-		}
-
 		public string Version { get; }
 		public string BuildDate { get; }
+		public string RuntimeVersion { get; }
 		public List<AboutListEntry> LibraryList { get; }
 		public List<AboutListEntry> AcknowledgeList { get; }
 
@@ -40,6 +25,7 @@ namespace Mesen.Windows
 		{
 			Version = EmuApi.GetMesenVersion().ToString();
 			BuildDate = EmuApi.GetMesenBuildDate();
+			RuntimeVersion = ".NET " + Environment.Version;
 
 			LibraryList = new List<AboutListEntry>() {
 				new("Avalonia", "", "MIT", "https://github.com/AvaloniaUI/Avalonia"),
@@ -114,5 +100,21 @@ namespace Mesen.Windows
 		{
 			ApplicationHelper.OpenBrowser("https://www.mesen.ca");
 		}
+	}
+
+	public class AboutListEntry
+	{
+		public AboutListEntry(string name, string author, string note, string url)
+		{
+			Name = name;
+			Author = author;
+			Note = note;
+			Url = url;
+		}
+
+		public string Name { get; set; } = "";
+		public string Author { get; set; } = "";
+		public string Note { get; set; } = "";
+		public string Url { get; set; } = "";
 	}
 }

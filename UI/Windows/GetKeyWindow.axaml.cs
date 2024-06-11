@@ -11,7 +11,6 @@ using Mesen.Interop;
 using Avalonia.Threading;
 using Avalonia;
 using Mesen.Config;
-using Mesen.Utilities.GlobalMouseLib;
 using Mesen.Utilities;
 using Mesen.Localization;
 using Avalonia.Remote.Protocol.Input;
@@ -116,15 +115,15 @@ namespace Mesen.Windows
 		private void UpdateKeyDisplay()
 		{
 			if(!_allowKeyboardOnly) {
-				MousePosition p = GlobalMouse.GetMousePosition(IntPtr.Zero);
-				PixelPoint mousePos = new PixelPoint(p.X, p.Y);
-				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, LayoutHelper.GetLayoutScale(this)));
+				SystemMouseState mouseState = InputApi.GetSystemMouseState(IntPtr.Zero);
+				PixelPoint mousePos = new PixelPoint(mouseState.XPosition, mouseState.YPosition);
+				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, LayoutHelper.GetLayoutScale(this) / InputApi.GetPixelScale()));
 				bool mouseInsideWindow = clientBounds.Contains(mousePos);
-				InputApi.SetKeyState(MouseManager.LeftMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Left));
-				InputApi.SetKeyState(MouseManager.RightMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Right));
-				InputApi.SetKeyState(MouseManager.MiddleMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Middle));
-				InputApi.SetKeyState(MouseManager.MouseButton4KeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Button4));
-				InputApi.SetKeyState(MouseManager.MouseButton5KeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Button5));
+				InputApi.SetKeyState(MouseManager.LeftMouseButtonKeyCode, mouseInsideWindow && mouseState.LeftButton);
+				InputApi.SetKeyState(MouseManager.RightMouseButtonKeyCode, mouseInsideWindow && mouseState.RightButton);
+				InputApi.SetKeyState(MouseManager.MiddleMouseButtonKeyCode, mouseInsideWindow && mouseState.MiddleButton);
+				InputApi.SetKeyState(MouseManager.MouseButton4KeyCode, mouseInsideWindow && mouseState.Button4);
+				InputApi.SetKeyState(MouseManager.MouseButton5KeyCode, mouseInsideWindow && mouseState.Button5);
 
 				List<UInt16> scanCodes = InputApi.GetPressedKeys();
 

@@ -50,6 +50,22 @@ void GbPpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 
 	Write(0xFF48, 0xFF);
 	Write(0xFF49, 0xFF);
+
+	//Reset state to ensure powering off and then back on works properly for SGB
+	ResetRenderer();
+	_wyEnableFlag = false;
+	_wxEnableFlag = false;	
+	_lcdDisabled = true;
+	_stopOamBlocked = false;
+	_stopVramBlocked = false;
+	_stopPaletteBlocked = false;
+	_oamReadBlocked = false;
+	_oamWriteBlocked = false;
+	_vramReadBlocked = false;
+	_vramWriteBlocked = false;
+	_isFirstFrame = true;
+	_forceBlankFrame = true;
+	_rendererIdle = false;
 }
 
 GbPpu::~GbPpu()
@@ -236,7 +252,7 @@ void GbPpu::ProcessVblankScanline()
 				_state.Scanline = 0;
 				_state.Ly = 0;
 				_state.LyForCompare = 0;
-				_wyEnableFlag = false;
+				_wyEnableFlag = _state.Scanline == _state.WindowY && _state.WindowEnabled;
 
 				if(!_gameboy->IsCgb()) {
 					//On scanline 0, hblank gets set here (not on CGB)
@@ -272,25 +288,14 @@ void GbPpu::ProcessFirstScanlineAfterPowerOn()
 			_rendererIdle = true;
 			break;
 
-		case 91:
-			if(_gameboy->IsCgb()) {
-				_rendererIdle = false;
-				//"at some point in this frame the value of WY was equal to LY"
-				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
-			}
-			break;
-
 		case 92:
-			if(!_gameboy->IsCgb()) {
-				_rendererIdle = false;
-				//"at some point in this frame the value of WY was equal to LY"
-				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
-			}
+			_rendererIdle = false;
 			break;
 
 		case 456:
 			_state.Cycle = 0;
 			_state.Scanline++;
+			_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			_drawnPixels = 0;
 			_state.Ly = _state.Scanline;
 			_drawnPixels = 0;
@@ -342,27 +347,16 @@ void GbPpu::ProcessVisibleScanline()
 			_rendererIdle = true;
 			ResetRenderer();
 			break;
-		
-		case 88:
-			if(_gameboy->IsCgb()) {
-				_rendererIdle = false;
-				//"at some point in this frame the value of WY was equal to LY"
-				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
-			}
-			break;
 
 		case 89:
-			if(!_gameboy->IsCgb()) {
-				_rendererIdle = false;
-				//"at some point in this frame the value of WY was equal to LY"
-				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
-			}
+			_rendererIdle = false;
 			break;
 
 		case 456:
 			_state.Cycle = 0;
 			_state.Scanline++;
 			_state.Ly = _state.Scanline;
+			_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			_drawnPixels = 0;
 			if(_state.Scanline == 144) {
 				_state.LyForCompare = -1;
@@ -373,6 +367,8 @@ void GbPpu::ProcessVisibleScanline()
 
 void GbPpu::ProcessPpuCycle()
 {
+	_gbcTileGlitch = false;
+
 	if(_emu->IsDebugging()) {
 		_emu->ProcessPpuCycle<CpuType::Gameboy>();
 		if(_state.Mode != PpuMode::Drawing) {
@@ -461,10 +457,10 @@ void GbPpu::RunDrawCycle()
 					if(_state.CgbEnabled) {
 						WriteBgPixel(entry.Color | ((entry.Attributes & 0x07) << 2));
 					} else {
-						WriteBgPixel(_state.BgEnabled ? ((_state.BgPalette >> (entry.Color * 2)) & 0x03) : 0);
+						WriteBgPixel(_state.BgEnabled ? ((_state.BgPalette >> (entry.Color * 2)) & 0x03) : (_state.BgPalette & 0x03));
 					}
 				} else {
-					WriteBgPixel(0);
+					WriteBgPixel(_state.BgPalette & 0x03);
 				}
 				_lastPixelType = GbPixelType::Background;
 				_lastBgColor = entry.Color;
@@ -952,6 +948,8 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			_state.LargeSprites = (value & 0x04) != 0;
 			_state.SpritesEnabled = (value & 0x02) != 0;
 			_state.BgEnabled = (value & 0x01) != 0;
+
+			_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
 			break;
 
 		case 0xFF41:
@@ -1007,9 +1005,9 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 	}
 }
 
-void GbPpu::SetTileFetchGlitchState(bool enabled)
+void GbPpu::SetTileFetchGlitchState()
 {
-	_gbcTileGlitch = enabled;
+	_gbcTileGlitch = true;
 }
 
 bool GbPpu::IsVramReadAllowed()

@@ -27,32 +27,32 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
-				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuActions}" />
-				<MenuItem Header="{l:Translate mnuTools}" ItemsSource="{CompiledBinding ToolsMenuActions}" />
+				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuActions}" />
+				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuActions}" />
+				<MenuItem Header="{l:Translate mnuTools}" ItemsSource="{Binding ToolsMenuActions}" />
 			</c:MesenMenu>
 		</Panel>
 
-		<dc:ActionToolbar Items="{CompiledBinding ToolbarActions}" DockPanel.Dock="Top" />
+		<dc:ActionToolbar Items="{Binding ToolbarActions}" DockPanel.Dock="Top" />
 
 		<ScrollViewer Margin="3 0" DockPanel.Dock="Right">
 			<StackPanel>
 				<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top">
 					<dc:PaletteSelector
-						ColumnCount="{CompiledBinding PaletteColumnCount}"
+						ColumnCount="{Binding PaletteColumnCount}"
 						BlockSize="14"
 						SelectionMode="SingleColor"
-						PaletteColors="{CompiledBinding PaletteColors}"
-						RawPalette="{CompiledBinding RawPalette}"
-						RawFormat="{CompiledBinding RawFormat}"
-						SelectedPalette="{CompiledBinding SelectedColor}"
+						PaletteColors="{Binding PaletteColors}"
+						RawPalette="{Binding RawPalette}"
+						RawFormat="{Binding RawFormat}"
+						SelectedPalette="{Binding SelectedColor}"
 					/>
 				</Border>
 				<DockPanel Margin="3 5">
 					<TextBlock Text="{l:Translate lblBackground}" VerticalAlignment="Center" DockPanel.Dock="Left" />
-					<c:EnumComboBox SelectedItem="{CompiledBinding Config.Background}" />
+					<c:EnumComboBox SelectedItem="{Binding Config.Background}" />
 				</DockPanel>
-				<CheckBox IsChecked="{CompiledBinding Config.ShowGrid}" Content="{l:Translate chkShowGrid}" />
+				<CheckBox IsChecked="{Binding Config.ShowGrid}" Content="{l:Translate chkShowGrid}" />
 				<StackPanel Margin="3 0 3 5">
 					<TextBlock Text="{l:Translate lblHint1}" />
 					<TextBlock Text="{l:Translate lblHint2}" />
@@ -64,10 +64,10 @@
 					<Border BorderBrush="Gray" Background="{StaticResource ViewerBgBrush}" BorderThickness="1" HorizontalAlignment="Left">
 						<dc:PictureViewer
 							Zoom="4"
-							Source="{CompiledBinding ViewerBitmap}"
+							Source="{Binding ViewerBitmap}"
 							AllowSelection="False"
 							ShowMousePosition="False"
-							CustomGrids="{CompiledBinding CustomGrids}"
+							CustomGrids="{Binding CustomGrids}"
 						/>
 					</Border>
 				</c:GroupBox>
@@ -78,11 +78,11 @@
 			x:Name="picViewer"
 			AllowClickDrag="False"
 			AllowSelection="False"
-			Zoom="{CompiledBinding Config.ImageScale}"
-			Source="{CompiledBinding ViewerBitmap}"
+			Zoom="{Binding Config.ImageScale}"
+			Source="{Binding ViewerBitmap}"
 			GridSizeX="1"
 			GridSizeY="1"
-			CustomGrids="{CompiledBinding CustomGrids}"
+			CustomGrids="{Binding CustomGrids}"
 		/>
 	</DockPanel>
 </Window>

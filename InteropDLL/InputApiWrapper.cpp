@@ -4,8 +4,10 @@
 #include "Core/Shared/KeyManager.h"
 #include "Core/Shared/ShortcutKeyHandler.h"
 #include "Utilities/StringUtilities.h"
+#include "Core/Shared/Interfaces/IMouseManager.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
+extern unique_ptr<IMouseManager> _mouseManager;
 extern unique_ptr<Emulator> _emu;
 
 extern "C" 
@@ -80,5 +82,51 @@ extern "C"
 	DllExport void __stdcall ResetLagCounter()
 	{
 		_emu->ResetLagCounter();
+	}
+
+	DllExport SystemMouseState __stdcall GetSystemMouseState(void* rendererHandle)
+	{
+		if(_mouseManager) {
+			return _mouseManager->GetSystemMouseState(rendererHandle);
+		}
+		SystemMouseState state = {};
+		return state;
+	}
+
+	DllExport bool __stdcall CaptureMouse(int32_t x, int32_t y, int32_t width, int32_t height, void* rendererHandle)
+	{
+		if(_mouseManager) {
+			return _mouseManager->CaptureMouse(x, y, width, height, rendererHandle);
+		}
+		return false;
+	}
+
+	DllExport void __stdcall ReleaseMouse()
+	{
+		if(_mouseManager) {
+			_mouseManager->ReleaseMouse();
+		}
+	}
+
+	DllExport void __stdcall SetSystemMousePosition(int32_t x, int32_t y)
+	{
+		if(_mouseManager) {
+			_mouseManager->SetSystemMousePosition(x, y);
+		}
+	}
+
+	DllExport void __stdcall SetCursorImage(CursorImage image)
+	{
+		if(_mouseManager) {
+			_mouseManager->SetCursorImage(image);
+		}
+	}
+
+	DllExport double __stdcall GetPixelScale()
+	{
+		if(_mouseManager) {
+			return _mouseManager->GetPixelScale();
+		}
+		return 1.0;
 	}
 }

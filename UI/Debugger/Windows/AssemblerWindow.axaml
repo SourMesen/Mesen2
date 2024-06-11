@@ -34,8 +34,8 @@
 
 	<DockPanel>
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
-			<MenuItem Header="{l:Translate mnuOptions}" ItemsSource="{CompiledBinding OptionsMenuActions}" />
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuActions}" />
+			<MenuItem Header="{l:Translate mnuOptions}" ItemsSource="{Binding OptionsMenuActions}" />
 		</c:MesenMenu>
 		
 		<Grid Classes="main" ColumnDefinitions="1*, 300" RowDefinitions="3*,100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -43,7 +43,7 @@
 				<dc:MesenTextEditor
 					Name="Editor"
 					ShowLineNumbers="False"
-					TextBinding="{CompiledBinding Code}"
+					TextBinding="{Binding Code}"
 					FontFamily="{DynamicResource MesenAssemblerFont}"
 					FontSize="{DynamicResource MesenAssemblerFontSize}"
 				/>
@@ -55,19 +55,19 @@
 					IsReadOnly="True"
 					FontFamily="{DynamicResource MesenAssemblerFont}"
 					FontSize="{DynamicResource MesenAssemblerFontSize}"
-					TextBinding="{CompiledBinding ByteCodeView}"
+					TextBinding="{Binding ByteCodeView}"
 				/>
 			</Border>
 
 			<Border Grid.Row="1">
 				<DataBox
-					Items="{CompiledBinding Errors}"
+					Items="{Binding Errors}"
 					GridLinesVisibility="All"
 					CellClick="OnCellClick"
 				>
 					<DataBox.Columns>
-						<DataBoxTextColumn Header="{l:Translate colLine}" Binding="{Binding LineNumber}" CanUserResize="True" />
-						<DataBoxTextColumn Header="{l:Translate colError}" Binding="{Binding Message}" CanUserResize="True" InitialWidth="400" />
+						<DataBoxTextColumn Header="{l:Translate colLine}" Binding="{Binding LineNumber, DataType={x:Type vm:AssemblerError}}" CanUserResize="True" />
+						<DataBoxTextColumn Header="{l:Translate colError}" Binding="{Binding Message, DataType={x:Type vm:AssemblerError}}" CanUserResize="True" InitialWidth="400" />
 					</DataBox.Columns>
 				</DataBox>
 			</Border>
@@ -75,15 +75,15 @@
 			<Border Grid.Row="1" Grid.Column="1" Padding="2">
 				<DockPanel>
 					<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-						<TextBlock Text="{l:Translate lblCodeMatchesOriginal}" Padding="5 0" FontStyle="Italic" IsVisible="{CompiledBinding IsIdentical}" />
+						<TextBlock Text="{l:Translate lblCodeMatchesOriginal}" Padding="5 0" FontStyle="Italic" IsVisible="{Binding IsIdentical}" />
 						<c:ButtonWithIcon
 							MinWidth="70"
 							HorizontalContentAlignment="Center"
 							Click="Ok_OnClick"
 							Icon="Assets/Warning.png"
-							ShowIcon="{CompiledBinding HasWarning}"
+							ShowIcon="{Binding HasWarning}"
 							Text="{l:Translate btnOk}"
-							IsEnabled="{CompiledBinding OkEnabled}"
+							IsEnabled="{Binding OkEnabled}"
 						/>
 						<Button MinWidth="70" HorizontalContentAlignment="Center" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 					</StackPanel>
@@ -93,24 +93,24 @@
 							Grid.Column="1"
 							Width="50"
 							Hex="True"
-							Max="{CompiledBinding MaxAddress}"
-							Value="{CompiledBinding StartAddress}"
+							Max="{Binding MaxAddress}"
+							Value="{Binding StartAddress}"
 						/>
 						<TextBlock Text="{l:Translate lblBytesUsed}" Grid.Row="1" Margin="0 5 0 0" />
 						<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 5 0 0">
-							<TextBlock Text="{CompiledBinding BytesUsed}" Margin="5 0 0 0" />
-							<TextBlock Text="/" Margin="5 0" IsVisible="{CompiledBinding OriginalByteCount}" />
-							<TextBlock Text="{CompiledBinding OriginalByteCount}" IsVisible="{CompiledBinding OriginalByteCount}" />
+							<TextBlock Text="{Binding BytesUsed}" Margin="5 0 0 0" />
+							<TextBlock Text="/" Margin="5 0" IsVisible="{Binding OriginalByteCount}" />
+							<TextBlock Text="{Binding OriginalByteCount}" IsVisible="{Binding OriginalByteCount}" />
 							<Image
 								Margin="5 0"
 								Source="/Assets/Warning.png"
-								IsVisible="{CompiledBinding OriginalSizeExceeded}"
+								IsVisible="{Binding OriginalSizeExceeded}"
 								ToolTip.Tip="{l:Translate lblByteCountExceeded}"
 							/>
 							<Image
 								Margin="5 0"
 								Source="/Assets/Warning.png"
-								IsVisible="{CompiledBinding MaxSizeExceeded}"
+								IsVisible="{Binding MaxSizeExceeded}"
 								ToolTip.Tip="{l:Translate lblMaxSizeExceeded}"
 							/>
 						</StackPanel>

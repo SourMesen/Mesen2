@@ -42,14 +42,14 @@
 	</Application.Resources>
 	
 	<Application.DataTemplates>
-		<dbg:DebuggerViewLocator />
-
 		<DataTemplate DataType="x:Enum">
 			<TextBlock Text="{Binding, Converter={StaticResource Enum}}" />
 		</DataTemplate>
 	</Application.DataTemplates>
 
 	<Application.Styles>
+		<FluentTheme />
+		<StyleInclude Source="/Styles/MesenStyles.xaml" />
 	</Application.Styles>
 
 	<NativeMenu.Menu>

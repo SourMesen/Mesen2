@@ -102,9 +102,9 @@
 					VerticalAlignment="Top"
 				/>
 				
-				<ContentControl Content="{CompiledBinding BreakpointBar, ElementName=root}" />
+				<ContentControl Content="{Binding BreakpointBar, ElementName=root}" />
 
-				<Canvas Classes="hidden" IsVisible="{CompiledBinding ShowMarkers, ElementName=root}">
+				<Canvas Classes="hidden" IsVisible="{Binding ShowMarkers, ElementName=root}">
 					<Canvas.Transitions>
 						<Transitions>
 							<DoubleTransition Property="Opacity" Duration="0:0:0.1" />
@@ -122,13 +122,13 @@
 					</Canvas.Styles>
 
 					<TextBlock Text="00" Canvas.Top="0" />
-					<TextBlock Text="20" Canvas.Top="{CompiledBinding MarkerTop[0], ElementName=root}" />
-					<TextBlock Text="40" Canvas.Top="{CompiledBinding MarkerTop[1], ElementName=root}" />
-					<TextBlock Text="60" Canvas.Top="{CompiledBinding MarkerTop[2], ElementName=root}" />
-					<TextBlock Text="80" Canvas.Top="{CompiledBinding MarkerTop[3], ElementName=root}" />
-					<TextBlock Text="A0" Canvas.Top="{CompiledBinding MarkerTop[4], ElementName=root}" />
-					<TextBlock Text="C0" Canvas.Top="{CompiledBinding MarkerTop[5], ElementName=root}" />
-					<TextBlock Text="E0" Canvas.Top="{CompiledBinding MarkerTop[6], ElementName=root}" />
+					<TextBlock Text="20" Canvas.Top="{Binding MarkerTop[0], ElementName=root}" />
+					<TextBlock Text="40" Canvas.Top="{Binding MarkerTop[1], ElementName=root}" />
+					<TextBlock Text="60" Canvas.Top="{Binding MarkerTop[2], ElementName=root}" />
+					<TextBlock Text="80" Canvas.Top="{Binding MarkerTop[3], ElementName=root}" />
+					<TextBlock Text="A0" Canvas.Top="{Binding MarkerTop[4], ElementName=root}" />
+					<TextBlock Text="C0" Canvas.Top="{Binding MarkerTop[5], ElementName=root}" />
+					<TextBlock Text="E0" Canvas.Top="{Binding MarkerTop[6], ElementName=root}" />
 					<TextBlock Text="FF" Canvas.Bottom="0" />
 				</Canvas>
 			</Panel>

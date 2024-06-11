@@ -163,6 +163,15 @@ void PceConsole::RunFrame()
 	_psg->PlayQueuedAudio();
 }
 
+void PceConsole::ProcessEndOfFrame()
+{
+	//Run the PSG at least once per frame to prevent issues when a very
+	//large block transfer (TIA, etc.) is running across multiple frames
+	//(RunFrame above can run more than one frame in this scenario, which can cause issues)
+	_psg->Run();
+	_psg->PlayQueuedAudio();
+}
+
 void PceConsole::SaveBattery()
 {
 	if(_cdrom) {

@@ -21,20 +21,20 @@
 	>
 		<c:SimpleImageViewer
 			Name="Frame"
-			Source="{CompiledBinding FrameSurface}"
+			Source="{Binding FrameSurface}"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 		/>
 		<c:SimpleImageViewer
 			Name="EmuHud"
-			Source="{CompiledBinding EmuHudSurface}"
+			Source="{Binding EmuHudSurface}"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			RenderOptions.TextRenderingMode="Alias"
 		/>
 		<c:SimpleImageViewer
 			Name="ScriptHud"
-			Source="{CompiledBinding ScriptHudSurface}"
+			Source="{Binding ScriptHudSurface}"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			RenderOptions.TextRenderingMode="Alias"

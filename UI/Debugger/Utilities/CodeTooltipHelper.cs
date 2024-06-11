@@ -18,7 +18,7 @@ namespace Mesen.Debugger.Utilities
 			int address = -1;
 			if(seg.Type == CodeSegmentType.EffectiveAddress) {
 				if(seg.Data.EffectiveAddress >= 0) {
-					MemoryType memType = seg.Data.EffectiveAddressType != MemoryType.None ? seg.Data.EffectiveAddressType : cpuType.ToMemoryType();
+					MemoryType memType = seg.Data.EffectiveAddressType;
 					if(memType.IsRelativeMemory()) {
 						AddressInfo relAddress = new AddressInfo() { Address = (Int32)seg.Data.EffectiveAddress, Type = memType };
 						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
@@ -37,7 +37,7 @@ namespace Mesen.Debugger.Utilities
 				string addressText = seg.Text.Trim(' ', '[', ']', '$');
 				int.TryParse(addressText, System.Globalization.NumberStyles.HexNumber, null, out address);
 				if(address >= 0) {
-					MemoryType memType = seg.Data.EffectiveAddress >= 0 && seg.Data.EffectiveAddressType != MemoryType.None ? seg.Data.EffectiveAddressType : cpuType.ToMemoryType();
+					MemoryType memType = seg.Data.EffectiveAddress >= 0 ? seg.Data.EffectiveAddressType : cpuType.ToMemoryType();
 					if(memType.IsRelativeMemory()) {
 						AddressInfo relAddress = new AddressInfo() { Address = address, Type = memType };
 						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);

@@ -28,18 +28,18 @@
 
 	<DockPanel>
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-			<Button MinWidth="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnOK}" IsEnabled="{CompiledBinding OkEnabled}" />
+			<Button MinWidth="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnOK}" IsEnabled="{Binding OkEnabled}" />
 			<Button MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 		</StackPanel>
 
 		<StackPanel DockPanel.Dock="Bottom" Margin="0 0 0 -20">
 			<CheckBox
 				Content="{l:Translate chkIgnoreDummyOperations}"
-				IsChecked="{CompiledBinding Breakpoint.IgnoreDummyOperations}"
-				IsVisible="{CompiledBinding HasDummyOperations}"
+				IsChecked="{Binding Breakpoint.IgnoreDummyOperations}"
+				IsVisible="{Binding HasDummyOperations}"
 			/>
-			<CheckBox Content="{l:Translate chkMark}" IsChecked="{CompiledBinding Breakpoint.MarkEvent}" />
-			<CheckBox Content="{l:Translate chkEnable}" IsChecked="{CompiledBinding Breakpoint.Enabled}" />
+			<CheckBox Content="{l:Translate chkMark}" IsChecked="{Binding Breakpoint.MarkEvent}" />
+			<CheckBox Content="{l:Translate chkEnable}" IsChecked="{Binding Breakpoint.Enabled}" />
 		</StackPanel>
 
 		<Grid
@@ -51,32 +51,32 @@
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblBreakpointType}" />
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0">
 				<c:EnumComboBox
-					SelectedItem="{CompiledBinding Breakpoint.MemoryType}"
-					AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+					SelectedItem="{Binding Breakpoint.MemoryType}"
+					AvailableValues="{Binding AvailableMemoryTypes}"
 					Width="150"
 				/>
-				<TextBlock Margin="3 0 0 0" Text="{CompiledBinding MaxAddress}" Foreground="Gray" />
+				<TextBlock Margin="3 0 0 0" Text="{Binding MaxAddress}" Foreground="Gray" />
 			</StackPanel>
 
 			<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblBreakOn}" />
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1">
-				<CheckBox Content="{l:Translate chkBreakOnRead}" IsChecked="{CompiledBinding Breakpoint.BreakOnRead}" />
-				<CheckBox Content="{l:Translate chkBreakOnWrite}" IsChecked="{CompiledBinding Breakpoint.BreakOnWrite}" Margin="10 0 0 0" />
+				<CheckBox Content="{l:Translate chkBreakOnRead}" IsChecked="{Binding Breakpoint.BreakOnRead}" />
+				<CheckBox Content="{l:Translate chkBreakOnWrite}" IsChecked="{Binding Breakpoint.BreakOnWrite}" Margin="10 0 0 0" />
 				<CheckBox
 					Content="{l:Translate chkBreakOnExec}"
-					IsChecked="{CompiledBinding Breakpoint.BreakOnExec}"
+					IsChecked="{Binding Breakpoint.BreakOnExec}"
 					Margin="10 0 0 0"
-					IsVisible="{CompiledBinding CanExec}"
+					IsVisible="{Binding CanExec}"
 				/>
 			</StackPanel>
 
 			<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblAddress}" />
 			<StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
 				<TextBlock Margin="0 0 3 0">$</TextBlock>
-				<c:MesenNumericTextBox Name="startAddress" Value="{CompiledBinding Breakpoint.StartAddress}" Hex="True" Trim="True" Width="60" />
+				<c:MesenNumericTextBox Name="startAddress" Value="{Binding Breakpoint.StartAddress}" Hex="True" Trim="True" Width="60" />
 
 				<TextBlock Margin="3 0 3 0" Text="{l:Translate lblAddressTo}" />
-				<c:MesenNumericTextBox Value="{CompiledBinding Breakpoint.EndAddress}" Hex="True" Trim="True" Width="60" />
+				<c:MesenNumericTextBox Value="{Binding Breakpoint.EndAddress}" Hex="True" Trim="True" Width="60" />
 			</StackPanel>
 
 			<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblCondition}" />
@@ -85,11 +85,11 @@
 					AcceptsReturn="True"
 					TextWrapping="Wrap"
 					Height="NaN"
-					Text="{CompiledBinding Breakpoint.Condition}"
+					Text="{Binding Breakpoint.Condition}"
 				/>
 
-				<Image Grid.Column="1" Stretch="None" Source="/Assets/Warning.png" ToolTip.Tip="{l:Translate lblConditionError}" IsVisible="{CompiledBinding !IsConditionValid}" />
-				<Image Grid.Column="2" Stretch="None" Source="/Assets/Help.png" ToolTip.Tip="{CompiledBinding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+				<Image Grid.Column="1" Stretch="None" Source="/Assets/Warning.png" ToolTip.Tip="{l:Translate lblConditionError}" IsVisible="{Binding !IsConditionValid}" />
+				<Image Grid.Column="2" Stretch="None" Source="/Assets/Help.png" ToolTip.Tip="{Binding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 			</Grid>
 		</Grid>
 	</DockPanel>

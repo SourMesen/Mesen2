@@ -18,8 +18,8 @@ namespace Mesen.Config
 
 		public bool IsIdentical(T other)
 		{
-			string a = JsonSerializer.Serialize(this, this.GetType(), JsonHelper.Options);
-			string b = JsonSerializer.Serialize(other, this.GetType(), JsonHelper.Options);
+			string a = JsonSerializer.Serialize(this, this.GetType(), MesenSerializerContext.Default);
+			string b = JsonSerializer.Serialize(other, this.GetType(), MesenSerializerContext.Default);
 			return a == b;
 		}
 	}

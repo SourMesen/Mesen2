@@ -31,32 +31,32 @@
 	<DockPanel Margin="2 2 2 7">
 		<TextBlock
 			DockPanel.Dock="Bottom"
-			Text="{CompiledBinding SubTitle, ElementName=root}"
+			Text="{Binding SubTitle, ElementName=root}"
 			TextAlignment="Center"
 			TextWrapping="Wrap"
-			IsEnabled="{CompiledBinding Enabled, ElementName=root}"
+			IsEnabled="{Binding Enabled, ElementName=root}"
 		/>
 		<TextBlock
 			DockPanel.Dock="Bottom"
-			Text="{CompiledBinding Title, ElementName=root}"
+			Text="{Binding Title, ElementName=root}"
 			TextAlignment="Center"
 			TextWrapping="NoWrap"
 			TextTrimming="CharacterEllipsis"
-			IsEnabled="{CompiledBinding Enabled, ElementName=root}"
+			IsEnabled="{Binding Enabled, ElementName=root}"
 		/>
 		<Button
-			Classes.activeEntry="{CompiledBinding IsActiveEntry, ElementName=root}"
+			Classes.activeEntry="{Binding IsActiveEntry, ElementName=root}"
 			BorderThickness="2"
 			Height="NaN"
 			Background="Black"
 			Click="OnImageClick"
-			IsEnabled="{CompiledBinding Enabled, ElementName=root}"
+			IsEnabled="{Binding Enabled, ElementName=root}"
 			HorizontalAlignment="Center"
 			VerticalAlignment="Stretch"
 			Padding="0"
 		>
 			<c:ImageAspectRatio
-				Source="{CompiledBinding Image, ElementName=root}"
+				Source="{Binding Image, ElementName=root}"
 				RenderOptions.BitmapInterpolationMode="LowQuality"
 				Stretch="Fill"
 				StretchDirection="Both"

@@ -23,10 +23,10 @@
 
 		<Grid ColumnDefinitions="Auto,1*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 			<TextBlock Text="{l:Translate lblPort}" />
-			<TextBox Grid.Column="1" Text="{CompiledBinding ServerPort}" />
+			<TextBox Grid.Column="1" Text="{Binding ServerPort}" />
 
 			<TextBlock Grid.Row="1" Text="{l:Translate lblPassword}" />
-			<TextBox Grid.Row="1" Grid.Column="1" Text="{CompiledBinding ServerPassword}" />
+			<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ServerPassword}" />
 		</Grid>
 	</DockPanel>
 </Window>

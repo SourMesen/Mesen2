@@ -15,7 +15,7 @@ namespace Mesen.Windows
 {
 	public class CommandLineHelpWindow : MesenWindow
 	{
-		public List<TabEntry> HelpTabs { get; } = new();
+		public List<CommandLineTabEntry> HelpTabs { get; } = new();
 
 		public CommandLineHelpWindow()
 		{
@@ -36,11 +36,11 @@ namespace Mesen.Windows
 		{
 			Close();
 		}
+	}
 
-		public class TabEntry
-		{
-			public string Name { get; set; } = "";
-			public string Content { get; set; } = "";
-		}
+	public class CommandLineTabEntry
+	{
+		public string Name { get; set; } = "";
+		public string Content { get; set; } = "";
 	}
 }

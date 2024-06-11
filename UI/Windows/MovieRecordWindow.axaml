@@ -23,14 +23,14 @@
 
 		<Grid ColumnDefinitions="Auto,1*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 			<TextBlock Text="{l:Translate lblSaveTo}" />
-			<TextBox Grid.Column="1" IsReadOnly="True" Text="{CompiledBinding SavePath}" />
+			<TextBox Grid.Column="1" IsReadOnly="True" Text="{Binding SavePath}" />
 			<Button Grid.Column="2" Content="{l:Translate btnBrowse}" Click="OnBrowseClick" />
 
 			<TextBlock Grid.Row="1" Text="{l:Translate lblRecordFrom}" />
 			<c:EnumComboBox
 				Grid.Row="1"
 				Grid.Column="1"
-				SelectedItem="{CompiledBinding Config.RecordFrom}"
+				SelectedItem="{Binding Config.RecordFrom}"
 			/>
 
 			<TextBlock
@@ -41,7 +41,7 @@
 				Margin="0 14 0 3"
 			/>
 			<TextBlock Grid.Row="3" Text="{l:Translate lblAuthor}" />
-			<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{CompiledBinding Config.Author}" />
+			<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Config.Author}" />
 
 			<TextBlock Grid.Row="4" Text="{l:Translate lblDescription}" />
 			<TextBox
@@ -53,7 +53,7 @@
 				VerticalContentAlignment="Top"
 				ScrollViewer.HorizontalScrollBarVisibility="Auto"
 				ScrollViewer.VerticalScrollBarVisibility="Auto"
-				Text="{CompiledBinding Config.Description}"
+				Text="{Binding Config.Description}"
 			/>
 		</Grid>
 	</DockPanel>

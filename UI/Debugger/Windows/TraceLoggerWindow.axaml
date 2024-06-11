@@ -36,14 +36,14 @@
 
 	<DockPanel>
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{CompiledBinding DebugMenuItems}" />
-			<MenuItem Header="{l:Translate mnuSearch}" ItemsSource="{CompiledBinding SearchMenuItems}" />
-			<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuItems}" />
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{Binding DebugMenuItems}" />
+			<MenuItem Header="{l:Translate mnuSearch}" ItemsSource="{Binding SearchMenuItems}" />
+			<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuItems}" />
 		</c:MesenMenu>
 
-		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="{CompiledBinding Config.ShowToolbar}">
-			<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
+		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="{Binding Config.ShowToolbar}">
+			<dc:ActionToolbar Items="{Binding ToolbarItems}" />
 		</StackPanel>
 
 		<Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto" DockPanel.Dock="Bottom">
@@ -57,28 +57,28 @@
 			<c:ButtonWithIcon
 				Grid.Column="2"
 				Click="OnOpenTraceFile"
-				IsEnabled="{CompiledBinding AllowOpenTraceFile}"
+				IsEnabled="{Binding AllowOpenTraceFile}"
 				Icon="Assets/Folder.png"
 				Text="{l:Translate btnOpenTraceFile}"
 			/>
 			<c:ButtonWithIcon
 				Grid.Column="3"
 				Click="OnStartLoggingClick"
-				IsEnabled="{CompiledBinding IsStartLoggingEnabled}"
-				IsVisible="{CompiledBinding !IsLoggingToFile}"
+				IsEnabled="{Binding IsStartLoggingEnabled}"
+				IsVisible="{Binding !IsLoggingToFile}"
 				Icon="Assets/Record.png"
 				Text="{l:Translate btnStart}"
 			/>
 			<c:ButtonWithIcon
 				Grid.Column="3"
 				Click="OnStopLoggingClick"
-				IsVisible="{CompiledBinding IsLoggingToFile}"
+				IsVisible="{Binding IsLoggingToFile}"
 				Icon="Assets/MediaStop.png"
 				Text="{l:Translate btnStop}"
 			/>
 		</Grid>
 		
-		<TabControl ItemsSource="{CompiledBinding Tabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1" DockPanel.Dock="Bottom">
+		<TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab}" Padding="1" DockPanel.Dock="Bottom">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">
@@ -89,7 +89,7 @@
 			</TabControl.ItemTemplate>
 
 			<TabControl.ContentTemplate>
-				<DataTemplate>
+				<DataTemplate DataType="vm:TraceLoggerOptionTab">
 					<c:GroupBox Header="{Binding LogOptionsTitle}">
 						<StackPanel>
 							<Grid ColumnDefinitions="Auto,3,Auto,10,Auto,10,Auto" RowDefinitions="Auto,Auto,Auto" Margin="0 0 0 5">
@@ -153,16 +153,16 @@
 					Orientation="Vertical"
 					VerticalAlignment="Stretch"
 					AllowAutoHide="False"
-					Minimum="{CompiledBinding MinScrollPosition}"
-					Maximum="{CompiledBinding MaxScrollPosition}"
-					Value="{CompiledBinding ScrollPosition}"
+					Minimum="{Binding MinScrollPosition}"
+					Maximum="{Binding MaxScrollPosition}"
+					Value="{Binding ScrollPosition}"
 				/>
 				
 				<ScrollBar
 					Orientation="Horizontal"
 					Grid.Row="1"
-					Maximum="{CompiledBinding #disViewer.HorizontalScrollMaxPosition}"
-					Value="{CompiledBinding #disViewer.HorizontalScrollPosition}"
+					Maximum="{Binding #disViewer.HorizontalScrollMaxPosition}"
+					Value="{Binding #disViewer.HorizontalScrollPosition}"
 				/>
 
 				<Panel Grid.Row="1" Grid.Column="1" Background="{DynamicResource ButtonBackground}" />
@@ -170,16 +170,16 @@
 				<Panel>
 					<dc:DisassemblyViewer
 						Name="disViewer"
-						Lines="{CompiledBinding TraceLogLines}"
+						Lines="{Binding TraceLogLines}"
 						FontFamily="{DynamicResource MesenDisassemblyFont}"
 						FontSize="{DynamicResource MesenDisassemblyFontSize}"
-						StyleProvider="{CompiledBinding StyleProvider}"
-						SearchString="{CompiledBinding QuickSearch.SearchString}"
-						ShowByteCode="{CompiledBinding ShowByteCode}"
+						StyleProvider="{Binding StyleProvider}"
+						SearchString="{Binding QuickSearch.SearchString}"
+						ShowByteCode="{Binding ShowByteCode}"
 					/>
 
 					<dv:QuickSearchView
-						DataContext="{CompiledBinding QuickSearch}"
+						DataContext="{Binding QuickSearch}"
 						VerticalAlignment="Top"
 						HorizontalAlignment="Right"
 					/>

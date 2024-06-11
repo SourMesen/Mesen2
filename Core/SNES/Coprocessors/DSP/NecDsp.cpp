@@ -146,7 +146,7 @@ void NecDsp::BuildProgramCache()
 void NecDsp::ReadOpCode()
 {
 	_opCode = _prgCache[_state.PC & _progMask];
-	_emu->ProcessMemoryRead<CpuType::NecDsp>(_state.PC, _opCode, MemoryOperationType::ExecOpCode);
+	_emu->ProcessMemoryRead<CpuType::NecDsp>(_state.PC & _progMask, _opCode, MemoryOperationType::ExecOpCode);
 }
 
 void NecDsp::Run()
@@ -181,7 +181,8 @@ void NecDsp::Run()
 
 uint16_t NecDsp::ReadRom(uint32_t addr)
 {
-	uint16_t value = _dataRom[addr & _dataMask];
+	addr &= _dataMask;
+	uint16_t value = _dataRom[addr];
 	_emu->ProcessMemoryRead<CpuType::NecDsp>(NecDsp::DataRomReadFlag | (addr << 1), value, MemoryOperationType::Read);
 	_emu->ProcessMemoryRead<CpuType::NecDsp>(NecDsp::DataRomReadFlag | (addr << 1) + 1, value, MemoryOperationType::Read);
 	return value;
@@ -189,7 +190,8 @@ uint16_t NecDsp::ReadRom(uint32_t addr)
 
 uint16_t NecDsp::ReadRam(uint32_t addr)
 {
-	uint16_t value = _ram[addr & _ramMask];
+	addr &= _ramMask;
+	uint16_t value = _ram[addr];
 	_emu->ProcessMemoryRead<CpuType::NecDsp>(addr << 1, value, MemoryOperationType::Read);
 	_emu->ProcessMemoryRead<CpuType::NecDsp>((addr << 1) + 1, value, MemoryOperationType::Read);
 	return value;
@@ -197,9 +199,10 @@ uint16_t NecDsp::ReadRam(uint32_t addr)
 
 void NecDsp::WriteRam(uint32_t addr, uint16_t value)
 {
+	addr &= _ramMask;
 	_emu->ProcessMemoryWrite<CpuType::NecDsp>(addr << 1, value, MemoryOperationType::Write);
 	_emu->ProcessMemoryWrite<CpuType::NecDsp>((addr << 1) + 1, value, MemoryOperationType::Write);
-	_ram[addr & _ramMask] = value;
+	_ram[addr] = value;
 }
 
 uint8_t NecDsp::Read(uint32_t addr)

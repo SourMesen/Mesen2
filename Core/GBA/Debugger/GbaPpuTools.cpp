@@ -84,10 +84,10 @@ DebugTilemapInfo GbaPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 						vramAddr = layer.TilemapAddr + row * result.ColumnCount + column;
 					} else {
 						vramAddr = layer.TilemapAddr + (((row & 0x1F) * 32 + (column & 0x1F)) * 2);
-						if(column > 32) {
+						if(column >= 32) {
 							vramAddr += 0x800;
 						}
-						if(row > 32) {
+						if(row >= 32) {
 							vramAddr += layer.DoubleWidth ? 0x1000 : 0x800;
 						}
 					}
@@ -297,10 +297,10 @@ DebugTilemapTileInfo GbaPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 				tilemapAddr = offset + row * columnCount + column;
 			} else {
 				tilemapAddr = offset + (((row & 0x1F) << 5) + column) * 2;
-				if(column > 32) {
+				if(column >= 32) {
 					tilemapAddr += 0x800;
 				}
-				if(row > 32) {
+				if(row >= 32) {
 					tilemapAddr += size.Width > 256 ? 0x1000 : 0x800;
 				}
 			}
@@ -354,7 +354,7 @@ DebugTilemapTileInfo GbaPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	result.TileAddress = tileStart;
 	result.PixelData = pixelData;
 	result.PaletteIndex = paletteIndex;
-	result.PaletteAddress = paletteIndex << 4;
+	result.PaletteAddress = paletteIndex << 5;
 	result.HorizontalMirroring = hMirror;
 	result.VerticalMirroring = vMirror;
 	return result;
@@ -460,6 +460,7 @@ void GbaPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview
 	sprite.TileIndex = oam[addr + 4] | ((oam[addr + 5] & 0x03) << 8);
 	sprite.Priority = (DebugSpritePriority)((oam[addr + 5] >> 2) & 0x03);
 	sprite.Palette = bpp8Mode ? 0 : (oam[addr + 5] >> 4) & 0x0F;
+	sprite.PaletteAddress = bpp8Mode ? -1 : (sprite.Palette << 5);
 
 	static constexpr uint8_t sprSize[4][4][2] = {
 		{ { 8, 8 }, { 16, 8 }, { 8, 16 }, { 8, 8 } },

@@ -5,7 +5,7 @@ namespace Mesen.Config
 {
 	public class RegisterViewerConfig : BaseWindowConfig<RegisterViewerConfig>
 	{
-		public RefreshTimingConfig RefreshTiming = new RefreshTimingConfig();
+		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();
 		[Reactive] public List<int> ColumnWidths { get; set; } = new();
 	}
 }

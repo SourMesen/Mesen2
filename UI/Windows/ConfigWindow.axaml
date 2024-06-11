@@ -12,7 +12,7 @@
 	x:DataType="vm:ConfigViewModel"
 	x:Class="Mesen.Windows.ConfigWindow"
 	Width="620" Height="500"
-  Topmost="{CompiledBinding AlwaysOnTop}"
+  Topmost="{Binding AlwaysOnTop}"
 	Title="{l:Translate wndTitle}"
 >
 	<Design.DataContext>
@@ -66,8 +66,8 @@
 			</Grid>
 		</Panel>
 		
-		<TabControl TabStripPlacement="Left" Background="#20888888" SelectedIndex="{CompiledBinding SelectedIndex, Mode=TwoWay}" Padding="0">
-			<TabItem Content="{CompiledBinding Audio}">
+		<TabControl TabStripPlacement="Left" Background="#20888888" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}" Padding="0">
+			<TabItem Content="{Binding Audio}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/Audio.png" Margin="0 0 10 0" />
@@ -75,7 +75,7 @@
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>
-			<TabItem Content="{CompiledBinding Emulation}">
+			<TabItem Content="{Binding Emulation}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/HammerScrewdriver.png" Margin="0 0 10 0" />
@@ -83,7 +83,7 @@
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>
-			<TabItem Content="{CompiledBinding Input}">
+			<TabItem Content="{Binding Input}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/Controller.png" Margin="0 0 10 0" />
@@ -91,7 +91,7 @@
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>
-			<TabItem Content="{CompiledBinding Video}">
+			<TabItem Content="{Binding Video}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/VideoOptions.png" Margin="0 0 10 0" />
@@ -106,7 +106,7 @@
 				</TabItem.Header>
 			</TabItem>
 			
-			<TabItem Content="{CompiledBinding Nes}"> 
+			<TabItem Content="{Binding Nes}"> 
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/NesIcon.png" Margin="0 0 10 0" />
@@ -115,7 +115,7 @@
 				</TabItem.Header>
 			</TabItem>
 
-			<TabItem Content="{CompiledBinding Snes}">
+			<TabItem Content="{Binding Snes}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/SnesIcon.png" Margin="0 0 10 0" />
@@ -124,7 +124,7 @@
 				</TabItem.Header>
 			</TabItem>
 
-			<TabItem Content="{CompiledBinding Gameboy}">
+			<TabItem Content="{Binding Gameboy}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/GameboyIcon.png" Margin="0 0 10 0" />
@@ -133,7 +133,7 @@
 				</TabItem.Header>
 			</TabItem>
 
-			<TabItem Content="{CompiledBinding Gba}">
+			<TabItem Content="{Binding Gba}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/GbaIcon.png" Margin="0 0 10 0" />
@@ -142,7 +142,7 @@
 				</TabItem.Header>
 			</TabItem>
 
-			<TabItem Content="{CompiledBinding PcEngine}">
+			<TabItem Content="{Binding PcEngine}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/PceIcon.png" Margin="0 0 10 0" />
@@ -151,7 +151,7 @@
 				</TabItem.Header>
 			</TabItem>
 
-			<TabItem Content="{CompiledBinding Sms}">
+			<TabItem Content="{Binding Sms}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/SmsIcon.png" Margin="0 0 10 0" />
@@ -166,7 +166,7 @@
 				</TabItem.Header>
 			</TabItem>
 			
-			<TabItem Content="{CompiledBinding Preferences}">
+			<TabItem Content="{Binding Preferences}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/Settings.png" Margin="0 0 10 0" />

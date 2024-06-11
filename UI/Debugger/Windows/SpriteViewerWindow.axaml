@@ -36,8 +36,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
-				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuActions}" />
+				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuActions}" />
+				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuActions}" />
 			</c:MesenMenu>
 			<c:IconButton
 				HorizontalAlignment="Right"
@@ -48,14 +48,14 @@
 			/>
 		</Panel>
 
-		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
+		<dv:RefreshTimingView DataContext="{Binding RefreshTiming}" DockPanel.Dock="Bottom" />
 
-		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+		<Panel DockPanel.Dock="Right" IsVisible="{Binding Config.ShowSettingsPanel}">
 			<ScrollViewer MinWidth="190">
 				<StackPanel Margin="3">
-					<CheckBox Content="{l:Translate chkShowOutline}" IsChecked="{CompiledBinding Config.ShowOutline}" />
-					<CheckBox Content="{l:Translate chkShowOffscreenRegions}" IsChecked="{CompiledBinding Config.ShowOffscreenRegions}" />
-					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ListView.ShowListView}" />
+					<CheckBox Content="{l:Translate chkShowOutline}" IsChecked="{Binding Config.ShowOutline}" />
+					<CheckBox Content="{l:Translate chkShowOffscreenRegions}" IsChecked="{Binding Config.ShowOffscreenRegions}" />
+					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{Binding ListView.ShowListView}" />
 
 					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
 						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblBackground}" />
@@ -63,25 +63,25 @@
 							HorizontalAlignment="Left"
 							Width="120"
 							Grid.Column="1" Grid.Row="0"
-							SelectedItem="{CompiledBinding Config.Background}"
+							SelectedItem="{Binding Config.Background}"
 						/>
 					</Grid>
 					
 					<c:OptionSection Header="{l:Translate lblDataSource}">
 						<Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
 							<TextBlock Text="{l:Translate lblSource}" />
-							<c:EnumComboBox Grid.Column="1" SelectedItem="{CompiledBinding Config.Source}" Width="120" />
+							<c:EnumComboBox Grid.Column="1" SelectedItem="{Binding Config.Source}" Width="120" />
 
-							<TextBlock Grid.Row="1" Text="{l:Translate lblSourceOffset}" IsVisible="{CompiledBinding !!Config.Source}" />
+							<TextBlock Grid.Row="1" Text="{l:Translate lblSourceOffset}" IsVisible="{Binding !!Config.Source}" />
 							<dc:HexInput
-								IsVisible="{CompiledBinding !!Config.Source}"
+								IsVisible="{Binding !!Config.Source}"
 								Grid.Row="1"
 								Grid.Column="1"
 								Minimum="0"
-								Maximum="{CompiledBinding MaxSourceOffset}"
+								Maximum="{Binding MaxSourceOffset}"
 								SmallIncrement="1"
 								LargeIncrement="256"
-								Value="{CompiledBinding Config.SourceOffset}"
+								Value="{Binding Config.SourceOffset}"
 							/>
 						</Grid>
 					</c:OptionSection>
@@ -90,9 +90,9 @@
 						Header="{l:Translate lblSelectedSprite}"
 						Margin="0 5 0 0"
 						MinWidth="170"
-						IsVisible="{CompiledBinding SelectedPreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
+						IsVisible="{Binding SelectedPreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
 					>
-						<ContentControl Content="{CompiledBinding SelectedPreviewPanel}" />
+						<ContentControl Content="{Binding SelectedPreviewPanel}" />
 					</c:GroupBox>
 				</StackPanel>
 			</ScrollViewer>
@@ -103,8 +103,8 @@
 				<RowDefinition MinHeight="200" Height="*" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition
-					MinHeight="{CompiledBinding ListView.MinListViewHeight}"
-					Height="{CompiledBinding ListView.ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
+					MinHeight="{Binding ListView.MinListViewHeight}"
+					Height="{Binding ListView.ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
 				/>
 			</Grid.RowDefinitions>
 			
@@ -122,14 +122,14 @@
 				Grid.Column="1"
 				Margin="1"
 				x:Name="picViewer"
-				Source="{CompiledBinding ViewerBitmap}"
-				Zoom="{CompiledBinding Config.ImageScale}"
-				SelectionRect="{CompiledBinding SelectionRect}"
-				MouseOverRect="{CompiledBinding MouseOverRect}"
-				LeftClipSize="{CompiledBinding LeftClipSize}"
-				RightClipSize="{CompiledBinding RightClipSize}"
-				TopClipSize="{CompiledBinding TopClipSize}"
-				BottomClipSize="{CompiledBinding BottomClipSize}"
+				Source="{Binding ViewerBitmap}"
+				Zoom="{Binding Config.ImageScale}"
+				SelectionRect="{Binding SelectionRect}"
+				MouseOverRect="{Binding MouseOverRect}"
+				LeftClipSize="{Binding LeftClipSize}"
+				RightClipSize="{Binding RightClipSize}"
+				TopClipSize="{Binding TopClipSize}"
+				BottomClipSize="{Binding BottomClipSize}"
 				ShowMousePosition="False"
 				AllowSelection="False"
 			/>
@@ -138,20 +138,20 @@
 				Grid.Row="1"
 				Grid.ColumnSpan="2"
 				HorizontalAlignment="Stretch"
-				IsVisible="{CompiledBinding Config.ShowListView}"
+				IsVisible="{Binding Config.ShowListView}"
 			/>
 
 			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2" Margin="1" Grid.ColumnSpan="2">
 				<DataBox
 					Name="ListView"
-					Items="{CompiledBinding ListView.SpritePreviews}"
-					Selection="{CompiledBinding ListView.Selection}"
+					Items="{Binding ListView.SpritePreviews}"
+					Selection="{Binding ListView.Selection}"
 					CanUserResizeColumns="False"
 					SortMode="Multiple"
-					SortState="{CompiledBinding ListView.SortState}"
-					SortCommand="{CompiledBinding ListView.SortCommand}"
+					SortState="{Binding ListView.SortState}"
+					SortCommand="{Binding ListView.SortCommand}"
 					GridLinesVisibility="All"
-					ColumnWidths="{CompiledBinding ListView.ColumnWidths}"
+					ColumnWidths="{Binding ListView.ColumnWidths}"
 				>
 					<DataBox.Styles>
 						<Style Selector="TextBlock">
@@ -174,14 +174,14 @@
 					</DataBox.Styles>
 						
 					<DataBox.Columns>
-						<DataBoxTextColumn ColumnName="SpriteIndex" Header="{l:Translate colSpriteIndex}" InitialWidth="50" Binding="{Binding SpriteIndex}" />
+						<DataBoxTextColumn ColumnName="SpriteIndex" Header="{l:Translate colSpriteIndex}" InitialWidth="50" Binding="{Binding SpriteIndex, DataType={x:Type dvm:SpritePreviewModel}}" />
 						<DataBoxTemplateColumn ColumnName="X" Header="{l:Translate colX}" InitialWidth="82">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
-									<TextBlock Text="{Binding RawX, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock Text="{Binding RawX, Converter={StaticResource Hex}, ConverterParameter='X2', DataType={x:Type dvm:SpritePreviewModel}}" />
 									<TextBlock Classes="smallValue" Text=" (" />
-									<TextBlock Classes="smallValue" Text="{Binding X}" />
+									<TextBlock Classes="smallValue" Text="{Binding X, DataType={x:Type dvm:SpritePreviewModel}}" />
 									<TextBlock Classes="smallValue" Text=")" />
 								</StackPanel>
 							</DataTemplate>
@@ -190,9 +190,9 @@
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
-									<TextBlock Text="{Binding RawY, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock Text="{Binding RawY, Converter={StaticResource Hex}, ConverterParameter='X2', DataType={x:Type dvm:SpritePreviewModel}}" />
 									<TextBlock Classes="smallValue" Text=" (" />
-									<TextBlock Classes="smallValue" Text="{Binding Y}" />
+									<TextBlock Classes="smallValue" Text="{Binding Y, DataType={x:Type dvm:SpritePreviewModel}}" />
 									<TextBlock Classes="smallValue" Text=")" />
 								</StackPanel>
 							</DataTemplate>
@@ -200,9 +200,9 @@
 						<DataBoxTemplateColumn ColumnName="Size" Header="{l:Translate colSize}" InitialWidth="64">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
-									<TextBlock Text="{Binding Width}" />
+									<TextBlock Text="{Binding Width, DataType={x:Type dvm:SpritePreviewModel}}" />
 									<TextBlock Text="x" />
-									<TextBlock Text="{Binding Height}" />
+									<TextBlock Text="{Binding Height, DataType={x:Type dvm:SpritePreviewModel}}" />
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
@@ -210,13 +210,13 @@
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
-									<TextBlock Text="{Binding TileIndex, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock Text="{Binding TileIndex, Converter={StaticResource Hex}, ConverterParameter='X2', DataType={x:Type dvm:SpritePreviewModel}}" />
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTextColumn ColumnName="Palette" Header="{l:Translate colPalette}" InitialWidth="67" Binding="{Binding Palette}" />
-						<DataBoxTextColumn ColumnName="Priority" Header="{l:Translate colPriority}" InitialWidth="83" Binding="{Binding Priority, Converter={StaticResource Enum}}" />
-						<DataBoxTextColumn ColumnName="Flags" Header="{l:Translate colFlags}" InitialWidth="68" Binding="{Binding Flags}" />
+						<DataBoxTextColumn ColumnName="Palette" Header="{l:Translate colPalette}" InitialWidth="67" Binding="{Binding Palette, DataType={x:Type dvm:SpritePreviewModel}}" />
+						<DataBoxTextColumn ColumnName="Priority" Header="{l:Translate colPriority}" InitialWidth="83" Binding="{Binding Priority, Converter={StaticResource Enum}, DataType={x:Type dvm:SpritePreviewModel}}" />
+						<DataBoxTextColumn ColumnName="Flags" Header="{l:Translate colFlags}" InitialWidth="68" Binding="{Binding Flags, DataType={x:Type dvm:SpritePreviewModel}}" />
 					</DataBox.Columns>
 				</DataBox>
 			</Border>

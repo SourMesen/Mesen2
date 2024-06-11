@@ -31,7 +31,7 @@ namespace Mesen.Debugger.Views
 
 		private void OnCellDoubleClick(DataBoxCell cell)
 		{
-			if(cell.DataContext is CallStackViewModel.StackInfo stack && DataContext is CallStackViewModel model) {
+			if(cell.DataContext is StackInfo stack && DataContext is CallStackViewModel model) {
 				model.GoToLocation(stack);
 			}
 		}

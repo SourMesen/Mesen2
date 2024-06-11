@@ -160,10 +160,10 @@ namespace Mesen.Controls
 		{
 			if(string.IsNullOrWhiteSpace(Text)) {
 				long? min = GetMin();
-				if(min != null) {
-					SetNewValue(Math.Min(0, min.Value));
+				if(min != null && min.Value > 0) {
+					SetNewValue((IComparable)Convert.ChangeType(min.Value, Value.GetType()));
 				} else {
-					SetNewValue(0);
+					SetNewValue((IComparable)Convert.ChangeType(0, Value.GetType()));
 				}
 			}
 
@@ -228,7 +228,7 @@ namespace Mesen.Controls
 			} else if(min != null && val.CompareTo(Convert.ChangeType(min, val.GetType())) < 0) {
 				val = (IComparable)Convert.ChangeType(min, val.GetType());
 			} else if(min == null && val.CompareTo(Convert.ChangeType(0, val.GetType())) < 0) {
-				val = 0;
+				val = (IComparable)Convert.ChangeType(0, val.GetType());
 			}
 			if(!object.Equals(Value, val)) {
 				Value = val;

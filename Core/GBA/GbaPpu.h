@@ -116,14 +116,19 @@ private:
 	GbaPixelData _layerOutput[4][GbaConstants::ScreenWidth] = {};
 	
 	uint8_t _oamWindow[GbaConstants::ScreenWidth] = {};
-	uint8_t _activeWindow[GbaConstants::ScreenWidth] = {};
+	uint8_t _activeWindow[256] = {};
 
 	Timer _frameSkipTimer;
 	bool _skipRender = false;
 	
 	bool _triggerSpecialDma = false;
-	bool _window0Active = false;
-	bool _window1Active = false;
+
+	int16_t _lastWindowCycle = -1;
+	bool _window0ActiveY = false;
+	bool _window1ActiveY = false;
+	bool _window0ActiveX = false;
+	bool _window1ActiveX = false;
+	uint8_t _windowChangePos[4] = {};
 
 	int16_t _lastRenderCycle = -1;
 	GbaLayerRendererData _layerData[4] = {};
@@ -166,11 +171,12 @@ private:
 	template<GbaPpuBlendEffect effect, bool bg0Enabled, bool bg1Enabled, bool bg2Enabled, bool bg3Enabled, bool windowEnabled> void ProcessColorMath();
 
 	void BlendColors(uint16_t* dst, int x, uint16_t a, uint8_t aCoeff, uint16_t b, uint8_t bCoeff);
-	void ApplyWindowBounds(uint8_t window);
-	void InitializeActiveWindows();
-	
 	template<bool isSubColor> uint16_t ReadColor(int x, uint16_t addr);
 
+	void InitializeWindows();
+	void ProcessWindow();
+	void SetWindowX(uint8_t& regValue, uint8_t newValue);
+	void UpdateWindowChangePoints();
 	void SetWindowActiveLayers(int window, uint8_t cfg);
 
 	void SendFrame();

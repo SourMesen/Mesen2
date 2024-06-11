@@ -30,9 +30,9 @@ namespace Mesen.Debugger.Disassembly
 			DebuggerFeatures features = DebugApi.GetDebuggerFeatures(CpuType);
 
 			if(features.ChangeProgramCounter) {
-				props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor;
+				props.TextBgColor = Color.FromUInt32(ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor);
 			} else {
-				props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveMidInstructionColor;
+				props.TextBgColor = Color.FromUInt32(ConfigManager.Config.Debug.Debugger.CodeActiveMidInstructionColor);
 			}
 			props.FgColor = ColorHelper.GetContrastTextColor(props.TextBgColor.Value);
 			props.Symbol |= LineSymbol.Arrow;
@@ -101,11 +101,11 @@ namespace Mesen.Debugger.Disassembly
 			}
 
 			if(lineData.Flags.HasFlag(LineFlags.VerifiedData)) {
-				props.LineBgColor = cfg.CodeVerifiedDataColor;
+				props.LineBgColor = Color.FromUInt32(cfg.CodeVerifiedDataColor);
 			} else if(lineData.Flags.HasFlag(LineFlags.UnexecutedCode)) {
-				props.LineBgColor = cfg.CodeUnexecutedCodeColor;
+				props.LineBgColor = Color.FromUInt32(cfg.CodeUnexecutedCodeColor);
 			} else if(!lineData.Flags.HasFlag(LineFlags.VerifiedCode)) {
-				props.LineBgColor = cfg.CodeUnidentifiedDataColor;
+				props.LineBgColor = Color.FromUInt32(cfg.CodeUnidentifiedDataColor);
 			}
 
 			return props;

@@ -42,7 +42,7 @@
 		<DockPanel DockPanel.Dock="Bottom">
 			<Button DockPanel.Dock="Right" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 			<c:ButtonWithIcon DockPanel.Dock="Right" Icon="Assets/SaveFloppy.png" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Text="{l:Translate btnSaveAs}" />
-			<TextBlock VerticalAlignment="Center" Text="{CompiledBinding ErrorMessage}" Foreground="{DynamicResource SystemErrorTextColor}" />
+			<TextBlock VerticalAlignment="Center" Text="{Binding ErrorMessage}" Foreground="{DynamicResource SystemErrorTextColor}" />
 		</DockPanel>
 
 		<TextBox
@@ -50,7 +50,7 @@
 			Margin="0 5"
 			HorizontalAlignment="Stretch"
 			IsReadOnly="True"
-			Text="{CompiledBinding HeaderBytes}"
+			Text="{Binding HeaderBytes}"
 			Width="NaN"
 			FontFamily="{DynamicResource MesenMonospaceFont}"
 			FontSize="{DynamicResource MesenMonospaceFontSize}"
@@ -58,65 +58,65 @@
 		
 		<Grid ColumnDefinitions="Auto,1.5*,10,Auto,1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 			<TextBlock Text="{l:Translate lblFileType}" Grid.Row="0" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.FileType}" Grid.Row="0" Grid.Column="1" />
+			<c:EnumComboBox SelectedItem="{Binding Header.FileType}" Grid.Row="0" Grid.Column="1" />
 			
 			<TextBlock Text="{l:Translate lblMapper}" Grid.Row="1" />
-			<c:MesenNumericTextBox Value="{CompiledBinding Header.MapperId}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" />
+			<c:MesenNumericTextBox Value="{Binding Header.MapperId}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" />
 			
 			<TextBlock Text="{l:Translate lblSubmapper}" Grid.Row="2" />
-			<c:MesenNumericTextBox Value="{CompiledBinding Header.SubmapperId}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" />
+			<c:MesenNumericTextBox Value="{Binding Header.SubmapperId}" IsEnabled="{Binding IsNes20}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" />
 			
 			<TextBlock Text="{l:Translate lblMirroringType}" Grid.Row="3" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.Mirroring}" Grid.Row="3" Grid.Column="1" />
+			<c:EnumComboBox SelectedItem="{Binding Header.Mirroring}" Grid.Row="3" Grid.Column="1" />
 			
 			<TextBlock Text="{l:Translate lblFrameTiming}" Grid.Row="4" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.Timing}" AvailableValues="{CompiledBinding AvailableTimings}" Grid.Row="4" Grid.Column="1" />
+			<c:EnumComboBox SelectedItem="{Binding Header.Timing}" AvailableValues="{Binding AvailableTimings}" Grid.Row="4" Grid.Column="1" />
 			
 			<TextBlock Text="{l:Translate lblSystem}" Grid.Row="5" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.System}" AvailableValues="{CompiledBinding AvailableSystemTypes}" Grid.Row="5" Grid.Column="1" />
+			<c:EnumComboBox SelectedItem="{Binding Header.System}" AvailableValues="{Binding AvailableSystemTypes}" Grid.Row="5" Grid.Column="1" />
 			
 			<TextBlock Text="{l:Translate lblInputType}" Grid.Row="6" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.InputType}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="6" Grid.Column="1" />
+			<c:EnumComboBox SelectedItem="{Binding Header.InputType}" IsEnabled="{Binding IsNes20}" Grid.Row="6" Grid.Column="1" />
 			
 			<TextBlock Text="{l:Translate lblVsSystemType}" Grid.Row="7" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.VsSystem}" IsEnabled="{CompiledBinding IsVsSystemVisible}" Grid.Row="7" Grid.Column="1" />
+			<c:EnumComboBox SelectedItem="{Binding Header.VsSystem}" IsEnabled="{Binding IsVsSystemVisible}" Grid.Row="7" Grid.Column="1" />
 			
 			<TextBlock Text="{l:Translate lblVsPpuType}" Grid.Row="8" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.VsPpu}" IsEnabled="{CompiledBinding IsVsSystemVisible}" Grid.Row="8" Grid.Column="1" />
+			<c:EnumComboBox SelectedItem="{Binding Header.VsPpu}" IsEnabled="{Binding IsVsSystemVisible}" Grid.Row="8" Grid.Column="1" />
 
 			<TextBlock Text="{l:Translate lblPrgRom}" Grid.Row="0" Grid.Column="3" />
 			<StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="4">
-				<c:MesenNumericTextBox Value="{CompiledBinding Header.PrgRom}"  />
+				<c:MesenNumericTextBox Value="{Binding Header.PrgRom}"  />
 				<TextBlock Text=" KB" />
 			</StackPanel>
 
 			<TextBlock Text="{l:Translate lblChrRom}" Grid.Row="1" Grid.Column="3" />
 			<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="4">
-				<c:MesenNumericTextBox Value="{CompiledBinding Header.ChrRom}"  />
+				<c:MesenNumericTextBox Value="{Binding Header.ChrRom}"  />
 				<TextBlock Text=" KB" />
 			</StackPanel>
 
 			<TextBlock Text="{l:Translate lblWorkRam}" Grid.Row="2" Grid.Column="3" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.WorkRam}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="2" Grid.Column="4" />
+			<c:EnumComboBox SelectedItem="{Binding Header.WorkRam}" IsEnabled="{Binding IsNes20}" Grid.Row="2" Grid.Column="4" />
 
 			<TextBlock Text="{l:Translate lblSaveRam}" Grid.Row="3" Grid.Column="3" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.SaveRam}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="3" Grid.Column="4" />
+			<c:EnumComboBox SelectedItem="{Binding Header.SaveRam}" IsEnabled="{Binding IsNes20}" Grid.Row="3" Grid.Column="4" />
 
 			<TextBlock Text="{l:Translate lblChrRam}" Grid.Row="4" Grid.Column="3" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.ChrRam}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="4" Grid.Column="4" />
+			<c:EnumComboBox SelectedItem="{Binding Header.ChrRam}" IsEnabled="{Binding IsNes20}" Grid.Row="4" Grid.Column="4" />
 
 			<TextBlock Text="{l:Translate lblChrSaveRam}" Grid.Row="5" Grid.Column="3" />
-			<c:EnumComboBox SelectedItem="{CompiledBinding Header.ChrRamBattery}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="5" Grid.Column="4" />
+			<c:EnumComboBox SelectedItem="{Binding Header.ChrRamBattery}" IsEnabled="{Binding IsNes20}" Grid.Row="5" Grid.Column="4" />
 
 			<CheckBox
-				IsChecked="{CompiledBinding Header.HasBattery}"
-				IsEnabled="{CompiledBinding IsBatteryCheckboxEnabled}"
+				IsChecked="{Binding Header.HasBattery}"
+				IsEnabled="{Binding IsBatteryCheckboxEnabled}"
 				Content="{l:Translate chkBattery}"
 				Grid.Row="6"
 				Grid.Column="3"
 				Grid.ColumnSpan="2"
 			/>
-			<CheckBox IsChecked="{CompiledBinding Header.HasTrainer}" Content="{l:Translate chkTrainer}" Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="2" />
+			<CheckBox IsChecked="{Binding Header.HasTrainer}" Content="{l:Translate chkTrainer}" Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="2" />
 		</Grid>
 	</DockPanel>
 </Window>

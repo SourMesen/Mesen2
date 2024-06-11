@@ -26,19 +26,19 @@
 
 	<Window.Styles>
 		<Style Selector="DataBoxRow > Grid Rectangle#BackgroundRectangle">
-			<Setter Property="Fill" Value="{Binding Path=Background}"/>
+			<Setter Property="Fill" Value="{Binding Path=Background, DataType={x:Type vm:RegEntry}}"/>
 		</Style>
 	</Window.Styles>
 
 	<DockPanel>
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
-			<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuActions}" />
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuActions}" />
+			<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuActions}" />
 		</c:MesenMenu>
 
-		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
+		<dv:RefreshTimingView DataContext="{Binding RefreshTiming}" DockPanel.Dock="Bottom" />
 		
-		<TabControl ItemsSource="{CompiledBinding Tabs}" Padding="1">
+		<TabControl ItemsSource="{Binding Tabs}" Padding="1">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<TextBlock Text="{Binding TabName}" />
@@ -46,7 +46,7 @@
 			</TabControl.ItemTemplate>
 		
 			<TabControl.ContentTemplate>
-				<DataTemplate>
+				<DataTemplate DataType="vm:RegisterViewerTab">
 					<dv:RegisterTabView DataContext="{Binding}" />
 				</DataTemplate>
 			</TabControl.ContentTemplate>

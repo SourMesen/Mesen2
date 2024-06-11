@@ -14,7 +14,7 @@ namespace Mesen.Config
 	{
 		private static string FilePath { get { return Path.Combine(ConfigManager.CheatFolder, EmuApi.GetRomInfo().GetRomName() + ".json"); } }
 
-		public List<CheatCode> Cheats = new List<CheatCode>();
+		public List<CheatCode> Cheats { get; set; } = new List<CheatCode>();
 
 		public static CheatCodes LoadCheatCodes()
 		{
@@ -27,7 +27,7 @@ namespace Mesen.Config
 
 			if(File.Exists(path)) {
 				try {
-					cheats = JsonSerializer.Deserialize<CheatCodes>(File.ReadAllText(path), JsonHelper.Options) ?? new CheatCodes();
+					cheats = (CheatCodes?)JsonSerializer.Deserialize(File.ReadAllText(path), typeof(CheatCodes), MesenSerializerContext.Default) ?? new CheatCodes();
 				} catch { }
 			}
 			
@@ -38,7 +38,7 @@ namespace Mesen.Config
 		{
 			try {
 				if(Cheats.Count > 0) {
-					FileHelper.WriteAllText(CheatCodes.FilePath, JsonSerializer.Serialize(this, JsonHelper.Options));
+					FileHelper.WriteAllText(CheatCodes.FilePath, JsonSerializer.Serialize(this, typeof(CheatCodes), MesenSerializerContext.Default));
 				} else {
 					if(File.Exists(CheatCodes.FilePath)) {
 						File.Delete(CheatCodes.FilePath);

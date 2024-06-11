@@ -5,6 +5,7 @@
 	xmlns:dvm="using:Mesen.Debugger.ViewModels.DebuggerDock"
 	xmlns:converters="using:Dock.Avalonia.Converters"
 	xmlns:controls="using:Dock.Model.Controls"
+	xmlns:core="using:Dock.Model.Core"
 >
 	<Style Selector="ToolControl /template/ Separator#PART_Separator">
 		<Setter Property="IsVisible" Value="False" />
@@ -29,9 +30,17 @@
 		<Setter Property="Background" Value="{DynamicResource DockThemeBackgroundBrush}" />
 		<Setter Property="BorderBrush" Value="{DynamicResource DockThemeBorderLowBrush}" />
 	</Style>
+
+	<Style Selector="PinnedDockControl">
+		<!-- prevent error in binding -->
+		<Setter Property="PinnedDockAlignment" Value="Unset" />
+	</Style>
 	
-	<!-- Add help icon/tooltip to tool window header -->
 	<Style Selector="ToolChromeControl">
+		<!-- prevent error in binding -->
+		<Setter Property="IsMaximized" Value="False" />
+
+		<!-- Add help icon/tooltip to tool window header -->
 		<Setter Property="Template">
 			<ControlTemplate>
 				<Grid RowDefinitions="Auto,*" x:DataType="controls:IToolDock" x:CompileBindings="True">
@@ -43,9 +52,10 @@
 											Padding="{TemplateBinding Padding}"
 											Grid.Row="1" />
 					<Border x:Name="PART_Border"
-							  BorderBrush="{TemplateBinding BorderBrush}"
-							  VerticalAlignment="Top"
-							  Grid.Row="{Binding GripMode, Converter={x:Static converters:GripModeConverters.GridRowAutoHideConverter}}">
+								BorderBrush="{TemplateBinding BorderBrush}"
+								VerticalAlignment="Top"
+								ContextFlyout="{DynamicResource ToolChromeControlContextMenu}"
+								Grid.Row="{Binding GripMode, Converter={x:Static converters:GripModeConverters.GridRowAutoHideConverter}}">
 						<Grid x:Name="PART_Grip">
 							<DockPanel LastChildFill="True" Margin="8 0">
 								<Panel DockPanel.Dock="Left">
@@ -69,34 +79,81 @@
 										</ContentControl>
 									</WrapPanel>
 								</Panel>
-								<Button x:Name="PART_CloseButton"
-										  Command="{Binding Owner.Factory.CloseDockable}"
-										  CommandParameter="{Binding ActiveDockable}"
-										  IsVisible="{Binding ActiveDockable.CanClose, FallbackValue=False}"
-										  DockPanel.Dock="Right">
-									<Viewbox>
-										<Path x:Name="PART_ClosePath" />
-									</Viewbox>
-								</Button>
-								<Button x:Name="PART_PinButton"
-										  Command="{Binding Owner.Factory.PinDockable}"
-										  CommandParameter="{Binding ActiveDockable}"
-										  IsVisible="{Binding ActiveDockable.CanPin, FallbackValue=False}"
-										  DockPanel.Dock="Right">
-									<Viewbox>
-										<Path x:Name="PART_PinPath" />
-									</Viewbox>
-								</Button>
+								<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+									<Button x:Name="PART_MenuButton" IsVisible="False"
+												Theme="{StaticResource ChromeButton}"
+												Flyout="{StaticResource ToolChromeControlContextMenu}">
+										<Viewbox Margin="2">
+											<Path x:Name="PART_MenuPath" />
+										</Viewbox>
+									</Button>
+									<Button x:Name="PART_PinButton"
+												Command="{Binding Owner.Factory.PinDockable}"
+												CommandParameter="{Binding ActiveDockable}"
+												Theme="{StaticResource ChromeButton}">
+										<Button.IsVisible>
+											<MultiBinding Converter="{x:Static BoolConverters.And}">
+												<Binding Path="ActiveDockable.CanPin" FallbackValue="{x:False}" />
+												<TemplateBinding Property="IsFloating" Converter="{x:Static BoolConverters.Not}" />
+											</MultiBinding>
+										</Button.IsVisible>
+										<Viewbox>
+											<Path x:Name="PART_PinPath" />
+										</Viewbox>
+									</Button>
+									<Button x:Name="PART_MaximizeRestoreButton"
+												IsVisible="{TemplateBinding IsFloating}"
+												Theme="{StaticResource ChromeButton}">
+										<Viewbox>
+											<Path x:Name="PART_MaximizeRestorePath" />
+										</Viewbox>
+									</Button>
+									<Button x:Name="PART_CloseButton"
+												Command="{Binding Owner.Factory.CloseDockable}"
+												CommandParameter="{Binding ActiveDockable}"
+												IsVisible="{Binding ActiveDockable.CanClose, FallbackValue=False}"
+												Theme="{StaticResource ChromeButton}">
+										<Viewbox>
+											<Path x:Name="PART_ClosePath" />
+										</Viewbox>
+									</Button>
+								</StackPanel>
 								<Grid x:Name="PART_Grid" />
 							</DockPanel>
 						</Grid>
 					</Border>
 					<Panel x:Name="PART_Panel"
-							 Background="{TemplateBinding BorderBrush}"
-							 Height="1"
-							 VerticalAlignment="Top"
-							 Grid.Row="{Binding GripMode, Converter={x:Static converters:GripModeConverters.GridRowAutoHideConverter}}" />
+								Background="{TemplateBinding BorderBrush}"
+								Height="1"
+								VerticalAlignment="Top"
+								Grid.Row="{Binding GripMode, Converter={x:Static converters:GripModeConverters.GridRowAutoHideConverter}}" />
 				</Grid>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+
+	<Style Selector="ProportionalDockControl">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<DockableControl TrackingMode="Visible">
+					<ItemsControl ItemsSource="{ReflectionBinding VisibleDockables}">
+						<ItemsControl.Styles>
+							<Style Selector="ItemsControl > ContentPresenter">
+								<Setter x:DataType="core:IDock" Property="(ProportionalStackPanel.Proportion)" Value="{Binding Proportion}" />
+
+								<!-- prevent error in binding -->
+								<Setter Property="(ProportionalStackPanel.IsCollapsed)" Value="False" />
+							</Style>
+						</ItemsControl.Styles>
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<ProportionalStackPanel DockProperties.IsDropArea="True"
+																Background="Transparent"
+																Orientation="{ReflectionBinding Orientation, Converter={x:Static converters:OrientationConverter.Instance}}" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+				</DockableControl>
 			</ControlTemplate>
 		</Setter>
 	</Style>

@@ -21,7 +21,7 @@
 		<ComboBox x:Name="cboFontFamily" Width="175" SelectedItem="{Binding InternalFontFamily, ElementName=root}" />
 		<Image
 			Source="/Assets/Warning.png"
-			IsVisible="{CompiledBinding ShowWarning, ElementName=root}"
+			IsVisible="{Binding ShowWarning, ElementName=root}"
 			ToolTip.Tip="{l:Translate lblWarningMono}"
 			Stretch="None"
 			Margin="4 0"
@@ -30,7 +30,7 @@
 		/>
 		<Image
 			Source="/Assets/Error.png"
-			IsVisible="{CompiledBinding ShowError, ElementName=root}"
+			IsVisible="{Binding ShowError, ElementName=root}"
 			ToolTip.Tip="{l:Translate lblError}"
 			Stretch="None"
 			Margin="4 0"
@@ -39,6 +39,6 @@
 		/>
 		
 		<TextBlock VerticalAlignment="Center" Margin="10 0 0 0" Text="{l:Translate lblSize}" />
-		<ComboBox x:Name="cboFontSize" Width="70" SelectedItem="{CompiledBinding FontSize}" />
+		<ComboBox x:Name="cboFontSize" Width="70" SelectedItem="{Binding FontSize}" />
 	</StackPanel>
 </UserControl>

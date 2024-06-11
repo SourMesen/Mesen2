@@ -13,6 +13,7 @@ using ReactiveUI;
 using Mesen.Interop;
 using Avalonia.Controls;
 using System.IO.Compression;
+using System.Text.Json;
 
 namespace Mesen.ViewModels
 {
@@ -35,11 +36,10 @@ namespace Mesen.ViewModels
 				if(depStream != null) {
 					using ZipArchive zip = new(depStream);
 					foreach(ZipArchiveEntry entry in zip.Entries) {
-						if(entry.Name == "CheatDb." + consoleType.ToString() + ".xml") {
+						if(entry.Name == "CheatDb." + consoleType.ToString() + ".json") {
 							using Stream entryStream = entry.Open();
 							using StreamReader reader = new StreamReader(entryStream);
-							XmlSerializer xmlSerializer = new XmlSerializer(typeof(CheatDatabase));
-							cheatDb = (CheatDatabase?)xmlSerializer.Deserialize(reader) ?? new CheatDatabase();
+							cheatDb = (CheatDatabase?)JsonSerializer.Deserialize(reader.ReadToEnd(), typeof(CheatDatabase), MesenCamelCaseSerializerContext.Default) ?? new CheatDatabase();
 						}
 					}
 				}

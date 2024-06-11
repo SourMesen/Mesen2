@@ -19,7 +19,7 @@
 	x:Class="Mesen.Debugger.Windows.ScriptWindow"
 	Icon="/Assets/Script.png"
 	x:DataType="vm:ScriptWindowViewModel"
-	Title="{CompiledBinding WindowTitle}"
+	Title="{Binding WindowTitle}"
 >
 	<Design.DataContext>
 		<vm:ScriptWindowViewModel />
@@ -31,27 +31,27 @@
 
 	<DockPanel>
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
-			<MenuItem Header="{l:Translate mnuScript}" ItemsSource="{CompiledBinding ScriptMenuActions}" />
-			<MenuItem Header="{l:Translate mnuHelp}" ItemsSource="{CompiledBinding HelpMenuActions}" />
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuActions}" />
+			<MenuItem Header="{l:Translate mnuScript}" ItemsSource="{Binding ScriptMenuActions}" />
+			<MenuItem Header="{l:Translate mnuHelp}" ItemsSource="{Binding HelpMenuActions}" />
 		</c:MesenMenu>
 
 		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-			<dc:ActionToolbar Items="{CompiledBinding ToolbarActions}" />
+			<dc:ActionToolbar Items="{Binding ToolbarActions}" />
 		</StackPanel>
 		
 		<Grid ColumnDefinitions="*" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
 				<RowDefinition Height="4" />
-				<RowDefinition MinHeight="50" Height="{CompiledBinding Config.LogWindowHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}" />
+				<RowDefinition MinHeight="50" Height="{Binding Config.LogWindowHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}" />
 			</Grid.RowDefinitions>
 
 			<Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Margin="1">
 				<dc:MesenTextEditor
 					Name="Editor"
 					ShowLineNumbers="False"
-					TextBinding="{CompiledBinding Code}"
+					TextBinding="{Binding Code}"
 					FontFamily="{DynamicResource MesenScriptWindowFont}"
 					FontSize="{DynamicResource MesenScriptWindowFontSize}"
 				/>
@@ -63,7 +63,7 @@
 				<dc:MesenTextEditor
 					Name="txtScriptLog"
 					Height="NaN"
-					TextBinding="{CompiledBinding Log}"
+					TextBinding="{Binding Log}"
 					IsReadOnly="True"
 					FontFamily="{DynamicResource MesenScriptWindowFont}"
 					FontSize="{DynamicResource MesenScriptWindowFontSize}"

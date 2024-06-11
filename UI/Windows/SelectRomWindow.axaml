@@ -15,7 +15,7 @@
 	<DockPanel HorizontalAlignment="Stretch">
 		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto" DockPanel.Dock="Top">
 			<TextBlock Text="{l:Translate lblSearch}" />
-			<TextBox Grid.Column="1" Text="{CompiledBinding SearchString}" Name="Search" />
+			<TextBox Grid.Column="1" Text="{Binding SearchString}" Name="Search" />
 		</Grid>
 
 		<StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom">
@@ -26,14 +26,14 @@
 					<Setter Property="HorizontalContentAlignment" Value="Center"/>
 				</Style>
 			</StackPanel.Styles>
-			<Button Content="{l:Translate btnOK}" Click="OnOkClick" IsEnabled="{CompiledBinding SelectedEntry, Converter={x:Static ObjectConverters.IsNotNull}}" />
+			<Button Content="{l:Translate btnOK}" Click="OnOkClick" IsEnabled="{Binding SelectedEntry, Converter={x:Static ObjectConverters.IsNotNull}}" />
 			<Button Content="{l:Translate btnCancel}" Click="OnCancelClick" />
 		</StackPanel>
 
 		<ListBox
 			Name="ListBox"
-			ItemsSource="{CompiledBinding FilteredEntries}"
-			SelectedItem="{CompiledBinding SelectedEntry}"
+			ItemsSource="{Binding FilteredEntries}"
+			SelectedItem="{Binding SelectedEntry}"
 			DoubleTapped="OnDoubleTapped"
 			PointerReleased="OnPointerReleased"
 			ScrollViewer.AllowAutoHide="False"

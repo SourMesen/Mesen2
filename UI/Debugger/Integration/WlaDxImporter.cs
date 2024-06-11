@@ -15,7 +15,7 @@ namespace Mesen.Debugger.Integration;
 
 public abstract class WlaDxImporter : ISymbolProvider
 {
-	private static Regex _labelRegex = new Regex(@"^([0-9a-fA-F]{2,4}):([0-9a-fA-F]{4}) ([^\s]*)", RegexOptions.Compiled);
+	private static Regex _labelRegex = new Regex(@"^([0-9a-fA-F]{2,4})[:]{0,1}([0-9a-fA-F]{4}) ([^\s]*)", RegexOptions.Compiled);
 	private static Regex _fileRegex = new Regex(@"^([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) (.*)", RegexOptions.Compiled);
 	private static Regex _addrRegex = new Regex(@"^([0-9a-fA-F]{2,4}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
 	private static Regex _fileV2Regex = new Regex(@"^([0-9a-fA-F]{4}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) (.*)", RegexOptions.Compiled);
@@ -115,13 +115,20 @@ public abstract class WlaDxImporter : ISymbolProvider
 			string str = lines[i].Trim();
 			if(labelsOnly || str == "[labels]") {
 				for(; i < lines.Length; i++) {
-					if(lines[i].Length > 0) {
-						Match m = _labelRegex.Match(lines[i]);
+					str = lines[i].Trim();
+					int commentStart = str.IndexOf(';');
+					if(commentStart >= 0) {
+						str = str.Substring(0, commentStart);
+					}
+
+					if(str.Length > 0) {
+						Match m = _labelRegex.Match(str);
 						if(m.Success) {
 							int bank = Int32.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
 							int addr = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
 							string label = m.Groups[3].Value;
-							label = label.Replace('.', '_').Replace(':', '_').Replace('$', '_');
+
+							label = LabelManager.InvalidLabelRegex.Replace(label, "_");
 
 							if(!LabelManager.LabelRegex.IsMatch(label)) {
 								//ignore labels that don't respect the label naming restrictions

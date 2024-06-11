@@ -493,7 +493,7 @@ public class NesHeaderEditViewModel : DisposableViewModel
 		public GameInputType GetInputType()
 		{
 			if(GetRomHeaderVersion() == RomHeaderVersion.Nes2_0) {
-				if(_bytes[15] < Enum.GetValues(typeof(GameInputType)).Length) {
+				if(_bytes[15] < Enum.GetValues<GameInputType>().Length) {
 					return (GameInputType)_bytes[15];
 				}
 				return GameInputType.Unspecified;

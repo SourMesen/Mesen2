@@ -20,27 +20,45 @@
 
 	<UserControl.Styles>
 		<Style Selector="DataBoxRow">
-			<Setter Property="Foreground" Value="{Binding RowBrush}" />
-			<Setter Property="FontStyle" Value="{Binding RowStyle}" />
+			<Setter Property="Foreground" Value="{Binding RowBrush, DataType={x:Type vm:FunctionViewModel}}" />
+			<Setter Property="FontStyle" Value="{Binding RowStyle, DataType={x:Type vm:FunctionViewModel}}" />
 		</Style>
 	</UserControl.Styles>
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
-			Items="{CompiledBinding Functions}"
-			Selection="{CompiledBinding Selection}"
+			Items="{Binding Functions}"
+			Selection="{Binding Selection}"
 			GridLinesVisibility="All"
 			SelectionMode="Multiple"
 			SortMode="Multiple"
 			SortCommand="{Binding Sort}"
-			SortState="{CompiledBinding SortState}"
+			SortState="{Binding SortState}"
 			CellDoubleClick="OnCellDoubleClick"
-			ColumnWidths="{CompiledBinding ColumnWidths}"
+			ColumnWidths="{Binding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Function" Header="{l:Translate colFunction}" Binding="{Binding LabelName}" CanUserResize="True" InitialWidth="100" />
-				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay}" CanUserResize="True" InitialWidth="80" />
-				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay}" CanUserResize="True" InitialWidth="80" />
+				<DataBoxTextColumn
+					ColumnName="Function"
+					Header="{l:Translate colFunction}"
+					Binding="{Binding LabelName, DataType={x:Type vm:FunctionViewModel}}"
+					CanUserResize="True"
+					InitialWidth="100"
+				/>
+				<DataBoxTextColumn
+					ColumnName="RelAddr"
+					Header="{l:Translate colCpuAddr}"
+					Binding="{Binding RelAddressDisplay, DataType={x:Type vm:FunctionViewModel}}"
+					CanUserResize="True"
+					InitialWidth="80"
+				/>
+				<DataBoxTextColumn
+					ColumnName="AbsAddr"
+					Header="{l:Translate colRomAddr}"
+					Binding="{Binding AbsAddressDisplay, DataType={x:Type vm:FunctionViewModel}}"
+					CanUserResize="True"
+					InitialWidth="80"
+				/>
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

@@ -24,7 +24,7 @@
 	<DockPanel>
 		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto" DockPanel.Dock="Top">
 			<TextBlock Text="{l:Translate lblSearch}" />
-			<TextBox Grid.Column="1" Text="{CompiledBinding SearchString}" Name="Search" />
+			<TextBox Grid.Column="1" Text="{Binding SearchString}" Name="Search" />
 		</Grid>
 		
 		<StackPanel HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="0 0 1 1">
@@ -35,8 +35,8 @@
 		<Border BorderThickness="1" BorderBrush="{StaticResource MesenGrayBorderColor}" Margin="2">
 			<ListBox
 				Name="ListBox"
-				ItemsSource="{CompiledBinding FilteredEntries}"
-				Selection="{CompiledBinding SelectionModel}"
+				ItemsSource="{Binding FilteredEntries}"
+				Selection="{Binding SelectionModel}"
 				DoubleTapped="OnDoubleTapped"
 				PointerReleased="OnPointerReleased"
 				ScrollViewer.AllowAutoHide="False"

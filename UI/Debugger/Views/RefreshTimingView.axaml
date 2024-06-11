@@ -19,24 +19,24 @@
 	</Design.DataContext>
 
 	<StackPanel Orientation="Horizontal" Background="#15808080">
-		<CheckBox IsChecked="{CompiledBinding Config.AutoRefresh}" Content="{l:Translate lblScanline}" />
+		<CheckBox IsChecked="{Binding Config.AutoRefresh}" Content="{l:Translate lblScanline}" />
 		<NumericUpDown
-			Value="{CompiledBinding Config.RefreshScanline}"
-			Minimum="{CompiledBinding MinScanline}"
-			Maximum="{CompiledBinding MaxScanline}"
+			Value="{Binding Config.RefreshScanline}"
+			Minimum="{Binding MinScanline}"
+			Maximum="{Binding MaxScanline}"
 			Margin="3 0"
 		/>
 		<TextBlock VerticalAlignment="Center" Text="{l:Translate lblCycle}" />
 		<NumericUpDown
-			Value="{CompiledBinding Config.RefreshCycle}"
+			Value="{Binding Config.RefreshCycle}"
 			Minimum="0"
-			Maximum="{CompiledBinding MaxCycle}"
+			Maximum="{Binding MaxCycle}"
 			Margin="3 0"
 		/>
 		<c:IconButton
 			ToolTip.Tip="{l:Translate lblResetToDefault}"
 			Icon="Assets/ResetSettings.png"
-			Command="{CompiledBinding ResetCommand}"
+			Command="{Binding ResetCommand}"
 		/>
 		
 		<Line
@@ -49,7 +49,7 @@
 		/>
 
 		<CheckBox
-			IsChecked="{CompiledBinding Config.RefreshOnBreakPause}"
+			IsChecked="{Binding Config.RefreshOnBreakPause}"
 			Content="{l:Translate chkRefreshOnBreakPause}"
 		/>
 	</StackPanel>

@@ -26,15 +26,15 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
+	<TabControl TabStripPlacement="Top" SelectedIndex="{Binding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock Text="{l:Translate lblModel}" Margin="3 0 5 0" />
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.Model}" MinWidth="200" />
+						<c:EnumComboBox SelectedItem="{Binding Config.Model}" MinWidth="200" />
 					</StackPanel>
-					<CheckBox IsChecked="{CompiledBinding Config.UseSgb2}" Content="{l:Translate chkUseSgb2}" />
+					<CheckBox IsChecked="{Binding Config.UseSgb2}" Content="{l:Translate chkUseSgb2}" />
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
@@ -52,10 +52,10 @@
 								</Style>
 							</StackPanel.Styles>
 
-							<c:MesenSlider Text="{l:Translate lblSquare1}" Value="{CompiledBinding Config.Square1Vol}" />
-							<c:MesenSlider Text="{l:Translate lblSquare2}" Value="{CompiledBinding Config.Square2Vol}" />
-							<c:MesenSlider Text="{l:Translate lblWave}" Value="{CompiledBinding Config.WaveVol}" />
-							<c:MesenSlider Text="{l:Translate lblNoise}" Value="{CompiledBinding Config.NoiseVol}" />
+							<c:MesenSlider Text="{l:Translate lblSquare1}" Value="{Binding Config.Square1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblSquare2}" Value="{Binding Config.Square2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblWave}" Value="{Binding Config.WaveVol}" />
+							<c:MesenSlider Text="{l:Translate lblNoise}" Value="{Binding Config.NoiseVol}" />
 						</StackPanel>
 					</c:GroupBox>
 				</StackPanel>
@@ -66,9 +66,9 @@
 				<StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+						<c:EnumComboBox SelectedItem="{Binding Config.RamPowerOnState}" Width="200" />
 					</StackPanel>
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+					<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
@@ -79,7 +79,7 @@
 						<TextBlock Text="{l:Translate lblPlayer1}" />
 						<Button
 							Margin="10 0 0 0"
-							Command="{CompiledBinding SetupPlayer}"
+							Command="{Binding SetupPlayer}"
 							CommandParameter="{Binding $self}"
 							Content="{l:Translate btnSetup}"
 						/>
@@ -95,7 +95,7 @@
 							<TextBlock Text="{l:Translate lblGbBackground}" />
 							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Width="82">
 								<dc:PaletteSelector
-									PaletteColors="{CompiledBinding Config.BgColors}"
+									PaletteColors="{Binding Config.BgColors}"
 									ColorClick="BgColor_OnClick"
 								/>
 							</Border>
@@ -117,7 +117,7 @@
 							<TextBlock Text="{l:Translate lblGbObj0}" Grid.Row="1" />
 							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Grid.Row="1" Width="82">
 								<dc:PaletteSelector
-									PaletteColors="{CompiledBinding Config.Obj0Colors}"
+									PaletteColors="{Binding Config.Obj0Colors}"
 									ColorClick="Obj0Color_OnClick"
 								/>
 							</Border>
@@ -125,20 +125,20 @@
 							<TextBlock Text="{l:Translate lblGbObj1}" Grid.Row="2" />
 							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Grid.Row="2" Width="82">
 								<dc:PaletteSelector
-									PaletteColors="{CompiledBinding Config.Obj1Colors}"
+									PaletteColors="{Binding Config.Obj1Colors}"
 									ColorClick="Obj1Color_OnClick"
 								/>
 							</Border>
 						</Grid>
 					</c:OptionSection>
 					<c:OptionSection Header="{l:Translate lblLcdSettings}">
-						<CheckBox IsChecked="{CompiledBinding Config.GbcAdjustColors}" Content="{l:Translate chkGbcAdjustColors}"/>
-						<CheckBox IsChecked="{CompiledBinding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+						<CheckBox IsChecked="{Binding Config.GbcAdjustColors}" Content="{l:Translate chkGbcAdjustColors}"/>
+						<CheckBox IsChecked="{Binding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
 					</c:OptionSection>
 					<c:OptionSection Header="{l:Translate lblMiscSettings}">
-						<CheckBox IsChecked="{CompiledBinding Config.HideSgbBorders}" Content="{l:Translate chkHideSgbBorders}"/>
+						<CheckBox IsChecked="{Binding Config.HideSgbBorders}" Content="{l:Translate chkHideSgbBorders}"/>
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>

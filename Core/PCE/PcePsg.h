@@ -31,6 +31,8 @@ private:
 	int16_t _prevRightOutput = 0;
 
 	uint32_t _clockCounter = 0;
+	
+	void UpdateSoundOffset();
 
 public:
 	PcePsg(Emulator* emu, PceConsole* console);
