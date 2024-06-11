@@ -17,7 +17,7 @@
 				</Border>
 				<ContentControl
 					Content="{Binding Header, ElementName=root}"
-					Background="{StaticResource ThemeBackgroundBrush}"
+					Background="{DynamicResource ThemeBackgroundBrush}"
 					Margin="8 2 0 0"
 					Padding="3 0"
 					HorizontalAlignment="Left"

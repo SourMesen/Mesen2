@@ -33,10 +33,10 @@
 			</Panel>
 		</Border>
 		<TabControl Name="tabMain" TabStripPlacement="Top" SelectedIndex="0">
-			<TabItem Header="{l:Translate tpgSet1}" Content="{CompiledBinding KeyMapping1}" />
-			<TabItem Header="{l:Translate tpgSet2}" Content="{CompiledBinding KeyMapping2}" />
-			<TabItem Header="{l:Translate tpgSet3}" Content="{CompiledBinding KeyMapping3}" />
-			<TabItem Header="{l:Translate tpgSet4}" Content="{CompiledBinding KeyMapping4}" />
+			<TabItem Header="{l:Translate tpgSet1}" Content="{Binding KeyMapping1}" />
+			<TabItem Header="{l:Translate tpgSet2}" Content="{Binding KeyMapping2}" />
+			<TabItem Header="{l:Translate tpgSet3}" Content="{Binding KeyMapping3}" />
+			<TabItem Header="{l:Translate tpgSet4}" Content="{Binding KeyMapping4}" />
 		</TabControl>
 
 		<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
@@ -46,7 +46,7 @@
 				Click="btnPreset_OnClick" 
 				VerticalAlignment="Top"
 				Margin="12"
-				IsVisible="{CompiledBinding ShowPresets}"
+				IsVisible="{Binding ShowPresets}"
 			>
 				<Button.ContextMenu>
 					<ContextMenu Name="Preset" PlacementMode="Bottom">
@@ -56,24 +56,24 @@
 						</MenuItem>
 						<Separator />
 						<MenuItem Header="{l:Translate mnuXboxController}">
-							<MenuItem Header="{l:Translate mnuXboxLayout1}" Click="mnuXboxLayout1_OnClick" IsVisible="{CompiledBinding !IsTwoButtonController}" />
-							<MenuItem Header="{l:Translate mnuXboxLayout2}" Click="mnuXboxLayout2_OnClick" IsVisible="{CompiledBinding !IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout1}" Click="mnuXboxLayout1_OnClick" IsVisible="{Binding !IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout2}" Click="mnuXboxLayout2_OnClick" IsVisible="{Binding !IsTwoButtonController}" />
 
-							<MenuItem Header="{l:Translate mnuXboxLayout1AltA}" Click="mnuXboxLayout1_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
-							<MenuItem Header="{l:Translate mnuXboxLayout1AltB}" Click="mnuXboxLayout1Alt_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
-							<Separator IsVisible="{CompiledBinding IsTwoButtonController}" />
-							<MenuItem Header="{l:Translate mnuXboxLayout2AltA}" Click="mnuXboxLayout2_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
-							<MenuItem Header="{l:Translate mnuXboxLayout2AltB}" Click="mnuXboxLayout2Alt_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout1AltA}" Click="mnuXboxLayout1_OnClick" IsVisible="{Binding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout1AltB}" Click="mnuXboxLayout1Alt_OnClick" IsVisible="{Binding IsTwoButtonController}" />
+							<Separator IsVisible="{Binding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout2AltA}" Click="mnuXboxLayout2_OnClick" IsVisible="{Binding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout2AltB}" Click="mnuXboxLayout2Alt_OnClick" IsVisible="{Binding IsTwoButtonController}" />
 						</MenuItem>
 						<MenuItem Header="{l:Translate mnuPs4Controller}">
-							<MenuItem Header="{l:Translate mnuPs4Layout1}" Click="mnuPs4Layout1_OnClick" IsVisible="{CompiledBinding !IsTwoButtonController}" />
-							<MenuItem Header="{l:Translate mnuPs4Layout2}" Click="mnuPs4Layout2_OnClick" IsVisible="{CompiledBinding !IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout1}" Click="mnuPs4Layout1_OnClick" IsVisible="{Binding !IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout2}" Click="mnuPs4Layout2_OnClick" IsVisible="{Binding !IsTwoButtonController}" />
 
-							<MenuItem Header="{l:Translate mnuPs4Layout1AltA}" Click="mnuPs4Layout1_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
-							<MenuItem Header="{l:Translate mnuPs4Layout1AltB}" Click="mnuPs4Layout1Alt_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
-							<Separator IsVisible="{CompiledBinding IsTwoButtonController}" />
-							<MenuItem Header="{l:Translate mnuPs4Layout2AltA}" Click="mnuPs4Layout2_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
-							<MenuItem Header="{l:Translate mnuPs4Layout2AltB}" Click="mnuPs4Layout2Alt_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout1AltA}" Click="mnuPs4Layout1_OnClick" IsVisible="{Binding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout1AltB}" Click="mnuPs4Layout1Alt_OnClick" IsVisible="{Binding IsTwoButtonController}" />
+							<Separator IsVisible="{Binding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout2AltA}" Click="mnuPs4Layout2_OnClick" IsVisible="{Binding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout2AltB}" Click="mnuPs4Layout2Alt_OnClick" IsVisible="{Binding IsTwoButtonController}" />
 						</MenuItem>
 					</ContextMenu>
 				</Button.ContextMenu>
@@ -85,7 +85,7 @@
 				Grid.Row="0"
 				Click="btnSetDefaultBindings_OnClick"
 				Content="{l:Translate btnSetDefaultBindings}"
-				IsVisible="{CompiledBinding !ShowPresets}"
+				IsVisible="{Binding !ShowPresets}"
 			/>
 
 			<Button
@@ -96,10 +96,10 @@
 				Content="{l:Translate btnClear}"
 			/>
 
-			<StackPanel Orientation="Horizontal" Margin="0 3 3 0" Grid.Column="2" IsVisible="{CompiledBinding ShowTurbo}">
+			<StackPanel Orientation="Horizontal" Margin="0 3 3 0" Grid.Column="2" IsVisible="{Binding ShowTurbo}">
 				<TextBlock Text="{l:Translate lblTurboSpeed}" VerticalAlignment="Top" Margin="0 5 0 0" />
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="0 -10 0 0">
-					<c:MesenSlider Value="{CompiledBinding Config.TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0 10 0" HideValue="True" TickFrequency="1" />
+					<c:MesenSlider Value="{Binding Config.TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0 10 0" HideValue="True" TickFrequency="1" />
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblTurboSlow}" Margin="5" />
 					<TextBlock Grid.Row="1" Grid.Column="1" Text="{l:Translate lblTurboFast}" HorizontalAlignment="Right" Margin="5" />
 				</Grid>

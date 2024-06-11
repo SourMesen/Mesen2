@@ -19,23 +19,23 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
-			Items="{CompiledBinding Breakpoints}"
-			Selection="{CompiledBinding Selection}"
+			Items="{Binding Breakpoints}"
+			Selection="{Binding Selection}"
 			CellClick="OnCellClick"
 			CellDoubleClick="OnCellDoubleClick"
 			SelectionMode="Multiple"
 			SortMode="Multiple"
 			SortCommand="{Binding Sort}"
-			SortState="{CompiledBinding SortState}"
+			SortState="{Binding SortState}"
 			GridLinesVisibility="All"
-			ColumnWidths="{CompiledBinding ColumnWidths}"
+			ColumnWidths="{Binding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxCheckBoxColumn ColumnName="Enabled" Header="{l:Translate colEnabled}" Binding="{Binding Breakpoint.Enabled}" InitialWidth="22" />
-				<DataBoxCheckBoxColumn ColumnName="Marked" Header="{l:Translate colMarked}" Binding="{Binding Breakpoint.MarkEvent}" InitialWidth="22" />
-				<DataBoxTextColumn ColumnName="Type" Header="{l:Translate colType}" Binding="{Binding TypeDisplay}" CanUserResize="True" InitialWidth="65" />
-				<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressDisplay}" CanUserResize="True" InitialWidth="65" />
-				<DataBoxTextColumn ColumnName="Condition" Header="{l:Translate colCondition}" Binding="{Binding Breakpoint.Condition}" CanUserResize="True" InitialWidth="150" />
+				<DataBoxCheckBoxColumn ColumnName="Enabled" Header="{l:Translate colEnabled}" Binding="{Binding Breakpoint.Enabled, DataType={x:Type vm:BreakpointViewModel}}" InitialWidth="22" />
+				<DataBoxCheckBoxColumn ColumnName="Marked" Header="{l:Translate colMarked}" Binding="{Binding Breakpoint.MarkEvent, DataType={x:Type vm:BreakpointViewModel}}" InitialWidth="22" />
+				<DataBoxTextColumn ColumnName="Type" Header="{l:Translate colType}" Binding="{Binding TypeDisplay, DataType={x:Type vm:BreakpointViewModel}}" CanUserResize="True" InitialWidth="65" />
+				<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressDisplay, DataType={x:Type vm:BreakpointViewModel}}" CanUserResize="True" InitialWidth="65" />
+				<DataBoxTextColumn ColumnName="Condition" Header="{l:Translate colCondition}" Binding="{Binding Breakpoint.Condition, DataType={x:Type vm:BreakpointViewModel}}" CanUserResize="True" InitialWidth="150" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

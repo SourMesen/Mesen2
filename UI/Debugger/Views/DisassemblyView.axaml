@@ -21,9 +21,9 @@
 		<dc:CodeScrollBar
 			Grid.Column="1"
 			VerticalAlignment="Stretch"
-			Maximum="{CompiledBinding MaxScrollPosition}"
-			Value="{CompiledBinding ScrollPosition}"
-			ShowMarkers="{CompiledBinding ShowScrollBarMarkers}"
+			Maximum="{Binding MaxScrollPosition}"
+			Value="{Binding ScrollPosition}"
+			ShowMarkers="{Binding ShowScrollBarMarkers}"
 		>
 			<dc:CodeScrollBar.BreakpointBar>
 				<dc:BreakpointBar />
@@ -33,8 +33,8 @@
 		<ScrollBar
 			Orientation="Horizontal"
 			Grid.Row="1"
-			Maximum="{CompiledBinding #disViewer.HorizontalScrollMaxPosition}"
-			Value="{CompiledBinding #disViewer.HorizontalScrollPosition}"
+			Maximum="{Binding #disViewer.HorizontalScrollMaxPosition}"
+			Value="{Binding #disViewer.HorizontalScrollPosition}"
 		/>
 
 		<Panel Grid.Row="1" Grid.Column="1" Background="{DynamicResource ButtonBackground}" />
@@ -42,17 +42,17 @@
 		<Panel>
 			<dc:DisassemblyViewer
 				Name="disViewer"
-				Lines="{CompiledBinding Lines}"
-				SearchString="{CompiledBinding QuickSearch.SearchString}"
-				StyleProvider="{CompiledBinding StyleProvider}"
+				Lines="{Binding Lines}"
+				SearchString="{Binding QuickSearch.SearchString}"
+				StyleProvider="{Binding StyleProvider}"
 				FontFamily="{DynamicResource MesenDisassemblyFont}"
 				FontSize="{DynamicResource MesenDisassemblyFontSize}"
-				ShowByteCode="{CompiledBinding Config.Debugger.ShowByteCode}"
-				AddressDisplayType="{CompiledBinding Config.Debugger.AddressDisplayType}"
+				ShowByteCode="{Binding Config.Debugger.ShowByteCode}"
+				AddressDisplayType="{Binding Config.Debugger.AddressDisplayType}"
 			/>
 			
 			<dv:QuickSearchView
-				DataContext="{CompiledBinding QuickSearch}"
+				DataContext="{Binding QuickSearch}"
 				VerticalAlignment="Top"
 				HorizontalAlignment="Right"
 			/>

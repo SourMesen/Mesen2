@@ -12,33 +12,33 @@
 >
 	<StackPanel>
 		<TextBlock Text="{l:Translate lblTop}" HorizontalAlignment="Center" />
-		<NumericUpDown Value="{CompiledBinding Overscan.Top, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center"/>
+		<NumericUpDown Value="{Binding Overscan.Top, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center"/>
 
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 				<TextBlock Text="{l:Translate lblLeft}" HorizontalAlignment="Center" />
-				<NumericUpDown Value="{CompiledBinding Overscan.Left, ElementName=root}" Minimum="0" Maximum="100" />
+				<NumericUpDown Value="{Binding Overscan.Left, ElementName=root}" Minimum="0" Maximum="100" />
 			</StackPanel>
 
 			<Border Width="130" Height="122" BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
 				<Viewbox Width="128" Height="120">
 					<Canvas Width="256" Height="240">
 						<Rectangle Width="256" Height="240" Fill="{StaticResource MesenGrayBackgroundColor}" />
-						<Rectangle Width="{CompiledBinding Overscan.Left, ElementName=root}" Height="240" Fill="DarkGray" Canvas.Left="0" />
-						<Rectangle Width="{CompiledBinding Overscan.Right, ElementName=root}" Height="240" Fill="DarkGray" Canvas.Right="0" />
-						<Rectangle Width="256" Height="{CompiledBinding Overscan.Top, ElementName=root}" Fill="DarkGray" Canvas.Top="0" />
-						<Rectangle Width="256" Height="{CompiledBinding Overscan.Bottom, ElementName=root}" Fill="DarkGray" Canvas.Bottom="0" />
+						<Rectangle Width="{Binding Overscan.Left, ElementName=root}" Height="240" Fill="DarkGray" Canvas.Left="0" />
+						<Rectangle Width="{Binding Overscan.Right, ElementName=root}" Height="240" Fill="DarkGray" Canvas.Right="0" />
+						<Rectangle Width="256" Height="{Binding Overscan.Top, ElementName=root}" Fill="DarkGray" Canvas.Top="0" />
+						<Rectangle Width="256" Height="{Binding Overscan.Bottom, ElementName=root}" Fill="DarkGray" Canvas.Bottom="0" />
 					</Canvas>
 				</Viewbox>
 			</Border>
 
 			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 				<TextBlock Text="{l:Translate lblRight}" HorizontalAlignment="Center" />
-				<NumericUpDown Value="{CompiledBinding Overscan.Right, ElementName=root}" Minimum="0" Maximum="100" />
+				<NumericUpDown Value="{Binding Overscan.Right, ElementName=root}" Minimum="0" Maximum="100" />
 			</StackPanel>
 		</StackPanel>
 
 		<TextBlock Text="{l:Translate lblBottom}" HorizontalAlignment="Center" />
-		<NumericUpDown Value="{CompiledBinding Overscan.Bottom, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center" />
+		<NumericUpDown Value="{Binding Overscan.Bottom, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center" />
 	</StackPanel>
 </UserControl>

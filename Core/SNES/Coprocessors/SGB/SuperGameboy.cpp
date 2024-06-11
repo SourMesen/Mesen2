@@ -275,7 +275,7 @@ void SuperGameboy::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleR
 	
 	if(!_spc->IsMuted()) {
 		_resampler.SetSampleRates(GbApu::SampleRate * _effectiveClockRate / _gameboy->GetMasterClockRate(), sampleRate);
-		_resampler.Resample<true>(gbSamples, gbSampleCount, out, sampleCount);
+		_resampler.Resample<true>(gbSamples, gbSampleCount, out, sampleCount, true);
 	}
 }
 

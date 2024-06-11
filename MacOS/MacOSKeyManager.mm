@@ -27,8 +27,9 @@ MacOSKeyManager::MacOSKeyManager(Emulator* emu)
 
 	_disableAllKeys = false;
 
-	_eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskFlagsChanged)
-	                         handler:^ NSEvent* (NSEvent* event) {
+	NSEventMask eventMask = NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskFlagsChanged;
+
+	_eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:eventMask handler:^ NSEvent* (NSEvent* event) {
 		if(_emu->GetSettings()->CheckFlag(EmulationFlags::InBackground)) {
 			//Allow UI to handle key-events when main window is not in focus
 			return event;

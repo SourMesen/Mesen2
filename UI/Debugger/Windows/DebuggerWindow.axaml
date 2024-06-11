@@ -4,8 +4,11 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:m="clr-namespace:Mesen"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:vmd="using:Mesen.Debugger.ViewModels.DebuggerDock"
+	xmlns:sv="using:Mesen.Debugger.StatusViews"
 	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:v="using:Mesen.Debugger.Views"
+	xmlns:vd="using:Mesen.Debugger.Views.DebuggerDock"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:dc="using:Mesen.Debugger.Controls"
@@ -19,8 +22,8 @@
 	DragDrop.AllowDrop="True"  
 	x:Class="Mesen.Debugger.Windows.DebuggerWindow"
 	x:DataType="vm:DebuggerWindowViewModel"
-	Title="{CompiledBinding Title}"
-	Icon="{CompiledBinding Icon}"
+	Title="{Binding Title}"
+	Icon="{Binding Icon}"
 	Width="800" Height="500"
 	x:Name="Debugger"
 >
@@ -45,26 +48,92 @@
 			<StackPanel>
 				<dc:MemoryMappingViewer
 					Margin="2 1"
-					IsVisible="{CompiledBinding CpuMappings.Count}"
-					Mappings="{CompiledBinding CpuMappings}"
-					MemType="{CompiledBinding CpuMemType}"
+					IsVisible="{Binding CpuMappings.Count}"
+					Mappings="{Binding CpuMappings}"
+					MemType="{Binding CpuMemType}"
 				/>
 				<dc:MemoryMappingViewer
 					Margin="2 1"
-					IsVisible="{CompiledBinding PpuMappings.Count}"
-					Mappings="{CompiledBinding PpuMappings}"
-					MemType="{CompiledBinding PpuMemType}"
+					IsVisible="{Binding PpuMappings.Count}"
+					Mappings="{Binding PpuMappings}"
+					MemType="{Binding PpuMemType}"
 				/>
 			</StackPanel>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type sv:Cx4StatusViewModel}">
+			<sv:Cx4StatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:GbaStatusViewModel}">
+			<sv:GbaStatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:GbStatusViewModel}">
+			<sv:GbStatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:GsuStatusViewModel}">
+			<sv:GsuStatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:NecDspStatusViewModel}">
+			<sv:NecDspStatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:NesStatusViewModel}">
+			<sv:NesStatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:PceStatusViewModel}">
+			<sv:PceStatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:SmsStatusViewModel}">
+			<sv:SmsStatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:SnesStatusViewModel}">
+			<sv:SnesStatusView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:SpcStatusViewModel}">
+			<sv:SpcStatusView />
+		</DataTemplate>
+		
+		<DataTemplate DataType="{x:Type vmd:BaseToolContainerViewModel}">
+			<vd:ToolContainerView />
+		</DataTemplate>
+		
+		<DataTemplate DataType="{x:Type vm:BreakpointListViewModel}">
+			<v:BreakpointListView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:CallStackViewModel}">
+			<v:CallStackView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:ControllerInputViewModel}">
+			<v:ControllerInputView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:ControllerListViewModel}">
+			<v:ControllerListView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:DisassemblyViewModel}">
+			<v:DisassemblyView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:FindResultListViewModel}">
+			<v:FindResultListView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:FunctionListViewModel}">
+			<v:FunctionListView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:LabelListViewModel}">
+			<v:LabelListView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:SourceViewViewModel}">
+			<v:SourceViewView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:WatchListViewModel}">
+			<v:WatchListView />
 		</DataTemplate>
 	</Window.DataTemplates>
 	
 	<DockPanel>
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{CompiledBinding DebugMenuItems}" />
-			<MenuItem Header="{l:Translate mnuSearch}" ItemsSource="{CompiledBinding SearchMenuItems}" />
-			<MenuItem Header="{l:Translate mnuOptions}" ItemsSource="{CompiledBinding OptionMenuItems}" />
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{Binding DebugMenuItems}" />
+			<MenuItem Header="{l:Translate mnuSearch}" ItemsSource="{Binding SearchMenuItems}" />
+			<MenuItem Header="{l:Translate mnuOptions}" ItemsSource="{Binding OptionMenuItems}" />
 		</c:MesenMenu>
 		<DockPanel DockPanel.Dock="Top">
 			<c:IconButton
@@ -75,13 +144,13 @@
 				Icon="Assets/Settings.png"
 			/>
 			<StackPanel Orientation="Horizontal">
-				<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
+				<dc:ActionToolbar Items="{Binding ToolbarItems}" />
 			</StackPanel>
 		</DockPanel>
 		<DockPanel>
-			<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}" Margin="3 0">
+			<Panel DockPanel.Dock="Right" IsVisible="{Binding Config.ShowSettingsPanel}" Margin="3 0">
 				<ScrollViewer>
-					<v:DebuggerOptionsView DataContext="{CompiledBinding Options}" />
+					<v:DebuggerOptionsView DataContext="{Binding Options}" />
 				</ScrollViewer>
 			</Panel>
 			<Grid DockPanel.Dock="Bottom" MinHeight="18" RowDefinitions="1*" ColumnDefinitions="1*,1*,1*">
@@ -90,16 +159,16 @@
 						Source="/Assets/Breakpoint.png"
 						VerticalAlignment="Center"
 						Stretch="None"
-						IsVisible="{CompiledBinding BreakReason.Length}"
+						IsVisible="{Binding BreakReason.Length}"
 					/>
 					<TextBlock
-						Text="{CompiledBinding BreakReason}"
+						Text="{Binding BreakReason}"
 						VerticalAlignment="Center"
 					/>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
 					<TextBlock
-						Text="{CompiledBinding CdlStats}"
+						Text="{Binding CdlStats}"
 						VerticalAlignment="Center"
 					/>
 				</StackPanel>
@@ -107,9 +176,9 @@
 					Orientation="Horizontal"
 					HorizontalAlignment="Right"
 					Grid.Column="2"
-					ToolTip.Tip="{CompiledBinding BreakElapsedCyclesTooltip}"
+					ToolTip.Tip="{Binding BreakElapsedCyclesTooltip}"
 					ToolTip.ShowDelay="100"
-					IsVisible="{CompiledBinding BreakElapsedCycles.Length}"
+					IsVisible="{Binding BreakElapsedCycles.Length}"
 				>
 					<Image
 						Source="/Assets/Speed.png"
@@ -117,7 +186,7 @@
 						Stretch="None"
 					/>
 					<TextBlock
-						Text="{CompiledBinding BreakElapsedCycles}"
+						Text="{Binding BreakElapsedCycles}"
 						VerticalAlignment="Center"
 						Margin="3 0"
 					/>
@@ -125,12 +194,12 @@
 			</Grid>
 
 			<ContentControl
-				Content="{CompiledBinding MemoryMappings}"
-				IsVisible="{CompiledBinding Config.ShowMemoryMappings}"
+				Content="{Binding MemoryMappings}"
+				IsVisible="{Binding Config.ShowMemoryMappings}"
 				DockPanel.Dock="Bottom"
 		  />
 			
-			<idc:DockControl Layout="{CompiledBinding DockLayout}" />
+			<idc:DockControl Layout="{Binding DockLayout}" />
 		</DockPanel>
 	</DockPanel>
 </Window>

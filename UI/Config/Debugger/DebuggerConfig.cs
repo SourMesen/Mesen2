@@ -6,6 +6,8 @@ using ReactiveUI.Fody.Helpers;
 using System.Reactive.Linq;
 using System.Reactive;
 using System.Collections.Generic;
+using ReactiveUI;
+using System;
 
 namespace Mesen.Config
 {
@@ -65,23 +67,23 @@ namespace Mesen.Config
 		[Reactive] public bool ShowSelectionLength { get; set; } = false;
 		[Reactive] public WatchFormatStyle WatchFormat { get; set; } = WatchFormatStyle.Hex;
 
-		[Reactive] public Color CodeOpcodeColor  { get; set; } = Color.FromRgb(22, 37, 37);
-		[Reactive] public Color CodeLabelDefinitionColor { get; set; } = Colors.Blue;
-		[Reactive] public Color CodeImmediateColor { get; set; } = Colors.Chocolate;
-		[Reactive] public Color CodeAddressColor { get; set; } = Colors.DarkRed;
-		[Reactive] public Color CodeCommentColor { get; set; } = Colors.Green;
-		[Reactive] public Color CodeEffectiveAddressColor { get; set; } = Colors.SteelBlue;
+		[Reactive] public UInt32 CodeOpcodeColor  { get; set; } = Color.FromRgb(22, 37, 37).ToUInt32();
+		[Reactive] public UInt32 CodeLabelDefinitionColor { get; set; } = Colors.Blue.ToUInt32();
+		[Reactive] public UInt32 CodeImmediateColor { get; set; } = Colors.Chocolate.ToUInt32();
+		[Reactive] public UInt32 CodeAddressColor { get; set; } = Colors.DarkRed.ToUInt32();
+		[Reactive] public UInt32 CodeCommentColor { get; set; } = Colors.Green.ToUInt32();
+		[Reactive] public UInt32 CodeEffectiveAddressColor { get; set; } = Colors.SteelBlue.ToUInt32();
 
-		[Reactive] public Color CodeVerifiedDataColor { get; set; } = Color.FromRgb(255, 252, 236);
-		[Reactive] public Color CodeUnidentifiedDataColor { get; set; } = Color.FromRgb(255, 242, 242);
-		[Reactive] public Color CodeUnexecutedCodeColor { get; set; } = Color.FromRgb(225, 244, 228);
+		[Reactive] public UInt32 CodeVerifiedDataColor { get; set; } = Color.FromRgb(255, 252, 236).ToUInt32();
+		[Reactive] public UInt32 CodeUnidentifiedDataColor { get; set; } = Color.FromRgb(255, 242, 242).ToUInt32();
+		[Reactive] public UInt32 CodeUnexecutedCodeColor { get; set; } = Color.FromRgb(225, 244, 228).ToUInt32();
 
-		[Reactive] public Color CodeExecBreakpointColor { get; set; } = Color.FromRgb(140, 40, 40);
-		[Reactive] public Color CodeWriteBreakpointColor { get; set; } = Color.FromRgb(40, 120, 80);
-		[Reactive] public Color CodeReadBreakpointColor { get; set; } = Color.FromRgb(40, 40, 200);
+		[Reactive] public UInt32 CodeExecBreakpointColor { get; set; } = Color.FromRgb(140, 40, 40).ToUInt32();
+		[Reactive] public UInt32 CodeWriteBreakpointColor { get; set; } = Color.FromRgb(40, 120, 80).ToUInt32();
+		[Reactive] public UInt32 CodeReadBreakpointColor { get; set; } = Color.FromRgb(40, 40, 200).ToUInt32();
 		
-		[Reactive] public Color CodeActiveStatementColor { get; set; } = Colors.Yellow;
-		[Reactive] public Color CodeActiveMidInstructionColor { get; set; } = Color.FromRgb(255, 220, 40);
+		[Reactive] public UInt32 CodeActiveStatementColor { get; set; } = Colors.Yellow.ToUInt32();
+		[Reactive] public UInt32 CodeActiveMidInstructionColor { get; set; } = Color.FromRgb(255, 220, 40).ToUInt32();
 
 		[Reactive] public List<int> LabelListColumnWidths { get; set; } = new();
 		[Reactive] public List<int> FunctionListColumnWidths { get; set; } = new();
@@ -93,6 +95,11 @@ namespace Mesen.Config
 		public DebuggerConfig()
 		{
 		}
+	}
+
+	public class CfgColor : ReactiveObject
+	{
+		[Reactive] public UInt32 ColorCode { get; set; }
 	}
 
 	public enum BreakInMetric

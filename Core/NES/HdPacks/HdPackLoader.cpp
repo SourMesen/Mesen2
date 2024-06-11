@@ -14,7 +14,9 @@
 #include "Utilities/FastString.h"
 #include "Utilities/magic_enum.hpp"
 
-#define checkConstraint(x, y) if(!(x)) { MessageManager::Log(y); return; }
+#define logError(y) MessageManager::Log("[HDPack - Line " + std::to_string(_currentLine) + "] " + (y)); _errorCount++;
+#define checkConstraint(x, y) if(!(x)) { logError(y); return; }
+#define checkConstraintEx(x, y) if(_data->Version >= 109) { checkConstraint(x, y); } else { if(!(x)) { logError(y); } }
 
 HdPackLoader::HdPackLoader()
 {
@@ -133,6 +135,8 @@ bool HdPackLoader::LoadFile(string filename, vector<uint8_t> &fileData)
 bool HdPackLoader::LoadPack()
 {
 	string lineContent;
+	_currentLine = 0;
+
 	try {
 		vector<uint8_t> hdDefinition;
 		if(!LoadFile("hires.txt", hdDefinition)) {
@@ -155,6 +159,7 @@ bool HdPackLoader::LoadPack()
 			}
 
 			lineContent.insert(0, (char*)hdDefinition.data() + start, pos < len ? (pos - start - 1) : (len - start));
+			_currentLine++;
 
 			if(lineContent.empty()) {
 				continue;
@@ -168,7 +173,7 @@ bool HdPackLoader::LoadPack()
 			if(lineContent.substr(0, 1) == "[") {
 				size_t endOfCondition = lineContent.find_first_of(']', 1);
 				if(endOfCondition == string::npos) {
-					MessageManager::Log("[HDPack] Invalid condition tag: " + lineContent);
+					logError("Invalid condition tag: " + lineContent);
 					continue;
 				}
 				conditions = ParseConditionString(lineContent.substr(1, endOfCondition - 1));
@@ -206,14 +211,14 @@ bool HdPackLoader::LoadPack()
 			} else if(lineContent.substr(0, 5) == "<ver>") {
 				_data->Version = stoi(lineContent.substr(5));
 				if(_data->Version > BaseHdNesPack::CurrentVersion) {
-					MessageManager::Log("[HDPack] This HD Pack was built with a more recent version of Mesen - update Mesen to the latest version and try again.");
+					logError("This HD Pack was built with a more recent version of Mesen - update Mesen to the latest version and try again.");
 					return false;
 				}
 			} else if(lineContent.substr(0, 7) == "<scale>") {
 				lineContent = lineContent.substr(7);
 				_data->Scale = std::stoi(lineContent);
 				if(_data->Scale > 10) {
-					MessageManager::Log("[HDPack] Scale ratios higher than 10 are not supported.");
+					logError("Scale ratios higher than 10 are not supported.");
 					return false;
 				}
 			} else if(lineContent.substr(0, 10) == "<overscan>") {
@@ -231,9 +236,16 @@ bool HdPackLoader::LoadPack()
 		LoadCustomPalette();
 		InitializeHdPack();
 
+		if(_errorCount > 0) {
+			if(_data->Version >= 109) {
+				MessageManager::DisplayMessage("HDPack", "Loaded with " + std::to_string(_errorCount) + " errors");
+			}
+			MessageManager::Log("[HDPack] Loaded with " + std::to_string(_errorCount) + " errors");
+		}
+
 		return true;
 	} catch(std::exception &ex) {
-		MessageManager::Log(string("[HDPack] Error loading HDPack: ") + ex.what() + " on line: " + lineContent);
+		logError(string("Error: ") + ex.what() + " on line: " + lineContent);
 		return false;
 	}
 }
@@ -245,7 +257,7 @@ bool HdPackLoader::ProcessImgTag(string src)
 
 	if(!LoadFile(src, bitmapInfo.FileData)) {
 		_data->ImageFileData.pop_back();
-		MessageManager::Log("[HDPack] Error loading HDPack: PNG file " + src + " could not be read.");
+		logError("Error loading HDPack: PNG file " + src + " could not be read.");
 		return false;
 	}
 	bitmapInfo.PngName = src;
@@ -314,13 +326,13 @@ void HdPackLoader::ProcessOverscanTag(vector<string> &tokens)
 
 void HdPackLoader::ProcessPatchTag(vector<string> &tokens)
 {
-	checkConstraint(tokens.size() >= 2, "[HDPack] Patch tag requires more parameters");
-	checkConstraint(tokens[1].size() == 40, string("[HDPack] Invalid SHA1 hash for patch (" + tokens[0] + "): " + tokens[1]));
+	checkConstraint(tokens.size() >= 2, "Patch tag requires more parameters");
+	checkConstraintEx(tokens.size() < 3, "Patch tag contains too many parameters");
+	checkConstraint(tokens[1].size() == 40, "Invalid SHA1 hash for patch (" + tokens[0] + "): " + tokens[1]);
 
 	vector<uint8_t> fileData;
 	if(!LoadFile(tokens[0], fileData)) {
-		MessageManager::Log(string("[HDPack] Patch file not found: " + tokens[1]));
-		return;
+		checkConstraint(false, string("Patch file not found: " + tokens[1]));
 	}
 
 	std::transform(tokens[1].begin(), tokens[1].end(), tokens[1].begin(), ::toupper);
@@ -378,7 +390,7 @@ void HdPackLoader::ProcessTileTag(vector<string> &tokens, vector<HdPackCondition
 	} else {
 		tileInfo->Brightness = 255;
 	}
-	tileInfo->DefaultTile = (tokens[index++] == "Y");
+	tileInfo->DefaultTile = ParseBooleanValue(tokens[index++]);
 
 	//For CHR ROM tiles, the ID is just the bank number in chr rom (4k banks)
 	tileInfo->ChrBankId = tileInfo->TileIndex / 256;
@@ -402,7 +414,8 @@ void HdPackLoader::ProcessTileTag(vector<string> &tokens, vector<HdPackCondition
 		}
 	}
 
-	checkConstraint(tileInfo->BitmapIndex < _data->ImageFileData.size(), "[HDPack] Invalid bitmap index: " + std::to_string(tileInfo->BitmapIndex));
+	checkConstraintEx(tokens.size() == index, "Tile tag contains too many parameters");
+	checkConstraint(tileInfo->BitmapIndex < _data->ImageFileData.size(), "Invalid bitmap index: " + std::to_string(tileInfo->BitmapIndex));
 
 	tileInfo->Bitmap = _data->ImageFileData[tileInfo->BitmapIndex].get();
 	tileInfo->Width = 8 * _data->Scale;
@@ -424,17 +437,19 @@ void HdPackLoader::ProcessOptionTag(vector<string> &tokens)
 			_data->OptionFlags |= (int)HdPackOptions::DontRenderOriginalTiles;
 		} else if(token == "automaticFallbackTiles") {
 			_data->OptionFlags |= (int)HdPackOptions::AutomaticFallbackTiles;
+		} else if(token == "disableContours") {
+			//no longer exists, prevent warning
 		} else {
-			MessageManager::Log("[HDPack] Invalid option: " + token);
+			logError("Invalid option: " + token);
 		}
 	}
 }
 
 void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvertedCondition)
 {
-	checkConstraint(tokens.size() >= 4, "[HDPack] Condition tag should contain at least 4 parameters");
-	checkConstraint(tokens[0].size() > 0, "[HDPack] Condition name may not be empty");
-	checkConstraint(tokens[0].find_last_of('!') == string::npos, "[HDPack] Condition name may not contain '!' characters");
+	checkConstraint(tokens.size() >= 4, "Condition tag should contain at least 4 parameters");
+	checkConstraint(tokens[0].size() > 0, "Condition name may not be empty");
+	checkConstraint(tokens[0].find_last_of('!') == string::npos, "Condition name may not contain '!' characters");
 
 	unique_ptr<HdPackCondition> condition;
 	
@@ -461,7 +476,7 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 	} else if(tokens[1] == "originPositionCheckY") {
 		condition.reset(new HdPackOriginPositionCheckYCondition());
 	} else {
-		MessageManager::Log("[HDPack] Invalid condition type: " + tokens[1]);
+		logError("Invalid condition type: " + tokens[1]);
 		return;
 	}
 
@@ -478,7 +493,8 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 		case HdPackConditionType::TileAtPos:
 		case HdPackConditionType::SpriteNearby:
 		case HdPackConditionType::SpriteAtPos: {
-			checkConstraint(tokens.size() >= 6, "[HDPack] Condition tag should contain at least 6 parameters");
+			checkConstraint(tokens.size() >= 6, "Condition tag should contain at least 6 parameters");
+			checkConstraintEx(tokens.size() < 9, "Condition tag contains too many parameters");
 
 			int x = std::stoi(tokens[index++]);
 			int y = std::stoi(tokens[index++]);
@@ -499,52 +515,55 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 
 			bool ignorePalette = false;
 			if(tokens.size() >= 7) {
-				checkConstraint(_data->Version >= 108, "[HDPack] This feature requires version 108+ of HD Packs");
-				ignorePalette = tokens[index++] == "Y" ? true : false;
+				checkConstraintEx(_data->Version >= 108, "Condition tag ignore palette feature requires version 108+ of HD Packs");
+				if(_data->Version >= 108) {
+					ignorePalette = ParseBooleanValue(tokens[index++]);
+				}
 			}
-			
+
 			((HdPackBaseTileCondition*)condition.get())->Initialize(x, y, palette, tileIndex, tileData, ignorePalette);
 			break;
 		}
 
 		case HdPackConditionType::MemoryCheck:
 		case HdPackConditionType::MemoryCheckConstant: {
-			checkConstraint(_data->Version >= 101, "[HDPack] This feature requires version 101+ of HD Packs");
-			checkConstraint(tokens.size() >= 5, "[HDPack] Condition tag should contain at least 5 parameters");
-		
+			checkConstraint(_data->Version >= 101, "This feature requires version 101+ of HD Packs");
+			checkConstraint(tokens.size() >= 5, "Condition tag should contain at least 5 parameters");
+			checkConstraintEx(tokens.size() < 7, "Condition tag contains too many parameters");
+
 			bool usePpuMemory = tokens[1].substr(0, 3) == "ppu";
 			uint32_t operandA = HexUtilities::FromHex(tokens[index++]);
 
 			if(usePpuMemory) {
-				checkConstraint(operandA <= 0x3FFF, "[HDPack] Out of range memoryCheck operand");
+				checkConstraint(operandA <= 0x3FFF, "Out of range memoryCheck operand");
 				operandA |= HdPackBaseMemoryCondition::PpuMemoryMarker;
 			} else {
-				checkConstraint(operandA <= 0xFFFF, "[HDPack] Out of range memoryCheck operand");
+				checkConstraint(operandA <= 0xFFFF, "Out of range memoryCheck operand");
 			}
 
 			HdPackConditionOperator op = ParseConditionOperator(tokens[index++]);
-			checkConstraint(op != HdPackConditionOperator::Invalid, "[HDPack] Invalid operator.");
+			checkConstraint(op != HdPackConditionOperator::Invalid, "Invalid operator.");
 			
 			uint32_t operandB = HexUtilities::FromHex(tokens[index++]);
 			uint32_t mask = 0xFF;
 			if(tokens.size() > 5 && _data->Version >= 103) {
-				checkConstraint(operandB <= 0xFF, "[HDPack] Out of range memoryCheck mask");
+				checkConstraint(operandB <= 0xFF, "Out of range memoryCheck mask");
 				mask = HexUtilities::FromHex(tokens[index++]);
 			}
 
 			switch(condition->GetConditionType()) {
 				case HdPackConditionType::MemoryCheck:
 					if(usePpuMemory) {
-						checkConstraint(operandB <= 0x3FFF, "[HDPack] Out of range memoryCheck operand");
+						checkConstraint(operandB <= 0x3FFF, "Out of range memoryCheck operand");
 						operandB |= HdPackBaseMemoryCondition::PpuMemoryMarker;
 					} else {
-						checkConstraint(operandB <= 0xFFFF, "[HDPack] Out of range memoryCheck operand");
+						checkConstraint(operandB <= 0xFFFF, "Out of range memoryCheck operand");
 					}
 					_data->WatchedMemoryAddresses.emplace(operandB);
 					break;
 
 				case HdPackConditionType::MemoryCheckConstant:
-					checkConstraint(operandB <= 0xFF, "[HDPack] Out of range memoryCheckConstant operand");
+					checkConstraint(operandB <= 0xFF, "Out of range memoryCheckConstant operand");
 					break;
 			}
 
@@ -557,22 +576,24 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 		case HdPackConditionType::PositionCheckY:
 		case HdPackConditionType::OriginPositionCheckX:
 		case HdPackConditionType::OriginPositionCheckY: {
-			checkConstraint(_data->Version >= 108, "[HDPack] This feature requires version 109+ of HD Packs");
-			checkConstraint(tokens.size() >= 4, "[HDPack] Condition tag should contain at least 4 parameters");
+			checkConstraint(_data->Version >= 108, "This condition type requires version 108+ of HD Packs");
+			checkConstraint(tokens.size() >= 4, "Condition tag should contain at least 4 parameters");
+			checkConstraintEx(tokens.size() < 5, "Condition tag contains too many parameters");
 
 			HdPackConditionOperator op = ParseConditionOperator(tokens[index++]);
-			checkConstraint(op != HdPackConditionOperator::Invalid, "[HDPack] Invalid operator.");
+			checkConstraint(op != HdPackConditionOperator::Invalid, "Invalid operator.");
 
 			uint32_t operand = std::stoi(tokens[index++]);
 
-			checkConstraint(operand <= 0xFFFF, "[HDPack] Out of range positionCheck operand");
+			checkConstraint(operand <= 0xFFFF, "Out of range positionCheck operand");
 			((HdPackBasePositionCheckCondition*)condition.get())->Initialize(op, operand);
 			break;
 		}
 
 		case HdPackConditionType::FrameRange: {
-			checkConstraint(_data->Version >= 101, "[HDPack] This feature requires version 101+ of HD Packs");
-			checkConstraint(tokens.size() >= 4, "[HDPack] Condition tag should contain at least 4 parameters");
+			checkConstraint(_data->Version >= 101, "This condition type requires version 101+ of HD Packs");
+			checkConstraint(tokens.size() >= 4, "Condition tag should contain at least 4 parameters");
+			checkConstraintEx(tokens.size() < 5, "Condition tag contains too many parameters");
 
 			int32_t operandA;
 			int32_t operandB;
@@ -585,8 +606,8 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 				operandB = std::stoi(tokens[index++]);
 			}
 
-			checkConstraint(operandA >= 0 && operandA <= 0xFFFF, "[HDPack] Out of range frameRange operand");
-			checkConstraint(operandB >= 0 && operandB <= 0xFFFF, "[HDPack] Out of range frameRange operand");
+			checkConstraint(operandA >= 0 && operandA <= 0xFFFF, "Out of range frameRange operand");
+			checkConstraint(operandB >= 0 && operandB <= 0xFFFF, "Out of range frameRange operand");
 
 			((HdPackFrameRangeCondition*)condition.get())->Initialize(operandA, operandB);
 			break;
@@ -619,7 +640,8 @@ HdPackConditionOperator HdPackLoader::ParseConditionOperator(string& opString)
 
 void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCondition*> conditions)
 {
-	checkConstraint(tokens.size() >= 2, "[HDPack] Background tag should contain at least 2 parameters");
+	checkConstraint(tokens.size() >= 2, "Background tag should contain at least 2 parameters");
+	checkConstraintEx(tokens.size() < 9, "Background tag contains too many parameters");
 	HdPackBitmapInfo* bgFileData = nullptr;
 
 	auto result = _backgroundsByName.find(tokens[0]);
@@ -665,53 +687,55 @@ void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCon
 					break;
 
 				default:
-					MessageManager::Log("[HDPack] Invalid condition type for background: " + tokens[0]);
+					logError("Invalid condition type for background: " + tokens[0]);
 					break;
 			}
 		}
 
 		if(tokens.size() > 2) {
-			checkConstraint(_data->Version >= 101, "[HDPack] This feature requires version 101+ of HD Packs");
+			checkConstraint(_data->Version >= 101, "This feature requires version 101+ of HD Packs");
 
 			backgroundInfo.HorizontalScrollRatio = std::stof(tokens[2]);
 			if(tokens.size() > 3) {
 				backgroundInfo.VerticalScrollRatio = std::stof(tokens[3]);
 			}
 			if(tokens.size() > 4) {
-				checkConstraint(_data->Version >= 102, "[HDPack] This feature requires version 102+ of HD Packs");
+				checkConstraint(_data->Version >= 102, "This feature requires version 102+ of HD Packs");
 				if(_data->Version >= 106) {
 					backgroundInfo.Priority = std::stoi(tokens[4]);
-					checkConstraint(backgroundInfo.Priority >= 0 && backgroundInfo.Priority < 40, "[HDPack] Invalid background priority value");
+					checkConstraint(backgroundInfo.Priority >= 0 && backgroundInfo.Priority < 40, "Invalid background priority value");
 				} else {
-					backgroundInfo.Priority = tokens[4] == "Y" ? 0 : 10;
+					backgroundInfo.Priority = ParseBooleanValue(tokens[4]) ? 0 : 10;
 				}
 			}
 			if(tokens.size() > 6) {
-				checkConstraint(_data->Version >= 105, "[HDPack] This feature requires version 105+ of HD Packs");
+				checkConstraint(_data->Version >= 105, "This feature requires version 105+ of HD Packs");
 				backgroundInfo.Left = std::max(0, std::stoi(tokens[5]));
 				backgroundInfo.Top = std::max(0, std::stoi(tokens[6]));
 			}
 
 			if(tokens.size() > 7) {
-				checkConstraint(_data->Version >= 107, "[HDPack] This feature requires version 107+ of HD Packs");
+				checkConstraintEx(_data->Version >= 107, "Background blend mode feature requires version 107+ of HD Packs");
 				auto blendMode  = magic_enum::enum_cast<HdPackBlendMode>(tokens[7]);
 				if(blendMode.has_value()) {
 					backgroundInfo.BlendMode = blendMode.value();
 				} else {
-					MessageManager::Log("[HDPack] Invalid blend mode: " + tokens[7]);
+					logError("Invalid blend mode: " + tokens[7]);
 				}
 			}
 		}
 
 		_data->BackgroundsByPriority[backgroundInfo.Priority].push_back(backgroundInfo);
 	} else {
-		MessageManager::Log("[HDPack] Error while loading background: " + tokens[0]);
+		checkConstraint(false, "Error while loading background: " + tokens[0]);
 	}
 }
 
 void HdPackLoader::ProcessAdditionTag(vector<string>& tokens)
 {
-	checkConstraint(_data->Version >= 107, "[HDPack] This feature requires version 107+ of HD Packs");
+	checkConstraint(_data->Version >= 107, "Additiona tag requires version 107+ of HD Packs");
+	checkConstraint(tokens.size() >= 6, "Addition tag should contain at least 6 parameters");
+	checkConstraintEx(tokens.size() < 8, "Addition tag contains too many parameters");
 
 	_data->AdditionalSprites.push_back({});
 
@@ -723,14 +747,16 @@ void HdPackLoader::ProcessAdditionTag(vector<string>& tokens)
 
 	info.IgnorePalette = false;
 	if(tokens.size() >= 7) {
-		checkConstraint(_data->Version >= 108, "[HDPack] This feature requires version 108+ of HD Packs");
-		info.IgnorePalette = tokens[6] == "Y" ? true : false;
+		checkConstraint(_data->Version >= 108, "Addition tag ignore palette feature requires version 108+ of HD Packs");
+		info.IgnorePalette = ParseBooleanValue(tokens[6]);
 	}
 }
 
 void HdPackLoader::ProcessFallbackTag(vector<string>& tokens)
 {
-	checkConstraint(_data->Version >= 107, "[HDPack] This feature requires version 107+ of HD Packs");
+	checkConstraint(_data->Version >= 107, "Fallback tag requires version 107+ of HD Packs");
+	checkConstraint(tokens.size() >= 2, "Fallback tag should contain at least 2 parameters");
+	checkConstraintEx(tokens.size() < 3, "Fallback tag contains too many parameters");
 	_data->FallbackTiles.push_back({ HexUtilities::FromHex(tokens[0]), HexUtilities::FromHex(tokens[1]) });
 }
 
@@ -738,18 +764,18 @@ int HdPackLoader::ProcessSoundTrack(string albumString, string trackString, stri
 {
 	int album = std::stoi(albumString);
 	if(album < 0 || album > 255) {
-		MessageManager::Log("[HDPack] Invalid album value: " + albumString);
+		logError("Invalid album value: " + albumString);
 		return -1;
 	}
 
 	int track = std::stoi(trackString);
 	if(track < 0 || track > 255) {
-		MessageManager::Log("[HDPack] Invalid track value: " + trackString);
+		logError("Invalid track value: " + trackString);
 		return -1;
 	}
 
 	if(!CheckFile(filename)) {
-		MessageManager::Log("[HDPack] OGG file not found: " + filename);
+		logError("OGG file not found: " + filename);
 		return -1;
 	}
 
@@ -758,6 +784,9 @@ int HdPackLoader::ProcessSoundTrack(string albumString, string trackString, stri
 
 void HdPackLoader::ProcessBgmTag(vector<string> &tokens)
 {
+	checkConstraint(tokens.size() >= 3, "BGM tag should contain at least 3 parameters");
+	checkConstraintEx(tokens.size() < 5, "BGM tag contains too many parameters");
+
 	int trackId = ProcessSoundTrack(tokens[0], tokens[1], tokens[2]);
 	if(trackId >= 0) {
 		BgmTrackInfo track = {};
@@ -776,6 +805,9 @@ void HdPackLoader::ProcessBgmTag(vector<string> &tokens)
 
 void HdPackLoader::ProcessSfxTag(vector<string> &tokens)
 {
+	checkConstraint(tokens.size() >= 3, "SFX tag should contain at least 3 parameters");
+	checkConstraintEx(tokens.size() < 4, "SFX tag contains too many parameters");
+
 	int trackId = ProcessSoundTrack(tokens[0], tokens[1], tokens[2]);
 	if(trackId >= 0) {
 		if(_loadFromZip) {
@@ -798,7 +830,7 @@ vector<HdPackCondition*> HdPackLoader::ParseConditionString(string conditionStri
 		if(result != _conditionsByName.end()) {
 			conditions.push_back(result->second);
 		} else {
-			MessageManager::Log("[HDPack] Condition not found: " + string(conditionName.ToString()));
+			logError("Condition not found: " + string(conditionName.ToString()));
 		}
 		conditionName.Reset();
 	};
@@ -817,6 +849,14 @@ vector<HdPackCondition*> HdPackLoader::ParseConditionString(string conditionStri
 	processCondition();
 
 	return conditions;
+}
+
+bool HdPackLoader::ParseBooleanValue(string value)
+{
+	if(value != "Y" && value != "N") {
+		logError("Invalid boolean value: " + value);
+	}
+	return value == "Y";
 }
 
 void HdPackLoader::LoadCustomPalette()

@@ -19,7 +19,7 @@ namespace Mesen.Debugger.Disassembly
 		
 		//(.[a-z]) is allowed after the ocode to support assemblers (for source view) that use
 		//e.g .b/.w/.l suffixes to select between 8/16bit operations, etc.
-		private static Regex _opCode = new Regex("^([a-z0-9]{1,5}(.[a-z]){0,1})([\\s]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _opCode = new Regex("^([a-z0-9]{1,5}([.][a-z]){0,1})([\\s]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		private static Regex _syntax = new Regex("^[]([)!+,.|:<>-]{1}", RegexOptions.Compiled);
 		private static Regex _operand = new Regex("^((([$]|0x)[0-9a-f]*([.]\\d){0,1})|(#([$]|0x|[0-9])[0-9a-f]*)|#|([@_a-z]([@_a-z0-9])*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -38,15 +38,15 @@ namespace Mesen.Debugger.Disassembly
 				while(codeString.Length > 0) {
 					Match m;
 					if((m = _comment.Match(codeString)).Success) {
-						colors.Add(new CodeColor(m.Value, cfg.CodeCommentColor, CodeSegmentType.Comment, pos));
+						colors.Add(new CodeColor(m.Value, Color.FromUInt32(cfg.CodeCommentColor), CodeSegmentType.Comment, pos));
 					} else if(colors.Count == 0 && (m = _labelDef.Match(codeString)).Success) {
-						colors.Add(new CodeColor(m.Groups[1].Value, cfg.CodeLabelDefinitionColor, CodeSegmentType.LabelDefinition, pos));
+						colors.Add(new CodeColor(m.Groups[1].Value, Color.FromUInt32(cfg.CodeLabelDefinitionColor), CodeSegmentType.LabelDefinition, pos));
 					} else if(!foundOpCode && (m = _directive.Match(codeString)).Success) {
 						foundDirective = true;
-						colors.Add(new CodeColor(m.Groups[1].Value, cfg.CodeOpcodeColor, CodeSegmentType.Directive, pos));
+						colors.Add(new CodeColor(m.Groups[1].Value, Color.FromUInt32(cfg.CodeOpcodeColor), CodeSegmentType.Directive, pos));
 					} else if(!foundOpCode && (m = _opCode.Match(codeString)).Success) {
 						foundOpCode = true;
-						colors.Add(new CodeColor(m.Groups[1].Value, textColor ?? cfg.CodeOpcodeColor, CodeSegmentType.OpCode, pos));
+						colors.Add(new CodeColor(m.Groups[1].Value, textColor ?? Color.FromUInt32(cfg.CodeOpcodeColor), CodeSegmentType.OpCode, pos));
 					} else if((foundOpCode || foundDirective) && (m = _operand.Match(codeString)).Success) {
 						string operand = m.Value;
 						Color operandColor = Colors.Black;
@@ -54,15 +54,15 @@ namespace Mesen.Debugger.Disassembly
 						if(operand.Length > 0) {
 							switch(operand[0]) {
 								case '#':
-									operandColor = cfg.CodeImmediateColor;
+									operandColor = Color.FromUInt32(cfg.CodeImmediateColor);
 									type = CodeSegmentType.ImmediateValue;
 									break;
 								case '$':
-									operandColor = cfg.CodeAddressColor;
+									operandColor = Color.FromUInt32(cfg.CodeAddressColor);
 									type = CodeSegmentType.Address;
 									break;
 								default:
-									operandColor = cfg.CodeLabelDefinitionColor;
+									operandColor = Color.FromUInt32(cfg.CodeLabelDefinitionColor);
 									type = CodeSegmentType.Label;
 									break;
 							}
@@ -94,7 +94,7 @@ namespace Mesen.Debugger.Disassembly
 
 				if(lineData.ShowEffectiveAddress && lineData.EffectiveAddress >= 0) {
 					string effAddress = lineData.GetEffectiveAddressString(addressFormat, out CodeSegmentType type);
-					colors.Add(new CodeColor(" " + effAddress, cfg.CodeEffectiveAddressColor, type));
+					colors.Add(new CodeColor(" " + effAddress, Color.FromUInt32(cfg.CodeEffectiveAddressColor), type));
 				}
 
 				if(showMemoryValues && lineData.ValueSize > 0) {
@@ -102,13 +102,13 @@ namespace Mesen.Debugger.Disassembly
 				}
 
 				if(!string.IsNullOrWhiteSpace(lineData.Comment)) {
-					colors.Add(new CodeColor(" " + lineData.Comment, cfg.CodeCommentColor, CodeSegmentType.Comment));
+					colors.Add(new CodeColor(" " + lineData.Comment, Color.FromUInt32(cfg.CodeCommentColor), CodeSegmentType.Comment));
 				}
 			} else {
 				if(lineData.Flags.HasFlag(LineFlags.Comment)) {
-					colors.Add(new CodeColor(lineData.Comment, cfg.CodeCommentColor, CodeSegmentType.Comment));
+					colors.Add(new CodeColor(lineData.Comment, Color.FromUInt32(cfg.CodeCommentColor), CodeSegmentType.Comment));
 				} else if(codeString.EndsWith(":")) {
-					colors.Add(new CodeColor(codeString, cfg.CodeLabelDefinitionColor, CodeSegmentType.LabelDefinition));
+					colors.Add(new CodeColor(codeString, Color.FromUInt32(cfg.CodeLabelDefinitionColor), CodeSegmentType.LabelDefinition));
 				} else {
 					colors.Add(new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None));
 				}

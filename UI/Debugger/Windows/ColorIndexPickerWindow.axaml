@@ -29,10 +29,10 @@
 		<ScrollViewer MaxHeight="400">
 			<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
 				<dc:PaletteSelector
-					PaletteColors="{CompiledBinding Palette, ElementName=root}"
-					SelectedPalette="{CompiledBinding SelectedPalette, ElementName=root}"
-					ColumnCount="{CompiledBinding ColumnCount, ElementName=root}"
-					BlockSize="{CompiledBinding BlockSize, ElementName=root}"
+					PaletteColors="{Binding Palette, ElementName=root}"
+					SelectedPalette="{Binding SelectedPalette, ElementName=root}"
+					ColumnCount="{Binding ColumnCount, ElementName=root}"
+					BlockSize="{Binding BlockSize, ElementName=root}"
 					ColorClick="PaletteColor_OnClick"
 					SelectionMode="None"
 					ShowIndexes="True"

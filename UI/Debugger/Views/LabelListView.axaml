@@ -26,28 +26,28 @@
 			<Setter Property="Foreground" Value="{DynamicResource ToolTipForeground}" />
 		</Style>
 		<Style Selector="DataBoxRow">
-			<Setter Property="Foreground" Value="{Binding RowBrush}" />
-			<Setter Property="FontStyle" Value="{Binding RowStyle}" />
+			<Setter Property="Foreground" Value="{Binding RowBrush, DataType={x:Type vm:LabelViewModel}}" />
+			<Setter Property="FontStyle" Value="{Binding RowStyle, DataType={x:Type vm:LabelViewModel}}" />
 		</Style>
 	</UserControl.Styles>
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="#80808080">
 		<DataBox
-			Items="{CompiledBinding Labels}"
-			Selection="{CompiledBinding Selection}"
+			Items="{Binding Labels}"
+			Selection="{Binding Selection}"
 			GridLinesVisibility="All"
 			SelectionMode="Multiple"
 			SortMode="Multiple"
 			SortCommand="{Binding Sort}"
-			SortState="{CompiledBinding SortState}"
+			SortState="{Binding SortState}"
 			CellDoubleClick="OnCellDoubleClick"
-			ColumnWidths="{CompiledBinding ColumnWidths}"
+			ColumnWidths="{Binding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Label" Header="{l:Translate colLabel}" Binding="{Binding LabelText}" CanUserResize="True" InitialWidth="100" />
-				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay}" CanUserResize="True" InitialWidth="80" />
-				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay}" CanUserResize="True" InitialWidth="80" />
-				<DataBoxTextColumn ColumnName="Comment" ShowToolTip="True" Header="{l:Translate colComment}" Binding="{Binding LabelComment}" CanUserResize="True" InitialWidth="100" />
+				<DataBoxTextColumn ColumnName="Label" Header="{l:Translate colLabel}" Binding="{Binding LabelText, DataType={x:Type vm:LabelViewModel}}" CanUserResize="True" InitialWidth="100" />
+				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay, DataType={x:Type vm:LabelViewModel}}" CanUserResize="True" InitialWidth="80" />
+				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay, DataType={x:Type vm:LabelViewModel}}" CanUserResize="True" InitialWidth="80" />
+				<DataBoxTextColumn ColumnName="Comment" ShowToolTip="True" Header="{l:Translate colComment}" Binding="{Binding LabelComment, DataType={x:Type vm:LabelViewModel}}" CanUserResize="True" InitialWidth="100" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

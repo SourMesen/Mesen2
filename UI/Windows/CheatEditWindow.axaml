@@ -20,13 +20,13 @@
 
 	<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,*,Auto">
 		<TextBlock Text="{l:Translate lblDescription}" VerticalAlignment="Center" />
-		<TextBox Grid.Column="1" Text="{CompiledBinding Cheat.Description}" />
+		<TextBox Grid.Column="1" Text="{Binding Cheat.Description}" />
 	
 		<CheckBox
 			Grid.Row="1"
 			Grid.ColumnSpan="2"
 			Content="{l:Translate chkEnabled}"
-			IsChecked="{CompiledBinding Cheat.Enabled}"
+			IsChecked="{Binding Cheat.Enabled}"
 		/>
 
 		<c:GroupBox Header="{l:Translate grpCodes}" Grid.Row="3" Grid.ColumnSpan="2">
@@ -36,8 +36,8 @@
 					<c:EnumComboBox
 						Grid.Row="2"
 						Grid.ColumnSpan="2"
-						SelectedItem="{CompiledBinding Cheat.Type}"
-						AvailableValues="{CompiledBinding AvailableCheatTypes}"
+						SelectedItem="{Binding Cheat.Type}"
+						AvailableValues="{Binding AvailableCheatTypes}"
 					/>
 				</DockPanel>
 
@@ -47,7 +47,7 @@
 					AcceptsReturn="True"
 					ScrollViewer.HorizontalScrollBarVisibility="Auto"
 					Height="NaN"
-					Text="{CompiledBinding Cheat.Codes}"
+					Text="{Binding Cheat.Codes}"
 				/>
 
 				<TextBox
@@ -58,10 +58,10 @@
 					IsReadOnly="True"
 					Background="{StaticResource MesenGrayBackgroundColor}"
 					Height="NaN"
-					Text="{CompiledBinding ConvertedCodes}"
+					Text="{Binding ConvertedCodes}"
 				/>
 
-				<StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" IsVisible="{CompiledBinding ShowInvalidCodeHint}">
+				<StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" IsVisible="{Binding ShowInvalidCodeHint}">
 					<Image Source="/Assets/Warning.png" Stretch="None" Margin="3" />
 					<TextBlock Text="{l:Translate lblInvalidCodes}" VerticalAlignment="Center" />
 				</StackPanel>
@@ -80,7 +80,7 @@
 				IsDefault="True"
 				Click="Ok_OnClick"
 				Content="{l:Translate btnOK}"
-				IsEnabled="{CompiledBinding OkButtonEnabled}"
+				IsEnabled="{Binding OkButtonEnabled}"
 			/>
 			
 			<Button

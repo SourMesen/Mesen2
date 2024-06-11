@@ -13,6 +13,7 @@ using Avalonia.Controls.Selection;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Metadata;
 using Avalonia.Threading;
@@ -350,8 +351,11 @@ public class DataBox : TemplatedControl
 			return false;
 		}
 
-		if(column is DataBoxTextColumn textColumn && textColumn.Binding is Binding columnBinding) {
-			Binding binding = new Binding(columnBinding.Path, BindingMode.OneTime);
+		if(column is DataBoxTextColumn textColumn && textColumn.Binding is CompiledBindingExtension columnBinding) {
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+			Binding binding = new Binding(columnBinding.Path.ToString(), BindingMode.OneTime);
+#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+			int i = 0;
 			foreach(object item in Items) {
 				binding.Source = item;
 				ValueGetter getter = new ValueGetter();
@@ -361,8 +365,10 @@ public class DataBox : TemplatedControl
 				if(value.StartsWith(_searchString, StringComparison.OrdinalIgnoreCase) || value.StartsWith(_searchStringHex, StringComparison.OrdinalIgnoreCase)) {
 					_rowsPresenter.SelectedItem = item;
 					_rowsPresenter.ScrollIntoView(item);
+					_rowsPresenter.GetRow(i)?.Focus();
 					return true;
 				}
+				i++;
 			}
 		}
 

@@ -28,7 +28,7 @@
 				Padding="3"
 				FontFamily="{DynamicResource MesenFont}"
 				FontSize="{DynamicResource MesenFontSize}"
-				TextBinding="{CompiledBinding LogContent, ElementName=root}"
+				TextBinding="{Binding LogContent, ElementName=root}"
 			/>
 		</Border>
 	</DockPanel>

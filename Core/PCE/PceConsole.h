@@ -59,6 +59,8 @@ public:
 
 	void RunFrame() override;
 
+	void ProcessEndOfFrame();
+
 	void SaveBattery() override;
 
 	BaseControlManager* GetControlManager() override;

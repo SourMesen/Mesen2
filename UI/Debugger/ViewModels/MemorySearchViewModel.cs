@@ -52,6 +52,10 @@ public class MemorySearchViewModel : DisposableViewModel
 	[Reactive] public bool IsUndoEnabled { get; set; } = false;
 	[Reactive] public bool IsSpecificValueEnabled { get; set; } = false;
 	[Reactive] public bool IsSpecificAddressEnabled { get; set; } = false;
+	
+	public int[] AddressLookup => _addressLookup;
+	public byte[] MemoryState => _memoryState;
+	public byte[] PrevMemoryState => _prevMemoryState;
 
 	private List<MemoryAddressViewModel> _innerData = new();
 
@@ -337,43 +341,56 @@ public class MemorySearchViewModel : DisposableViewModel
 		RefreshList(true);
 	}
 
-	public class MemoryAddressViewModel : INotifyPropertyChanged
+	private class SearchHistory
 	{
-		public event PropertyChangedEventHandler? PropertyChanged;
+		public HashSet<int> HiddenAddresses;
+		public byte[] SearchSnapshot;
 
-		private string _addressString = "";
-		public string AddressString
+		public SearchHistory(HashSet<int> hiddenAddresses, byte[] searchSnapshot)
 		{
-			get
-			{
-				UpdateFields();
-				return _addressString;
-			}
+			HiddenAddresses = new(hiddenAddresses);
+			SearchSnapshot = searchSnapshot;
 		}
+	}
+}
 
-		public string Value { get; set; } = "";
-		public string PrevValue { get; set; } = "";
+public class MemoryAddressViewModel : INotifyPropertyChanged
+{
+	public event PropertyChangedEventHandler? PropertyChanged;
 
-		public string ReadCount { get; set; } = "";
-		public string WriteCount { get; set; } = "";
-		public string ExecCount { get; set; } = "";
-
-		public string LastRead { get; set; } = "";
-		public string LastWrite { get; set; } = "";
-		public string LastExec { get; set; } = "";
-		
-		public bool IsMatch { get; set; } = true;
-
-		private int _index;
-		private MemorySearchViewModel _search;
-
-		public MemoryAddressViewModel(int index, MemorySearchViewModel memorySearch)
+	private string _addressString = "";
+	public string AddressString
+	{
+		get
 		{
-			_index = index;
-			_search = memorySearch;
+			UpdateFields();
+			return _addressString;
 		}
+	}
 
-		static private PropertyChangedEventArgs[] _args = new[] {
+	public string Value { get; set; } = "";
+	public string PrevValue { get; set; } = "";
+
+	public string ReadCount { get; set; } = "";
+	public string WriteCount { get; set; } = "";
+	public string ExecCount { get; set; } = "";
+
+	public string LastRead { get; set; } = "";
+	public string LastWrite { get; set; } = "";
+	public string LastExec { get; set; } = "";
+
+	public bool IsMatch { get; set; } = true;
+
+	private int _index;
+	private MemorySearchViewModel _search;
+
+	public MemoryAddressViewModel(int index, MemorySearchViewModel memorySearch)
+	{
+		_index = index;
+		_search = memorySearch;
+	}
+
+	static private PropertyChangedEventArgs[] _args = new[] {
 			new PropertyChangedEventArgs(nameof(MemoryAddressViewModel.AddressString)),
 			new PropertyChangedEventArgs(nameof(MemoryAddressViewModel.Value)),
 			new PropertyChangedEventArgs(nameof(MemoryAddressViewModel.PrevValue)),
@@ -386,109 +403,96 @@ public class MemorySearchViewModel : DisposableViewModel
 			new PropertyChangedEventArgs(nameof(MemoryAddressViewModel.IsMatch))
 		};
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Update()
-		{
-			if(PropertyChanged != null) {
-				PropertyChanged(this, _args[0]);
-				PropertyChanged(this, _args[1]);
-				PropertyChanged(this, _args[2]);
-				PropertyChanged(this, _args[3]);
-				PropertyChanged(this, _args[4]);
-				PropertyChanged(this, _args[5]);
-				PropertyChanged(this, _args[6]);
-				PropertyChanged(this, _args[7]);
-				PropertyChanged(this, _args[8]);
-				PropertyChanged(this, _args[9]);
-			}
-		}
-
-		private void UpdateFields()
-		{
-			if(_index >= _search._addressLookup.Length) {
-				return;
-			}
-
-			int address = _search._addressLookup[_index];
-			_addressString = address.ToString("X4");
-
-			uint value = 0;
-			uint prevValue = 0;
-			for(int i = 0; i < (int)_search.ValueSize && address + i < _search._memoryState.Length; i++) {
-				value |= (uint)_search._memoryState[address + i] << (i * 8);
-				prevValue |= (uint)_search._prevMemoryState[address + i] << (i * 8);
-			}
-
-			switch(_search.Format) {
-				case MemorySearchFormat.Hex: {
-					string format = "X" + (((int)_search.ValueSize) * 2);
-					Value = value.ToString(format);
-					PrevValue = prevValue.ToString(format);
-					break;
-				}
-
-				case MemorySearchFormat.Signed: {
-					switch(_search.ValueSize) {
-						case MemorySearchValueSize.Byte:
-							Value = ((sbyte)value).ToString();
-							PrevValue = ((sbyte)prevValue).ToString();
-							break;
-						case MemorySearchValueSize.Word:
-							Value = ((short)value).ToString();
-							PrevValue = ((short)prevValue).ToString();
-							break;
-						case MemorySearchValueSize.Dword:
-							Value = ((int)value).ToString();
-							PrevValue = ((int)prevValue).ToString();
-							break;
-					}
-					break;
-				}
-
-				case MemorySearchFormat.Unsigned: {
-					switch(_search.ValueSize) {
-						case MemorySearchValueSize.Byte:
-							Value = ((byte)value).ToString();
-							PrevValue = ((byte)prevValue).ToString();
-							break;
-						case MemorySearchValueSize.Word:
-							Value = ((ushort)value).ToString();
-							PrevValue = ((ushort)prevValue).ToString();
-							break;
-						case MemorySearchValueSize.Dword:
-							Value = ((uint)value).ToString();
-							PrevValue = ((uint)prevValue).ToString();
-							break;
-					}
-					break;
-				}
-			}
-
-			AddressCounters counters = DebugApi.GetMemoryAccessCounts((uint)address, 1, _search.MemoryType)[0];
-			UInt64 masterClock = EmuApi.GetTimingInfo(_search.MemoryType.ToCpuType()).MasterClock;
-
-			ReadCount = CodeTooltipHelper.FormatCount(counters.ReadCounter);
-			WriteCount = CodeTooltipHelper.FormatCount(counters.WriteCounter);
-			ExecCount = CodeTooltipHelper.FormatCount(counters.ExecCounter);
-
-			LastRead = CodeTooltipHelper.FormatCount(masterClock - counters.ReadStamp, counters.ReadStamp);
-			LastWrite = CodeTooltipHelper.FormatCount(masterClock - counters.WriteStamp, counters.WriteStamp);
-			LastExec = CodeTooltipHelper.FormatCount(masterClock - counters.ExecStamp, counters.ExecStamp);
-
-			IsMatch = _search.IsMatch(address);
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void Update()
+	{
+		if(PropertyChanged != null) {
+			PropertyChanged(this, _args[0]);
+			PropertyChanged(this, _args[1]);
+			PropertyChanged(this, _args[2]);
+			PropertyChanged(this, _args[3]);
+			PropertyChanged(this, _args[4]);
+			PropertyChanged(this, _args[5]);
+			PropertyChanged(this, _args[6]);
+			PropertyChanged(this, _args[7]);
+			PropertyChanged(this, _args[8]);
+			PropertyChanged(this, _args[9]);
 		}
 	}
-	
-	private class SearchHistory
-	{
-		public HashSet<int> HiddenAddresses;
-		public byte[] SearchSnapshot;
 
-		public SearchHistory(HashSet<int> hiddenAddresses, byte[] searchSnapshot)
-		{
-			HiddenAddresses = new(hiddenAddresses);
-			SearchSnapshot = searchSnapshot;
+	private void UpdateFields()
+	{
+		if(_index >= _search.AddressLookup.Length) {
+			return;
 		}
+
+		int address = _search.AddressLookup[_index];
+		_addressString = address.ToString("X4");
+
+		uint value = 0;
+		uint prevValue = 0;
+		for(int i = 0; i < (int)_search.ValueSize && address + i < _search.MemoryState.Length; i++) {
+			value |= (uint)_search.MemoryState[address + i] << (i * 8);
+			prevValue |= (uint)_search.PrevMemoryState[address + i] << (i * 8);
+		}
+
+		switch(_search.Format) {
+			case MemorySearchFormat.Hex: {
+				string format = "X" + (((int)_search.ValueSize) * 2);
+				Value = value.ToString(format);
+				PrevValue = prevValue.ToString(format);
+				break;
+			}
+
+			case MemorySearchFormat.Signed: {
+				switch(_search.ValueSize) {
+					case MemorySearchValueSize.Byte:
+						Value = ((sbyte)value).ToString();
+						PrevValue = ((sbyte)prevValue).ToString();
+						break;
+					case MemorySearchValueSize.Word:
+						Value = ((short)value).ToString();
+						PrevValue = ((short)prevValue).ToString();
+						break;
+					case MemorySearchValueSize.Dword:
+						Value = ((int)value).ToString();
+						PrevValue = ((int)prevValue).ToString();
+						break;
+				}
+				break;
+			}
+
+			case MemorySearchFormat.Unsigned: {
+				switch(_search.ValueSize) {
+					case MemorySearchValueSize.Byte:
+						Value = ((byte)value).ToString();
+						PrevValue = ((byte)prevValue).ToString();
+						break;
+					case MemorySearchValueSize.Word:
+						Value = ((ushort)value).ToString();
+						PrevValue = ((ushort)prevValue).ToString();
+						break;
+					case MemorySearchValueSize.Dword:
+						Value = ((uint)value).ToString();
+						PrevValue = ((uint)prevValue).ToString();
+						break;
+				}
+				break;
+			}
+		}
+
+		AddressCounters counters = DebugApi.GetMemoryAccessCounts((uint)address, 1, _search.MemoryType)[0];
+		UInt64 masterClock = EmuApi.GetTimingInfo(_search.MemoryType.ToCpuType()).MasterClock;
+
+		ReadCount = CodeTooltipHelper.FormatCount(counters.ReadCounter);
+		WriteCount = CodeTooltipHelper.FormatCount(counters.WriteCounter);
+		ExecCount = CodeTooltipHelper.FormatCount(counters.ExecCounter);
+
+		LastRead = CodeTooltipHelper.FormatCount(masterClock - counters.ReadStamp, counters.ReadStamp);
+		LastWrite = CodeTooltipHelper.FormatCount(masterClock - counters.WriteStamp, counters.WriteStamp);
+		LastExec = CodeTooltipHelper.FormatCount(masterClock - counters.ExecStamp, counters.ExecStamp);
+
+		IsMatch = _search.IsMatch(address);
 	}
 }
 

@@ -23,13 +23,16 @@
 	#include "Windows/Renderer.h"
 	#include "Windows/SoundManager.h"
 	#include "Windows/WindowsKeyManager.h"
+	#include "Windows/WindowsMouseManager.h"
 #elif __APPLE__
-	#include "Linux/SdlSoundManager.h"
+	#include "Sdl/SdlSoundManager.h"
 	#include "MacOS/MacOSKeyManager.h"
+	#include "MacOS/MacOSMouseManager.h"
 #else
-	#include "Linux/SdlRenderer.h"
-	#include "Linux/SdlSoundManager.h"
+	#include "Sdl/SdlRenderer.h"
+	#include "Sdl/SdlSoundManager.h"
 	#include "Linux/LinuxKeyManager.h"
+	#include "Linux/LinuxMouseManager.h"
 #endif
 
 #include "Shared/Video/SoftwareRenderer.h"
@@ -37,6 +40,7 @@
 unique_ptr<IRenderingDevice> _renderer;
 unique_ptr<IAudioDevice> _soundManager;
 unique_ptr<IKeyManager> _keyManager;
+unique_ptr<IMouseManager> _mouseManager;
 unique_ptr<Emulator> _emu(new Emulator());
 bool _softwareRenderer = false;
 
@@ -107,10 +111,13 @@ extern "C" {
 			if(!noInput) {
 				#ifdef _WIN32
 					_keyManager.reset(new WindowsKeyManager(_emu.get(), (HWND)_windowHandle));
+					_mouseManager.reset(new WindowsMouseManager());
 				#elif __APPLE__
 					_keyManager.reset(new MacOSKeyManager(_emu.get()));
+					_mouseManager.reset(new MacOSMouseManager());
 				#else 
 					_keyManager.reset(new LinuxKeyManager(_emu.get()));
+					_mouseManager.reset(new LinuxMouseManager(_windowHandle));
 				#endif
 					
 				KeyManager::RegisterKeyManager(_keyManager.get());

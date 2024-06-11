@@ -134,7 +134,14 @@ void GbCpu::ProcessNextCycleStart()
 		//This is needed to make various tests pass.
 		if(_gameboy->IsCgb()) {
 			//On CGB, it looks like the IRQ is checked slightly earlier?
-			_prevIrqVector = _memoryManager->ProcessIrqRequests();
+			if(_memoryManager->GetState().CgbSwitchSpeedRequest) {
+				//Prevent IRQs when the CPU is switching speed
+				//This might not be entirely correct? but Conker's Pocket Tales in GBC mode locks up without this
+				//The "Color Panel Demo" fails to switch speed without this, too (which breaks the video output)
+				_prevIrqVector = 0;
+			} else {
+				_prevIrqVector = _memoryManager->ProcessIrqRequests();
+			}
 			ExecCpuCycle();
 		} else {
 			//DMG HALT seems to check the irq state slightly later vs CGB?
@@ -1526,5 +1533,6 @@ void GbCpu::Serialize(Serializer& s)
 	SV(_state.EiPending);
 	SV(_state.CycleCount);
 	SV(_state.HaltBug);
+	SV(_state.Stopped);
 	SV(_prevIrqVector);
 }

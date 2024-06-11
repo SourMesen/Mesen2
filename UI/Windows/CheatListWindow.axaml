@@ -6,6 +6,7 @@
 	xmlns:w="using:Mesen.Windows"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:c="using:Mesen.Debugger.Controls"
+	xmlns:cfg="using:Mesen.Config"
 	xmlns:v="using:Mesen.Views"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -29,27 +30,27 @@
 		<DockPanel DockPanel.Dock="Bottom" Margin="0 0 1 1">
 			<Button DockPanel.Dock="Right" MinWidth="70" HorizontalContentAlignment="Center" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 			<Button DockPanel.Dock="Right" MinWidth="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
-			<CheckBox Content="{l:Translate chkDisableCheats}" IsChecked="{CompiledBinding DisableAllCheats}" />
+			<CheckBox Content="{l:Translate chkDisableCheats}" IsChecked="{Binding DisableAllCheats}" />
 		</DockPanel >
 		
-		<c:ActionToolbar DockPanel.Dock="Top" Items="{CompiledBinding ToolbarActions}" />
+		<c:ActionToolbar DockPanel.Dock="Top" Items="{Binding ToolbarActions}" />
 		
 		<Border BorderThickness="1" BorderBrush="{StaticResource MesenGrayBorderColor}" Margin="2">
 			<DataBox
-				Items="{CompiledBinding Cheats}"
-				Selection="{CompiledBinding Selection}"
+				Items="{Binding Cheats}"
+				Selection="{Binding Selection}"
 				CellClick="OnCellClick"
 				CellDoubleClick="OnCellDoubleClick"
 				SortMode="Multiple"
 				SortCommand="{Binding Sort}"
-				SortState="{CompiledBinding SortState}"
+				SortState="{Binding SortState}"
 				GridLinesVisibility="All"
-				ColumnWidths="{CompiledBinding Config.ColumnWidths}"
+				ColumnWidths="{Binding Config.ColumnWidths}"
 			>
 				<DataBox.Columns>
-					<DataBoxCheckBoxColumn ColumnName="Enabled" Header="" Binding="{Binding Enabled}" InitialWidth="22" />
-					<DataBoxTextColumn ColumnName="Description" Header="{l:Translate colDescription}" Binding="{Binding Description}" CanUserResize="True" InitialWidth="150" />
-					<DataBoxTextColumn ColumnName="Codes" Header="{l:Translate colCodes}" CanUserResize="True" InitialWidth="150" Binding="{Binding Codes, Converter={StaticResource CodeConverter}}" />
+					<DataBoxCheckBoxColumn ColumnName="Enabled" Header="" Binding="{Binding Enabled, DataType={x:Type cfg:CheatCode}}" InitialWidth="22" />
+					<DataBoxTextColumn ColumnName="Description" Header="{l:Translate colDescription}" Binding="{Binding Description, DataType={x:Type cfg:CheatCode}}" CanUserResize="True" InitialWidth="150" />
+					<DataBoxTextColumn ColumnName="Codes" Header="{l:Translate colCodes}" CanUserResize="True" InitialWidth="150" Binding="{Binding Codes, Converter={StaticResource CodeConverter}, DataType={x:Type cfg:CheatCode}}" />
 				</DataBox.Columns>
 			</DataBox>
 		</Border>

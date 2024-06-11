@@ -55,9 +55,9 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
-				<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{CompiledBinding DebugMenuItems}" />
-				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuItems}" />
+				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuItems}" />
+				<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{Binding DebugMenuItems}" />
+				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuItems}" />
 			</c:MesenMenu>
 			<c:IconButton
 				HorizontalAlignment="Right"
@@ -68,18 +68,18 @@
 			/>
 		</Panel>
 
-		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="{CompiledBinding Config.ShowToolbar}">
-			<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
+		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="{Binding Config.ShowToolbar}">
+			<dc:ActionToolbar Items="{Binding ToolbarItems}" />
 		</StackPanel>
 
-		<Panel DockPanel.Dock="Right" Margin="3" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+		<Panel DockPanel.Dock="Right" Margin="3" IsVisible="{Binding Config.ShowSettingsPanel}">
 			<ScrollViewer VerticalAlignment="Top">
 				<StackPanel>
-					<ContentControl Content="{CompiledBinding ConsoleConfig}" />
-					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ShowListView}" />
+					<ContentControl Content="{Binding ConsoleConfig}" />
+					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{Binding ShowListView}" />
 					<StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-						<Button Command="{CompiledBinding EnableAllEventTypes}" Content="{l:Translate btnSelectAll}" />
-						<Button Command="{CompiledBinding DisableAllEventTypes}" Content="{l:Translate btnDeselectAll}" />
+						<Button Command="{Binding EnableAllEventTypes}" Content="{l:Translate btnSelectAll}" />
+						<Button Command="{Binding DisableAllEventTypes}" Content="{l:Translate btnDeselectAll}" />
 					</StackPanel>
 				</StackPanel>
 			</ScrollViewer>
@@ -90,38 +90,38 @@
 				<RowDefinition MinHeight="200" Height="*" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition
-					MinHeight="{CompiledBinding MinListViewHeight}"
-					Height="{CompiledBinding ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
+					MinHeight="{Binding MinListViewHeight}"
+					Height="{Binding ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
 				/>
 			</Grid.RowDefinitions>
 
 			<dc:ScrollPictureViewer
 				x:Name="picViewer"
 				Grid.Row="0"
-				Source="{CompiledBinding ViewerBitmap}"
-				Zoom="{CompiledBinding Config.ImageScale}"
+				Source="{Binding ViewerBitmap}"
+				Zoom="{Binding Config.ImageScale}"
 				ShowMousePosition="False"
 				AllowSelection="False"
-				SelectionRect="{CompiledBinding SelectionRect}"
-				GridHighlight="{CompiledBinding GridHighlightPoint}"
+				SelectionRect="{Binding SelectionRect}"
+				GridHighlight="{Binding GridHighlightPoint}"
 			/>
 
 			<GridSplitter
 				Grid.Row="1"
 				HorizontalAlignment="Stretch"
-				IsVisible="{CompiledBinding Config.ShowListView}"
+				IsVisible="{Binding Config.ShowListView}"
 			/>
 			
 			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2">
 				<DataBox
 					Name="lstEvents"
-					Items="{CompiledBinding ListView.DebugEvents}"
-					Selection="{CompiledBinding ListView.Selection}"
+					Items="{Binding ListView.DebugEvents}"
+					Selection="{Binding ListView.Selection}"
 					SortMode="Multiple"
-					SortCommand="{CompiledBinding ListView.SortCommand}"
-					SortState="{CompiledBinding ListView.SortState}"
+					SortCommand="{Binding ListView.SortCommand}"
+					SortState="{Binding ListView.SortState}"
 					GridLinesVisibility="All"
-					ColumnWidths="{CompiledBinding ListView.ColumnWidths}"
+					ColumnWidths="{Binding ListView.ColumnWidths}"
 				>
 					<DataBox.Styles>
 						<Style Selector="TextBlock">
@@ -139,19 +139,19 @@
 								<Border
 									BorderBrush="{DynamicResource MesenBlackBorderColor}"
 									BorderThickness="1"
-									Background="{Binding Color, Converter={StaticResource ArgbColorToBrushConverter}}"
+									Background="{Binding Color, Converter={StaticResource ArgbColorToBrushConverter}, DataType={x:Type dvm:DebugEventViewModel}}"
 									Width="12"
 									Height="12"
 								/>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTextColumn Header="{l:Translate colScanline}" ColumnName="Scanline" InitialWidth="88" Binding="{Binding Scanline}" />
-						<DataBoxTextColumn Header="{l:Translate colCycle}" ColumnName="Cycle" InitialWidth="77" Binding="{Binding Cycle}" />
-						<DataBoxTextColumn Header="{l:Translate colPc}" ColumnName="ProgramCounter" InitialWidth="62" Binding="{Binding ProgramCounter}" />
-						<DataBoxTextColumn Header="{l:Translate colType}" ColumnName="Type" InitialWidth="77" Binding="{Binding Type}" />
-						<DataBoxTextColumn Header="{l:Translate colAddress}" ColumnName="Address" InitialWidth="68" Binding="{Binding Address}" />
-						<DataBoxTextColumn Header="{l:Translate colValue}" ColumnName="Value" InitialWidth="50" Binding="{Binding Value}" />
-						<DataBoxTextColumn Header="{l:Translate colDetails}" CanUserSort="False" InitialWidth="416" Binding="{Binding Details}" />
+						<DataBoxTextColumn Header="{l:Translate colScanline}" ColumnName="Scanline" InitialWidth="88" Binding="{Binding Scanline, DataType={x:Type dvm:DebugEventViewModel}}" />
+						<DataBoxTextColumn Header="{l:Translate colCycle}" ColumnName="Cycle" InitialWidth="77" Binding="{Binding Cycle, DataType={x:Type dvm:DebugEventViewModel}}" />
+						<DataBoxTextColumn Header="{l:Translate colPc}" ColumnName="ProgramCounter" InitialWidth="62" Binding="{Binding ProgramCounter, DataType={x:Type dvm:DebugEventViewModel}}" />
+						<DataBoxTextColumn Header="{l:Translate colType}" ColumnName="Type" InitialWidth="77" Binding="{Binding Type, DataType={x:Type dvm:DebugEventViewModel}}" />
+						<DataBoxTextColumn Header="{l:Translate colAddress}" ColumnName="Address" InitialWidth="68" Binding="{Binding Address, DataType={x:Type dvm:DebugEventViewModel}}" />
+						<DataBoxTextColumn Header="{l:Translate colValue}" ColumnName="Value" InitialWidth="50" Binding="{Binding Value, DataType={x:Type dvm:DebugEventViewModel}}" />
+						<DataBoxTextColumn Header="{l:Translate colDetails}" CanUserSort="False" InitialWidth="416" Binding="{Binding Details, DataType={x:Type dvm:DebugEventViewModel}}" />
 					</DataBox.Columns>
 				</DataBox>
 			</Border>

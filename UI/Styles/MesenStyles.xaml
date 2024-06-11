@@ -3,12 +3,22 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:sys="clr-namespace:System;assembly=netstandard"	
 	xmlns:c="using:Mesen.Controls"
+	xmlns:du="using:Mesen.Debugger.Utilities"
 >
+	<StyleInclude Source="/Styles/MesenStyles.Light.xaml" />
+	<StyleInclude Source="/Styles/MesenStyles.Dark.xaml" />
+
+	<StyleInclude Source="avares://Dock.Avalonia/Themes/DockFluentTheme.axaml" />
+	<StyleInclude Source="/ThirdParty/DataBox/Themes/Fluent.axaml" />
+	<StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+	<StyleInclude Source="/Styles/DockStyles.xaml" />
+
 	<StyleInclude Source="/Styles/AvaloniaComboBoxStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaContextMenuStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaMenuItemStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaNumericUpDownStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaScrollViewerStyles.xaml" />
+	<StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
 	
 	<Design.PreviewWith>
 		<Window Width="440" Height="620" Padding="5">
@@ -151,13 +161,13 @@
 	</Style>
 
 	<Style Selector="Menu#ActionMenu MenuItem MenuItem, ContextMenu#ActionMenu MenuItem">
-		<Setter Property="Header" Value="{Binding ActionName}" />
-		<Setter Property="Icon" Value="{Binding ActionIcon}" />
-		<Setter Property="IsVisible" Value="{Binding Visible}" />
-		<Setter Property="IsEnabled" Value="{Binding Enabled}" />
-		<Setter Property="Tag" Value="{Binding ShortcutText}" />
-		<Setter Property="ItemsSource" Value="{Binding SubActions}" />
-		<Setter Property="Command" Value="{Binding ClickCommand}" />
+		<Setter Property="Header" Value="{Binding ActionName, DataType={x:Type du:BaseMenuAction}}" />
+		<Setter Property="Icon" Value="{Binding ActionIcon, DataType={x:Type du:BaseMenuAction}}" />
+		<Setter Property="IsVisible" Value="{Binding Visible, DataType={x:Type du:BaseMenuAction}}" />
+		<Setter Property="IsEnabled" Value="{Binding Enabled, DataType={x:Type du:BaseMenuAction}}" />
+		<Setter Property="Tag" Value="{Binding ShortcutText, DataType={x:Type du:BaseMenuAction}}" />
+		<Setter Property="ItemsSource" Value="{Binding SubActions, DataType={x:Type du:BaseMenuAction}}" />
+		<Setter Property="Command" Value="{Binding ClickCommand, DataType={x:Type du:BaseMenuAction}}" />
 	</Style>
 	
 	<Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">

@@ -484,6 +484,7 @@ struct PcEngineConfig
 	uint32_t ChannelVol[6] = { 100, 100, 100, 100, 100, 100 };
 	uint32_t CdAudioVolume = 100;
 	uint32_t AdpcmVolume = 100;
+	bool UseHuC6280aAudio = true;
 
 	bool RemoveSpriteLimit = false;
 	bool DisableSprites = false;
@@ -856,6 +857,9 @@ enum class EmulatorShortcut
 	ToggleAudio,
 	IncreaseVolume,
 	DecreaseVolume,
+
+	PreviousTrack,
+	NextTrack,
 
 	ToggleBgLayer1,
 	ToggleBgLayer2,

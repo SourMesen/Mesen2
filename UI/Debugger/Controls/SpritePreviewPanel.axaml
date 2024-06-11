@@ -20,8 +20,8 @@
 	>
 		<Panel Background="{StaticResource ViewerBgBrush}" HorizontalAlignment="Center" VerticalAlignment="Center">
 			<dc:PictureViewer
-				Source="{CompiledBinding SpritePreview}"
-				Zoom="{CompiledBinding SpritePreviewZoom}"
+				Source="{Binding SpritePreview}"
+				Zoom="{Binding SpritePreviewZoom}"
 				ShowMousePosition="False"
 				AllowSelection="False"
 			/>

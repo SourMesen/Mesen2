@@ -12,7 +12,7 @@
 	<ComboBox
 		Name="Dropdown"
 		HorizontalAlignment="Stretch"
-		ItemsSource="{CompiledBinding InternalItems, ElementName=root}"
-		SelectedItem="{CompiledBinding InternalSelectedItem, ElementName=root}"
+		ItemsSource="{Binding InternalItems, ElementName=root}"
+		SelectedItem="{Binding InternalSelectedItem, ElementName=root}"
 	/>
 </UserControl>

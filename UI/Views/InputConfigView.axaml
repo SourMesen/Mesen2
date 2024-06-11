@@ -36,7 +36,7 @@
 								TickFrequency="1"
 								Width="100"
 								HideValue="True"
-								Value="{CompiledBinding Config.ControllerDeadzoneSize}"
+								Value="{Binding Config.ControllerDeadzoneSize}"
 							/>
 
 							<Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="115" HorizontalAlignment="Left" Margin="5 0 5 0">
@@ -55,7 +55,7 @@
 								TickFrequency="1"
 								Width="100"
 								HideValue="True"
-								Value="{CompiledBinding Config.MouseSensitivity}"
+								Value="{Binding Config.MouseSensitivity}"
 							/>
 
 							<Grid Grid.Row="3" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="107" HorizontalAlignment="Left" Margin="10 0 5 0">
@@ -64,7 +64,7 @@
 							</Grid>
 						</Grid>
 
-						<c:CheckBoxWarning Margin="0 10 0 0" IsChecked="{CompiledBinding Config.HidePointerForLightGuns}" Text="{l:Translate chkHidePointerForLightGuns}" />
+						<c:CheckBoxWarning Margin="0 10 0 0" IsChecked="{Binding Config.HidePointerForLightGuns}" Text="{l:Translate chkHidePointerForLightGuns}" />
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>
@@ -80,20 +80,20 @@
 							</Style>
 						</Grid.Styles>
 
-						<CheckBox Grid.Row="0" Content="{l:Translate chkDisplayPort1}" IsChecked="{CompiledBinding Config.DisplayInputPort1}" />
-						<CheckBox Grid.Row="0" Grid.Column="1" Content="{l:Translate chkDisplayPort2}" IsChecked="{CompiledBinding Config.DisplayInputPort2}" />
-						<CheckBox Grid.Row="1" Content="{l:Translate chkDisplayPort3}" IsChecked="{CompiledBinding Config.DisplayInputPort3}" />
-						<CheckBox Grid.Row="1" Grid.Column="1" Content="{l:Translate chkDisplayPort4}" IsChecked="{CompiledBinding Config.DisplayInputPort4}" />
-						<CheckBox Grid.Row="2" Content="{l:Translate chkDisplayPort5}" IsChecked="{CompiledBinding Config.DisplayInputPort5}" />
-						<CheckBox Grid.Row="2" Grid.Column="1" Content="{l:Translate chkDisplayPort6}" IsChecked="{CompiledBinding Config.DisplayInputPort6}" />
-						<CheckBox Grid.Row="3" Content="{l:Translate chkDisplayPort7}" IsChecked="{CompiledBinding Config.DisplayInputPort7}" />
-						<CheckBox Grid.Row="3" Grid.Column="1" Content="{l:Translate chkDisplayPort8}" IsChecked="{CompiledBinding Config.DisplayInputPort8}" />
+						<CheckBox Grid.Row="0" Content="{l:Translate chkDisplayPort1}" IsChecked="{Binding Config.DisplayInputPort1}" />
+						<CheckBox Grid.Row="0" Grid.Column="1" Content="{l:Translate chkDisplayPort2}" IsChecked="{Binding Config.DisplayInputPort2}" />
+						<CheckBox Grid.Row="1" Content="{l:Translate chkDisplayPort3}" IsChecked="{Binding Config.DisplayInputPort3}" />
+						<CheckBox Grid.Row="1" Grid.Column="1" Content="{l:Translate chkDisplayPort4}" IsChecked="{Binding Config.DisplayInputPort4}" />
+						<CheckBox Grid.Row="2" Content="{l:Translate chkDisplayPort5}" IsChecked="{Binding Config.DisplayInputPort5}" />
+						<CheckBox Grid.Row="2" Grid.Column="1" Content="{l:Translate chkDisplayPort6}" IsChecked="{Binding Config.DisplayInputPort6}" />
+						<CheckBox Grid.Row="3" Content="{l:Translate chkDisplayPort7}" IsChecked="{Binding Config.DisplayInputPort7}" />
+						<CheckBox Grid.Row="3" Grid.Column="1" Content="{l:Translate chkDisplayPort8}" IsChecked="{Binding Config.DisplayInputPort8}" />
 					</Grid>
 
 					<TextBlock Grid.Row="1" Text="{l:Translate lblDisplayPosition}" />
-					<c:EnumComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{CompiledBinding Config.DisplayInputPosition}" />
+					<c:EnumComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{Binding Config.DisplayInputPosition}" />
 
-					<CheckBox Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{CompiledBinding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />
+					<CheckBox Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{Binding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />
 				</Grid>
 			</ScrollViewer>
 		</TabItem>

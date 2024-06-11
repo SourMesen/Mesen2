@@ -6,6 +6,7 @@
 	xmlns:c="using:Mesen.Debugger.Controls"
 	xmlns:v="using:Mesen.Debugger.Views"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:md="using:Mesen.Debugger"
 	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
@@ -52,11 +53,11 @@
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
 			Name="WatchList"
-			Items="{CompiledBinding WatchEntries}"
-			Selection="{CompiledBinding Selection}"
+			Items="{Binding WatchEntries}"
+			Selection="{Binding Selection}"
 			SelectionMode="Multiple"
 			GridLinesVisibility="All"
-			ColumnWidths="{CompiledBinding ColumnWidths}"
+			ColumnWidths="{Binding ColumnWidths}"
 		>
 			<DataBox.Columns>
 				<DataBoxTemplateColumn Header="{l:Translate colName}" CanUserResize="True" InitialWidth="200">
@@ -66,7 +67,7 @@
 							Name="WatchTextBox"
 							ContextFlyout="{x:Null}"
 							ContextRequested="OnEntryContextRequested"
-							Text="{Binding Expression}"
+							Text="{Binding Expression, DataType={x:Type md:WatchValueInfo}}"
 							LostFocus="OnEntryLostFocus"
 							KeyDown="OnEntryKeyDown"
 							Watermark="Click to add..."
@@ -78,6 +79,7 @@
 						<TextBlock
 							Padding="3 0 0 0"
 							VerticalAlignment="Center"
+							x:DataType="md:WatchValueInfo"
 							Text="{Binding Value}"
 							Classes.changed="{Binding IsChanged}"
 						/>

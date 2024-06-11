@@ -119,7 +119,7 @@ namespace Mesen.Debugger
 			this.AbsoluteAddress = data.AbsoluteAddress;
 			this.ShowEffectiveAddress = data.EffectiveAddress.ShowAddress;
 			this.EffectiveAddress = data.EffectiveAddress.Address;
-			this.EffectiveAddressType = data.EffectiveAddress.Type;
+			this.EffectiveAddressType = data.EffectiveAddress.Type != MemoryType.None ? data.EffectiveAddress.Type : CpuType.ToMemoryType();
 			this.Flags = (LineFlags)data.Flags;
 			this.Value = data.Value;
 			this.ValueSize = data.EffectiveAddress.ValueSize;

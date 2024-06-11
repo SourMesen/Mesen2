@@ -5,6 +5,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mesen.Config;
+using System.Runtime.CompilerServices;
 
 namespace Mesen.Utilities
 {
@@ -15,6 +16,8 @@ namespace Mesen.Utilities
 		private static Guid _identifier = new Guid("{A46696B7-2D1C-4CC5-A52F-43BCAF094AEF}");
 
 		private Mutex? _mutex;
+		private FileStream? _lockFileStream;
+
 		private bool _disposed = false;
 		private bool _firstInstance = false;
 
@@ -23,7 +26,18 @@ namespace Mesen.Utilities
 
 		public void Init(string[] args)
 		{
-			_mutex = new Mutex(true, "Global\\" + _identifier.ToString(), out _firstInstance);
+			if(OperatingSystem.IsLinux() && !RuntimeFeature.IsDynamicCodeSupported) {
+				//Linux NativeAOT doesn't appear to work correctly here, use file lock instead
+				try {
+					_lockFileStream = File.Open(Path.Combine(ConfigManager.HomeFolder, "mesen.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+					_lockFileStream.Lock(0, 0);
+					_firstInstance = true;
+				} catch {
+					_firstInstance = false;
+				}
+			} else {
+				_mutex = new Mutex(true, "Global\\" + _identifier.ToString(), out _firstInstance);
+			}
 
 			if(_firstInstance || !ConfigManager.Config.Preferences.SingleInstance) {
 				_firstInstance = true;
@@ -93,6 +107,7 @@ namespace Mesen.Utilities
 					_mutex.ReleaseMutex();
 					_mutex = null;
 				}
+				_lockFileStream = null;
 				_disposed = true;
 			}
 		}

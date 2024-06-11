@@ -25,7 +25,7 @@
 			<Setter Property="Minimum" Value="-20" />
 			<Setter Property="Maximum" Value="20" />
 			<Setter Property="Orientation" Value="Vertical" />
-			<Setter Property="IsEnabled" Value="{CompiledBinding Config.EnableEqualizer}" />
+			<Setter Property="IsEnabled" Value="{Binding Config.EnableEqualizer}" />
 		</Style>
 	</UserControl.Styles>
 	
@@ -36,7 +36,7 @@
 					<c:SystemSpecificSettings ConfigType="Audio" />
 
 					<c:OptionSection Header="{l:Translate tpgGeneral}">
-						<CheckBox Content="{l:Translate chkEnableAudio}" IsChecked="{CompiledBinding Config.EnableAudio}" />
+						<CheckBox Content="{l:Translate chkEnableAudio}" IsChecked="{Binding Config.EnableAudio}" />
 
 						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblAudioDevice}" />
@@ -44,8 +44,8 @@
 								Name="AudioDevice"
 								Grid.Row="0"
 								Grid.Column="1"
-								ItemsSource="{CompiledBinding AudioDevices}"
-								SelectedItem="{CompiledBinding Config.AudioDevice}"
+								ItemsSource="{Binding AudioDevices}"
+								SelectedItem="{Binding Config.AudioDevice}"
 								Width="200"
 							/>
 
@@ -53,7 +53,7 @@
 							<c:EnumComboBox
 								Grid.Row="1"
 								Grid.Column="1"
-								SelectedItem="{CompiledBinding Config.SampleRate}"
+								SelectedItem="{Binding Config.SampleRate}"
 								HorizontalAlignment="Left"
 								Width="100"
 							/>
@@ -63,12 +63,12 @@
 								<NumericUpDown
 									Minimum="15"
 									Maximum="300"
-									Value="{CompiledBinding Config.AudioLatency}"
+									Value="{Binding Config.AudioLatency}"
 								/>
 								<TextBlock Text="{l:Translate lblLatencyMs}" VerticalAlignment="Center" Margin="5" />
 								<TextBlock
 									Text="{l:Translate lblLatencyWarning}"
-									IsVisible="{CompiledBinding ShowLatencyWarning}"
+									IsVisible="{Binding ShowLatencyWarning}"
 									Foreground="{DynamicResource ErrorBrush}"
 									VerticalAlignment="Center"
 									Margin="5"
@@ -83,16 +83,16 @@
 								Minimum="0"
 								Maximum="100"
 								Width="150"
-								Value="{CompiledBinding Config.MasterVolume}"
+								Value="{Binding Config.MasterVolume}"
 								HorizontalAlignment="Left"
 							/>
 						</Grid>
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblVolumeReductionSettings}" Margin="0 10 0 0">
-						<CheckBox Content="{l:Translate chkMuteSoundInBackground}" IsChecked="{CompiledBinding Config.MuteSoundInBackground}" />
-						<CheckBox Content="{l:Translate chkReduceSoundInBackground}" IsChecked="{CompiledBinding Config.ReduceSoundInBackground}" />
-						<CheckBox Content="{l:Translate chkReduceSoundInFastForward}" IsChecked="{CompiledBinding Config.ReduceSoundInFastForward}" />
+						<CheckBox Content="{l:Translate chkMuteSoundInBackground}" IsChecked="{Binding Config.MuteSoundInBackground}" />
+						<CheckBox Content="{l:Translate chkReduceSoundInBackground}" IsChecked="{Binding Config.ReduceSoundInBackground}" />
+						<CheckBox Content="{l:Translate chkReduceSoundInFastForward}" IsChecked="{Binding Config.ReduceSoundInFastForward}" />
 
 						<StackPanel Orientation="Horizontal">
 							<TextBlock VerticalAlignment="Center" Margin="0 -8 10 0" Text="{l:Translate lblVolumeReduction}" />
@@ -101,7 +101,7 @@
 								Minimum="0"
 								Maximum="100"
 								Width="150"
-								Value="{CompiledBinding Config.VolumeReduction}"
+								Value="{Binding Config.VolumeReduction}"
 								HorizontalAlignment="Left"
 							/>
 						</StackPanel>
@@ -111,13 +111,13 @@
 						<TextBlock Text="{l:Translate lblAudioPlayerHint}" />
 						<StackPanel Margin="10 5 0 0">
 							<StackPanel Orientation="Horizontal">
-								<CheckBox IsChecked="{CompiledBinding Config.AudioPlayerAutoDetectSilence}" Content="{l:Translate chkAudioPlayerAutoDetectSilence}" />
-								<NumericUpDown Margin="5 1" Maximum="999999" Value="{CompiledBinding Config.AudioPlayerSilenceDelay}" IsEnabled="{CompiledBinding Config.AudioPlayerAutoDetectSilence}" />
+								<CheckBox IsChecked="{Binding Config.AudioPlayerAutoDetectSilence}" Content="{l:Translate chkAudioPlayerAutoDetectSilence}" />
+								<NumericUpDown Margin="5 1" Maximum="999999" Value="{Binding Config.AudioPlayerSilenceDelay}" IsEnabled="{Binding Config.AudioPlayerAutoDetectSilence}" />
 								<TextBlock Text="{l:Translate lblMillisecondsOfSilence}" />
 							</StackPanel>
 							<StackPanel Orientation="Horizontal">
-								<CheckBox IsChecked="{CompiledBinding Config.AudioPlayerEnableTrackLength}" Content="{l:Translate chkAudioPlayerEnableTrackLength}" />
-								<NumericUpDown Margin="5 1" Maximum="9999" Value="{CompiledBinding Config.AudioPlayerTrackLength}" IsEnabled="{CompiledBinding Config.AudioPlayerEnableTrackLength}" />
+								<CheckBox IsChecked="{Binding Config.AudioPlayerEnableTrackLength}" Content="{l:Translate chkAudioPlayerEnableTrackLength}" />
+								<NumericUpDown Margin="5 1" Maximum="9999" Value="{Binding Config.AudioPlayerTrackLength}" IsEnabled="{Binding Config.AudioPlayerEnableTrackLength}" />
 								<TextBlock Text="{l:Translate lblSeconds}" />
 							</StackPanel>
 						</StackPanel>
@@ -130,32 +130,32 @@
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<c:GroupBox>
 					<c:GroupBox.Header>
-						<CheckBox Content="{l:Translate chkEnableEqualizer}" DataContext="{Binding DataContext, ElementName=root}" IsChecked="{Binding Config.EnableEqualizer}" Margin="0 -3 0 0" />
+						<CheckBox Content="{l:Translate chkEnableEqualizer}" IsChecked="{Binding Config.EnableEqualizer}" Margin="0 -3 0 0" />
 					</c:GroupBox.Header>
 					<StackPanel>
 						<StackPanel Orientation="Horizontal">
-							<c:MesenSlider Classes="Equalizer" Text="40 Hz" Value="{CompiledBinding Config.Band1Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="56 Hz" Value="{CompiledBinding Config.Band2Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="80 Hz" Value="{CompiledBinding Config.Band3Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="113 Hz" Value="{CompiledBinding Config.Band4Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="160 Hz" Value="{CompiledBinding Config.Band5Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="225 Hz" Value="{CompiledBinding Config.Band6Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="320 Hz" Value="{CompiledBinding Config.Band7Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="450 Hz" Value="{CompiledBinding Config.Band8Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="600 Hz" Value="{CompiledBinding Config.Band9Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="750 Hz" Value="{CompiledBinding Config.Band10Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="40 Hz" Value="{Binding Config.Band1Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="56 Hz" Value="{Binding Config.Band2Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="80 Hz" Value="{Binding Config.Band3Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="113 Hz" Value="{Binding Config.Band4Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="160 Hz" Value="{Binding Config.Band5Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="225 Hz" Value="{Binding Config.Band6Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="320 Hz" Value="{Binding Config.Band7Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="450 Hz" Value="{Binding Config.Band8Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="600 Hz" Value="{Binding Config.Band9Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="750 Hz" Value="{Binding Config.Band10Gain}" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-							<c:MesenSlider Classes="Equalizer" Text="1.0 kHz" Value="{CompiledBinding Config.Band11Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="2.0 kHz" Value="{CompiledBinding Config.Band12Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="3.0 kHz" Value="{CompiledBinding Config.Band13Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="4.0 kHz" Value="{CompiledBinding Config.Band14Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="5.0 kHz" Value="{CompiledBinding Config.Band15Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="6.0 kHz" Value="{CompiledBinding Config.Band16Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="7.0 kHz" Value="{CompiledBinding Config.Band17Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="10.0 kHz" Value="{CompiledBinding Config.Band18Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="12.5 kHz" Value="{CompiledBinding Config.Band19Gain}" />
-							<c:MesenSlider Classes="Equalizer" Text="15.0 kHz" Value="{CompiledBinding Config.Band20Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="1.0 kHz" Value="{Binding Config.Band11Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="2.0 kHz" Value="{Binding Config.Band12Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="3.0 kHz" Value="{Binding Config.Band13Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="4.0 kHz" Value="{Binding Config.Band14Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="5.0 kHz" Value="{Binding Config.Band15Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="6.0 kHz" Value="{Binding Config.Band16Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="7.0 kHz" Value="{Binding Config.Band17Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="10.0 kHz" Value="{Binding Config.Band18Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="12.5 kHz" Value="{Binding Config.Band19Gain}" />
+							<c:MesenSlider Classes="Equalizer" Text="15.0 kHz" Value="{Binding Config.Band20Gain}" />
 						</StackPanel>
 					</StackPanel>
 				</c:GroupBox>
@@ -167,32 +167,32 @@
 				<StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<CheckBox
-							IsChecked="{CompiledBinding Config.CrossFeedEnabled}"
+							IsChecked="{Binding Config.CrossFeedEnabled}"
 							Content="{l:Translate chkCrossFeedEnabled}"
 						/>
 						<NumericUpDown
-							IsEnabled="{CompiledBinding Config.CrossFeedEnabled}"
+							IsEnabled="{Binding Config.CrossFeedEnabled}"
 							Margin="10 0 5 0"
 							Minimum="0"
 							Maximum="100"
-							Value="{CompiledBinding Config.CrossFeedRatio}"
+							Value="{Binding Config.CrossFeedRatio}"
 						/>
 						<TextBlock>%</TextBlock>
 					</StackPanel>
 					<StackPanel Orientation="Vertical" Margin="0 1">
 						<CheckBox
-							IsChecked="{CompiledBinding Config.ReverbEnabled}"
+							IsChecked="{Binding Config.ReverbEnabled}"
 							Content="{l:Translate chkReverbEnabled}"
 						/>
 						<Grid Margin="25 0 0 0" ColumnDefinitions="Auto, Auto" RowDefinitions="Auto, Auto">
 							<TextBlock Text="{l:Translate lblStrength}" />
 							<NumericUpDown
 								Grid.Column="1"
-								IsEnabled="{CompiledBinding Config.ReverbEnabled}"
+								IsEnabled="{Binding Config.ReverbEnabled}"
 								Margin="10 0 5 2"
 								Minimum="0"
 								Maximum="10"
-								Value="{CompiledBinding Config.ReverbStrength}"
+								Value="{Binding Config.ReverbStrength}"
 							/>
 							<TextBlock
 								Grid.Row="1"
@@ -201,15 +201,15 @@
 							<NumericUpDown
 								Grid.Row="1"
 								Grid.Column="1"
-								IsEnabled="{CompiledBinding Config.ReverbEnabled}"
+								IsEnabled="{Binding Config.ReverbEnabled}"
 								Margin="10 0 5 0"
 								Minimum="0"
 								Maximum="30"
-								Value="{CompiledBinding Config.ReverbDelay}"
+								Value="{Binding Config.ReverbDelay}"
 							/>
 						</Grid>
 					</StackPanel>
-					<c:CheckBoxWarning Text="{l:Translate chkDisableDynamicSampleRate}" IsChecked="{CompiledBinding Config.DisableDynamicSampleRate}" />
+					<c:CheckBoxWarning Text="{l:Translate chkDisableDynamicSampleRate}" IsChecked="{Binding Config.DisableDynamicSampleRate}" />
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>

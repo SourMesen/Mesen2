@@ -19,16 +19,16 @@
 		<vm:PceConfigViewModel />
 	</Design.DataContext>
 
-	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
+	<TabControl TabStripPlacement="Top" SelectedIndex="{Binding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 						<TextBlock Text="{l:Translate lblConsoleType}"/>
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.ConsoleType}" Grid.Column="1" MinWidth="200" />
+						<c:EnumComboBox SelectedItem="{Binding Config.ConsoleType}" Grid.Column="1" MinWidth="200" />
 
 						<TextBlock Text="{l:Translate lblCdRomType}" Grid.Row="1" />
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.CdRomType}" Grid.Row="1" Grid.Column="1" />
+						<c:EnumComboBox SelectedItem="{Binding Config.CdRomType}" Grid.Row="1" Grid.Column="1" />
 					</Grid>
 				</StackPanel>
 			</ScrollViewer>
@@ -47,16 +47,22 @@
 								</Style>
 							</StackPanel.Styles>
 
-							<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{CompiledBinding Config.Channel1Vol}" />
-							<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{CompiledBinding Config.Channel2Vol}" />
-							<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{CompiledBinding Config.Channel3Vol}" />
-							<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{CompiledBinding Config.Channel4Vol}" />
-							<c:MesenSlider Text="{l:Translate lblChannel5}" Value="{CompiledBinding Config.Channel5Vol}" />
-							<c:MesenSlider Text="{l:Translate lblChannel6}" Value="{CompiledBinding Config.Channel6Vol}" />
-							<c:MesenSlider Text="{l:Translate lblCdAudio}" Value="{CompiledBinding Config.CdAudioVolume}" />
-							<c:MesenSlider Text="{l:Translate lblAdpcm}" Value="{CompiledBinding Config.AdpcmVolume}" />
+							<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{Binding Config.Channel1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{Binding Config.Channel2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{Binding Config.Channel3Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{Binding Config.Channel4Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel5}" Value="{Binding Config.Channel5Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel6}" Value="{Binding Config.Channel6Vol}" />
+							<c:MesenSlider Text="{l:Translate lblCdAudio}" Value="{Binding Config.CdAudioVolume}" />
+							<c:MesenSlider Text="{l:Translate lblAdpcm}" Value="{Binding Config.AdpcmVolume}" />
 						</StackPanel>
 					</c:GroupBox>
+
+					<c:OptionSection Header="{l:Translate tpgGeneral}">
+						<StackPanel>
+							<CheckBox IsChecked="{Binding Config.UseHuC6280aAudio}" Content="{l:Translate chkUseHuC6280aAudio}" />
+						</StackPanel>
+					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
@@ -67,40 +73,40 @@
 					<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-							<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+							<c:EnumComboBox SelectedItem="{Binding Config.RamPowerOnState}" Width="200" />
 						</StackPanel>
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblMiscSettings}">
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableCdRomForHuCardGames}" Text="{l:Translate chkEnableCdRomForHuCardGames}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableCdRomSaveRamForHuCardGames}" Text="{l:Translate chkDisableCdRomSaveRamForHuCardGames}" IsVisible="{CompiledBinding !Config.EnableCdRomForHuCardGames}" />
-						<c:CheckBoxWarning IsChecked="False" Text="{l:Translate chkDisableCdRomSaveRamForHuCardGames}" IsEnabled="False" IsVisible="{CompiledBinding Config.EnableCdRomForHuCardGames}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.EnableCdRomForHuCardGames}" Text="{l:Translate chkEnableCdRomForHuCardGames}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableCdRomSaveRamForHuCardGames}" Text="{l:Translate chkDisableCdRomSaveRamForHuCardGames}" IsVisible="{Binding !Config.EnableCdRomForHuCardGames}" />
+						<c:CheckBoxWarning IsChecked="False" Text="{l:Translate chkDisableCdRomSaveRamForHuCardGames}" IsEnabled="False" IsVisible="{Binding Config.EnableCdRomForHuCardGames}" />
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgInput}">
-			<v:PceInputConfigView DataContext="{CompiledBinding Input}" />
+			<v:PceInputConfigView DataContext="{Binding Input}" />
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgVideo}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
-						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceFixedResolution}" Text="{l:Translate chkForceFixedResolution}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackgroundVdc2}" Text="{l:Translate chkDisableBackgroundVdc2}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSpritesVdc2}" Text="{l:Translate chkDisableSpritesVdc2}" />
+						<CheckBox IsChecked="{Binding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.ForceFixedResolution}" Text="{l:Translate chkForceFixedResolution}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableBackgroundVdc2}" Text="{l:Translate chkDisableBackgroundVdc2}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableSpritesVdc2}" Text="{l:Translate chkDisableSpritesVdc2}" />
 					</c:OptionSection>
 					<c:OptionSection Header="{l:Translate lblPalette}">
 						<c:PaletteConfig
-							Palette="{CompiledBinding Config.Palette}"
-							PalettePresets="{CompiledBinding PalettePresets}"
+							Palette="{Binding Config.Palette}"
+							PalettePresets="{Binding PalettePresets}"
 							ColumnCount="32"
 							BlockSize="12"
 							SmallPaletteSize="512"
@@ -108,7 +114,7 @@
 						/>
 					</c:OptionSection>
 					<c:OptionSection Header="{l:Translate lblOverscan}">
-						<c:OverscanInput Overscan="{CompiledBinding Config.Overscan}" />
+						<c:OverscanInput Overscan="{Binding Config.Overscan}" />
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>

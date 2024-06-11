@@ -16,14 +16,14 @@
 			Margin="5 0"
 			Width="190"
 			VerticalAlignment="Center"
-			SelectedItem="{CompiledBinding ControllerType, ElementName=root}"
-			AvailableValues="{CompiledBinding AvailableValues, ElementName=root}"
+			SelectedItem="{Binding ControllerType, ElementName=root}"
+			AvailableValues="{Binding AvailableValues, ElementName=root}"
 		/>
 		<Button
 			VerticalAlignment="Center"
 			Content="{l:Translate btnSetup}"
 			Click="btnSetup_Click"
-			IsEnabled="{CompiledBinding SetupEnabled, ElementName=root}"
+			IsEnabled="{Binding SetupEnabled, ElementName=root}"
 		/>
 	</StackPanel>
 </UserControl>

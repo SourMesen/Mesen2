@@ -909,7 +909,7 @@ void SmsVdp::DebugSendFrame()
 		memset(_currentOutputBuffer + offset, 0, pixelsToClear * sizeof(uint16_t));
 	}
 	
-	uint32_t height = _console->GetModel() == SmsModel::Sms ? _state.VisibleScanlineCount : 144;
+	uint32_t height = _console->GetModel() == SmsModel::Sms ? 240 : 144;
 	RenderedFrame frame(_currentOutputBuffer, width, height, 1.0, _state.FrameCount);
 	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 }

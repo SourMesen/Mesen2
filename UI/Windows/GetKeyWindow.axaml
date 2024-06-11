@@ -21,7 +21,7 @@
 		<StackPanel VerticalAlignment="Center">
 			<Panel VerticalAlignment="Center" Height="40">
 				<TextBlock
-					Text="{CompiledBinding HintLabel, ElementName=root}"
+					Text="{Binding HintLabel, ElementName=root}"
 					TextWrapping="Wrap"
 					HorizontalAlignment="Center"
 					VerticalAlignment="Center"

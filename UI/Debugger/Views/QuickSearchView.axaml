@@ -25,7 +25,7 @@
 	</UserControl.Styles>
 
 	<Border 
-		IsVisible="{CompiledBinding IsSearchBoxVisible}"
+		IsVisible="{Binding IsSearchBoxVisible}"
 		BorderBrush="{DynamicResource MesenGrayBorderColor}"
 		BorderThickness="1"
 		Background="{DynamicResource ThemeBackgroundBrush}"
@@ -36,8 +36,8 @@
 			<TextBox
 				Name="txtSearch"
 				Width="120"
-				Text="{CompiledBinding SearchString}"
-				Classes.highlight="{CompiledBinding IsErrorVisible}"
+				Text="{Binding SearchString}"
+				Classes.highlight="{Binding IsErrorVisible}"
 		  />
 			<c:IconButton Icon="Assets/PreviousArrow.png" Command="{Binding FindPrev}" />
 			<c:IconButton Icon="Assets/NextArrow.png" Command="{Binding FindNext}" />

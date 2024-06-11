@@ -16,7 +16,7 @@
 		<Setter Property="BorderBrush" Value="{StaticResource MesenGrayBorderColor}" />
 		<Setter Property="Margin" Value="0 0 5 0" />
 		<Setter Property="BorderThickness" Value="1 0 1 1" />
-		<Setter Property="Background" Value="{StaticResource ThemeBackgroundBrush}" />
+		<Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
 	</Style>
 
 	<Style Selector="search|SearchPanel Path">
@@ -62,7 +62,7 @@
 							</ItemsPanelTemplate>
 						</cc:CompletionListBox.ItemsPanel>
 						<cc:CompletionListBox.ItemTemplate>
-							<DataTemplate>
+							<DataTemplate x:DataType="cc:ICompletionData">
 								<StackPanel Orientation="Horizontal" Margin="0">
 									<Image Source="{Binding Image}"
 											 Width="16"

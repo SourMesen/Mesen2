@@ -83,6 +83,7 @@ void GbaPpu::ProcessHBlank()
 void GbaPpu::ProcessEndOfScanline()
 {
 	ProcessSprites();
+	ProcessWindow();
 
 	if(!_skipRender && _emu->IsDebugging()) {
 		DebugProcessMemoryAccessView();
@@ -93,8 +94,9 @@ void GbaPpu::ProcessEndOfScanline()
 	_state.Cycle = 0;
 	_state.Scanline++;
 
-	//Reset renderer data for next scale
+	//Reset renderer data for next scanline
 	_lastRenderCycle = -1;
+	_lastWindowCycle = -1;
 	_oamLastCycle = -1;
 	std::fill(_layerOutput[0], _layerOutput[0] + 240, GbaPixelData {});
 	std::fill(_layerOutput[1], _layerOutput[1] + 240, GbaPixelData {});
@@ -165,23 +167,7 @@ void GbaPpu::ProcessEndOfScanline()
 		_console->GetMemoryManager()->SetIrqSource(GbaIrqSource::LcdScanlineMatch);
 	}
 
-	//Windows are enabled/disabled when the scanline reaches the start/end scanlines
-	//See window_midframe test - unsure about behavior when top==bottom
-	if(_state.Scanline == _state.Window[0].TopY) {
-		_window0Active = _state.Window0Enabled;
-	}
-	if(_state.Scanline == _state.Window[0].BottomY) {
-		_window0Active = false;
-	}
-
-	if(_state.Scanline == _state.Window[1].TopY) {
-		_window1Active = _state.Window1Enabled;
-	}
-	if(_state.Scanline == _state.Window[1].BottomY) {
-		_window1Active = false;
-	}
-
-	InitializeActiveWindows();
+	InitializeWindows();
 }
 
 void GbaPpu::SendFrame()
@@ -226,6 +212,7 @@ void GbaPpu::RenderScanline(bool forceRender)
 	}
 
 	ProcessSprites();
+	ProcessWindow();
 
 	if(_state.Scanline >= 160 || _lastRenderCycle >= 1006) {
 		return;
@@ -294,15 +281,16 @@ void GbaPpu::ProcessColorMath()
 	GbaPixelData sprPixel = {};
 
 	for(int x = start; x <= end; x++) {
-		wnd = _activeWindow[x];
 
 		if constexpr(windowEnabled) {
-			if(_state.WindowActiveLayers[_activeWindow[x]][GbaPpu::SpriteLayerIndex]) {
+			wnd = _activeWindow[x];
+			if(_state.WindowActiveLayers[wnd][GbaPpu::SpriteLayerIndex]) {
 				main = _oamReadOutput[x];
 			} else {
 				main = {};
 			}
 		} else {
+			wnd = GbaPpu::NoWindow;
 			main = _oamReadOutput[x];
 		}
 		
@@ -391,35 +379,100 @@ void GbaPpu::BlendColors(uint16_t* dst, int x, uint16_t main, uint8_t aCoeff, ui
 	dst[x] = r | (g << 5) | (b << 10);
 }
 
-void GbaPpu::ApplyWindowBounds(uint8_t window)
+void GbaPpu::InitializeWindows()
 {
-	uint8_t x1 = _state.Window[window].LeftX;
-	uint8_t x2 = _state.Window[window].RightX;
-	if(x2 < x1 || x2 > 240) {
-		x2 = 240;
+	//Windows are enabled/disabled when the scanline reaches the start/end scanlines
+	//See window_midframe test - unsure about behavior when top==bottom
+	if(_state.Scanline == _state.Window[0].TopY) {
+		_window0ActiveY = _state.Window0Enabled;
+	}
+	if(_state.Scanline == _state.Window[0].BottomY) {
+		_window0ActiveY = false;
 	}
 
-	if(x1 < 240) {
-		memset(_activeWindow + x1, window, x2 - x1);
+	if(_state.Scanline == _state.Window[1].TopY) {
+		_window1ActiveY = _state.Window1Enabled;
+	}
+	if(_state.Scanline == _state.Window[1].BottomY) {
+		_window1ActiveY = false;
+	}
+
+	memset(_activeWindow, GbaPpu::OutsideWindow, sizeof(_activeWindow));
+}
+
+void GbaPpu::ProcessWindow()
+{
+	//Using the same logic as for window Y above, enable/disable windows when
+	//the current pixel matches the left/right X value for the window
+	//Some games set left > right, essentially making the window
+	//wrap around to the beginning of the next scanline.
+	//(MM&B does this for speech bubbles)
+	//TODOGBA is there any test rom for this (window x)?
+	int x = (_lastWindowCycle + 1) / 4;
+	int end = std::min(_state.Cycle / 4, 255) + 1;
+	if(x >= end) {
+		return;
+	}
+	
+	if(_state.Window0Enabled || _state.Window1Enabled) {
+		for(int i = -1; i < 4; i++) {
+			uint16_t changePos = i < 0 ? 0 : _windowChangePos[i];
+			uint16_t nextChange = i < 3 ? _windowChangePos[i + 1] : 256;
+			if(nextChange == changePos || (changePos < x && nextChange < x)) {
+				continue;
+			}
+
+			if(x == _state.Window[0].LeftX) {
+				_window0ActiveX = _state.Window0Enabled;
+			}
+			if(x == _state.Window[0].RightX) {
+				_window0ActiveX = false;
+			}
+
+			if(x == _state.Window[1].LeftX) {
+				_window1ActiveX = _state.Window1Enabled;
+			}
+			if(x == _state.Window[1].RightX) {
+				_window1ActiveX = false;
+			}
+
+			int length = std::min(nextChange - x, end - x);
+			if(_window0ActiveX && _window0ActiveY) {
+				memset(_activeWindow + x, GbaPpu::Window0, length);
+			} else if(_window1ActiveX && _window1ActiveY) {
+				memset(_activeWindow + x, GbaPpu::Window1, length);
+			}
+
+			x += length;
+			if(x >= end) {
+				break;
+			}
+		}
+	} else {
+		_window0ActiveX = false;
+		_window1ActiveX = false;
+	}
+
+	_lastWindowCycle = _state.Cycle;
+}
+
+void GbaPpu::SetWindowX(uint8_t& regValue, uint8_t newValue)
+{
+	if(regValue != newValue) {
+		regValue = newValue;
+		UpdateWindowChangePoints();
 	}
 }
 
-void GbaPpu::InitializeActiveWindows()
+void GbaPpu::UpdateWindowChangePoints()
 {
-	//TODOGBA currently doesn't update mid-scanline, is this latched on the GBA?
-	if(!_state.Window0Enabled && !_state.Window1Enabled && !_state.ObjWindowEnabled) {
-		memset(_activeWindow, GbaPpu::NoWindow, sizeof(_activeWindow));
-	} else {
-		memset(_activeWindow, GbaPpu::OutsideWindow, sizeof(_activeWindow));
-
-		if(_window1Active) {
-			ApplyWindowBounds(GbaPpu::Window1);
-		}
-
-		if(_window0Active) {
-			ApplyWindowBounds(GbaPpu::Window0);
-		}
-	}
+	//Generate a sorted list of the positions where the windows start/end
+	//Used in ProcessWindow to process the changes in chunks
+	_windowChangePos[0] = _state.Window[0].LeftX;
+	_windowChangePos[1] = _state.Window[0].RightX;
+	_windowChangePos[2] = _state.Window[1].LeftX;
+	_windowChangePos[3] = _state.Window[1].RightX;
+	std::sort(_windowChangePos, _windowChangePos + 4);
 }
 
 void GbaPpu::SetPixelData(GbaPixelData& pixel, uint16_t color, uint8_t priority, uint8_t layer)
@@ -1247,10 +1300,10 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 		case 0x2E: case 0x3E: SetTransformOrigin<16>((addr & 0x10) >> 4, value, true);  break;
 		case 0x2F: case 0x3F: SetTransformOrigin<24>((addr & 0x10) >> 4, value & 0x0F, true);  break;
 
-		case 0x40: _state.Window[0].RightX = value; break;
-		case 0x41: _state.Window[0].LeftX = value; break;
-		case 0x42: _state.Window[1].RightX = value; break;
-		case 0x43: _state.Window[1].LeftX = value; break;
+		case 0x40: SetWindowX(_state.Window[0].RightX, value); break;
+		case 0x41: SetWindowX(_state.Window[0].LeftX, value); break;
+		case 0x42: SetWindowX(_state.Window[1].RightX, value); break;
+		case 0x43: SetWindowX(_state.Window[1].LeftX, value); break;
 		
 		case 0x44: _state.Window[0].BottomY = value; break;
 		case 0x45: _state.Window[0].TopY = value; break;
@@ -1479,8 +1532,12 @@ void GbaPpu::Serialize(Serializer& s)
 		SVArray(_memoryAccess, 308 * 4);
 
 		SV(_triggerSpecialDma);
-		SV(_window0Active);
-		SV(_window1Active);
+
+		SV(_lastWindowCycle);
+		SV(_window0ActiveY);
+		SV(_window1ActiveY);
+		SV(_window0ActiveX);
+		SV(_window1ActiveX);
 
 		SV(_lastRenderCycle);
 		SV(_evalOamIndex);
@@ -1548,5 +1605,9 @@ void GbaPpu::Serialize(Serializer& s)
 			SVI(_objData[i].Width);
 			SVI(_objData[i].Height);
 		}
+	}
+
+	if(!s.IsSaving()) {
+		UpdateWindowChangePoints();
 	}
 }

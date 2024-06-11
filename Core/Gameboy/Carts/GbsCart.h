@@ -90,13 +90,6 @@ public:
 		prg[0x74] = 0x73;
 		prg[0x75] = 0x00;
 
-		GbCpuState& state = _gameboy->GetCpu()->GetState();
-		state = {};
-		state.SP = _header.StackPointer[0] | (_header.StackPointer[1] << 8);
-		state.PC = 0x70;
-		state.A = (uint8_t)selectedTrack;
-		state.IME = true; //enable CPU interrupts
-
 		//Disable boot room
 		_memoryManager->WriteRegister(0xFF50, 0x01);
 
@@ -112,6 +105,9 @@ public:
 		_memoryManager->ClearIrqRequest(0xFF);
 
 		if((_header.TimerControl & 0x04) == 0) {
+			//Turn off PPU to restart it at the top of the frame
+			_memoryManager->WriteRegister(0xFF40, 0x00);
+
 			//Turn on PPU for vblank interrupts, since timer is disabled
 			_memoryManager->WriteRegister(0xFF40, 0x80);
 		} else {
@@ -127,6 +123,16 @@ public:
 			_memoryManager->WriteRegister(0xFF06, _header.TimerModulo);
 			_memoryManager->WriteRegister(0xFF07, _header.TimerControl & 0x07);
 		}
+
+		//Clear any pending IRQ processing
+		_gameboy->GetCpu()->PowerOn();
+
+		GbCpuState& state = _gameboy->GetCpu()->GetState();
+		state = {};
+		state.SP = _header.StackPointer[0] | (_header.StackPointer[1] << 8);
+		state.PC = 0x70;
+		state.A = (uint8_t)selectedTrack;
+		state.IME = true; //enable CPU interrupts
 
 		_startClock = _gameboy->GetMasterClock();
 		_prgBank = 1;

@@ -74,8 +74,12 @@ public static class OpCodeHelper
 		return new DynamicTooltip() { Items = items };
 	}
 
-	private static void InitDocumentation(CpuType cpuType, DocFileFormat doc, Dictionary<string, OpCodeDesc>? baseDesc = null)
+	private static void InitDocumentation(CpuType cpuType, DocFileFormat? doc, Dictionary<string, OpCodeDesc>? baseDesc = null)
 	{
+		if(doc == null) {
+			return;
+		}
+
 		Dictionary<string, OpCodeDesc> desc = baseDesc ?? new();
 		foreach(OpCodeDesc op in doc.Instructions) {
 			desc[op.Op] = op;
@@ -296,76 +300,10 @@ public static class OpCodeHelper
 		};
 	}
 
-	private static DocFileFormat ReadDocumentationFile(string filename)
+	private static DocFileFormat? ReadDocumentationFile(string filename)
 	{
 		using StreamReader reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.Documentation." + filename)!);
-		return JsonSerializer.Deserialize<DocFileFormat>(reader.ReadToEnd(), new JsonSerializerOptions() { Converters = { new JsonStringEnumConverter() }, PropertyNamingPolicy = JsonNamingPolicy.CamelCase })!;
-	}
-
-	private enum AddrMode
-	{
-		//6502
-		None, Acc, Imp, Imm, Rel,
-		Zero, Abs, ZeroX, ZeroY,
-		Ind, IndX, IndY, AbsX, AbsY,
-
-		//65816
-		AbsLng, AbsIdxXInd, AbsIdxX,
-		AbsIdxY, AbsLngIdxX, AbsIndLng,
-		AbsInd,
-		BlkMov,
-		Dir, DirIdxX, DirInd,
-		DirIndLng, DirIndIdxY, DirIdxIndX,
-		DirIdxY, DirIndLngIdxY,
-		Imm8, Imm16, ImmX, ImmM,
-		RelLng,
-		Stk, StkRel, StkRelIndIdxY,
-
-		//PCE
-		AbsXInd,
-		Block,
-		ImZero, ImZeroX, ImAbs, ImAbsX,
-		ZInd, ZeroRel,
-	}
-
-	private enum CpuFlag
-	{
-		Carry,
-		Decimal,
-		Interrupt,
-		Negative,
-		Overflow,
-		Zero,
-		Memory,
-		Index,
-		Emulation,
-		HalfCarry,
-		DirectPage,
-		Sign,
-		OverflowParity,
-		F3,
-		F5
-	}
-
-	private class DocFileFormat
-	{
-		public OpCodeDesc[] Instructions { get; set; } = Array.Empty<OpCodeDesc>();
-		public AddrMode[]? AddressingModes { get; set; } = null;
-		public int[]? MinCycles { get; set; }
-		public int[]? MaxCycles { get; set; }
-	}
-
-	private class OpCodeDesc
-	{
-		public string Op { get; set; } = "";
-		public string Name { get; set; } = "";
-		public string Description { get; set; } = "";
-		public CpuFlag[]? Flags { get; set; }
-
-		public OpCodeDesc Clone()
-		{
-			return (OpCodeDesc)this.MemberwiseClone();
-		}
+		return (DocFileFormat?)JsonSerializer.Deserialize(reader.ReadToEnd(), typeof(DocFileFormat), MesenCamelCaseSerializerContext.Default);
 	}
 
 	private class CpuDocumentationData
@@ -381,5 +319,71 @@ public static class OpCodeHelper
 			OpMode = opMode;
 			OpCycleCount = opCycleCount;
 		}
+	}
+}
+
+public enum AddrMode
+{
+	//6502
+	None, Acc, Imp, Imm, Rel,
+	Zero, Abs, ZeroX, ZeroY,
+	Ind, IndX, IndY, AbsX, AbsY,
+
+	//65816
+	AbsLng, AbsIdxXInd, AbsIdxX,
+	AbsIdxY, AbsLngIdxX, AbsIndLng,
+	AbsInd,
+	BlkMov,
+	Dir, DirIdxX, DirInd,
+	DirIndLng, DirIndIdxY, DirIdxIndX,
+	DirIdxY, DirIndLngIdxY,
+	Imm8, Imm16, ImmX, ImmM,
+	RelLng,
+	Stk, StkRel, StkRelIndIdxY,
+
+	//PCE
+	AbsXInd,
+	Block,
+	ImZero, ImZeroX, ImAbs, ImAbsX,
+	ZInd, ZeroRel,
+}
+
+public enum CpuFlag
+{
+	Carry,
+	Decimal,
+	Interrupt,
+	Negative,
+	Overflow,
+	Zero,
+	Memory,
+	Index,
+	Emulation,
+	HalfCarry,
+	DirectPage,
+	Sign,
+	OverflowParity,
+	F3,
+	F5
+}
+
+public class DocFileFormat
+{
+	public OpCodeDesc[] Instructions { get; set; } = Array.Empty<OpCodeDesc>();
+	public AddrMode[]? AddressingModes { get; set; } = null;
+	public int[]? MinCycles { get; set; }
+	public int[]? MaxCycles { get; set; }
+}
+
+public class OpCodeDesc
+{
+	public string Op { get; set; } = "";
+	public string Name { get; set; } = "";
+	public string Description { get; set; } = "";
+	public CpuFlag[]? Flags { get; set; }
+
+	public OpCodeDesc Clone()
+	{
+		return (OpCodeDesc)this.MemberwiseClone();
 	}
 }

@@ -22,7 +22,7 @@
 
 	<ScrollViewer>
 		<DockPanel>
-			<StackPanel DockPanel.Dock="Top" IsEnabled="{CompiledBinding EditAllowed}">
+			<StackPanel DockPanel.Dock="Top" IsEnabled="{Binding EditAllowed}">
 				<WrapPanel MaxWidth="300" HorizontalAlignment="Left">
 					<WrapPanel.Styles>
 						<Style Selector="StackPanel > TextBlock">
@@ -35,53 +35,53 @@
 					
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>TR:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegTR}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegTR}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>TRB:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegTRB}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegTRB}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>PC:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegPC}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>SP:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Hex="True" Max="8" />
+						<c:MesenNumericTextBox Value="{Binding RegSP}" Hex="True" Max="8" />
 					</StackPanel>
 					
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>RP:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegRP}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegRP}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>DP:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegDP}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegDP}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>DR:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegDR}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegDR}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>SR:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegSR}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegSR}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>K:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegK}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegK}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>L:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegL}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegL}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>M:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegM}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegM}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>N:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegN}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegN}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 				</WrapPanel>
 
@@ -90,21 +90,21 @@
 				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>A:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegA}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 
 					<WrapPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding RegA_C}" Content="Carry" />
-							<CheckBox IsChecked="{CompiledBinding RegA_Z}" Content="Zero" />
+							<CheckBox IsChecked="{Binding RegA_C}" Content="Carry" />
+							<CheckBox IsChecked="{Binding RegA_Z}" Content="Zero" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding RegA_V0}" Content="Overflow 0" />
-							<CheckBox IsChecked="{CompiledBinding RegA_V1}" Content="Overflow 1" />
+							<CheckBox IsChecked="{Binding RegA_V0}" Content="Overflow 0" />
+							<CheckBox IsChecked="{Binding RegA_V1}" Content="Overflow 1" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding RegA_S0}" Content="Sign 0" />
-							<CheckBox IsChecked="{CompiledBinding RegA_S1}" Content="Sign 1" />
+							<CheckBox IsChecked="{Binding RegA_S0}" Content="Sign 0" />
+							<CheckBox IsChecked="{Binding RegA_S1}" Content="Sign 1" />
 						</StackPanel>
 					</WrapPanel>
 				</WrapPanel>
@@ -112,21 +112,21 @@
 				<WrapPanel Margin="0 5 0 0" DockPanel.Dock="Top">
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>B:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegB}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{Binding RegB}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 
 					<WrapPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding RegB_C}" Content="Carry" />
-							<CheckBox IsChecked="{CompiledBinding RegB_Z}" Content="Zero" />
+							<CheckBox IsChecked="{Binding RegB_C}" Content="Carry" />
+							<CheckBox IsChecked="{Binding RegB_Z}" Content="Zero" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding RegB_V0}" Content="Overflow 0" />
-							<CheckBox IsChecked="{CompiledBinding RegB_V1}" Content="Overflow 1" />
+							<CheckBox IsChecked="{Binding RegB_V0}" Content="Overflow 0" />
+							<CheckBox IsChecked="{Binding RegB_V1}" Content="Overflow 1" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding RegB_S0}" Content="Sign 0" />
-							<CheckBox IsChecked="{CompiledBinding RegB_S1}" Content="Sign 1" />
+							<CheckBox IsChecked="{Binding RegB_S0}" Content="Sign 0" />
+							<CheckBox IsChecked="{Binding RegB_S1}" Content="Sign 1" />
 						</StackPanel>
 					</WrapPanel>
 				</WrapPanel>

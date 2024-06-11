@@ -45,8 +45,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
-				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuActions}" />
+				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuActions}" />
+				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuActions}" />
 			</c:MesenMenu>
 			<c:IconButton
 				HorizontalAlignment="Right"
@@ -57,14 +57,14 @@
 			/>
 		</Panel>
 
-		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
+		<dv:RefreshTimingView DataContext="{Binding RefreshTiming}" DockPanel.Dock="Bottom" />
 
-		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+		<ScrollViewer DockPanel.Dock="Right" IsVisible="{Binding Config.ShowSettingsPanel}">
 			<StackPanel Margin="3">
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 					<TextBlock Text="{l:Translate lblPresets}" Margin="0 5 0 0 " VerticalAlignment="Top" />
 					<Panel Grid.Column="1" MaxWidth="160" HorizontalAlignment="Left">
-						<ItemsControl ItemsSource="{CompiledBinding ConfigPresetRows}">
+						<ItemsControl ItemsSource="{Binding ConfigPresetRows}">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 									<ItemsControl ItemsSource="{Binding}">
@@ -89,77 +89,77 @@
 					<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblSource}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="2"
-						SelectedItem="{CompiledBinding Config.Source}"
-						AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+						SelectedItem="{Binding Config.Source}"
+						AvailableValues="{Binding AvailableMemoryTypes}"
 					/>
 
 					<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblAddress}" />
 					<dc:HexInput
 						Grid.Column="1" Grid.Row="3"
-						Value="{CompiledBinding Config.StartAddress}"
-						LargeIncrement="{CompiledBinding AddressIncrement}"
+						Value="{Binding Config.StartAddress}"
+						LargeIncrement="{Binding AddressIncrement}"
 						SmallIncrement="1"
 						Minimum="0"
-						Maximum="{CompiledBinding MaximumAddress}"
+						Maximum="{Binding MaximumAddress}"
 						Margin="1"
 					/>
 
 					<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblSize}" />
 					<StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal">
-						<NumericUpDown Value="{CompiledBinding Config.ColumnCount}" Minimum="4" Maximum="256" Increment="2" />
+						<NumericUpDown Value="{Binding Config.ColumnCount}" Minimum="4" Maximum="256" Increment="2" />
 						<TextBlock Margin="5 0">by</TextBlock>
-						<NumericUpDown Value="{CompiledBinding Config.RowCount}" Minimum="4" Maximum="256" Increment="2" />
+						<NumericUpDown Value="{Binding Config.RowCount}" Minimum="4" Maximum="256" Increment="2" />
 					</StackPanel>
 					
-					<TextBlock Grid.Column="0" Grid.Row="5" Text="{l:Translate lblFormat}" IsVisible="{CompiledBinding ShowFormatDropdown}" />
+					<TextBlock Grid.Column="0" Grid.Row="5" Text="{l:Translate lblFormat}" IsVisible="{Binding ShowFormatDropdown}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="5"
-						SelectedItem="{CompiledBinding Config.Format}"
-						AvailableValues="{CompiledBinding AvailableFormats}"
-						IsVisible="{CompiledBinding ShowFormatDropdown}"
+						SelectedItem="{Binding Config.Format}"
+						AvailableValues="{Binding AvailableFormats}"
+						IsVisible="{Binding ShowFormatDropdown}"
 					/>
 
 					<TextBlock Grid.Column="0" Grid.Row="6" Text="{l:Translate lblTileLayout}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="6"
-						SelectedItem="{CompiledBinding Config.Layout}"
+						SelectedItem="{Binding Config.Layout}"
 					/>
 
 					<TextBlock Grid.Column="0" Grid.Row="7" Text="{l:Translate lblBackground}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="7"
-						SelectedItem="{CompiledBinding Config.Background}"
+						SelectedItem="{Binding Config.Background}"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="8" Text="{l:Translate lblFilter}" IsVisible="{CompiledBinding ShowFilterDropdown}" />
+					<TextBlock Grid.Column="0" Grid.Row="8" Text="{l:Translate lblFilter}" IsVisible="{Binding ShowFilterDropdown}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="8"
-						IsVisible="{CompiledBinding ShowFilterDropdown}"
-						SelectedItem="{CompiledBinding Config.Filter}"
+						IsVisible="{Binding ShowFilterDropdown}"
+						SelectedItem="{Binding Config.Filter}"
 					/>
 					
-					<CheckBox Grid.Row="9" Grid.ColumnSpan="2" Content="{l:Translate chkShowTileGrid}" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
-					<CheckBox Grid.Row="10" Grid.ColumnSpan="2" Content="{l:Translate chkUseGrayscalePalette}" IsChecked="{CompiledBinding Config.UseGrayscalePalette}" />
+					<CheckBox Grid.Row="9" Grid.ColumnSpan="2" Content="{l:Translate chkShowTileGrid}" IsChecked="{Binding Config.ShowTileGrid}" />
+					<CheckBox Grid.Row="10" Grid.ColumnSpan="2" Content="{l:Translate chkUseGrayscalePalette}" IsChecked="{Binding Config.UseGrayscalePalette}" />
 				</Grid>
 
 				<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
 					<Panel>
 						<dc:PaletteSelector
-							ColumnCount="{CompiledBinding PaletteColumnCount}"
-							IsEnabled="{CompiledBinding !Config.UseGrayscalePalette}"
+							ColumnCount="{Binding PaletteColumnCount}"
+							IsEnabled="{Binding !Config.UseGrayscalePalette}"
 							BlockSize="12"
-							SelectionMode="{CompiledBinding PaletteSelectionMode}"
-							PaletteColors="{CompiledBinding PaletteColors}"
-							RawPalette="{CompiledBinding RawPalette}"
-							RawFormat="{CompiledBinding RawFormat}"
-							SelectedPalette="{CompiledBinding SelectedPalette}"
+							SelectionMode="{Binding PaletteSelectionMode}"
+							PaletteColors="{Binding PaletteColors}"
+							RawPalette="{Binding RawPalette}"
+							RawFormat="{Binding RawFormat}"
+							SelectedPalette="{Binding SelectedPalette}"
 						/>
 						<Rectangle
 							Fill="{StaticResource DisabledOverlayBrush}"
 						  Stretch="Fill"
 						  HorizontalAlignment="Stretch"
 						  VerticalAlignment="Stretch"
-							IsVisible="{CompiledBinding Config.UseGrayscalePalette}"
+							IsVisible="{Binding Config.UseGrayscalePalette}"
 						/>
 					</Panel>
 				</Border>
@@ -167,22 +167,22 @@
 				<c:GroupBox
 					Header="{l:Translate lblSelectedTile}"
 					Margin="0 5 0 0"
-					IsVisible="{CompiledBinding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
+					IsVisible="{Binding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
 				>
-					<ContentControl Content="{CompiledBinding PreviewPanel}" />
+					<ContentControl Content="{Binding PreviewPanel}" />
 				</c:GroupBox>
 			</StackPanel>
 		</ScrollViewer>
 
 		<dc:ScrollPictureViewer
 			x:Name="picViewer"
-			Source="{CompiledBinding ViewerBitmap}"
-			Zoom="{CompiledBinding Config.ImageScale}"
-			ShowGrid="{CompiledBinding Config.ShowTileGrid}"
-			GridSizeX="{CompiledBinding GridSizeX}"
-			GridSizeY="{CompiledBinding GridSizeY}"
-			SelectionRect="{CompiledBinding SelectionRect}"
-			OverlayLines="{CompiledBinding PageDelimiters}"
+			Source="{Binding ViewerBitmap}"
+			Zoom="{Binding Config.ImageScale}"
+			ShowGrid="{Binding Config.ShowTileGrid}"
+			GridSizeX="{Binding GridSizeX}"
+			GridSizeY="{Binding GridSizeY}"
+			SelectionRect="{Binding SelectionRect}"
+			OverlayLines="{Binding PageDelimiters}"
 		/>
 	</DockPanel>
 </Window>

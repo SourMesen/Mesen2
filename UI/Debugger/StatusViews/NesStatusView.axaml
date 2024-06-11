@@ -24,9 +24,9 @@
 		<StackPanel>
 			<DockPanel>
 				<StackPanel DockPanel.Dock="Right">
-					<StackPanel Orientation="Horizontal" IsEnabled="{CompiledBinding EditAllowed}">
+					<StackPanel Orientation="Horizontal" IsEnabled="{Binding EditAllowed}">
 						<TextBlock Margin="0">SP:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Hex="True" Max="0xFF" />
+						<c:MesenNumericTextBox Value="{Binding RegSP}" Hex="True" Max="0xFF" />
 					</StackPanel>
 					<TextBox
 						TextWrapping="Wrap"
@@ -35,31 +35,31 @@
 						AcceptsReturn="True"
 						IsReadOnly="True"
 						ScrollViewer.VerticalScrollBarVisibility="Visible"
-						Text="{CompiledBinding StackPreview}"
+						Text="{Binding StackPreview}"
 					/>
 				</StackPanel>
 
-				<StackPanel DockPanel.Dock="Top" IsEnabled="{CompiledBinding EditAllowed}">
+				<StackPanel DockPanel.Dock="Top" IsEnabled="{Binding EditAllowed}">
 					<WrapPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>A:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Hex="True" Max="0xFF" />
+							<c:MesenNumericTextBox Value="{Binding RegA}" Hex="True" Max="0xFF" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>X:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegX}" Hex="True" Max="0xFF" />
+							<c:MesenNumericTextBox Value="{Binding RegX}" Hex="True" Max="0xFF" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>Y:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegY}" Hex="True" Max="0xFF" />
+							<c:MesenNumericTextBox Value="{Binding RegY}" Hex="True" Max="0xFF" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>PC:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Hex="True" Max="0xFFFF" />
+							<c:MesenNumericTextBox Value="{Binding RegPC}" Hex="True" Max="0xFFFF" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>Cycle:</TextBlock>
-							<c:MesenNumericTextBox Width="70" Value="{CompiledBinding CycleCount}" IsEnabled="False" />
+							<c:MesenNumericTextBox Width="70" Value="{Binding CycleCount}" IsEnabled="False" />
 						</StackPanel>
 					</WrapPanel>
 
@@ -68,25 +68,25 @@
 					<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 						<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
 							<TextBlock>P:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegPS}" Hex="True" Max="0xFF" />
+							<c:MesenNumericTextBox Value="{Binding RegPS}" Hex="True" Max="0xFF" />
 						</StackPanel>
 
 						<WrapPanel>
 							<StackPanel>
-								<CheckBox IsChecked="{CompiledBinding FlagC}" Content="Carry" />
+								<CheckBox IsChecked="{Binding FlagC}" Content="Carry" />
 								<CheckBox IsEnabled="False" Content="----" />
 							</StackPanel>
 							<StackPanel>
-								<CheckBox IsChecked="{CompiledBinding FlagZ}" Content="Zero" />
+								<CheckBox IsChecked="{Binding FlagZ}" Content="Zero" />
 								<CheckBox IsEnabled="False" Content="----" />
 							</StackPanel>
 							<StackPanel>
-								<CheckBox IsChecked="{CompiledBinding FlagI}" Content="Interrupt" />
-								<CheckBox IsChecked="{CompiledBinding FlagV}" Content="Overflow" />
+								<CheckBox IsChecked="{Binding FlagI}" Content="Interrupt" />
+								<CheckBox IsChecked="{Binding FlagV}" Content="Overflow" />
 							</StackPanel>
 							<StackPanel>
-								<CheckBox IsChecked="{CompiledBinding FlagD}" Content="Decimal" />
-								<CheckBox IsChecked="{CompiledBinding FlagN}" Content="Negative" />
+								<CheckBox IsChecked="{Binding FlagD}" Content="Decimal" />
+								<CheckBox IsChecked="{Binding FlagN}" Content="Negative" />
 							</StackPanel>
 						</WrapPanel>
 					</WrapPanel>
@@ -95,54 +95,54 @@
 
 					<WrapPanel>
 						<TextBlock>IRQs:</TextBlock>
-						<CheckBox IsChecked="{CompiledBinding FlagNmi}" Content="NMI" />
-						<CheckBox IsChecked="{CompiledBinding FlagIrqExternal}" Content="Cart" />
-						<CheckBox IsChecked="{CompiledBinding FlagIrqFrameCount}" Content="Frame Counter" />
-						<CheckBox IsChecked="{CompiledBinding FlagIrqDmc}" Content="DMC" />
+						<CheckBox IsChecked="{Binding FlagNmi}" Content="NMI" />
+						<CheckBox IsChecked="{Binding FlagIrqExternal}" Content="Cart" />
+						<CheckBox IsChecked="{Binding FlagIrqFrameCount}" Content="Frame Counter" />
+						<CheckBox IsChecked="{Binding FlagIrqDmc}" Content="DMC" />
 					</WrapPanel>
 				</StackPanel>
 			</DockPanel>
 
-			<StackPanel IsEnabled="{CompiledBinding EditAllowed}">
+			<StackPanel IsEnabled="{Binding EditAllowed}">
 				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 4" />
 
 				<WrapPanel>
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 						<TextBlock>Cycle:</TextBlock>
-						<c:MesenNumericTextBox Grid.Column="1" Value="{CompiledBinding Cycle}" IsEnabled="False" Max="340" />
+						<c:MesenNumericTextBox Grid.Column="1" Value="{Binding Cycle}" IsEnabled="False" Max="340" />
 						<TextBlock Grid.Row="1">Scanline:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{CompiledBinding Scanline}" IsEnabled="False" Max="261" Min="-1" />
+						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{Binding Scanline}" IsEnabled="False" Max="261" Min="-1" />
 
 						<TextBlock Grid.Row="2">Bus:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{CompiledBinding BusAddr}" Hex="True" Max="0x3FFF" IsEnabled="False" />
+						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{Binding BusAddr}" Hex="True" Max="0x3FFF" IsEnabled="False" />
 						<TextBlock Grid.Row="3">V:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{CompiledBinding VramAddr}" Hex="True" Max="0x7FFF" />
+						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{Binding VramAddr}" Hex="True" Max="0x7FFF" />
 						<TextBlock Grid.Row="4">T:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{CompiledBinding TmpVramAddr}" Hex="True" Max="0x7FFF" />
+						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{Binding TmpVramAddr}" Hex="True" Max="0x7FFF" />
 						<TextBlock Grid.Row="5">X:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="5" Grid.Column="1" Value="{CompiledBinding ScrollX}" Hex="True" Max="7" />
+						<c:MesenNumericTextBox Grid.Row="5" Grid.Column="1" Value="{Binding ScrollX}" Hex="True" Max="7" />
 					</Grid>
 					<StackPanel Margin="5 0 2 0">
-						<CheckBox IsChecked="{CompiledBinding Sprite0Hit}" Content="Sprite 0 Hit" />
-						<CheckBox IsChecked="{CompiledBinding SpriteOverflow}" Content="Sprite Overflow" />
-						<CheckBox IsChecked="{CompiledBinding VerticalBlank}" Content="Vertical Blank" />
-						<CheckBox IsChecked="{CompiledBinding WriteToggle}" Content="Write Toggle" />
+						<CheckBox IsChecked="{Binding Sprite0Hit}" Content="Sprite 0 Hit" />
+						<CheckBox IsChecked="{Binding SpriteOverflow}" Content="Sprite Overflow" />
+						<CheckBox IsChecked="{Binding VerticalBlank}" Content="Vertical Blank" />
+						<CheckBox IsChecked="{Binding WriteToggle}" Content="Write Toggle" />
 
-						<CheckBox IsChecked="{CompiledBinding LargeSprites}" Content="Large Sprites" Margin="0 5 0 0" />
-						<CheckBox IsChecked="{CompiledBinding VerticalWrite}" Content="Vertical Write" />
-						<CheckBox IsChecked="{CompiledBinding NmiOnVBlank}" Content="NMI on VBlank" />
-						<CheckBox IsChecked="{CompiledBinding BgAt1000}" Content="BG at $1000" />
-						<CheckBox IsChecked="{CompiledBinding SpritesAt1000}" Content="Sprites at $1000" />
+						<CheckBox IsChecked="{Binding LargeSprites}" Content="Large Sprites" Margin="0 5 0 0" />
+						<CheckBox IsChecked="{Binding VerticalWrite}" Content="Vertical Write" />
+						<CheckBox IsChecked="{Binding NmiOnVBlank}" Content="NMI on VBlank" />
+						<CheckBox IsChecked="{Binding BgAt1000}" Content="BG at $1000" />
+						<CheckBox IsChecked="{Binding SpritesAt1000}" Content="Sprites at $1000" />
 					</StackPanel>
 					<StackPanel>
-						<CheckBox IsChecked="{CompiledBinding BgEnabled}"  Content="BG Enabled" />
-						<CheckBox IsChecked="{CompiledBinding SpritesEnabled}" Content="Sprites Enabled" />
-						<CheckBox IsChecked="{CompiledBinding BgMaskLeft}" Content="BG Mask" />
-						<CheckBox IsChecked="{CompiledBinding SpriteMaskLeft}" Content="Sprite Mask" />
-						<CheckBox IsChecked="{CompiledBinding Grayscale}" Content="Grayscale" />
-						<CheckBox IsChecked="{CompiledBinding IntensifyRed}" Content="Intensify Red" />
-						<CheckBox IsChecked="{CompiledBinding IntensifyGreen}" Content="Intensify Green" />
-						<CheckBox IsChecked="{CompiledBinding IntensifyBlue}" Content="Intensify Blue" />
+						<CheckBox IsChecked="{Binding BgEnabled}"  Content="BG Enabled" />
+						<CheckBox IsChecked="{Binding SpritesEnabled}" Content="Sprites Enabled" />
+						<CheckBox IsChecked="{Binding BgMaskLeft}" Content="BG Mask" />
+						<CheckBox IsChecked="{Binding SpriteMaskLeft}" Content="Sprite Mask" />
+						<CheckBox IsChecked="{Binding Grayscale}" Content="Grayscale" />
+						<CheckBox IsChecked="{Binding IntensifyRed}" Content="Intensify Red" />
+						<CheckBox IsChecked="{Binding IntensifyGreen}" Content="Intensify Green" />
+						<CheckBox IsChecked="{Binding IntensifyBlue}" Content="Intensify Blue" />
 					</StackPanel>
 				</WrapPanel>
 			</StackPanel>

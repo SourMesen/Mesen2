@@ -22,18 +22,18 @@
 
 		<Grid ColumnDefinitions="Auto,1*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 			<TextBlock Text="{l:Translate lblAviFile}" />
-			<TextBox Grid.Column="1" IsReadOnly="True" Text="{CompiledBinding SavePath}" />
+			<TextBox Grid.Column="1" IsReadOnly="True" Text="{Binding SavePath}" />
 			<Button Grid.Column="2" Content="{l:Translate btnBrowse}" Click="OnBrowseClick" />
 
 			<TextBlock Grid.Row="1" Text="{l:Translate lblCodec}" />
 			<c:EnumComboBox
 				Grid.Row="1"
 				Grid.Column="1"
-				SelectedItem="{CompiledBinding Config.Codec}"
+				SelectedItem="{Binding Config.Codec}"
 			/>
 
-			<TextBlock Grid.Row="2" Text="{l:Translate lblCompressionLevel}" IsVisible="{CompiledBinding CompressionAvailable}" />
-			<Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="Auto,1*,Auto" Margin="5 0" IsVisible="{CompiledBinding CompressionAvailable}">
+			<TextBlock Grid.Row="2" Text="{l:Translate lblCompressionLevel}" IsVisible="{Binding CompressionAvailable}" />
+			<Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="Auto,1*,Auto" Margin="5 0" IsVisible="{Binding CompressionAvailable}">
 				<TextBlock Text="{l:Translate lblLowCompression}" />
 				<c:MesenSlider
 					Grid.Column="1"
@@ -42,13 +42,13 @@
 					Minimum="0"
 					Maximum="8"
 					TickFrequency="1"
-					Value="{CompiledBinding Config.CompressionLevel}"
+					Value="{Binding Config.CompressionLevel}"
 				/>
 				<TextBlock Grid.Column="2" Text="{l:Translate lblHighCompression}" />
 			</Grid>
 			
-			<CheckBox Grid.Row="3" Grid.ColumnSpan="3" Content="{l:Translate lblRecordSystemHud}" IsChecked="{CompiledBinding Config.RecordSystemHud}" />
-			<CheckBox Grid.Row="4" Grid.ColumnSpan="3" Content="{l:Translate lblRecordInputHud}" IsChecked="{CompiledBinding Config.RecordInputHud}" />
+			<CheckBox Grid.Row="3" Grid.ColumnSpan="3" Content="{l:Translate lblRecordSystemHud}" IsChecked="{Binding Config.RecordSystemHud}" />
+			<CheckBox Grid.Row="4" Grid.ColumnSpan="3" Content="{l:Translate lblRecordInputHud}" IsChecked="{Binding Config.RecordInputHud}" />
 		</Grid>
 	</DockPanel>
 </Window>

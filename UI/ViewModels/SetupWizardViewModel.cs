@@ -109,11 +109,14 @@ namespace Mesen.ViewModels
 					return;
 				}
 
+#pragma warning disable IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
 				dynamic? shell = Activator.CreateInstance(t);
+#pragma warning restore IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
 				if(shell == null) {
 					return;
 				}
 
+#pragma warning disable IL2026 // Using dynamic types might cause types or members to be removed by trimmer.
 				try {
 					string linkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Mesen.lnk");
 					var lnk = shell.CreateShortcut(linkPath);
@@ -127,6 +130,7 @@ namespace Mesen.ViewModels
 				} finally {
 					Marshal.FinalReleaseComObject(shell);
 				}
+#pragma warning restore IL2026 // Using dynamic types might cause types or members to be removed by trimmer.
 			} else {
 				string shortcutFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "mesen.desktop");
 				FileAssociationHelper.CreateLinuxShortcutFile(shortcutFile);

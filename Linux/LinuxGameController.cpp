@@ -3,12 +3,6 @@
 #include "Core/Shared/EmuSettings.h"
 #include "LinuxGameController.h"
 
-#ifdef __APPLE__
-	bool LinuxGameController::IsButtonPressed(int buttonNumber) { return 0; }
-	int LinuxGameController::GetDeviceID() { return _deviceID; }
-	bool LinuxGameController::IsDisconnected() { return _disconnected; }
-	std::shared_ptr<LinuxGameController> LinuxGameController::GetController(Emulator* emu, int deviceID, bool logInformation) { return nullptr; }
-#else
 #include "libevdev/libevdev.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -236,4 +230,3 @@ static int print_event(struct input_event *ev)
 	return 0;
 }
 */
-#endif

@@ -625,7 +625,11 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}
 			if(tileInfo.PaletteIndex >= 0) {
-				entries.AddEntry("Palette index", tileInfo.PaletteIndex.ToString());
+				if(tileInfo.BasePaletteIndex >= 0) {
+					entries.AddEntry("Palette index", $"{tileInfo.BasePaletteIndex} ({tileInfo.PaletteIndex})");
+				} else {
+					entries.AddEntry("Palette index", tileInfo.PaletteIndex.ToString());
+				}
 			}
 			if(tileInfo.PaletteAddress >= 0) {
 				entries.AddEntry("Palette address", "$" + tileInfo.PaletteAddress.ToString("X2"));

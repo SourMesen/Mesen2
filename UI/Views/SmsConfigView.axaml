@@ -19,25 +19,25 @@
 		<vm:SmsConfigViewModel />
 	</Design.DataContext>
 
-	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
+	<TabControl TabStripPlacement="Top" SelectedIndex="{Binding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
 						<TextBlock Text="{l:Translate lblRegionSms}"/>
 						<c:EnumComboBox
-							SelectedItem="{CompiledBinding Config.Region}"
+							SelectedItem="{Binding Config.Region}"
 							Grid.Column="1"
 							MinWidth="130"
-							AvailableValues="{CompiledBinding AvailableRegionsSms}"
+							AvailableValues="{Binding AvailableRegionsSms}"
 						/>
 						<TextBlock Grid.Row="1" Text="{l:Translate lblRegionGg}"/>
 						<c:EnumComboBox
-							SelectedItem="{CompiledBinding Config.GameGearRegion}"
+							SelectedItem="{Binding Config.GameGearRegion}"
 							Grid.Row="1"
 							Grid.Column="1"
 							MinWidth="130"
-							AvailableValues="{CompiledBinding AvailableRegionsGg}"
+							AvailableValues="{Binding AvailableRegionsGg}"
 						/>
 					</Grid>
 				</StackPanel>
@@ -46,7 +46,7 @@
 		<TabItem Header="{l:Translate tpgAudio}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<CheckBox Content="{l:Translate chkEnableFmAudio}" IsChecked="{CompiledBinding Config.EnableFmAudio}" />
+					<CheckBox Content="{l:Translate chkEnableFmAudio}" IsChecked="{Binding Config.EnableFmAudio}" />
 					<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left">
 						<StackPanel Orientation="Horizontal" Height="150">
 							<StackPanel.Styles>
@@ -58,14 +58,14 @@
 								</Style>
 							</StackPanel.Styles>
 
-							<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{CompiledBinding Config.Tone1Vol}" />
-							<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{CompiledBinding Config.Tone2Vol}" />
-							<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{CompiledBinding Config.Tone3Vol}" />
-							<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{CompiledBinding Config.NoiseVol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{Binding Config.Tone1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{Binding Config.Tone2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{Binding Config.Tone3Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{Binding Config.NoiseVol}" />
 							<c:MesenSlider
 								Text="{l:Translate lblChannel5}"
-								IsEnabled="{CompiledBinding Config.EnableFmAudio}"
-								Value="{CompiledBinding Config.FmAudioVolume}"
+								IsEnabled="{Binding Config.EnableFmAudio}"
+								Value="{Binding Config.FmAudioVolume}"
 							/>
 						</StackPanel>
 					</c:GroupBox>
@@ -79,13 +79,13 @@
 					<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-							<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+							<c:EnumComboBox SelectedItem="{Binding Config.RamPowerOnState}" Width="200" />
 						</StackPanel>
 					</c:OptionSection>
 					<c:OptionSection Header="{l:Translate lblMiscSettings}">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblSmsRevision}" />
-							<c:EnumComboBox SelectedItem="{CompiledBinding Config.Revision}" Width="200" />
+							<c:EnumComboBox SelectedItem="{Binding Config.Revision}" Width="200" />
 						</StackPanel>
 					</c:OptionSection>
 				</StackPanel>
@@ -93,28 +93,28 @@
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgInput}">
-			<v:SmsInputConfigView DataContext="{CompiledBinding Input}" />
+			<v:SmsInputConfigView DataContext="{Binding Input}" />
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgVideo}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
-						<CheckBox IsChecked="{CompiledBinding Config.GgBlendFrames}" Content="{l:Translate chkGgBlendFrames}" />
-						<CheckBox IsChecked="{CompiledBinding Config.UseSgPalette}" Content="{l:Translate chkUseSgPalette}" />
-						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+						<CheckBox IsChecked="{Binding Config.GgBlendFrames}" Content="{l:Translate chkGgBlendFrames}" />
+						<CheckBox IsChecked="{Binding Config.UseSgPalette}" Content="{l:Translate chkUseSgPalette}" />
+						<CheckBox IsChecked="{Binding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
 					</c:OptionSection>
 					
 					<c:OptionSection Header="{l:Translate lblOverscan}" HorizontalAlignment="Left">
 						<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 0 0 5">
 							<TabControl>
 								<TabItem Header="{l:Translate lblOverscanNtsc}">
-									<c:OverscanInput Overscan="{CompiledBinding Config.NtscOverscan}" Margin="5" />
+									<c:OverscanInput Overscan="{Binding Config.NtscOverscan}" Margin="5" />
 								</TabItem>
 								<TabItem Header="{l:Translate lblOverscanPal}">
-									<c:OverscanInput Overscan="{CompiledBinding Config.PalOverscan}" Margin="5" />
+									<c:OverscanInput Overscan="{Binding Config.PalOverscan}" Margin="5" />
 								</TabItem>
 							</TabControl>
 						</Border>

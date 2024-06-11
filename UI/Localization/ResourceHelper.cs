@@ -29,14 +29,20 @@ namespace Mesen.Localization
 					_messageCache[node.Attributes!["ID"]!.Value] = node.InnerText;
 				}
 
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
 				Dictionary<string, Type> enumTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsEnum).ToDictionary(t => t.Name);
+#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+
 				foreach(XmlNode node in _resources.SelectNodes("/Resources/Enums/Enum")!) {
-					if(enumTypes.TryGetValue(node.Attributes!["ID"]!.Value!, out Type? enumType)) {
+					string enumName = node.Attributes!["ID"]!.Value;
+					if(enumTypes.TryGetValue(enumName, out Type? enumType)) {
 						foreach(XmlNode enumNode in node.ChildNodes) {
 							if(Enum.TryParse(enumType, enumNode.Attributes!["ID"]!.Value, out object? value)) {
 								_enumLabelCache[(Enum)value!] = enumNode.InnerText;
 							}
 						}
+					} else {
+						throw new Exception("Unknown enum type: " + enumName);
 					}
 				}
 
@@ -68,6 +74,20 @@ namespace Mesen.Localization
 			} else {
 				return "[[" + e.ToString() + "]]";
 			}
+		}
+
+		public static Enum[] GetEnumValues(Type t)
+		{
+			List<Enum> values = new List<Enum>();
+			XmlNode? node = _resources.SelectSingleNode("/Resources/Enums/Enum[@ID='" + t.Name + "']");
+			if(node?.Attributes!["ID"]!.Value == t.Name) {
+				foreach(XmlNode enumNode in node.ChildNodes) {
+					if(Enum.TryParse(t, enumNode.Attributes!["ID"]!.Value, out object? value) && value != null) {
+						values.Add((Enum)value);
+					}
+				}
+			}
+			return values.ToArray();
 		}
 
 		public static string GetViewLabel(string view, string control)

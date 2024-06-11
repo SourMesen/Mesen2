@@ -19,33 +19,33 @@
 
 	<UserControl.Styles>
 		<Style Selector="DataBoxCell">
-			<Setter Property="Foreground" Value="{Binding Path=RowBrush}"/>
-			<Setter Property="FontStyle" Value="{Binding Path=RowStyle}"/>
+			<Setter Property="Foreground" Value="{Binding Path=RowBrush, DataType={x:Type vm:StackInfo}}"/>
+			<Setter Property="FontStyle" Value="{Binding Path=RowStyle, DataType={x:Type vm:StackInfo}}"/>
 		</Style>
 	</UserControl.Styles>
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
-			Items="{CompiledBinding CallStackContent}"
-			Selection="{CompiledBinding Selection}"
+			Items="{Binding CallStackContent}"
+			Selection="{Binding Selection}"
 			GridLinesVisibility="All"
 			CellDoubleClick="OnCellDoubleClick"
-			ColumnWidths="{CompiledBinding ColumnWidths}"
+			ColumnWidths="{Binding ColumnWidths}"
 		>
 			<DataBox.Columns>
 				<DataBoxTextColumn
 					Header="{l:Translate colFunction}"
-					Binding="{Binding EntryPoint}"
+					Binding="{Binding EntryPoint, DataType={x:Type vm:StackInfo}}"
 					InitialWidth="100"
 				/>
 				<DataBoxTextColumn
 					Header="{l:Translate colPcAddress}"
-					Binding="{Binding PcAddress}"
+					Binding="{Binding PcAddress, DataType={x:Type vm:StackInfo}}"
 					InitialWidth="90"
 				/>
 				<DataBoxTextColumn
 					Header="{l:Translate colRomAddress}"
-					Binding="{Binding AbsAddress}"
+					Binding="{Binding AbsAddress, DataType={x:Type vm:StackInfo}}"
 					InitialWidth="90"
 				/>
 			</DataBox.Columns>

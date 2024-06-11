@@ -27,14 +27,14 @@
 			<Border
 				BorderBrush="{DynamicResource MesenBlackBorderColor}"
 				BorderThickness="1"
-				Background="{CompiledBinding Config.Color, ElementName=root, Converter={StaticResource BrushConverter}}"
+				Background="{Binding Config.Color, ElementName=root, Converter={StaticResource BrushConverter}}"
 				Width="16"
 				Height="16"
 			/>
 		</Button>
 		<CheckBox
-			Content="{CompiledBinding Text, ElementName=root}"
-			IsChecked="{CompiledBinding Config.Visible, ElementName=root}"
+			Content="{Binding Text, ElementName=root}"
+			IsChecked="{Binding Config.Visible, ElementName=root}"
 			MinWidth="0"
 		/>
 	</StackPanel>

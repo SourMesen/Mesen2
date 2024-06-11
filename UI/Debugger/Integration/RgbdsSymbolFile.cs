@@ -65,7 +65,7 @@ public class RgbdsSymbolFile
 			return false;
 		}
 
-		labelName = lineData.Substring(splitIndex + 1).Replace('.', '_');
+		labelName = LabelManager.InvalidLabelRegex.Replace(lineData.Substring(splitIndex + 1), "_");
 		if(string.IsNullOrEmpty(labelName) || !LabelManager.LabelRegex.IsMatch(labelName)) {
 			return false;
 		}

@@ -63,7 +63,8 @@ namespace Mesen.Debugger.Controls
 				foreach(ByteInfo byteInfo in dataToDraw) {
 					if(!_skFillPaints.ContainsKey(byteInfo.BackColor)) {
 						_skFillPaints[byteInfo.BackColor] = new SKPaint() { Color = new SKColor(ColorHelper.GetColor(byteInfo.BackColor).ToUInt32()) };
-					} else if(!_skBorderPaints.ContainsKey(byteInfo.BorderColor)) {
+					}
+					if(!_skBorderPaints.ContainsKey(byteInfo.BorderColor)) {
 						_skBorderPaints[byteInfo.BorderColor] = new SKPaint() { Style = SKPaintStyle.Stroke, Color = new SKColor(ColorHelper.GetColor(byteInfo.BorderColor).ToUInt32()) };
 					}
 				}
