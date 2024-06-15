@@ -124,9 +124,14 @@ namespace Mesen.Debugger.Windows
 		{
 			TooltipEntries entries = new();
 			entries.AddEntry("Type", ResourceHelper.GetEnumText(evt.Type));
+			
+			entries.AddSeparator("LocationSeparator");
+
 			entries.AddEntry("Scanline", evt.Scanline.ToString());
 			entries.AddEntry(_model.CpuType == CpuType.Snes ? "H-Clock" : "Cycle", evt.Cycle.ToString());
 			entries.AddEntry("PC", "$" + evt.ProgramCounter.ToString("X" + _model.CpuType.GetAddressSize()));
+
+			entries.AddSeparator("AddressValueSeparator");
 
 			switch(evt.Type) {
 				case DebugEventType.Register:
@@ -149,8 +154,11 @@ namespace Mesen.Debugger.Windows
 
 			string details = EventViewerViewModel.GetEventDetails(_model.CpuType, evt, false);
 			if(details.Length > 0) {
+				entries.AddSeparator("DetailsSeparator");
 				entries.AddEntry("Details", details);
 			}
+
+			entries.EndUpdate();
 
 			return entries;
 		}
