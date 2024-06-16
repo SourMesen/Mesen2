@@ -1054,6 +1054,7 @@ namespace Mesen.ViewModels
 			HelpMenuItems = new List<object>() {
 				new MainMenuAction() {
 					ActionType = ActionType.OnlineHelp,
+					IsVisible = () => false,
 					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/documentation/")
 				},
 				new MainMenuAction() {
@@ -1066,6 +1067,7 @@ namespace Mesen.ViewModels
 				},
 				new MainMenuAction() {
 					ActionType = ActionType.ReportBug,
+					IsVisible = () => false,
 					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/reportbug/")
 				},
 				new ContextMenuSeparator(),

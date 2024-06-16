@@ -2830,6 +2830,24 @@ E
 			<Value ID="Offscreen">Offscreen</Value>
 			<Value ID="Disabled">Disabled</Value>
 		</Enum>
+
+		<Enum ID="DocEntryCategory">
+			<Value ID="Callbacks">Callbacks</Value>
+			<Value ID="Drawing">Drawing</Value>
+			<Value ID="Emulation">Emulation</Value>
+			<Value ID="Input">Input</Value>
+			<Value ID="Logging">Logging</Value>
+			<Value ID="MemoryAccess">Memory Access</Value>
+			<Value ID="Miscellaneous">Miscellaneous</Value>
+			<Value ID="Enums">Enums</Value>
+		</Enum>
+		<Enum ID="DocEntrySubcategory">
+			<Value ID="AccessCounters">Access Counters</Value>
+			<Value ID="Cheats">Cheats</Value>
+			<Value ID="SaveStates">Save States</Value>
+			<Value ID="Others">Others</Value>
+		</Enum>
+
 		<Enum ID="DebugEventType">
 			<Value ID="Register">Register</Value>
 			<Value ID="Nmi">NMI</Value>
