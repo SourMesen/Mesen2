@@ -286,7 +286,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void PartialRefresh(bool refreshWatch)
 		{
-			ConsoleStatus?.UpdateUiState();
+			ConsoleStatus?.UpdateUiState(true);
 			MemoryMappings?.Refresh();
 			if(refreshWatch) {
 				WatchList.UpdateWatch();
