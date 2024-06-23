@@ -7,8 +7,6 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace Mesen.ViewModels
 {
@@ -104,33 +102,13 @@ namespace Mesen.ViewModels
 			}
 			
 			if(OperatingSystem.IsWindows()) {
-				Type? t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8"));
-				if(t == null) {
-					return;
-				}
-
-#pragma warning disable IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
-				dynamic? shell = Activator.CreateInstance(t);
-#pragma warning restore IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
-				if(shell == null) {
-					return;
-				}
-
-#pragma warning disable IL2026 // Using dynamic types might cause types or members to be removed by trimmer.
-				try {
-					string linkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Mesen.lnk");
-					var lnk = shell.CreateShortcut(linkPath);
-					try {
-						lnk.TargetPath = Program.ExePath;
-						lnk.IconLocation = Program.ExePath + ", 0";
-						lnk.Save();
-					} finally {
-						Marshal.FinalReleaseComObject(lnk);
-					}
-				} finally {
-					Marshal.FinalReleaseComObject(shell);
-				}
-#pragma warning restore IL2026 // Using dynamic types might cause types or members to be removed by trimmer.
+				string linkPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Mesen.url");
+				FileHelper.WriteAllText(linkPath,
+					"[InternetShortcut]" + Environment.NewLine +
+					"URL=file:///" + Program.ExePath + Environment.NewLine +
+					"IconIndex=0" + Environment.NewLine +
+					"IconFile=" + Program.ExePath.Replace('\\', '/') + Environment.NewLine
+				);
 			} else {
 				string shortcutFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "mesen.desktop");
 				FileAssociationHelper.CreateLinuxShortcutFile(shortcutFile);
