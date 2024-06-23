@@ -79,6 +79,8 @@
 
 					<SolidColorBrush x:Key="MesenDockTabPointerOverBrush" Color="#40808080" />
 
+					<SolidColorBrush x:Key="TextBoxSelectionBrush" Color="#70C0FF" />
+
 					<!-- Custom colors -->
 					<Color x:Key="MesenGridBackground">#FFF</Color>
 					<Color x:Key="MesenMenuBackground">#F1F1F1</Color>

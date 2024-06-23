@@ -268,7 +268,7 @@
 		<Setter Property="Padding" Value="2 0" />
 		<Setter Property="MinHeight" Value="21" />
 		<Setter Property="Height" Value="21" />
-		<Setter Property="SelectionForegroundBrush" Value="#FFF" />
+		<Setter Property="SelectionBrush" Value="{DynamicResource TextBoxSelectionBrush}" />
 		
 		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
 		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
