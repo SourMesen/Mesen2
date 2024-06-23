@@ -152,7 +152,7 @@ uint32_t GsuDebugger::GetProgramCounter(bool getInstPc)
 	return getInstPc ? _prevProgramCounter : ((state.ProgramBank << 16) | state.R[15]);
 }
 
-uint64_t GsuDebugger::GetCpuCycleCount()
+uint64_t GsuDebugger::GetCpuCycleCount(bool forProfiler)
 {
 	return _gsu->GetState().CycleCount;
 }

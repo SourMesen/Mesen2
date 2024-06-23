@@ -3,7 +3,7 @@
 #include "Debugger/DebugTypes.h"
 
 class Debugger;
-class IConsole;
+class IDebugger;
 
 struct ProfiledFunction
 {
@@ -19,7 +19,7 @@ class Profiler
 {
 private:
 	Debugger* _debugger = nullptr;
-	IConsole* _console = nullptr;
+	IDebugger* _cpuDebugger = nullptr;
 
 	unordered_map<int32_t, ProfiledFunction> _functions;
 	
@@ -35,7 +35,7 @@ private:
 	void UpdateCycles();
 
 public:
-	Profiler(Debugger* debugger, IConsole* _console);
+	Profiler(Debugger* debugger, IDebugger* cpuDebugger);
 	~Profiler();
 
 	void StackFunction(AddressInfo& addr, StackFrameFlags stackFlag);

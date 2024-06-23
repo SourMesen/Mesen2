@@ -59,7 +59,7 @@ GbDebugger::GbDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 
 	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _ppu));
-	_callstackManager.reset(new CallstackManager(debugger, _gameboy));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Gameboy, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new GbAssembler(debugger->GetLabelManager()));
@@ -366,7 +366,7 @@ uint32_t GbDebugger::GetProgramCounter(bool getInstPc)
 	return getInstPc ? _prevProgramCounter : _cpu->GetState().PC;
 }
 
-uint64_t GbDebugger::GetCpuCycleCount()
+uint64_t GbDebugger::GetCpuCycleCount(bool forProfiler)
 {
 	return _gameboy->GetCycleCount();
 }

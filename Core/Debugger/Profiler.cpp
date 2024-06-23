@@ -3,16 +3,17 @@
 #include "Debugger/Profiler.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/Debugger.h"
+#include "Debugger/IDebugger.h"
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/Interfaces/IConsole.h"
 
 static constexpr int32_t ResetFunctionIndex = -1;
 
-Profiler::Profiler(Debugger* debugger, IConsole* console)
+Profiler::Profiler(Debugger* debugger, IDebugger* cpuDebugger)
 {
 	_debugger = debugger;
-	_console = console;
+	_cpuDebugger = cpuDebugger;
 	InternalReset();
 }
 
@@ -53,7 +54,7 @@ void Profiler::StackFunction(AddressInfo &addr, StackFrameFlags stackFlag)
 
 void Profiler::UpdateCycles()
 {
-	uint64_t masterClock = _console->GetMasterClock();
+	uint64_t masterClock = _cpuDebugger->GetCpuCycleCount(true);
 	
 	ProfiledFunction& func = _functions[_currentFunction];
 	uint64_t clockGap = masterClock - _prevMasterClock;
@@ -101,7 +102,7 @@ void Profiler::Reset()
 
 void Profiler::ResetState()
 {
-	_prevMasterClock = _console->GetMasterClock();
+	_prevMasterClock = _cpuDebugger->GetCpuCycleCount(true);
 	_currentCycleCount = 0;
 	_functionStack.clear();
 	_stackFlags.clear();

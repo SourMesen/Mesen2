@@ -64,7 +64,7 @@ public:
 
 	void Reset() override;
 
-	uint64_t GetCpuCycleCount() override;
+	uint64_t GetCpuCycleCount(bool forProfiler = false) override;
 	void ResetPrevOpCode() override;
 
 	void ProcessInstruction();

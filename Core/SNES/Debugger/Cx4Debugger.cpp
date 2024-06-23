@@ -35,7 +35,7 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 	_traceLogger.reset(new Cx4TraceLogger(debugger, this, console->GetPpu(), _memoryManager));
 
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Cx4, debugger->GetEventManager(CpuType::Snes)));
-	_callstackManager.reset(new CallstackManager(debugger, console));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 	_step.reset(new StepRequest());
 }
 
@@ -185,7 +185,7 @@ uint32_t Cx4Debugger::GetProgramCounter(bool getInstPc)
 	return getInstPc ? _prevProgramCounter : ((state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF);
 }
 
-uint64_t Cx4Debugger::GetCpuCycleCount()
+uint64_t Cx4Debugger::GetCpuCycleCount(bool forProfiler)
 {
 	return _cx4->GetState().CycleCount;
 }

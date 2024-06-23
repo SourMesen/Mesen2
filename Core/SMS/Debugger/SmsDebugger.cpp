@@ -54,7 +54,7 @@ SmsDebugger::SmsDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 
 	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new SmsEventManager(debugger, _console, _cpu, _vdp));
-	_callstackManager.reset(new CallstackManager(debugger, _console));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Sms, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new SmsAssembler(debugger->GetLabelManager()));
@@ -364,7 +364,7 @@ uint32_t SmsDebugger::GetProgramCounter(bool getInstPc)
 	return getInstPc ? _prevProgramCounter : _cpu->GetState().PC;
 }
 
-uint64_t SmsDebugger::GetCpuCycleCount()
+uint64_t SmsDebugger::GetCpuCycleCount(bool forProfiler)
 {
 	return _cpu->GetCycleCount();
 }
