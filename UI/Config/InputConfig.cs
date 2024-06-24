@@ -15,6 +15,7 @@ namespace Mesen.Config
 	{
 		[Reactive] [MinMax(0, 4)] public UInt32 ControllerDeadzoneSize { get; set; } = 2;
 		[Reactive] [MinMax(0, 9)] public UInt32 MouseSensitivity { get; set; } = 5;
+		[Reactive] public bool EnableSmootherSnesMouse { get; set; } = false;
 		[Reactive] public bool HidePointerForLightGuns { get; set; } = false;
 
 		[Reactive] public InputDisplayPosition DisplayInputPosition { get; set; } = InputDisplayPosition.BottomRight;
@@ -37,6 +38,7 @@ namespace Mesen.Config
 			ConfigApi.SetInputConfig(new InteropInputConfig() {
 				ControllerDeadzoneSize = this.ControllerDeadzoneSize,
 				MouseSensitivity = this.MouseSensitivity,
+				EnableSmootherSnesMouse = this.EnableSmootherSnesMouse,
 				DisplayInputPosition = this.DisplayInputPosition,
 				DisplayInputPort1 = this.DisplayInputPort1,
 				DisplayInputPort2 = this.DisplayInputPort2,
@@ -221,6 +223,7 @@ namespace Mesen.Config
 	{
 		public UInt32 ControllerDeadzoneSize;
 		public UInt32 MouseSensitivity;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableSmootherSnesMouse;
 
 		public InputDisplayPosition DisplayInputPosition;
 		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort1;

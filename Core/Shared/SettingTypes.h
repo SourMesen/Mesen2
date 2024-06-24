@@ -320,6 +320,7 @@ struct InputConfig
 {
 	uint32_t ControllerDeadzoneSize = 2;
 	uint32_t MouseSensitivity = 1;
+	bool EnableSmootherSnesMouse;
 
 	InputDisplayPosition DisplayInputPosition = InputDisplayPosition::TopLeft;
 	bool DisplayInputPort[8] = { };
