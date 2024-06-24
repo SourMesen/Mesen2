@@ -7,7 +7,7 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:u="using:Mesen.Utilities"
 	mc:Ignorable="d"
-	MinWidth="120"
+	MinWidth="140"
 	x:Name="root"
 	HorizontalAlignment="Stretch"
 	x:Class="Mesen.Debugger.Controls.HexInput"
@@ -16,11 +16,14 @@
 		<StreamGeometry x:Key="FirstButton">M7,0 L2,5 7,10 M0,0 L0,10</StreamGeometry>
 		<StreamGeometry x:Key="LargeButton">M0,0 L5,5 0,10 M7,0 L7,10</StreamGeometry>
 
-		<StreamGeometry x:Key="PrevLargeButton">M7,0 L3,5 7,10 M3,0 L0,5 3,10</StreamGeometry>
-		<StreamGeometry x:Key="NextLargeButton">M0,0 L4,5 0,10 M4,0 L7,5 4,10</StreamGeometry>
+		<StreamGeometry x:Key="PrevLargeButton">M7,0 L3,4 7,8 M3,0 L-1,4 3,8</StreamGeometry>
+		<StreamGeometry x:Key="NextLargeButton">M-1,0 L3,4 -1,8 M3,0 L7,4 3,8</StreamGeometry>
 
-		<StreamGeometry x:Key="PrevSmallButton">M5,0 L0,5 5,10</StreamGeometry>
-		<StreamGeometry x:Key="NextSmallButton">M0,0 L5,5 0,10</StreamGeometry>
+		<StreamGeometry x:Key="PrevMediumButton">M2,0 L-2,4 2,8</StreamGeometry>
+		<StreamGeometry x:Key="NextMediumButton">M0,0 L4,4 0,8</StreamGeometry>
+
+		<StreamGeometry x:Key="PrevSmallButton">M0,1 H6</StreamGeometry>
+		<StreamGeometry x:Key="NextSmallButton">M0,3 H6 M3,0 V6</StreamGeometry>
 	</UserControl.Resources>
 
 	<UserControl.Styles>
@@ -30,10 +33,11 @@
 			<Setter Property="Padding" Value="4 0" />
 			<Setter Property="MinHeight" Value="21" />
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		</Style>
 		<Style Selector="Path">
 			<Setter Property="Stroke" Value="{DynamicResource ButtonForeground}"/>
-			<Setter Property="StrokeThickness" Value="2"/>
+			<Setter Property="StrokeThickness" Value="0.75"/>
 		</Style>
 		<Style Selector="RepeatButton:disabled Path">
 			<Setter Property="Stroke" Value="{DynamicResource ButtonForegroundDisabled}"/>
@@ -44,11 +48,17 @@
 		<RepeatButton Command="{Binding DecrementLarge}" DockPanel.Dock="Left" ToolTip.Tip="Previous page">
 			<Path Data="{StaticResource PrevLargeButton}" />
 		</RepeatButton>
+		<RepeatButton Command="{Binding DecrementMedium}" DockPanel.Dock="Left" ToolTip.Tip="Previous tile" Margin="-1 0 0 0">
+			<Path Data="{StaticResource PrevMediumButton}"/>
+		</RepeatButton>
 		<RepeatButton Command="{Binding DecrementSmall}" DockPanel.Dock="Left" ToolTip.Tip="Previous byte" Margin="-1 0 0 0">
 			<Path Data="{StaticResource PrevSmallButton}"/>
 		</RepeatButton>
 		<RepeatButton Command="{Binding IncrementLarge}"  DockPanel.Dock="Right" ToolTip.Tip="Next page">
 			<Path Data="{StaticResource NextLargeButton}" />
+		</RepeatButton>
+		<RepeatButton Command="{Binding IncrementMedium}"  DockPanel.Dock="Right" ToolTip.Tip="Next tile" Margin="0 0 -1 0">
+			<Path Data="{StaticResource NextMediumButton}" />
 		</RepeatButton>
 		<RepeatButton Command="{Binding IncrementSmall}" DockPanel.Dock="Right" ToolTip.Tip="Next byte" Margin="0 0 -1 0">
 			<Path Data="{StaticResource NextSmallButton}" />
