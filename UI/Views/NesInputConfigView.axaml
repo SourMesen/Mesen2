@@ -182,7 +182,7 @@
 				</Grid>
 			</c:OptionSection>
 			<c:OptionSection Header="{l:Translate grpHardware}">
-				<v:ShortcutKeysTabView HeaderMargin="0 0 0 0" Margin="0 0 10 0" />
+				<v:ShortcutKeysTabView HeaderMargin="0 0 0 0" Margin="0 0 10 0" ShortcutKeys="{Binding ShortcutKeys}" />
 			</c:OptionSection>
 		</StackPanel>
 	</ScrollViewer>

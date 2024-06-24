@@ -6,18 +6,14 @@
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:cfg="using:Mesen.Config"
+	xmlns:cs="using:Mesen.Config.Shortcuts"
 	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Top"
 	HorizontalAlignment="Stretch"
 	x:Name="root"
-	x:DataType="vm:PreferencesConfigViewModel"
 	x:Class="Mesen.Views.ShortcutKeysTabView"
 >
-	<Design.DataContext>
-		<vm:PreferencesConfigViewModel />
-	</Design.DataContext>
-
 	<UserControl.Resources>
 		<l:EnumConverter x:Key="EnumConverter" />
 	</UserControl.Resources>
@@ -32,9 +28,9 @@
 		</Border>
 		
 		<ScrollViewer AllowAutoHide="False">
-			<ItemsControl ItemsSource="{Binding ShortcutKeys}">
+			<ItemsControl ItemsSource="{Binding ShortcutKeys, ElementName=root}">
 				<ItemsControl.ItemTemplate>
-					<DataTemplate>
+					<DataTemplate DataType="{x:Type cs:ShortcutKeyInfo}">
 						<StackPanel>
 							<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 -1 0 0">
 								<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 0 0 0">

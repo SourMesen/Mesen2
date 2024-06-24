@@ -51,7 +51,7 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgShortcuts}">
-			<v:ShortcutKeysTabView />
+			<v:ShortcutKeysTabView ShortcutKeys="{Binding ShortcutKeys}" />
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgFiles}">
