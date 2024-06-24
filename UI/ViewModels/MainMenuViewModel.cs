@@ -970,7 +970,7 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.OpenProfiler,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenProfiler),
 					IsEnabled = () => IsGameRunning,
-					OnClick = () => DebugWindowManager.GetOrOpenDebugWindow(() => new ProfilerWindow(new ProfilerWindowViewModel()))
+					OnClick = () => DebugWindowManager.GetOrOpenDebugWindow(() => new ProfilerWindow())
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.OpenScriptWindow,

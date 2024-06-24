@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Collections;
@@ -20,6 +21,7 @@ using Avalonia.Threading;
 using DataBoxControl.Controls;
 using DataBoxControl.Primitives;
 using DynamicData;
+using Mesen.Utilities;
 using ReactiveUI;
 
 namespace DataBoxControl;
@@ -373,6 +375,63 @@ public class DataBox : TemplatedControl
 		}
 
 		return false;
+	}
+
+	private string ConvertToText()
+	{
+		if(Items == null || _rowsPresenter == null) {
+			return string.Empty;
+		}
+
+		StringBuilder sb = new();
+
+		List<Binding?> bindings = new();
+		for(int i = 0; i < Columns.Count; i++) {
+			DataBoxColumn column = Columns[i];
+			if(column is DataBoxTextColumn textColumn && textColumn.Binding is CompiledBindingExtension columnBinding) {
+#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+				bindings.Add(new Binding(columnBinding.Path.ToString(), BindingMode.OneTime));
+#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+
+				sb.Append(textColumn.Header);
+				if(i < Columns.Count - 1) {
+					sb.Append(",");
+				}
+			} else {
+				bindings.Add(null);
+			}
+		}
+		sb.Append(Environment.NewLine);
+
+		foreach(object item in Items) {
+			for(int i = 0; i < Columns.Count; i++) {
+				DataBoxColumn column = Columns[i];
+				if(column is DataBoxTextColumn textColumn && textColumn.Binding is CompiledBindingExtension columnBinding) {
+					Binding? binding = bindings[i];
+					if(binding == null) {
+						continue;
+					}
+
+					binding.Source = item;
+					ValueGetter getter = new ValueGetter();
+					getter.Bind(ValueGetter.ValueProperty, binding);
+
+					string value = getter.Value;
+					sb.Append(value);
+					if(i < Columns.Count - 1) {
+						sb.Append(",");
+					}
+				}
+			}
+			sb.Append(Environment.NewLine);
+		}
+
+		return sb.ToString();
+	}
+
+	public void CopyToClipboard()
+	{
+		ApplicationHelper.GetMainWindow()?.Clipboard?.SetTextAsync(ConvertToText());
 	}
 
 	public DataBoxRow? GetRow(int index)

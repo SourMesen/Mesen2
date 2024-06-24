@@ -1424,6 +1424,10 @@
 		
 		<Form ID="ProfilerWindow">
 			<Control ID="wndTitle">Profiler</Control>
+
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuView">_View</Control>
+			
 			<Control ID="btnReset">Reset</Control>
 			<Control ID="btnRefresh">Refresh</Control>
 			<Control ID="chkRefreshOnBreakPause">Refresh on break</Control>
@@ -3403,6 +3407,9 @@ E
 
 			<Value ID="NavigateBack">Navigate Backward</Value>
 			<Value ID="NavigateForward">Navigate Forward</Value>
+
+			<Value ID="CopyToClipboard">Copy to clipboard</Value>
+			<Value ID="ResetProfilerData">Reset profiler data</Value>
 		</Enum>
 	</Enums>
 </Resources>

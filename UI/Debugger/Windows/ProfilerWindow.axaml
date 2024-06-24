@@ -30,40 +30,24 @@
 		</Style>
 	</Window.Styles>
 
-	<TabControl ItemsSource="{Binding ProfilerTabs}" SelectedItem="{Binding SelectedTab}" Padding="1">
-		<TabControl.ItemTemplate>
-			<DataTemplate>
-				<TextBlock Text="{Binding TabName}" />
-			</DataTemplate>
-		</TabControl.ItemTemplate>
+	<DockPanel>
+		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{Binding FileMenuActions}" />
+			<MenuItem Header="{l:Translate mnuView}" ItemsSource="{Binding ViewMenuActions}" />
+		</c:MesenMenu>
+
+		<TabControl ItemsSource="{Binding ProfilerTabs}" SelectedItem="{Binding SelectedTab}" Padding="1">
+			<TabControl.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding TabName}" />
+				</DataTemplate>
+			</TabControl.ItemTemplate>
 		
-		<TabControl.ContentTemplate>
-			<DataTemplate DataType="vm:ProfilerTab">
-				<DockPanel>
-					<DockPanel DockPanel.Dock="Bottom">
-						<Button 
-							DockPanel.Dock="Right"
-							HorizontalAlignment="Right"
-							Content="{l:Translate btnReset}" 
-							Click="OnResetClick"
-						/>
-
-						<Button
-							DockPanel.Dock="Left"
-							HorizontalAlignment="Left"
-							Content="{l:Translate btnRefresh}"
-							Click="OnRefreshClick"
-						/>
-						
-						<CheckBox
-							HorizontalAlignment="Left"
-							IsChecked="{Binding Config.RefreshOnBreakPause}"
-							Content="{l:Translate chkRefreshOnBreakPause}"
-						/>
-					</DockPanel>
-
+			<TabControl.ContentTemplate>
+				<DataTemplate DataType="vm:ProfilerTab">
 					<Border BorderBrush="Gray" BorderThickness="1">
 						<DataBox
+							Name="ProfilerList"
 							Items="{Binding GridData}"
 							Selection="{Binding Selection}"
 							SortState="{Binding SortState}"
@@ -86,8 +70,8 @@
 							</DataBox.Columns>
 						</DataBox>
 					</Border>
-				</DockPanel>
-			</DataTemplate>
-		</TabControl.ContentTemplate>
-	</TabControl>
+				</DataTemplate>
+			</TabControl.ContentTemplate>
+		</TabControl>
+	</DockPanel>
 </Window>

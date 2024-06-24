@@ -867,5 +867,10 @@ namespace Mesen.Debugger.Utilities
 		NavigateBack,
 		[IconFile("NextArrow")]
 		NavigateForward,
+
+		[IconFile("Close")]
+		ResetProfilerData,
+		[IconFile("Copy")]
+		CopyToClipboard,
 	}
 }
