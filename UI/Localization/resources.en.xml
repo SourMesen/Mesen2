@@ -378,6 +378,7 @@
 			<Control ID="lblSaveType">Save Type:</Control>
 			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
+			<Control ID="chkEnableMgbaLogApi">Enable mGBA log API</Control>
 
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblLcdSettings">LCD Settings</Control>

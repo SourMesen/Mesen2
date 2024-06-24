@@ -443,6 +443,7 @@ struct GbaConfig
 	RamState RamPowerOnState = RamState::AllZeros;
 	GbaSaveType SaveType = GbaSaveType::AutoDetect;
 	bool AllowInvalidInput = false;
+	bool EnableMgbaLogApi = false;
 
 	uint32_t ChannelAVol = 100;
 	uint32_t ChannelBVol = 100;

@@ -71,6 +71,7 @@
 						<c:EnumComboBox SelectedItem="{Binding Config.SaveType}" MinWidth="150" />
 					</StackPanel>
 					<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+					<c:CheckBoxWarning IsChecked="{Binding Config.EnableMgbaLogApi}" Text="{l:Translate chkEnableMgbaLogApi}" />
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>

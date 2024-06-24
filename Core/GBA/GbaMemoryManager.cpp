@@ -8,6 +8,7 @@
 #include "GBA/GbaSerial.h"
 #include "GBA/GbaControlManager.h"
 #include "GBA/GbaRomPrefetch.h"
+#include "GBA/Debugger/MgbaLogHandler.h"
 #include "GBA/APU/GbaApu.h"
 #include "GBA/Cart/GbaCart.h"
 #include "Shared/Emulator.h"
@@ -31,6 +32,8 @@ GbaMemoryManager::GbaMemoryManager(Emulator* emu, GbaConsole* console, GbaPpu* p
 	_cart = cart;
 	_serial = serial;
 	_prefetch = prefetch;
+
+	_mgbaLog.reset(new MgbaLogHandler());
 	
 	_prgRom = (uint8_t*)emu->GetMemory(MemoryType::GbaPrgRom).Memory;
 	_prgRomSize = emu->GetMemory(MemoryType::GbaPrgRom).Size;
@@ -397,6 +400,10 @@ void GbaMemoryManager::InternalWrite(GbaAccessModeVal mode, uint32_t addr, uint8
 			//registers
 			if(addr < 0x3FF) {
 				WriteRegister(mode, addr, value);
+			} else if(addr >= 0xFFF600 && addr <= 0xFFF783) {
+				if(_emu->GetSettings()->GetGbaConfig().EnableMgbaLogApi) {
+					_mgbaLog->Write(addr, value);
+				}
 			}
 			break;
 
@@ -506,6 +513,12 @@ uint32_t GbaMemoryManager::ReadRegister(uint32_t addr)
 			case 0x303: return 0;
 
 			default:
+				if(addr >= 0xFFF700 && addr <= 0xFFF703) {
+					if(_emu->GetSettings()->GetGbaConfig().EnableMgbaLogApi) {
+						return _mgbaLog->Read(addr);
+					}
+				}
+
 				LogDebug("Read unimplemented register: " + HexUtilities::ToHex32(addr));
 				return _state.CartOpenBus[addr & 0x01];
 		}

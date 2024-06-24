@@ -16,6 +16,7 @@ class GbaApu;
 class GbaCart;
 class GbaSerial;
 class GbaRomPrefetch;
+class MgbaLogHandler;
 
 class GbaMemoryManager final : public ISerializable
 {
@@ -30,6 +31,8 @@ private:
 	GbaCart* _cart;
 	GbaSerial* _serial;
 	GbaRomPrefetch* _prefetch;
+
+	unique_ptr<MgbaLogHandler> _mgbaLog;
 
 	uint64_t _masterClock = 0;
 	bool _hasPendingUpdates = false;

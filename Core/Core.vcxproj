@@ -60,6 +60,7 @@
     <ClInclude Include="GBA\GbaTimer.h" />
     <ClInclude Include="GBA\GbaTypes.h" />
     <ClInclude Include="GBA\Input\GbaController.h" />
+    <ClInclude Include="GBA\Debugger\MgbaLogHandler.h" />
     <ClInclude Include="NES\HdPacks\HdBuilderPpu.h" />
     <ClInclude Include="NES\HdPacks\HdPackBuilder.h" />
     <ClInclude Include="PCE\CdRom\PceCdSeekDelay.h" />

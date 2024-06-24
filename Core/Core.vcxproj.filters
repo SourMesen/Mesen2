@@ -2808,6 +2808,9 @@
     <ClInclude Include="GBA\Debugger\GbaCodeDataLogger.h">
       <Filter>GBA\Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="GBA\Debugger\MgbaLogHandler.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

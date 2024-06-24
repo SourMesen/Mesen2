@@ -27,6 +27,7 @@ namespace Mesen.Config
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.AllZeros;
 		[Reactive] public GbaSaveType SaveType { get; set; } = GbaSaveType.AutoDetect;
 		[Reactive] public bool AllowInvalidInput { get; set; } = false;
+		[Reactive] public bool EnableMgbaLogApi { get; set; } = false;
 
 		[Reactive][MinMax(0, 100)] public UInt32 Square1Vol { get; set; } = 100;
 		[Reactive][MinMax(0, 100)] public UInt32 Square2Vol { get; set; } = 100;
@@ -53,6 +54,7 @@ namespace Mesen.Config
 				RamPowerOnState = RamPowerOnState,
 				SaveType = SaveType,
 				AllowInvalidInput = AllowInvalidInput,
+				EnableMgbaLogApi = EnableMgbaLogApi,
 
 				ChannelAVol = ChannelAVol,
 				ChannelBVol = ChannelBVol,
@@ -123,6 +125,7 @@ namespace Mesen.Config
 		public RamState RamPowerOnState;
 		public GbaSaveType SaveType;
 		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableMgbaLogApi;
 
 		public UInt32 ChannelAVol;
 		public UInt32 ChannelBVol;
