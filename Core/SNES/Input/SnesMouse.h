@@ -83,12 +83,6 @@ public:
 		int32_t dx = mov.dx;
 		int32_t dy = mov.dy;
 
-		bool enableSmoothMouse = _emu->GetSettings()->GetInputConfig().EnableSmootherSnesMouse;
-		if(enableSmoothMouse) {
-			dx = mov.dx * (1 + _sensitivity);
-			dy = mov.dy * (1 + _sensitivity);
-		}
-
 		//These flags will maintain and report their last moved direction.
 		//It's a hardware quirk that the real mouse does. (unknown if any games rely on this)
 		if(dx != 0) { _leftFlag = dx < 0 ? 0x80 : 0; }
@@ -97,7 +91,7 @@ public:
 		dx = std::min(std::abs(dx), 127);
 		dy = std::min(std::abs(dy), 127);
 
-		if(!enableSmoothMouse && _sensitivity > 0) {
+		if(_sensitivity > 0) {
 			dx = _sensitivityLut[_sensitivity - 1][std::min(7, dx)];
 			dy = _sensitivityLut[_sensitivity - 1][std::min(7, dy)];
 		}
