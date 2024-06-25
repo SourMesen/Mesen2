@@ -135,7 +135,7 @@ namespace Mesen.Debugger.ViewModels
 
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
 				new ContextMenuAction() {
-					ActionType = ActionType.ViewInMemoryViewer,
+					ActionType = ActionType.ViewTilemapInMemoryViewer,
 					HintText = () => {
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						return tile?.TileMapAddress > 0 ? $"${tile?.TileMapAddress:X4}" : "";
@@ -145,6 +145,20 @@ namespace Mesen.Debugger.ViewModels
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						if(tile != null && tile.Value.TileMapAddress >= 0) {
 							MemoryToolsWindow.ShowInMemoryTools(GetVramMemoryType(), tile.Value.TileMapAddress);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewAttributeInMemoryViewer,
+					IsVisible = () => CpuType == CpuType.Nes,
+					HintText = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						return tile?.TileMapAddress > 0 ? $"${tile?.AttributeAddress:X4}" : "";
+					},
+					OnClick = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						if(tile != null && tile.Value.AttributeAddress >= 0) {
+							MemoryToolsWindow.ShowInMemoryTools(GetVramMemoryType(), tile.Value.AttributeAddress);
 						}
 					}
 				},
@@ -186,6 +200,11 @@ namespace Mesen.Debugger.ViewModels
 							ActionType = ActionType.Custom,
 							CustomText = $"4x4 ({GridSizeX*4}px x {GridSizeY*4}px)",
 							OnClick = () => EditTileGrid(4, 4, wnd)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"8x8 ({GridSizeX*8}px x {GridSizeY*8}px)",
+							OnClick = () => EditTileGrid(8, 8, wnd)
 						}
 					}
 				},
@@ -249,7 +268,7 @@ namespace Mesen.Debugger.ViewModels
 			}));
 			AddDisposable(this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel()));
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
-			
+
 			InitNesGridOptions();
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
