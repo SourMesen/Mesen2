@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <algorithm>
-#include "NES/HdPacks/OggReader.h"
+#include "Shared/Audio/OggReader.h"
 #include "NES/HdPacks/OggMixer.h"
 
 enum class OggPlaybackOptions

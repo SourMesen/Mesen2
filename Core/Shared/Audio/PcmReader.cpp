@@ -17,23 +17,21 @@ PcmReader::~PcmReader()
 
 bool PcmReader::Init(string filename, bool loop, uint32_t startOffset)
 {
-	if(_file) {
-		_file.close();
-	}
+	auto v = VirtualFile(filename);
+	_file = v.Stream();
 
-	_file.open(filename, ios::binary);
 	if(_file) {
-		_file.seekg(0, ios::end);
-		_fileSize = (uint32_t)_file.tellg();
+		_file->seekg(0, ios::end);
+		_fileSize = (uint32_t)_file->tellg();
 		if(_fileSize < 12) {
 			return false;
 		}
 
-		_file.seekg(4, ios::beg);
-		uint32_t loopOffset = (uint8_t)_file.get();
-		loopOffset |= ((uint8_t)_file.get()) << 8;
-		loopOffset |= ((uint8_t)_file.get()) << 16;
-		loopOffset |= ((uint8_t)_file.get()) << 24;
+		_file->seekg(4, ios::beg);
+		uint32_t loopOffset = (uint8_t)_file->get();
+		loopOffset |= ((uint8_t)_file->get()) << 8;
+		loopOffset |= ((uint8_t)_file->get()) << 16;
+		loopOffset |= ((uint8_t)_file->get()) << 24;
 
 		_loopOffset = (uint32_t)loopOffset;
 
@@ -42,7 +40,7 @@ bool PcmReader::Init(string filename, bool loop, uint32_t startOffset)
 		_done = false;
 		_loop = loop;
 		_fileOffset = startOffset;
-		_file.seekg(_fileOffset, ios::beg);
+		_file->seekg(_fileOffset, ios::beg);
 
 		_leftoverSampleCount = 0;
 		_pcmBuffer.clear();
@@ -77,10 +75,10 @@ void PcmReader::SetLoopFlag(bool loop)
 void PcmReader::ReadSample(int16_t &left, int16_t &right)
 {
 	uint8_t val[4];
-	_file.get(((char*)val)[0]);
-	_file.get(((char*)val)[1]);
-	_file.get(((char*)val)[2]);
-	_file.get(((char*)val)[3]);
+	_file->get(((char*)val)[0]);
+	_file->get(((char*)val)[1]);
+	_file->get(((char*)val)[2]);
+	_file->get(((char*)val)[3]);
 
 	left = val[0] | (val[1] << 8);
 	right = val[2] | (val[3] << 8);
@@ -108,7 +106,7 @@ void PcmReader::LoadSamples(uint32_t samplesToLoad)
 			if(_loop) {
 				i = _loopOffset * 4 + 8;
 				_fileOffset = i;
-				_file.seekg(_fileOffset, ios::beg);
+				_file->seekg(_fileOffset, ios::beg);
 			} else {
 				_done = true;
 			}

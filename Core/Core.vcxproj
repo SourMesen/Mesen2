@@ -801,7 +801,6 @@
     <ClCompile Include="NES\HdPacks\HdPackLoader.cpp" />
     <ClCompile Include="NES\HdPacks\HdVideoFilter.cpp" />
     <ClCompile Include="NES\HdPacks\OggMixer.cpp" />
-    <ClCompile Include="NES\HdPacks\OggReader.cpp" />
     <ClCompile Include="NES\Loaders\FdsLoader.cpp" />
     <ClCompile Include="NES\Loaders\iNesLoader.cpp" />
     <ClCompile Include="NES\Loaders\NsfLoader.cpp" />
@@ -981,6 +980,7 @@
     <ClCompile Include="SNES\SnesNtscFilter.cpp" />
     <ClCompile Include="SNES\Coprocessors\OBC1\Obc1.cpp" />
     <ClCompile Include="Shared\Audio\PcmReader.cpp" />
+    <ClCompile Include="Shared\Audio\OggReader.cpp" />
     <ClCompile Include="SNES\SnesPpu.cpp" />
     <ClCompile Include="Debugger\PpuTools.cpp" />
     <ClCompile Include="Debugger\Profiler.cpp" />

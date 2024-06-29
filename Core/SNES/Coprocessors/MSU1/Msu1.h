@@ -1,19 +1,38 @@
 #pragma once
 #include "pch.h"
 #include "Shared/Interfaces/IAudioProvider.h"
+
 #include "Shared/Audio/PcmReader.h"
+#include "Shared/Audio/OggReader.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/VirtualFile.h"
+#include "Utilities/StringUtilities.h"
+#include "Utilities/ArchiveReader.h"
 
 class Spc;
 class Emulator;
+
+class PcmOrOggReader final {
+private:
+	PcmReader _pcmReader;
+	OggReader _oggReader;
+	bool _usingOgg = false;
+
+public:
+	void SetLoopFlag(bool loop);
+	void SetSampleRate(uint32_t sampleRate);
+	void ApplySamples(int16_t* buffer, size_t sampleCount, uint8_t volume);
+	bool IsPlaybackOver();
+	uint32_t GetOffset();
+	bool Init(string base, size_t track, bool loop, uint32_t startOffset);
+};
 
 class Msu1 final : public ISerializable, public IAudioProvider
 {
 private:
 	Spc* _spc = nullptr;
 	Emulator* _emu = nullptr;
-	PcmReader _pcmReader;
+	PcmOrOggReader _soundReader;
 	uint8_t _volume = 100;
 	uint16_t _trackSelect = 0;
 	uint32_t _tmpDataPointer = 0;
@@ -28,7 +47,7 @@ private:
 	bool _dataBusy = false; //Always false
 	bool _trackMissing = false;
 
-	ifstream _dataFile;
+	unique_ptr<istream> _dataFile;
 	uint32_t _dataSize;
 	
 	void LoadTrack(uint32_t startOffset = 8);

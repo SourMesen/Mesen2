@@ -11,7 +11,7 @@ private:
 
 	int16_t* _outputBuffer = nullptr;
 
-	ifstream _file;
+	unique_ptr<istream> _file;
 	uint32_t _fileOffset = 0;
 	uint32_t _fileSize = 0;
 	uint32_t _loopOffset = 0;
