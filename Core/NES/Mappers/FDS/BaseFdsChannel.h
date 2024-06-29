@@ -61,7 +61,6 @@ public:
 			_timer--;
 			if(_timer == 0) {
 				ResetTimer();
-
 				if(_volumeIncrease && _gain < 32) {
 					_gain++;
 				} else if(!_volumeIncrease && _gain > 0) {
