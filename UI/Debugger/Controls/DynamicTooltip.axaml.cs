@@ -116,6 +116,8 @@ namespace Mesen.Debugger.Controls
 
 	public class TooltipSeparator : TooltipEntry
 	{
+		[Reactive] public bool Hidden { get; set; } = false;
+
 		public TooltipSeparator(string name) : base(name, false, false)
 		{
 		}
@@ -176,12 +178,7 @@ namespace Mesen.Debugger.Controls
 
 		public void AddSeparator(string name)
 		{
-			if(this.Count > _updatedKeys.Count - 1 && this[_updatedKeys.Count - 1] is TooltipSeparator) {
-				return;
-			}
-
 			_updatedKeys.Add(name);
-
 			if(!_entries.TryGetValue(name, out _)) {
 				TooltipEntry? entry = new TooltipSeparator(name);
 				_entries[name] = entry;
@@ -231,8 +228,13 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 
-			while(this.Count > 0 && this[^1] is TooltipSeparator) {
-				RemoveAt(this.Count - 1);
+			for(int i = 0; i < Count; i++) {
+				if(this[i] is TooltipSeparator sep) {
+					bool hideSeparator = (i < Count - 1 && this[i + 1] is TooltipSeparator) || i == Count - 1;
+					if(sep.Hidden != hideSeparator) {
+						sep.Hidden = hideSeparator;
+					}
+				}
 			}
 
 			if(updated) {

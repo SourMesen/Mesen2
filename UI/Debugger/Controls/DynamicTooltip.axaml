@@ -27,7 +27,12 @@
 
 	<UserControl.DataTemplates>
 		<DataTemplate DataType="dc:TooltipSeparator">
-			<Rectangle Height="1" Fill="{StaticResource MesenGrayBorderColor}" Margin="5 3" />
+			<Rectangle
+				Height="1"
+				Fill="{StaticResource MesenGrayBorderColor}"
+				Margin="5 3"
+				IsVisible="{Binding !Hidden}"
+			/>
 		</DataTemplate>
 		
 		<DataTemplate DataType="dc:CustomTooltipEntry">
