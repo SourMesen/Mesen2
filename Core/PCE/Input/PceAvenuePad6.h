@@ -59,6 +59,14 @@ protected:
 	{
 	}
 
+	void Serialize(Serializer& s) override
+	{
+		BaseControlDevice::Serialize(s);
+		SV(_disableInput);
+		SV(_selectDPad);
+		SV(_selectExtraButtons);
+	}
+
 public:
 	enum Buttons { Up = 0, Down, Left, Right, Select, Run, I, II, III, IV, V, VI };
 

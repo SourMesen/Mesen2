@@ -33,3 +33,10 @@ void PceTurboTap::WriteRam(uint16_t addr, uint8_t value)
 		WritePort(i, i == _selectedPort ? value : 0x03);
 	}
 }
+
+void PceTurboTap::Serialize(Serializer& s)
+{
+	BaseControlDevice::Serialize(s);
+	SV(_selectedPort);
+	SV(_prevValue);
+}
