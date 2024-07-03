@@ -110,12 +110,12 @@ public:
 
 	void WriteRam(uint16_t addr, uint8_t value) override
 	{
-		bool select = (value & 0x01) != 0;
-		if(!_selectDPad && select) {
+		bool disableInput = (value & 0x02) != 0;
+		if(disableInput && !_disableInput) {
 			_selectExtraButtons = !_selectExtraButtons;
 		}
-		_disableInput = (value & 0x02) != 0;
-		_selectDPad = select;
+		_disableInput = disableInput;
+		_selectDPad = (value & 0x01) != 0;
 	}
 
 	void InternalDrawController(InputHud& hud) override
