@@ -24,12 +24,21 @@
 #include "Utilities/Serializer.h"
 #include "Utilities/StringUtilities.h"
 
+static bool _needStaticInit = true;
+static SimpleLock _staticInitLock;
+
 GbaConsole::GbaConsole(Emulator* emu)
 {
 	_emu = emu;
 
-	GbaCpu::StaticInit();
-	DummyGbaCpu::StaticInit();
+	if(_needStaticInit) {
+		auto lock = _staticInitLock.AcquireSafe();
+		if(_needStaticInit) {
+			GbaCpu::StaticInit();
+			DummyGbaCpu::StaticInit();
+			_needStaticInit = false;
+		}
+	}
 }
 
 GbaConsole::~GbaConsole()

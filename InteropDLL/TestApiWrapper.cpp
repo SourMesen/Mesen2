@@ -12,10 +12,12 @@ extern "C"
 	{
 		if(inBackground) {
 			unique_ptr<Emulator> emu(new Emulator());
-			emu->Initialize();
+			emu->Initialize(false);
 			emu->GetSettings()->SetFlag(EmulationFlags::ConsoleMode);
 			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(emu.get(), true));
-			return romTest->Run(filename);
+			RomTestResult result = romTest->Run(filename);
+			emu->Release();
+			return result;
 		} else {
 			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(_emu.get(), false));
 			return romTest->Run(filename);

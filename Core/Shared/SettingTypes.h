@@ -430,7 +430,7 @@ struct GbaConfig
 {
 	ControllerConfig Controller;
 
-	bool SkipBootScreen = true;
+	bool SkipBootScreen = false;
 	bool DisableFrameSkipping = false;
 
 	bool BlendFrames = true;
