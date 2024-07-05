@@ -240,6 +240,25 @@ void GbaMemoryManager::ProcessVramStalling(uint32_t addr)
 	}
 }
 
+template<uint8_t width>
+void GbaMemoryManager::UpdateOpenBus(GbaAccessModeVal mode, uint32_t addr, uint32_t value)
+{
+	//Unverified, but passes the openbuster test
+	if((mode & GbaAccessMode::Prefetch) || (addr & 0xFF000000) == 0x03000000) {
+		if(addr > 0x08000000 && addr < 0x10000000) {
+			for(int i = 0; i < width; i++) {
+				_state.InternalOpenBus[i] = value;
+				value >>= 8;
+			}
+		} else {
+			for(int i = 0; i < width; i++) {
+				_state.InternalOpenBus[(addr & (4 - width)) + i] = value;
+				value >>= 8;
+			}
+		}
+	}
+}
+
 uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 {
 	ProcessWaitStates(mode, addr);
@@ -251,24 +270,27 @@ uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 
 	bool isSigned = mode & GbaAccessMode::Signed;
 	if(mode & GbaAccessMode::Byte) {
-		value = _state.InternalOpenBus[0] = InternalRead(mode, addr, addr);
+		value = InternalRead(mode, addr, addr);
+		UpdateOpenBus<1>(mode, addr, value);
 		value = isSigned ? (uint32_t)(int8_t)value : (uint8_t)value;
 		_emu->ProcessMemoryRead<CpuType::Gba, 1>(addr, value, mode & GbaAccessMode::Prefetch ? MemoryOperationType::ExecOpCode : MemoryOperationType::Read);
 	} else if(mode & GbaAccessMode::HalfWord) {
-		uint8_t b0 = _state.InternalOpenBus[0] = InternalRead(mode, addr & ~0x01, addr);
-		uint8_t b1 = _state.InternalOpenBus[1] = InternalRead(mode, addr | 1, addr);
+		uint8_t b0 = InternalRead(mode, addr & ~0x01, addr);
+		uint8_t b1 = InternalRead(mode, addr | 1, addr);
 		value = b0 | (b1 << 8);
+		UpdateOpenBus<2>(mode, addr, value);
 		value = isSigned ? (uint32_t)(int16_t)value : (uint16_t)value;
 		if(!(mode & GbaAccessMode::NoRotate)) {
 			value = RotateValue(mode, addr, value, isSigned);
 		}
 		_emu->ProcessMemoryRead<CpuType::Gba, 2>(addr & ~0x01, value, mode & GbaAccessMode::Prefetch ? MemoryOperationType::ExecOpCode : MemoryOperationType::Read);
 	} else {
-		uint8_t b0 = _state.InternalOpenBus[0] = InternalRead(mode, addr & ~0x03, addr);
-		uint8_t b1 = _state.InternalOpenBus[1] = InternalRead(mode, (addr & ~0x03) | 1, addr);
-		uint8_t b2 = _state.InternalOpenBus[2] = InternalRead(mode, (addr & ~0x03) | 2, addr);
-		uint8_t b3 = _state.InternalOpenBus[3] = InternalRead(mode, addr | 3, addr);
+		uint8_t b0 = InternalRead(mode, addr & ~0x03, addr);
+		uint8_t b1 = InternalRead(mode, (addr & ~0x03) | 1, addr);
+		uint8_t b2 = InternalRead(mode, (addr & ~0x03) | 2, addr);
+		uint8_t b3 = InternalRead(mode, addr | 3, addr);
 		value = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+		UpdateOpenBus<4>(mode, addr, value);
 		if(!(mode & GbaAccessMode::NoRotate)) {
 			value = RotateValue(mode, addr, value, isSigned);
 		}

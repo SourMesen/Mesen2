@@ -62,6 +62,9 @@ private:
 
 	__noinline void ProcessVramStalling(uint32_t addr);
 
+	template<uint8_t width>
+	void UpdateOpenBus(GbaAccessModeVal mode, uint32_t addr, uint32_t value);
+
 	template<bool debug = false>
 	uint32_t RotateValue(GbaAccessModeVal mode, uint32_t addr, uint32_t value, bool isSigned);
 
