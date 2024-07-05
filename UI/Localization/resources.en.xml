@@ -584,7 +584,7 @@
 
 			<Control ID="tpgFiles">Folders/Files</Control>
 			<Control ID="grpFileAssociations">File Associations</Control>
-			<Control ID="chkSnesRomFiles">SNES roms: .sfc, .smc, .swc, .fig, .bs</Control>
+			<Control ID="chkSnesRomFiles">SNES roms: .sfc, .smc, .swc, .fig, .bs, .msu1</Control>
 			<Control ID="chkSnesMusicFiles">SNES music: .spc</Control>
 			<Control ID="chkNesRomFiles">NES roms: .nes, .unif, .fds, .studybox</Control>
 			<Control ID="chkNesMusicFiles">NES music: .nsf, .nsfe</Control>

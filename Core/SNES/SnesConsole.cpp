@@ -32,6 +32,7 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/PlatformUtilities.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/StringUtilities.h"
 #include "Shared/EventType.h"
 #include "SNES/RegisterHandlerA.h"
 #include "SNES/RegisterHandlerB.h"
@@ -100,7 +101,7 @@ void SnesConsole::Reset()
 	_memoryManager->IncMasterClockStartup();
 }
 
-LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
+LoadRomResult SnesConsole::InnerLoadRom(VirtualFile& romFile)
 {
 	SnesConfig config = _settings->GetSnesConfig();
 	LoadRomResult loadResult = LoadRomResult::UnknownType;
@@ -142,6 +143,16 @@ LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 	//Loading a cartridge can alter the SNES ram init settings - restore their original values here
 	_settings->SetSnesConfig(config);
 	return loadResult;
+}
+
+LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
+{
+	if (StringUtilities::ToLower(romFile.GetFileExtension()) == ".msu1") {
+		auto r = VirtualFile(romFile.GetFilePath(), "program.rom");
+		return this->InnerLoadRom(r);
+	} else {
+		return this->InnerLoadRom(romFile);
+	}
 }
 
 bool SnesConsole::LoadSpcFile(VirtualFile& romFile)

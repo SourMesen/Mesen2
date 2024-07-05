@@ -844,12 +844,6 @@
     <ClInclude Include="NES\HdPacks\OggMixer.h">
       <Filter>NES\HdPacks</Filter>
     </ClInclude>
-    <ClCompile Include="NES\HdPacks\OggReader.cpp">
-      <Filter>NES\HdPacks</Filter>
-    </ClCompile>
-    <ClInclude Include="NES\HdPacks\OggReader.h">
-      <Filter>NES\HdPacks</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Input\ArkanoidController.h">
       <Filter>NES\Input</Filter>
     </ClInclude>
@@ -977,6 +971,12 @@
       <Filter>Shared\Audio</Filter>
     </ClCompile>
     <ClInclude Include="Shared\Audio\PcmReader.h">
+      <Filter>Shared\Audio</Filter>
+    </ClInclude>
+    <ClCompile Include="Shared\Audio\OggReader.cpp">
+      <Filter>Shared\Audio</Filter>
+    </ClCompile>
+    <ClInclude Include="Shared\Audio\OggReader.h">
       <Filter>Shared\Audio</Filter>
     </ClInclude>
     <ClCompile Include="Shared\Audio\SoundMixer.cpp">
