@@ -233,9 +233,10 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerWheelChanged(e);
 			if(e.KeyModifiers == KeyModifiers.Control) {
-				if(e.Delta.Y > 0) {
+				double delta = e.GetDeltaY();
+				if(delta > 0) {
 					ZoomIn();
-				} else {
+				} else if(delta < 0) {
 					ZoomOut();
 				}
 				e.Handled = true;

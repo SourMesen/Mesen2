@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Metadata;
 using Avalonia.Threading;
+using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -211,9 +212,10 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerWheelChanged(e);
 			if(e.KeyModifiers == KeyModifiers.Control) {
-				if(e.Delta.Y > 0) {
+				double delta = e.GetDeltaY();
+				if(delta > 0) {
 					InnerViewer.ZoomIn();
-				} else {
+				} else if(delta < 0) {
 					InnerViewer.ZoomOut();
 				}
 				e.Handled = true;
