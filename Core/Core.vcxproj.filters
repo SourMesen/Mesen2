@@ -2811,6 +2811,12 @@
     <ClInclude Include="GBA\Debugger\MgbaLogHandler.h">
       <Filter>GBA\Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="Gameboy\GbxFooter.h">
+      <Filter>Gameboy</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\Carts\GbWisdomTree.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

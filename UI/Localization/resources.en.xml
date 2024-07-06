@@ -588,7 +588,7 @@
 			<Control ID="chkSnesMusicFiles">SNES music: .spc</Control>
 			<Control ID="chkNesRomFiles">NES roms: .nes, .unif, .fds, .studybox</Control>
 			<Control ID="chkNesMusicFiles">NES music: .nsf, .nsfe</Control>
-			<Control ID="chkGbRomFiles">Game Boy roms: .gb, .gbc</Control>
+			<Control ID="chkGbRomFiles">Game Boy roms: .gb, .gbc, .gbx</Control>
 			<Control ID="chkGbMusicFiles">Game Boy music: .gbs</Control>
 			<Control ID="chkGbaRomFiles">Game Boy Advance roms: .gba</Control>
 			<Control ID="chkPceRomFiles">PC Engine roms: .pce, .sgx</Control>

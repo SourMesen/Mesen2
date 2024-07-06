@@ -70,7 +70,7 @@ public:
 	Gameboy(Emulator* emu, bool allowSgb = false);
 	virtual ~Gameboy();
 	
-	static vector<string> GetSupportedExtensions() { return { ".gb", ".gbc", ".gbs" }; }
+	static vector<string> GetSupportedExtensions() { return { ".gb", ".gbc", ".gbx", ".gbs" }; }
 	static vector<string> GetSupportedSignatures() { return { "GBS" }; }
 
 	void PowerOn(SuperGameboy* sgb);
