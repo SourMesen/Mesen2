@@ -10,16 +10,18 @@ class Emulator;
 class ShortcutKeyHandler final : public INotificationListener, public std::enable_shared_from_this<ShortcutKeyHandler>
 {
 private:
-	Emulator* _emu;
+	Emulator* _emu = nullptr;
 
 	thread _thread;
 	atomic<bool> _stopThread;
 	SimpleLock _lock;
 	
-	int _keySetIndex;
+	int _keySetIndex = 0;
 	vector<uint16_t> _pressedKeys;
 	vector<uint16_t> _lastPressedKeys;
-	bool _isKeyUp;
+	bool _isKeyUp = false;
+	bool _isKeyboardConnected = false;
+	bool _isPaused = false;
 
 	Timer _runSingleFrameRepeatTimer;
 	atomic<bool> _repeatStarted;
@@ -31,8 +33,8 @@ private:
 	void CheckMappedKeys();
 	
 	bool IsKeyPressed(EmulatorShortcut key);
-	bool IsKeyPressed(KeyCombination comb);
-	bool IsKeyPressed(uint16_t keyCode, bool mergeCtrlAltShift);
+	bool IsKeyPressed(KeyCombination comb, bool blockKeyboardKeys);
+	bool IsKeyPressed(uint16_t keyCode, bool mergeCtrlAltShift, bool blockKeyboardKeys);
 
 	bool DetectKeyPress(EmulatorShortcut key);
 	bool DetectKeyRelease(EmulatorShortcut key);

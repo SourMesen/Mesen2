@@ -9,9 +9,6 @@ class Emulator;
 class MacOSKeyManager : public IKeyManager
 {
 private:
-	static constexpr int BaseMouseButtonIndex = 0x200;
-	static constexpr int BaseGamepadIndex = 0x1000;
-
 	Emulator* _emu;
 
 	vector<KeyDefinition> _keyDefinitions;

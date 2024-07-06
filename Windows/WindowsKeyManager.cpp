@@ -15,7 +15,7 @@ WindowsKeyManager::WindowsKeyManager(Emulator* emu, HWND hWnd)
 	vector<string> buttonNames = { "Up", "Down", "Left", "Right", "Start", "Back", "L3", "R3", "L1", "R1", "?", "?", "A", "B", "X", "Y", "L2", "R2", "RT Up", "RT Down", "RT Left", "RT Right", "LT Up", "LT Down", "LT Left", "LT Right" };
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < (int)buttonNames.size(); j++) {
-			_keyDefinitions.push_back({ "Pad" + std::to_string(i + 1) + " " + buttonNames[j], (uint32_t)(WindowsKeyManager::BaseXInputIndex + i * 0x100 + j + 1) });
+			_keyDefinitions.push_back({ "Pad" + std::to_string(i + 1) + " " + buttonNames[j], (uint32_t)(WindowsKeyManager::BaseGamepadIndex + i * 0x100 + j + 1) });
 		}
 	}
 
@@ -79,7 +79,7 @@ bool WindowsKeyManager::IsKeyPressed(uint16_t key)
 		return false;
 	}
 
-	if(key >= WindowsKeyManager::BaseXInputIndex) {
+	if(key >= WindowsKeyManager::BaseGamepadIndex) {
 		if(!_xInput || !_directInput) {
 			return false;
 		}
@@ -91,8 +91,8 @@ bool WindowsKeyManager::IsKeyPressed(uint16_t key)
 			return _directInput->IsPressed(gamepadPort, gamepadButton);
 		} else {
 			//XInput key
-			uint8_t gamepadPort = (key - WindowsKeyManager::BaseXInputIndex) / 0x100;
-			uint8_t gamepadButton = (key - WindowsKeyManager::BaseXInputIndex) % 0x100;
+			uint8_t gamepadPort = (key - WindowsKeyManager::BaseGamepadIndex) / 0x100;
+			uint8_t gamepadButton = (key - WindowsKeyManager::BaseGamepadIndex) % 0x100;
 			return _xInput->IsPressed(gamepadPort, gamepadButton);
 		}
 	} else if(key < 0x205) {
@@ -117,7 +117,7 @@ vector<uint16_t> WindowsKeyManager::GetPressedKeys()
 	for(int i = 0; i < XUSER_MAX_COUNT; i++) {
 		for(int j = 1; j <= 26; j++) {
 			if(_xInput->IsPressed(i, j)) {
-				result.push_back(WindowsKeyManager::BaseXInputIndex + i * 0x100 + j);
+				result.push_back(WindowsKeyManager::BaseGamepadIndex + i * 0x100 + j);
 			}
 		}
 	}

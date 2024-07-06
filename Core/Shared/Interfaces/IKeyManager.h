@@ -27,6 +27,9 @@ struct MouseMovement
 class IKeyManager
 {
 public:
+	static constexpr int BaseMouseButtonIndex = 0x200;
+	static constexpr int BaseGamepadIndex = 0x1000;
+
 	virtual ~IKeyManager() {}
 
 	virtual void RefreshState() = 0;

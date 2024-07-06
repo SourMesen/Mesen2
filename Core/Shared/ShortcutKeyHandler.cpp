@@ -20,6 +20,7 @@ ShortcutKeyHandler::ShortcutKeyHandler(Emulator* emu)
 
 	_keySetIndex = 0;
 	_isKeyUp = false;
+	_isKeyboardConnected = false;
 	_repeatStarted = false;
 	_needRepeat = false;
 
@@ -40,20 +41,25 @@ ShortcutKeyHandler::~ShortcutKeyHandler()
 
 bool ShortcutKeyHandler::IsKeyPressed(EmulatorShortcut shortcut)
 {
+	//When running while a keyboard is plugged into the console, disable all keyboard
+	//shortcut keys. The pause shortcut is always enabled, allowing it to be used to
+	//pause normally, which allows other shortcuts to be used (while paused)
+	bool blockKeyboardKeys = shortcut != EmulatorShortcut::Pause && _isKeyboardConnected && !_isPaused;
+
 	KeyCombination keyComb = _emu->GetSettings()->GetShortcutKey(shortcut, _keySetIndex);
 	vector<KeyCombination> supersets = _emu->GetSettings()->GetShortcutSupersets(shortcut, _keySetIndex);
 	for(KeyCombination &superset : supersets) {
-		if(IsKeyPressed(superset)) {
+		if(IsKeyPressed(superset, blockKeyboardKeys)) {
 			//A superset is pressed, ignore this subset
 			return false;
 		}
 	}
 
 	//No supersets are pressed, check if all matching keys are pressed
-	return IsKeyPressed(keyComb);
+	return IsKeyPressed(keyComb, blockKeyboardKeys);
 }
 
-bool ShortcutKeyHandler::IsKeyPressed(KeyCombination comb)
+bool ShortcutKeyHandler::IsKeyPressed(KeyCombination comb, bool blockKeyboardKeys)
 {
 	int keyCount = (comb.Key1 ? 1 : 0) + (comb.Key2 ? 1 : 0) + (comb.Key3 ? 1 : 0);
 
@@ -63,13 +69,17 @@ bool ShortcutKeyHandler::IsKeyPressed(KeyCombination comb)
 
 	bool mergeCtrlAltShift = keyCount > 1;
 
-	return IsKeyPressed(comb.Key1, mergeCtrlAltShift) &&
-		(comb.Key2 == 0 || IsKeyPressed(comb.Key2, mergeCtrlAltShift)) &&
-		(comb.Key3 == 0 || IsKeyPressed(comb.Key3, mergeCtrlAltShift));
+	return IsKeyPressed(comb.Key1, mergeCtrlAltShift, blockKeyboardKeys) &&
+		(comb.Key2 == 0 || IsKeyPressed(comb.Key2, mergeCtrlAltShift, blockKeyboardKeys)) &&
+		(comb.Key3 == 0 || IsKeyPressed(comb.Key3, mergeCtrlAltShift, blockKeyboardKeys));
 }
 
-bool ShortcutKeyHandler::IsKeyPressed(uint16_t keyCode, bool mergeCtrlAltShift)
+bool ShortcutKeyHandler::IsKeyPressed(uint16_t keyCode, bool mergeCtrlAltShift, bool blockKeyboardKeys)
 {
+	if(blockKeyboardKeys && keyCode < IKeyManager::BaseMouseButtonIndex) {
+		return false;
+	}
+
 	if(keyCode >= 116 && keyCode <= 121 && mergeCtrlAltShift) {
 		//Left/right ctrl/alt/shift
 		//Return true if either the left or right key is pressed
@@ -301,11 +311,6 @@ void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut, uint
 
 void ShortcutKeyHandler::CheckMappedKeys()
 {
-	if(_emu->IsKeyboardConnected()) {
-		//Disable all shortcut keys if a keyboard is connected to the console
-		return;
-	}
-
 	for(uint64_t i = 0; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {
 		EmulatorShortcut shortcut = (EmulatorShortcut)i;
 		if(DetectKeyPress(shortcut)) {
@@ -332,6 +337,9 @@ void ShortcutKeyHandler::ProcessKeys()
 
 	auto lock = _lock.AcquireSafe();
 	KeyManager::RefreshKeyState();
+
+	_isKeyboardConnected = _emu->IsKeyboardConnected();
+	_isPaused = _emu->IsPaused();
 
 	_pressedKeys = KeyManager::GetPressedKeys();
 	_isKeyUp = _pressedKeys.size() < _lastPressedKeys.size();

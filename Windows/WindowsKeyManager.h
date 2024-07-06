@@ -13,8 +13,6 @@ class Emulator;
 class WindowsKeyManager : public IKeyManager
 {
 private:
-	static constexpr int BaseMouseButtonIndex = 0x200;
-	static constexpr int BaseXInputIndex = 0x1000;
 	static constexpr int BaseDirectInputIndex = 0x2000;
 
 	HWND _hWnd;
