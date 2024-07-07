@@ -44,4 +44,5 @@ public:
 	void UpdateDeviceList();
 	int GetJoystickCount();
 	bool IsPressed(int port, int button);
+	optional<int16_t> GetAxisPosition(int port, int axis);
 };

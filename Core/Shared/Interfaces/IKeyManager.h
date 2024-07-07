@@ -36,6 +36,7 @@ public:
 	virtual void UpdateDevices() = 0;
 	virtual bool IsMouseButtonPressed(MouseButton button) = 0;
 	virtual bool IsKeyPressed(uint16_t keyCode) = 0;
+	virtual optional<int16_t> GetAxisPosition(uint16_t keyCode) { return std::nullopt; }
 	virtual vector<uint16_t> GetPressedKeys() = 0;
 	virtual string GetKeyName(uint16_t keyCode) = 0;
 	virtual uint16_t GetKeyCode(string keyName) = 0;

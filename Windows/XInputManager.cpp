@@ -75,3 +75,18 @@ bool XInputManager::IsPressed(uint8_t gamepadPort, uint8_t button)
 	}
 	return false;
 }
+
+optional<int16_t> XInputManager::GetAxisPosition(uint8_t port, int axis)
+{
+	if(_gamePadConnected[port]) {
+		XINPUT_GAMEPAD& gamepad = _gamePadStates[port]->Gamepad;
+		switch(axis - 27) {
+			case 0: return gamepad.sThumbLY;
+			case 1: return gamepad.sThumbLX;
+			case 2: return gamepad.sThumbRY;
+			case 3: return gamepad.sThumbRX;
+		}
+	}
+
+	return std::nullopt;
+}

@@ -40,6 +40,14 @@ bool KeyManager::IsKeyPressed(uint16_t keyCode)
 	return false;
 }
 
+optional<int16_t> KeyManager::GetAxisPosition(uint16_t keyCode)
+{
+	if(_keyManager != nullptr && _settings->IsInputEnabled()) {
+		return _keyManager->GetAxisPosition(keyCode);
+	}
+	return std::nullopt;
+}
+
 bool KeyManager::IsMouseButtonPressed(MouseButton button)
 {
 	if(_keyManager != nullptr) {

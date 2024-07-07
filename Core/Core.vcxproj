@@ -27,10 +27,12 @@
     <ClInclude Include="Debugger\StepBackManager.h" />
     <ClInclude Include="Gameboy\APU\GbChannelDac.h" />
     <ClInclude Include="Gameboy\APU\GbEnvelope.h" />
+    <ClInclude Include="Gameboy\Carts\Eeprom93Lc56.h" />
     <ClInclude Include="Gameboy\Carts\GbHuc1.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc3Rtc.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc6.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc7.h" />
+    <ClInclude Include="Gameboy\Carts\GbMbc7Accelerometer.h" />
     <ClInclude Include="Gameboy\Carts\GbWisdomTree.h" />
     <ClInclude Include="Gameboy\GbxFooter.h" />
     <ClInclude Include="GBA\APU\GbaApu.h" />

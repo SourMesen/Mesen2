@@ -1,23 +1,27 @@
 #pragma once
 #include "pch.h"
 #include "Gameboy/Carts/GbCart.h"
+#include "Gameboy/Carts/Eeprom93Lc56.h"
+#include "Gameboy/Carts/GbMbc7Accelerometer.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "Utilities/Serializer.h"
 
 class GbMbc7 : public GbCart
 {
 private:
+	shared_ptr<GbMbc7Accelerometer> _accelerometer;
+	Eeprom93Lc56 _eeprom;
 	bool _ramEnabled = false;
 	bool _ramEnabled2 = false;
 	uint16_t _prgBank = 1;
 
-	uint16_t _xAccel = 0x8000;
-	uint16_t _yAccel = 0x8000;
-	bool _latched = false;
-
 public:
 	void InitCart() override
 	{
+		_accelerometer.reset(new GbMbc7Accelerometer(_gameboy->GetEmulator()));
+		_gameboy->GetControlManager()->AddSystemControlDevice(_accelerometer);
+
+		_eeprom.SetRam(_cartRam);
 		_memoryManager->MapRegisters(0x0000, 0x5FFF, RegisterAccess::Write);
 	}
 
@@ -36,20 +40,19 @@ public:
 		}
 
 		switch(addr & 0xF0) {
-			case 0x20: return _xAccel & 0xFF;
-			case 0x30: return (_xAccel >> 8) & 0xFF;
-			case 0x40: return _yAccel & 0xFF;
-			case 0x50: return (_yAccel >> 8) & 0xFF;
+			case 0x20:
+			case 0x30:
+			case 0x40:
+			case 0x50:
+				return _accelerometer->Read(addr);
 
 			//Always 0
 			case 0x60: return 0;
 
-			//TODO EEPROM
-			case 0x80: return 0x01;
+			case 0x80: return _eeprom.Read();
 
 			default: return 0xFF;
 		}
-
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -63,27 +66,13 @@ public:
 			RefreshMappings();
 		} else {
 			switch(addr & 0xF0) {
-				//Reset accelerometer latch
 				case 0x00:
-					if(value == 0x55) {
-						_xAccel = 0x8000;
-						_yAccel = 0x8000;
-						_latched = false;
-					}
-					break;
-
-				//Latch accelerometer value
 				case 0x10:
-					if(!_latched && value == 0xAA) {
-						//TODO accelerometer
-						_xAccel = 0x81D0;
-						_yAccel = 0x81D0;
-						_latched = true;
-					}
+					_accelerometer->Write(addr, value);
 					break;
 
 				case 0x80:
-					//TODO EEPROM
+					_eeprom.Write(value);
 					break;
 			}
 		}
@@ -94,8 +83,7 @@ public:
 		SV(_ramEnabled);
 		SV(_ramEnabled2);
 		SV(_prgBank);
-		SV(_xAccel);
-		SV(_yAccel);
-		SV(_latched);
+		SV(_eeprom);
+		SV(_accelerometer);
 	}
 };

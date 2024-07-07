@@ -329,6 +329,7 @@ namespace Mesen.Config
 
 		//Game Boy
 		GameboyController,
+		GameboyAccelerometer,
 
 		//PC Engine
 		PceController,

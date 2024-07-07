@@ -219,6 +219,7 @@ enum class ControllerType
 
 	//Game Boy
 	GameboyController,
+	GameboyAccelerometer,
 
 	//PC Engine
 	PceController,

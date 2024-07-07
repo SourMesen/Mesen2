@@ -12,7 +12,18 @@ WindowsKeyManager::WindowsKeyManager(Emulator* emu, HWND hWnd)
 	_keyDefinitions = KeyDefinition::GetSharedKeyDefinitions();
 
 	//Init XInput buttons
-	vector<string> buttonNames = { "Up", "Down", "Left", "Right", "Start", "Back", "L3", "R3", "L1", "R1", "?", "?", "A", "B", "X", "Y", "L2", "R2", "RT Up", "RT Down", "RT Left", "RT Right", "LT Up", "LT Down", "LT Left", "LT Right" };
+	vector<string> buttonNames = { 
+		"Up", "Down", "Left", "Right",
+		"Start", "Back",
+		"L3", "R3", "L1", "R1",
+		"?", "?",
+		"A", "B", "X", "Y",
+		"L2", "R2",
+		"RT Up", "RT Down", "RT Left", "RT Right",
+		"LT Up", "LT Down", "LT Left", "LT Right",
+		"LT Y", "LT X", "RT Y", "RT X"
+	};
+
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < (int)buttonNames.size(); j++) {
 			_keyDefinitions.push_back({ "Pad" + std::to_string(i + 1) + " " + buttonNames[j], (uint32_t)(WindowsKeyManager::BaseGamepadIndex + i * 0x100 + j + 1) });
@@ -20,14 +31,29 @@ WindowsKeyManager::WindowsKeyManager(Emulator* emu, HWND hWnd)
 	}
 
 	//Init DirectInput buttons
-	vector<string> diButtonNames = { "Y+", "Y-", "X-", "X+", "Y2+", "Y2-", "X2-", "X2+", "Z+", "Z-", "Z2+", "Z2-", "DPad Up", "DPad Down", "DPad Right", "DPad Left" };
+	vector<string> diButtonNames = { 
+		"Y+", "Y-",
+		"X-", "X+",
+		"Y2+", "Y2-",
+		"X2-", "X2+",
+		"Z+", "Z-",
+		"Z2+", "Z2-",
+		"DPad Up", "DPad Down", "DPad Right", "DPad Left"
+	};
+	vector<string> axisNames = {
+		"Y", "X", "Y2", "X2", "Z", "Z2"
+	};
 	for(int i = 0; i < 16; i++) {
 		for(int j = 0; j < (int)diButtonNames.size(); j++) {
 			_keyDefinitions.push_back({ "Joy" + std::to_string(i + 1) + " " + diButtonNames[j], (uint32_t)(WindowsKeyManager::BaseDirectInputIndex + i * 0x100 + j) });
 		}
 
 		for(int j = 0; j < 128; j++) {
-			_keyDefinitions.push_back({ "Joy" + std::to_string(i + 1) + " But" + std::to_string(j + 1), (uint32_t)(WindowsKeyManager::BaseDirectInputIndex + i * 0x100 + j + diButtonNames.size())});
+			_keyDefinitions.push_back({ "Joy" + std::to_string(i + 1) + " But" + std::to_string(j + 1), (uint32_t)(WindowsKeyManager::BaseDirectInputIndex + i * 0x100 + j + diButtonNames.size()) });
+		}
+		
+		for(int j = 0; j < (int)axisNames.size(); j++) {
+			_keyDefinitions.push_back({ "Joy" + std::to_string(i + 1) + " " + axisNames[j], (uint32_t)(WindowsKeyManager::BaseDirectInputIndex + i * 0x100 + j + diButtonNames.size() + 0x100) });
 		}
 	}
 
@@ -99,6 +125,28 @@ bool WindowsKeyManager::IsKeyPressed(uint16_t key)
 		return _keyState[key] != 0;
 	}
 	return false;
+}
+
+optional<int16_t> WindowsKeyManager::GetAxisPosition(uint16_t key)
+{
+	if(key >= WindowsKeyManager::BaseGamepadIndex) {
+		if(!_xInput || !_directInput) {
+			return std::nullopt;
+		}
+
+		if(key >= WindowsKeyManager::BaseDirectInputIndex) {
+			//Directinput key
+			uint8_t port = (key - WindowsKeyManager::BaseDirectInputIndex) / 0x100;
+			uint8_t button = (key - WindowsKeyManager::BaseDirectInputIndex) % 0x100;
+			return _directInput->GetAxisPosition(port, button);
+		} else {
+			//XInput key
+			uint8_t port = (key - WindowsKeyManager::BaseGamepadIndex) / 0x100;
+			uint8_t button = (key - WindowsKeyManager::BaseGamepadIndex) % 0x100;
+			return _xInput->GetAxisPosition(port, button);
+		}
+	}
+	return std::nullopt;
 }
 
 bool WindowsKeyManager::IsMouseButtonPressed(MouseButton button)

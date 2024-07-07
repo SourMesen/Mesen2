@@ -23,7 +23,8 @@ LinuxKeyManager::LinuxKeyManager(Emulator* emu)
 		"Right 4", "Left 4", "Down 4", "Up 4",
 		"Trigger", "Thumb", "Thumb2", "Top", "Top2",
 		"Pinkie", "Base", "Base2", "Base3", "Base4",
-		"Base5", "Base6", "Dead"
+		"Base5", "Base6", "Dead",
+		"Y", "X", "Y2", "X2", "Z", "Z2"
 	};
 
 	for(int i = 0; i < 20; i++) {
@@ -73,6 +74,16 @@ bool LinuxKeyManager::IsKeyPressed(uint16_t key)
 		return _keyState[key] != 0;
 	}
 	return false;
+}
+
+optional<int16_t> LinuxKeyManager::GetAxisPosition(uint16_t key)
+{
+	if(key >= LinuxKeyManager::BaseGamepadIndex) {
+		uint8_t port = (key - LinuxKeyManager::BaseGamepadIndex) / 0x100;
+		uint8_t button = (key - LinuxKeyManager::BaseGamepadIndex) % 0x100;
+		return _controllers[port]->GetAxisPosition(button);
+	}
+	return std::nullopt;
 }
 
 bool LinuxKeyManager::IsMouseButtonPressed(MouseButton button)

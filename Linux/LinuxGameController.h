@@ -29,4 +29,5 @@ public:
 	bool IsDisconnected();
 	int GetDeviceID();
 	bool IsButtonPressed(int buttonNumber);
+	optional<int16_t> GetAxisPosition(int axis);
 };

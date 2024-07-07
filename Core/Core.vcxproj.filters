@@ -2817,6 +2817,12 @@
     <ClInclude Include="Gameboy\Carts\GbWisdomTree.h">
       <Filter>Gameboy\Carts</Filter>
     </ClInclude>
+    <ClInclude Include="Gameboy\Carts\Eeprom93Lc56.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\Carts\GbMbc7Accelerometer.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

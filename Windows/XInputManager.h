@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pch.h"
 #include "Common.h"
 #include <Xinput.h>
 
@@ -19,4 +20,5 @@ class XInputManager
 		void UpdateDeviceList();
 		void RefreshState();
 		bool IsPressed(uint8_t gamepadPort, uint8_t button);
+		optional<int16_t> GetAxisPosition(uint8_t gamepadPort, int axis);
 };

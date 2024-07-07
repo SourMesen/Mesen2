@@ -22,6 +22,7 @@ public:
 
 	static void RefreshKeyState();
 	static bool IsKeyPressed(uint16_t keyCode);
+	static optional<int16_t> GetAxisPosition(uint16_t keyCode);
 	static bool IsMouseButtonPressed(MouseButton button);
 	static vector<uint16_t> GetPressedKeys();
 	static string GetKeyName(uint16_t keyCode);

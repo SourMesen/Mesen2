@@ -286,8 +286,8 @@ int DirectInputManager::EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi
 		diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
 		diprg.diph.dwHow = DIPH_BYID;
 		diprg.diph.dwObj = pdidoi->dwType; // Specify the enumerated axis
-		diprg.lMin = -1000;
-		diprg.lMax = +1000;
+		diprg.lMin = INT16_MIN;
+		diprg.lMax = INT16_MAX;
 
 		// Set the range for the axis
 		if(FAILED(joystick->SetProperty(DIPROP_RANGE, &diprg.diph))) {
@@ -354,7 +354,7 @@ bool DirectInputManager::IsPressed(int port, int button)
 
 	DIJOYSTATE2& state = _joysticks[port].state;
 	DIJOYSTATE2& defaultState = _joysticks[port].defaultState;
-	int deadRange = (int)(500 * _emu->GetSettings()->GetControllerDeadzoneRatio());
+	int deadRange = (int)(INT16_MAX / 2 * _emu->GetSettings()->GetControllerDeadzoneRatio());
 
 	int povDirection = state.rgdwPOV[0] / 4500;
 	bool povCentered = (LOWORD(state.rgdwPOV[0]) == 0xFFFF) || povDirection >= 8;
@@ -376,10 +376,32 @@ bool DirectInputManager::IsPressed(int port, int button)
 		case 0x0D: return !povCentered && (povDirection >= 3 && povDirection <= 5);
 		case 0x0E: return !povCentered && (povDirection >= 1 && povDirection <= 3);
 		case 0x0F: return !povCentered && (povDirection >= 5 && povDirection <= 7);
-		default: return state.rgbButtons[button - 0x10] != 0;
+		default: 
+			if(button < 128 + 16) {
+				return state.rgbButtons[button - 0x10] != 0;
+			}
 	}
 
 	return false;
+}
+
+optional<int16_t> DirectInputManager::GetAxisPosition(int port, int axis)
+{
+	if(port >= (int)_joysticks.size() || !_joysticks[port].stateValid) {
+		return std::nullopt;
+	}
+
+	DIJOYSTATE2& state = _joysticks[port].state;
+
+	switch(axis - 128 - 16) {
+		case 0x00: return state.lX;
+		case 0x01: return state.lY;
+		case 0x02: return state.lRx;
+		case 0x03: return state.lRy;
+		case 0x04: return state.lZ;
+		case 0x05: return state.lRz;
+		default: return std::nullopt;
+	}
 }
 
 void DirectInputManager::UpdateInputState(DirectInputData &data)

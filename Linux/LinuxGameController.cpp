@@ -200,6 +200,34 @@ bool LinuxGameController::IsButtonPressed(int buttonNumber)
 	return false;
 }
 
+optional<int16_t> LinuxGameController::GetAxisPosition(int axis)
+{
+	axis -= 55;
+
+	unsigned int code;
+	switch(axis) {
+		default: return std::nullopt;
+		case 0: code = ABS_Y; break;
+		case 1: code = ABS_X; break;
+		case 2: code = ABS_RY; break;
+		case 3: code = ABS_RX; break;
+		case 4: code = ABS_Z; break;
+		case 5: code = ABS_RZ; break;
+	}
+
+	int min = libevdev_get_abs_minimum(_device, code);
+	int max = libevdev_get_abs_maximum(_device, code);
+
+	int value = libevdev_get_event_value(_device, EV_ABS, code);
+
+	int range = max - min;
+	int offset = value - min;
+	double ratio = (double)offset / range;
+
+	int16_t axisValue = (ratio - 0.5) * 2 * INT16_MAX;
+	return axis & 0x01 ? axisValue : -axisValue;
+}
+
 bool LinuxGameController::IsDisconnected()
 {
 	return _disconnected;
