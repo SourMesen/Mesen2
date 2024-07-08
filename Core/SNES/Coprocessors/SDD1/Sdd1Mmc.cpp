@@ -17,10 +17,26 @@ uint8_t Sdd1Mmc::ReadRom(uint32_t addr)
 	return GetHandler(addr)->Read(addr);
 }
 
+uint16_t Sdd1Mmc::ProcessRomMirroring(uint32_t addr)
+{
+	if(((addr & 0x800000) && _state->SelectedBanks[3] & 0x80) || (!(addr & 0x800000) && (_state->SelectedBanks[1] & 0x80))) {
+		//Force mirroring: $20-$3F mirrors $00-$1F, $A0-$BF mirrors $80-$9F
+		return (((addr & 0x1F0000) >> 1) | (addr & 0x7000)) >> 12;
+	} else {
+		return (((addr & 0x3F0000) >> 1) | (addr & 0x7000)) >> 12;
+	}
+}
+
 IMemoryHandler* Sdd1Mmc::GetHandler(uint32_t addr)
 {
-	uint8_t bank = (addr >> 20) - 0x0C;
-	uint16_t handlerIndex = ((_state->SelectedBanks[bank] & 0x0F) << 8) | ((addr & 0xFF000) >> 12);
+	uint16_t handlerIndex;
+	if(!(addr & 0x400000)) {
+		handlerIndex = ProcessRomMirroring(addr);
+	} else {
+		//Banks $C0+
+		uint8_t bank = (addr >> 20) - 0x0C;
+		handlerIndex = ((_state->SelectedBanks[bank] & 0x0F) << 8) | ((addr & 0xFF000) >> 12);
+	}
 	
 	return (*_romHandlers)[handlerIndex & _handlerMask].get();
 }
@@ -28,14 +44,7 @@ IMemoryHandler* Sdd1Mmc::GetHandler(uint32_t addr)
 uint8_t Sdd1Mmc::Read(uint32_t addr)
 {
 	if(!(addr & 0x400000)) {
-		uint16_t handlerIndex;
-		if(((addr & 0x800000) && _state->SelectedBanks[3] & 0x80) || (!(addr & 0x800000) && (_state->SelectedBanks[1] & 0x80))) {
-			//Force mirroring: $20-$3F mirrors $00-$1F, $A0-$BF mirrors $80-$9F
-			handlerIndex = (((addr & 0x1F0000) >> 1) | (addr & 0x7000)) >> 12;
-		} else {
-			handlerIndex = (((addr & 0x3F0000) >> 1) | (addr & 0x7000)) >> 12;
-		}
-		return (*_romHandlers)[handlerIndex & _handlerMask]->Read(addr);
+		return (*_romHandlers)[ProcessRomMirroring(addr) & _handlerMask]->Read(addr);
 	}
 
 	//Banks $C0+
@@ -67,12 +76,12 @@ uint8_t Sdd1Mmc::Read(uint32_t addr)
 
 uint8_t Sdd1Mmc::Peek(uint32_t addr)
 {
-	return 0;
+	return GetHandler(addr)->Peek(addr);
 }
 
 void Sdd1Mmc::PeekBlock(uint32_t addr, uint8_t *output)
 {
-	memset(output, 0, 0x1000);
+	GetHandler(addr)->PeekBlock(addr, output);
 }
 
 void Sdd1Mmc::Write(uint32_t addr, uint8_t value)

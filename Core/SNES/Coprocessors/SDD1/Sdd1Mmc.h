@@ -16,6 +16,7 @@ private:
 	Sdd1Decomp _decompressor;
 
 	IMemoryHandler* GetHandler(uint32_t addr);
+	uint16_t ProcessRomMirroring(uint32_t addr);
 
 public:
 	Sdd1Mmc(Sdd1State &state, BaseCartridge *cart);
