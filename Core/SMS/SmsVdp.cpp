@@ -605,8 +605,15 @@ void SmsVdp::ShiftSpriteSg(uint8_t sprIndex)
 
 bool SmsVdp::IsZoomedSpriteAllowed(int spriteIndex)
 {
-	//On SMS1, only the first 4 sprites are zoomed properly. The last 4 are only zoomed vertically
-	return _state.EnableDoubleSpriteSize && (spriteIndex < 4 || _console->GetRevision() != SmsRevision::Sms1);
+	//On all revisions, all sprites are zoomed vertically, but the horizontal zoom effect is bugged on SMS1.
+	//On SMS2/GG, all 8 sprites are zoomed as expected.
+	//On SMS1, only up to 4 sprites are zoomed horizontally. Specifically, only "[scanline sprite count] - 4" sprites are zoomed, e.g:
+	// -If the scanline has 4 sprites, none will be zoomed.
+	// -If the scanline has 5 sprites, only 1 sprite will be zoomed.
+	// -If the scanline has 8 sprites, 4 sprites will be zoomed.
+	//Which sprites get zoomed is based on their draw priority (i.e the earlier entries in sprite ram get zoomed first)
+	//See thread/test rom: https://www.smspower.org/forums/19189-SMS1DoubleSizeSpritesBitTest
+	return _state.EnableDoubleSpriteSize && (spriteIndex < ((int)_spriteCount - 4) || _console->GetRevision() != SmsRevision::Sms1);
 }
 
 uint16_t SmsVdp::GetPixelColor()
