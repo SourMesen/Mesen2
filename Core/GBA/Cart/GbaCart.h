@@ -4,8 +4,10 @@
 #include "GBA/Cart/GbaEeprom.h"
 
 class Emulator;
+class GbaConsole;
 class GbaMemoryManager;
 class GbaFlash;
+class GbaTiltSensor;
 
 class GbaCart final : public ISerializable
 {
@@ -13,6 +15,7 @@ private:
 	Emulator* _emu = nullptr;
 	GbaMemoryManager* _memoryManager = nullptr;;
 
+	shared_ptr<GbaTiltSensor> _tiltSensor;
 	unique_ptr<GbaEeprom> _eeprom;
 	unique_ptr<GbaFlash> _flash;
 	uint32_t _eepromAddr = ~1; //by default, eeprom is disabled
@@ -33,7 +36,7 @@ public:
 	GbaCart();
 	~GbaCart();
 
-	void Init(Emulator* emu, GbaMemoryManager* memoryManager, GbaSaveType saveType);
+	void Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryManager, GbaSaveType saveType, GbaCartridgeType cartType);
 
 	template<bool checkEeprom>
 	__forceinline uint8_t ReadRom(uint32_t addr)

@@ -1,8 +1,12 @@
 #include "pch.h"
+#include "GBA/GbaConsole.h"
 #include "GBA/GbaMemoryManager.h"
 #include "GBA/Cart/GbaCart.h"
 #include "GBA/Cart/GbaEeprom.h"
 #include "GBA/Cart/GbaFlash.h"
+#include "GBA/Cart/GbaTiltSensor.h"
+#include "Shared/Emulator.h"
+#include "Shared/BaseControlManager.h"
 #include "Utilities/Serializer.h"
 
 GbaCart::GbaCart()
@@ -13,9 +17,14 @@ GbaCart::~GbaCart()
 {
 }
 
-void GbaCart::Init(Emulator* emu, GbaMemoryManager* memoryManager, GbaSaveType saveType)
+void GbaCart::Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryManager, GbaSaveType saveType, GbaCartridgeType cartType)
 {
 	_emu = emu;
+
+	if(cartType == GbaCartridgeType::TiltSensor) {
+		_tiltSensor.reset(new GbaTiltSensor(emu));
+		console->GetControlManager()->AddSystemControlDevice(_tiltSensor);
+	}
 
 	_prgRom = (uint8_t*)_emu->GetMemory(MemoryType::GbaPrgRom).Memory;
 	_prgRomSize = _emu->GetMemory(MemoryType::GbaPrgRom).Size;
@@ -58,6 +67,8 @@ uint8_t GbaCart::ReadRam(uint32_t addr, uint32_t readAddr)
 		return _flash->Read(readAddr);
 	} else if(_saveRamSize) {
 		return _saveRam[readAddr & (_saveRamSize - 1)];
+	} else if(_tiltSensor && addr >= 0xE008000 && addr <= 0xE008500) {
+		return _tiltSensor->Read(addr);
 	}
 	
 	return 0xFF;
@@ -79,6 +90,8 @@ void GbaCart::WriteRam(GbaAccessModeVal mode, uint32_t addr, uint8_t value, uint
 	} else if(_saveRamSize) {
 		_saveRamDirty = true;
 		_saveRam[writeAddr & (_saveRamSize - 1)] = value;
+	} else if(_tiltSensor && writeAddr >= 0xE008000 && writeAddr <= 0xE008500) {
+		_tiltSensor->Write(addr, value);
 	}
 }
 
@@ -139,5 +152,8 @@ void GbaCart::Serialize(Serializer& s)
 	}
 	if(_flash) {
 		SV(_flash);
+	}
+	if(_tiltSensor) {
+		SV(_tiltSensor);
 	}
 }

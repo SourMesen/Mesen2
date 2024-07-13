@@ -111,7 +111,7 @@ LoadRomResult GbaConsole::LoadRom(VirtualFile& romFile)
 	_memoryManager.reset(new GbaMemoryManager(_emu, this, _ppu.get(), _dmaController.get(), _controlManager.get(), _timer.get(), _apu.get(), _cart.get(), _serial.get(), _prefetch.get()));
 
 	_prefetch->Init(_memoryManager.get());
-	_cart->Init(_emu, _memoryManager.get(), _saveType);
+	_cart->Init(_emu, this, _memoryManager.get(), _saveType, _cartType);
 	_ppu->Init(_emu, this, _memoryManager.get());
 	_apu->Init(_emu, this, _dmaController.get(), _memoryManager.get());
 	_timer->Init(_memoryManager.get(), _apu.get());
@@ -146,6 +146,12 @@ void GbaConsole::InitCart(VirtualFile& romFile, vector<uint8_t>& romData)
 			romData.insert(romData.end(), romData.begin(), romData.end());
 			romData.insert(romData.end(), romData.begin(), romData.end());
 		}
+	}
+
+	_cartType = GbaCartridgeType::Default;
+
+	if(gameCode == "KYGE" || gameCode == "KHPJ") {
+		_cartType = GbaCartridgeType::TiltSensor;
 	}
 
 	InitSaveRam(gameCode, romData);

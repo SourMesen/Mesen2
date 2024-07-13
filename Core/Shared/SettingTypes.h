@@ -427,6 +427,12 @@ enum class GbaSaveType
 	Flash128
 };
 
+enum class GbaCartridgeType
+{
+	Default,
+	TiltSensor
+};
+
 struct GbaConfig
 {
 	ControllerConfig Controller;
