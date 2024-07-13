@@ -99,6 +99,10 @@
 			<Control ID="lblLow">Slow</Control>
 			<Control ID="lblHigh">Fast</Control>
 
+			<Control ID="lblForceFeedbackIntensity">Force feedback (rumble):</Control>
+			<Control ID="lblForceFeedbackLow">Disabled</Control>
+			<Control ID="lblForceFeedbackHigh">Maximum</Control>
+
 			<Control ID="tpgDisplay">Display</Control>
 			<Control ID="lblDisplayInputPorts">Display ports: </Control>
 			<Control ID="chkDisplayPort1">Player 1</Control>

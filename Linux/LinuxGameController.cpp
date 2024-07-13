@@ -18,7 +18,7 @@ std::shared_ptr<LinuxGameController> LinuxGameController::GetController(Emulator
 	std::string deviceName = "/dev/input/event" + std::to_string(deviceID);
 	struct stat buffer;   
 	if(stat(deviceName.c_str(), &buffer) == 0) { 	
-		int fd = open(deviceName.c_str(), O_RDONLY | O_NONBLOCK);
+		int fd = open(deviceName.c_str(), O_RDWR | O_NONBLOCK);
 		if(fd < 0) {
 			if(logInformation) {
 				MessageManager::Log("[Input] " + deviceName + "  error: " + std::to_string(errno) + " " + strerror(errno));
@@ -56,6 +56,21 @@ LinuxGameController::LinuxGameController(Emulator* emu, int deviceID, int fileDe
 	_device = device;
 	_fd = fileDescriptor;
 	memset(_axisDefaultValue, 0, sizeof(_axisDefaultValue));
+
+	_rumbleEffect.reset(new ff_effect());
+	memset(_rumbleEffect.get(), 0, sizeof(ff_effect));
+	_rumbleEffect->type = FF_RUMBLE;
+	_rumbleEffect->id = -1;
+	_rumbleEffect->u.rumble.strong_magnitude = 0x8000;
+	_rumbleEffect->u.rumble.weak_magnitude = 0x8000;
+	_rumbleEffect->replay.length = 2000;
+	_rumbleEffect->replay.delay = 0;
+
+	int rc = ioctl(_fd, EVIOCSFF, _rumbleEffect.get());
+	if(rc < 0) {
+		MessageManager::Log("Could not initialize force feedback effect");
+		_rumbleEffect.reset();
+	}
 
 	_eventThread = std::thread([=]() {
 		int rc;
@@ -136,68 +151,71 @@ bool LinuxGameController::CheckAxis(unsigned int code, bool forPositive)
 
 bool LinuxGameController::IsButtonPressed(int buttonNumber)
 {
+	bool pressed = false;
 	switch(buttonNumber) {
-		case 0: return libevdev_get_event_value(_device, EV_KEY, BTN_A) == 1;
-		case 1: return libevdev_get_event_value(_device, EV_KEY, BTN_B) == 1;
-		case 2: return libevdev_get_event_value(_device, EV_KEY, BTN_C) == 1;
-		case 3: return libevdev_get_event_value(_device, EV_KEY, BTN_X) == 1;
-		case 4: return libevdev_get_event_value(_device, EV_KEY, BTN_Y) == 1;
-		case 5: return libevdev_get_event_value(_device, EV_KEY, BTN_Z) == 1;
-		case 6: return libevdev_get_event_value(_device, EV_KEY, BTN_TL) == 1;
-		case 7: return libevdev_get_event_value(_device, EV_KEY, BTN_TR) == 1;
-		case 8: return libevdev_get_event_value(_device, EV_KEY, BTN_TL2) == 1;
-		case 9: return libevdev_get_event_value(_device, EV_KEY, BTN_TR2) == 1;
-		case 10: return libevdev_get_event_value(_device, EV_KEY, BTN_SELECT) == 1;
-		case 11: return libevdev_get_event_value(_device, EV_KEY, BTN_START) == 1;
-		case 12: return libevdev_get_event_value(_device, EV_KEY, BTN_THUMBL) == 1;
-		case 13: return libevdev_get_event_value(_device, EV_KEY, BTN_THUMBR) == 1;
+		case 0: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_A) == 1; break;
+		case 1: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_B) == 1; break;
+		case 2: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_C) == 1; break;
+		case 3: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_X) == 1; break;
+		case 4: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_Y) == 1; break;
+		case 5: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_Z) == 1; break;
+		case 6: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TL) == 1; break;
+		case 7: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TR) == 1; break;
+		case 8: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TL2) == 1; break;
+		case 9: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TR2) == 1; break;
+		case 10: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_SELECT) == 1; break;
+		case 11: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_START) == 1; break;
+		case 12: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_THUMBL) == 1; break;
+		case 13: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_THUMBR) == 1; break;
 
-		case 14: return CheckAxis(ABS_X, true);
-		case 15: return CheckAxis(ABS_X, false);
-		case 16: return CheckAxis(ABS_Y, true);
-		case 17: return CheckAxis(ABS_Y, false); 
-		case 18: return CheckAxis(ABS_Z, true);
-		case 19: return CheckAxis(ABS_Z, false);		
-		case 20: return CheckAxis(ABS_RX, true);
-		case 21: return CheckAxis(ABS_RX, false);		
-		case 22: return CheckAxis(ABS_RY, true);
-		case 23: return CheckAxis(ABS_RY, false);				
-		case 24: return CheckAxis(ABS_RZ, true);
-		case 25: return CheckAxis(ABS_RZ, false);		
+		case 14: pressed = CheckAxis(ABS_X, true); break;
+		case 15: pressed = CheckAxis(ABS_X, false); break;
+		case 16: pressed = CheckAxis(ABS_Y, true); break;
+		case 17: pressed = CheckAxis(ABS_Y, false); break;
+		case 18: pressed = CheckAxis(ABS_Z, true); break;
+		case 19: pressed = CheckAxis(ABS_Z, false); break;
+		case 20: pressed = CheckAxis(ABS_RX, true); break;
+		case 21: pressed = CheckAxis(ABS_RX, false); break;
+		case 22: pressed = CheckAxis(ABS_RY, true); break;
+		case 23: pressed = CheckAxis(ABS_RY, false); break;
+		case 24: pressed = CheckAxis(ABS_RZ, true); break;
+		case 25: pressed = CheckAxis(ABS_RZ, false); break;
 
-		case 26: return CheckAxis(ABS_HAT0X, true);
-		case 27: return CheckAxis(ABS_HAT0X, false);		
-		case 28: return CheckAxis(ABS_HAT0Y, true);
-		case 29: return CheckAxis(ABS_HAT0Y, false);				
-		case 30: return CheckAxis(ABS_HAT1X, true);
-		case 31: return CheckAxis(ABS_HAT1X, false);		
-		case 32: return CheckAxis(ABS_HAT1Y, true);
-		case 33: return CheckAxis(ABS_HAT1Y, false);
-		case 34: return CheckAxis(ABS_HAT2X, true);
-		case 35: return CheckAxis(ABS_HAT2X, false);		
-		case 36: return CheckAxis(ABS_HAT2Y, true);
-		case 37: return CheckAxis(ABS_HAT2Y, false);
-		case 38: return CheckAxis(ABS_HAT3X, true);
-		case 39: return CheckAxis(ABS_HAT3X, false);		
-		case 40: return CheckAxis(ABS_HAT3Y, true);
-		case 41: return CheckAxis(ABS_HAT3Y, false);
+		case 26: pressed = CheckAxis(ABS_HAT0X, true); break;
+		case 27: pressed = CheckAxis(ABS_HAT0X, false); break;
+		case 28: pressed = CheckAxis(ABS_HAT0Y, true); break;
+		case 29: pressed = CheckAxis(ABS_HAT0Y, false); break;
+		case 30: pressed = CheckAxis(ABS_HAT1X, true); break;
+		case 31: pressed = CheckAxis(ABS_HAT1X, false); break;
+		case 32: pressed = CheckAxis(ABS_HAT1Y, true); break;
+		case 33: pressed = CheckAxis(ABS_HAT1Y, false); break;
+		case 34: pressed = CheckAxis(ABS_HAT2X, true); break;
+		case 35: pressed = CheckAxis(ABS_HAT2X, false); break;
+		case 36: pressed = CheckAxis(ABS_HAT2Y, true); break;
+		case 37: pressed = CheckAxis(ABS_HAT2Y, false); break;
+		case 38: pressed = CheckAxis(ABS_HAT3X, true); break;
+		case 39: pressed = CheckAxis(ABS_HAT3X, false); break;
+		case 40: pressed = CheckAxis(ABS_HAT3Y, true); break;
+		case 41: pressed = CheckAxis(ABS_HAT3Y, false); break;
 
-		case 42: return libevdev_get_event_value(_device, EV_KEY, BTN_TRIGGER) == 1;
-		case 43: return libevdev_get_event_value(_device, EV_KEY, BTN_THUMB) == 1;
-		case 44: return libevdev_get_event_value(_device, EV_KEY, BTN_THUMB2) == 1;
-		case 45: return libevdev_get_event_value(_device, EV_KEY, BTN_TOP) == 1;
-		case 46: return libevdev_get_event_value(_device, EV_KEY, BTN_TOP2) == 1;
-		case 47: return libevdev_get_event_value(_device, EV_KEY, BTN_PINKIE) == 1;
-		case 48: return libevdev_get_event_value(_device, EV_KEY, BTN_BASE) == 1;
-		case 49: return libevdev_get_event_value(_device, EV_KEY, BTN_BASE2) == 1;
-		case 50: return libevdev_get_event_value(_device, EV_KEY, BTN_BASE3) == 1;
-		case 51: return libevdev_get_event_value(_device, EV_KEY, BTN_BASE4) == 1;
-		case 52: return libevdev_get_event_value(_device, EV_KEY, BTN_BASE5) == 1;
-		case 53: return libevdev_get_event_value(_device, EV_KEY, BTN_BASE6) == 1;
-		case 54: return libevdev_get_event_value(_device, EV_KEY, BTN_DEAD) == 1;		
+		case 42: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TRIGGER) == 1; break;
+		case 43: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_THUMB) == 1; break;
+		case 44: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_THUMB2) == 1; break;
+		case 45: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TOP) == 1; break;
+		case 46: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TOP2) == 1; break;
+		case 47: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_PINKIE) == 1; break;
+		case 48: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE) == 1; break;
+		case 49: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE2) == 1; break;
+		case 50: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE3) == 1; break;
+		case 51: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE4) == 1; break;
+		case 52: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE5) == 1; break;
+		case 53: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE6) == 1; break;
+		case 54: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_DEAD) == 1; break;
 	}
 
-	return false;
+	_enableForceFeedback |= pressed;
+
+	return pressed;
 }
 
 optional<int16_t> LinuxGameController::GetAxisPosition(int axis)
@@ -226,6 +244,31 @@ optional<int16_t> LinuxGameController::GetAxisPosition(int axis)
 
 	int16_t axisValue = (ratio - 0.5) * 2 * INT16_MAX;
 	return axis & 0x01 ? axisValue : -axisValue;
+}
+
+void LinuxGameController::SetForceFeedback(uint16_t magnitude)
+{
+	if(!_rumbleEffect || !_enableForceFeedback) {
+		return;
+	}
+
+	_rumbleEffect->u.rumble.strong_magnitude = magnitude;
+	_rumbleEffect->u.rumble.weak_magnitude = magnitude;
+	int rc = ioctl(_fd, EVIOCSFF, _rumbleEffect.get());
+	if(rc < 0) {
+		//MessageManager::Log("Could not update force feedback effect.");
+		return;
+	}
+
+	struct input_event play = {};
+	play.type = EV_FF;
+	play.code = _rumbleEffect->id;
+	play.value = 1;
+	
+	rc = write(_fd, (const void*)&play, sizeof(play));
+	if(rc < 0) {
+		//MessageManager::Log("Could not play force feedback effect.");
+	}
 }
 
 bool LinuxGameController::IsDisconnected()

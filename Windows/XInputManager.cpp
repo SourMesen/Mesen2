@@ -7,8 +7,7 @@ XInputManager::XInputManager(Emulator* emu)
 {
 	_emu = emu;
 	for(int i = 0; i < XUSER_MAX_COUNT; i++) {
-		_gamePadStates.push_back(unique_ptr<XINPUT_STATE>(new XINPUT_STATE()));
-		_gamePadConnected.push_back(true);
+		_gamePadConnected[i] = true;
 	}
 }
 
@@ -19,10 +18,10 @@ void XInputManager::RefreshState()
 		if(_gamePadConnected[i]) {
 			if(XInputGetState(i, &state) != ERROR_SUCCESS) {
 				//XInputGetState is incredibly slow when no controller is plugged in
-				ZeroMemory(_gamePadStates[i].get(), sizeof(XINPUT_STATE));
+				ZeroMemory(&_gamePadStates[i], sizeof(XINPUT_STATE));
 				_gamePadConnected[i] = false;
 			} else {
-				*_gamePadStates[i] = state;
+				_gamePadStates[i] = state;
 			}
 		}
 	}
@@ -52,26 +51,31 @@ void XInputManager::UpdateDeviceList()
 bool XInputManager::IsPressed(uint8_t gamepadPort, uint8_t button)
 {
 	if(_gamePadConnected[gamepadPort]) {
-		XINPUT_GAMEPAD &gamepad = _gamePadStates[gamepadPort]->Gamepad;
+		XINPUT_GAMEPAD &gamepad = _gamePadStates[gamepadPort].Gamepad;
+		bool pressed = false;
 		if(button <= 16) {
 			WORD xinputButton = 1 << (button - 1);
-			return (_gamePadStates[gamepadPort]->Gamepad.wButtons & xinputButton) != 0;
+			pressed = (_gamePadStates[gamepadPort].Gamepad.wButtons & xinputButton) != 0;
 		} else {
 			double ratio = _emu->GetSettings()->GetControllerDeadzoneRatio() * 2;
 
 			switch(button) {
-				case 17: return gamepad.bLeftTrigger > (XINPUT_GAMEPAD_TRIGGER_THRESHOLD * ratio);
-				case 18: return gamepad.bRightTrigger > (XINPUT_GAMEPAD_TRIGGER_THRESHOLD * ratio);
-				case 19: return gamepad.sThumbRY > (XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * ratio);
-				case 20: return gamepad.sThumbRY < -(XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * ratio);
-				case 21: return gamepad.sThumbRX < -(XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * ratio);
-				case 22: return gamepad.sThumbRX > (XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * ratio);
-				case 23: return gamepad.sThumbLY > (XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE * ratio);
-				case 24: return gamepad.sThumbLY < -(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE * ratio);
-				case 25: return gamepad.sThumbLX < -(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE * ratio);
-				case 26: return gamepad.sThumbLX > (XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE * ratio);
+				case 17: pressed = gamepad.bLeftTrigger > (XINPUT_GAMEPAD_TRIGGER_THRESHOLD * ratio); break;
+				case 18: pressed = gamepad.bRightTrigger > (XINPUT_GAMEPAD_TRIGGER_THRESHOLD * ratio); break;
+				case 19: pressed = gamepad.sThumbRY > (XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * ratio); break;
+				case 20: pressed = gamepad.sThumbRY < -(XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * ratio); break;
+				case 21: pressed = gamepad.sThumbRX < -(XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * ratio); break;
+				case 22: pressed = gamepad.sThumbRX > (XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * ratio); break;
+				case 23: pressed = gamepad.sThumbLY > (XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE * ratio); break;
+				case 24: pressed = gamepad.sThumbLY < -(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE * ratio); break;
+				case 25: pressed = gamepad.sThumbLX < -(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE * ratio); break;
+				case 26: pressed = gamepad.sThumbLX > (XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE * ratio); break;
 			}
 		}
+
+		_enableForceFeedback[gamepadPort] |= pressed;
+
+		return pressed;
 	}
 	return false;
 }
@@ -79,7 +83,7 @@ bool XInputManager::IsPressed(uint8_t gamepadPort, uint8_t button)
 optional<int16_t> XInputManager::GetAxisPosition(uint8_t port, int axis)
 {
 	if(_gamePadConnected[port]) {
-		XINPUT_GAMEPAD& gamepad = _gamePadStates[port]->Gamepad;
+		XINPUT_GAMEPAD& gamepad = _gamePadStates[port].Gamepad;
 		switch(axis - 27) {
 			case 0: return gamepad.sThumbLY;
 			case 1: return gamepad.sThumbLX;
@@ -89,4 +93,17 @@ optional<int16_t> XInputManager::GetAxisPosition(uint8_t port, int axis)
 	}
 
 	return std::nullopt;
+}
+
+void XInputManager::SetForceFeedback(uint16_t magnitude)
+{
+	XINPUT_VIBRATION settings = {};
+	settings.wLeftMotorSpeed = magnitude;
+	settings.wRightMotorSpeed = magnitude;
+
+	for(int i = 0; i < XUSER_MAX_COUNT; i++) {
+		if(_enableForceFeedback[i]) {
+			XInputSetState(i, &settings);
+		}
+	}
 }

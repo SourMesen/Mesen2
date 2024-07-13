@@ -16,6 +16,7 @@ namespace Mesen.Config
 		[Reactive] [MinMax(0, 4)] public UInt32 ControllerDeadzoneSize { get; set; } = 2;
 		[Reactive] [MinMax(0, 9)] public UInt32 MouseSensitivity { get; set; } = 5;
 		[Reactive] public bool HidePointerForLightGuns { get; set; } = false;
+		[Reactive][MinMax(0, 10)] public UInt32 ForceFeedbackIntensity { get; set; } = 5;
 
 		[Reactive] public InputDisplayPosition DisplayInputPosition { get; set; } = InputDisplayPosition.BottomRight;
 		[Reactive] public bool DisplayInputPort1 { get; set; } = false;
@@ -46,8 +47,9 @@ namespace Mesen.Config
 				DisplayInputPort6 = this.DisplayInputPort6,
 				DisplayInputPort7 = this.DisplayInputPort7,
 				DisplayInputPort8 = this.DisplayInputPort8,
-				DisplayInputHorizontally = this.DisplayInputHorizontally
-			});
+				DisplayInputHorizontally = this.DisplayInputHorizontally,
+				ForceFeedbackIntensity = Math.Clamp(0.1 * this.ForceFeedbackIntensity, 0.0, 1.0)
+			}); ;
 		}
 	}
 
@@ -232,6 +234,8 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort7;
 		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort8;
 		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputHorizontally;
+
+		public double ForceFeedbackIntensity;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]

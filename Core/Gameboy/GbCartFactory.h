@@ -35,7 +35,7 @@ private:
 			bool isMbc30 = footer.GetRamSize() >= 0x10000;
 			return new GbMbc3(emu, footer.HasRtc(), isMbc30);
 		} else if(mapperId == "MBC5") {
-			return new GbMbc5();
+			return new GbMbc5(footer.HasRumble());
 		} else if(mapperId == "MBC6") {
 			return new GbMbc6();
 		} else if(mapperId == "MBC7") {
@@ -57,8 +57,7 @@ private:
 			case 0x00:
 				return new GbCart();
 
-			case 0x01: case 0x02: case 0x03:
-			{
+			case 0x01: case 0x02: case 0x03: {
 				//When the boot rom logo appears at both of these offsets, this is usually a multicart collection
 				//which uses a MBC1 chip with slightly different wiring.
 				bool isMbc1m = prgRom.size() > 0x40134 && memcmp(&prgRom[0x104], &prgRom[0x40104], 0x30) == 0;
@@ -80,8 +79,10 @@ private:
 				return new GbMbc3(emu, hasRtc, isMbc30);
 			}
 
-			case 0x19: case 0x1A: case 0x1B: case 0x1C: case 0x1D: case 0x1E:
-				return new GbMbc5();
+			case 0x19: case 0x1A: case 0x1B: case 0x1C: case 0x1D: case 0x1E: {
+				bool hasRumble = header.CartType >= 0x1C;
+				return new GbMbc5(hasRumble);
+			}
 
 			case 0x20:
 				return new GbMbc6();

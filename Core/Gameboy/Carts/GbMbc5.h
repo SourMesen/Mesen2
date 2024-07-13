@@ -3,15 +3,23 @@
 #include "Gameboy/Carts/GbCart.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "Utilities/Serializer.h"
+#include "Shared/KeyManager.h"
 
 class GbMbc5 : public GbCart
 {
 private:
+	bool _hasRumble = false;
+
 	bool _ramEnabled = false;
 	uint16_t _prgBank = 1;
 	uint8_t _ramBank = 0;
 
 public:
+	GbMbc5(bool hasRumble)
+	{
+		_hasRumble = hasRumble;
+	}
+
 	void InitCart() override
 	{
 		_memoryManager->MapRegisters(0x0000, 0x5FFF, RegisterAccess::Write);
@@ -58,7 +66,12 @@ public:
 
 			case 0x4000:
 			case 0x5000:
-				_ramBank = value & 0x0F;
+				if(_hasRumble) {
+					_ramBank = value & 0x07;
+					KeyManager::SetForceFeedback((value & 0x08) ? 0xFFFF : 0);
+				} else {
+					_ramBank = value & 0x0F;
+				}
 				break;
 		}
 		RefreshMappings();

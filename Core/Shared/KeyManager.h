@@ -35,4 +35,6 @@ public:
 	
 	static void SetMousePosition(Emulator* emu, double x, double y);
 	static MousePosition GetMousePosition();
+
+	static void SetForceFeedback(uint16_t magnitude);
 };

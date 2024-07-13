@@ -325,6 +325,8 @@ struct InputConfig
 	InputDisplayPosition DisplayInputPosition = InputDisplayPosition::TopLeft;
 	bool DisplayInputPort[8] = { };
 	bool DisplayInputHorizontally = true;
+
+	double ForceFeedbackIntensity = 1.0;
 };
 
 enum class RamState

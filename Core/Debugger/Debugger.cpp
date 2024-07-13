@@ -434,7 +434,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 	
 	bool notificationSent = false;
 	if(source != BreakSource::Unspecified || _breakRequestCount == 0) {
-		_emu->GetSoundMixer()->StopAudio();
+		_emu->OnBeforePause(false);
 
 		if(_settings->GetDebugConfig().SingleBreakpointPerInstruction) {
 			_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints = true;

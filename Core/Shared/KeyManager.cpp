@@ -134,3 +134,10 @@ MousePosition KeyManager::GetMousePosition()
 {
 	return _mousePosition;
 }
+
+void KeyManager::SetForceFeedback(uint16_t magnitude)
+{
+	if(_keyManager != nullptr) {
+		_keyManager->SetForceFeedback(magnitude * _settings->GetInputConfig().ForceFeedbackIntensity);
+	}
+}

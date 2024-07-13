@@ -213,3 +213,10 @@ void LinuxKeyManager::SetDisabled(bool disabled)
 {
 	_disableAllKeys = disabled;
 }
+
+void LinuxKeyManager::SetForceFeedback(uint16_t magnitude)
+{
+	for(auto& controller : _controllers) {
+		controller->SetForceFeedback(magnitude);
+	}
+}

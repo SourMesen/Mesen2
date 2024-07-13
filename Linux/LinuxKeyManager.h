@@ -45,4 +45,6 @@ public:
 	void ResetKeyState() override;
 
 	void SetDisabled(bool disabled) override;
+
+	void SetForceFeedback(uint16_t magnitude) override;
 };
