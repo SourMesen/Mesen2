@@ -44,6 +44,9 @@ namespace Mesen.Debugger.Controls
 		public SpritePreviewModel Model { get; private init; }
 		public SpriteViewerConfig Config { get; private init; }
 
+		[Obsolete("For designer only")]
+		public SpritePreviewPanel() : this(new(), new()) { }
+
 		public SpritePreviewPanel(SpritePreviewModel model, SpriteViewerConfig config)
 		{
 			InitializeComponent();

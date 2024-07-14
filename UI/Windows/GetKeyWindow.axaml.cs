@@ -81,7 +81,7 @@ namespace Mesen.Windows
 		{
 			e.Handled = true;
 
-			if(!_allowKeyboardOnly && (!_keyPressedStamp.TryGetValue(e.Key, out long stamp) || ((_stopWatch.ElapsedTicks - stamp) * 1000 / Stopwatch.Frequency) < 10)) {
+			if(e.Key.IsSpecialKey() && !_allowKeyboardOnly && (!_keyPressedStamp.TryGetValue(e.Key, out long stamp) || ((_stopWatch.ElapsedTicks - stamp) * 1000 / Stopwatch.Frequency) < 10)) {
 				//Key up received without key down, or key pressed for less than 10 ms, pretend the key was pressed for 50ms
 				//Some special keys can behave this way (e.g printscreen)
 				DbgShortcutKey = new DbgShortKeys(e.KeyModifiers, e.Key);

@@ -599,7 +599,7 @@ namespace Mesen.Windows
 			}
 
 			if(e.Key != Key.None) {
-				if(!_keyPressedStamp.TryGetValue(e.Key, out long stamp) || ((_stopWatch.ElapsedTicks - stamp) * 1000 / Stopwatch.Frequency) < 10) {
+				if(e.Key.IsSpecialKey() && (!_keyPressedStamp.TryGetValue(e.Key, out long stamp) || ((_stopWatch.ElapsedTicks - stamp) * 1000 / Stopwatch.Frequency) < 10)) {
 					//Key up received without key down, or key pressed for less than 10 ms, pretend the key was pressed for 50ms
 					//Some special keys can behave this way (e.g printscreen)
 					InputApi.SetKeyState((UInt16)e.Key, true);
