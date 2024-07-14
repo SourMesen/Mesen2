@@ -9,22 +9,31 @@
 	mc:Ignorable="d" d:DesignWidth="280" d:DesignHeight="200"
 	x:DataType="vm:SpritePreviewModel"
 	x:Class="Mesen.Debugger.Controls.SpritePreviewPanel"
+	Name="root"
 >
 	<Border
 		Background="#333"
-		BorderThickness="1"
+		BorderThickness="{Binding BorderSize, ElementName=root}"
 		BorderBrush="Gray"
 		HorizontalAlignment="Stretch"
 		VerticalAlignment="Stretch"
 		Margin="0 0 1 1"
 	>
-		<Panel Background="{StaticResource ViewerBgBrush}" HorizontalAlignment="Center" VerticalAlignment="Center">
-			<dc:PictureViewer
-				Source="{Binding SpritePreview}"
-				Zoom="{Binding SpritePreviewZoom}"
-				ShowMousePosition="False"
-				AllowSelection="False"
-			/>
+		<Panel Width="{Binding InnerWidth, ElementName=root}" Height="{Binding InnerHeight, ElementName=root}">
+			<Panel Background="{StaticResource ViewerBgBrush}" HorizontalAlignment="Center" VerticalAlignment="Center">
+				<dc:PictureViewer
+					Source="{Binding SpritePreview}"
+					Zoom="{Binding SpritePreviewZoom}"
+					ShowMousePosition="False"
+					AllowSelection="False"
+				/>
+				<Panel
+					Background="#80000000"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					IsVisible="{Binding FadePreview, ElementName=root}"
+				/>
+			</Panel>
 		</Panel>
 	</Border>
 </UserControl>

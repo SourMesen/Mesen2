@@ -999,10 +999,12 @@
 			<Control ID="colPriority">Priority</Control>
 			<Control ID="colPalette">Palette</Control>
 			<Control ID="colFlags">Flags</Control>
+			<Control ID="colVisible">Visible</Control>
 
 			<Control ID="chkShowOutline">Show outline around sprites</Control>
 			<Control ID="chkShowListView">Show list view</Control>
 			<Control ID="chkShowOffscreenRegions">Show offscreen regions</Control>
+			<Control ID="chkDimOffscreenSprites">Dim offscreen sprites (grid)</Control>
 			<Control ID="lblBackground">Background:</Control>
 			<Control ID="lblDataSource">Data Source</Control>
 			<Control ID="lblSource">Source:</Control>

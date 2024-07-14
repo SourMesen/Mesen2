@@ -394,9 +394,9 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				for(int i = 0; i < spriteCount; i++) {
-					SpritePreviewPanel preview = new SpritePreviewPanel();
-					preview.Height = 2 + 32.0 / dpiScale;
-					preview.Width = 2 + 32.0 / dpiScale;
+					SpritePreviewPanel preview = new SpritePreviewPanel(SpritePreviews[i], Config);
+					preview.InnerHeight = (32.0 / dpiScale);
+					preview.InnerWidth = (32.0 / dpiScale);
 					Grid.SetColumn(preview, i % 8);
 					Grid.SetRow(preview, i / 8);
 

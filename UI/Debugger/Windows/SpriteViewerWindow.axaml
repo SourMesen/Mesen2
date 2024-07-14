@@ -55,6 +55,7 @@
 				<StackPanel Margin="3">
 					<CheckBox Content="{l:Translate chkShowOutline}" IsChecked="{Binding Config.ShowOutline}" />
 					<CheckBox Content="{l:Translate chkShowOffscreenRegions}" IsChecked="{Binding Config.ShowOffscreenRegions}" />
+					<CheckBox Content="{l:Translate chkDimOffscreenSprites}" IsChecked="{Binding Config.DimOffscreenSprites}" />
 					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{Binding ListView.ShowListView}" />
 
 					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
@@ -217,6 +218,7 @@
 						<DataBoxTextColumn ColumnName="Palette" Header="{l:Translate colPalette}" InitialWidth="67" Binding="{Binding Palette, DataType={x:Type dvm:SpritePreviewModel}}" />
 						<DataBoxTextColumn ColumnName="Priority" Header="{l:Translate colPriority}" InitialWidth="83" Binding="{Binding Priority, Converter={StaticResource Enum}, DataType={x:Type dvm:SpritePreviewModel}}" />
 						<DataBoxTextColumn ColumnName="Flags" Header="{l:Translate colFlags}" InitialWidth="68" Binding="{Binding Flags, DataType={x:Type dvm:SpritePreviewModel}}" />
+						<DataBoxCheckBoxColumn ColumnName="Visible" Header="{l:Translate colVisible}" InitialWidth="60" Binding="{Binding !FadePreview, DataType={x:Type dvm:SpritePreviewModel}}" />
 					</DataBox.Columns>
 				</DataBox>
 			</Border>

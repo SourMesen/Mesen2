@@ -73,7 +73,8 @@ namespace Mesen.Debugger.ViewModels
 			} },
 			{ "Palette", (a, b) => a.Palette.CompareTo(b.Palette) },
 			{ "Priority", (a, b) => a.Priority.CompareTo(b.Priority) },
-			{ "Flags", (a, b) => string.Compare(a.Flags, b.Flags, StringComparison.OrdinalIgnoreCase) }
+			{ "Flags", (a, b) => string.Compare(a.Flags, b.Flags, StringComparison.OrdinalIgnoreCase) },
+			{ "Visible", (a, b) => a.FadePreview.CompareTo(b.FadePreview) }
 		};
 
 		public void RefreshList(bool force = false)

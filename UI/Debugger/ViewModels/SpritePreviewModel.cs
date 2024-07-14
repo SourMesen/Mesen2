@@ -50,6 +50,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public DynamicBitmap? SpritePreview { get; set; }
 		[Reactive] public double SpritePreviewZoom { get; set; }
+		[Reactive] public bool FadePreview { get; set; }
 
 		public int RealWidth => Width / (DoubleSize == NullableBoolean.True ? 2 : 1);
 		public int RealHeight => Height / (DoubleSize == NullableBoolean.True ? 2 : 1);
@@ -119,6 +120,7 @@ namespace Mesen.Debugger.ViewModels
 			SpritePreviewZoom = 32.0 / Math.Max(Width, Height);
 
 			Visibility = sprite.Visibility;
+			FadePreview = sprite.Visibility != SpriteVisibility.Visible;
 
 			HorizontalMirror = sprite.HorizontalMirror;
 			VerticalMirror = sprite.VerticalMirror;
@@ -196,6 +198,7 @@ namespace Mesen.Debugger.ViewModels
 			dst.Flags = Flags;
 			dst.HorizontalMirror = HorizontalMirror;
 			dst.VerticalMirror = VerticalMirror;
+			dst.FadePreview = FadePreview;
 
 			dst.MosaicEnabled = MosaicEnabled;
 			dst.BlendingEnabled = BlendingEnabled;
