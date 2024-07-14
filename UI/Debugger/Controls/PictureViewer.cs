@@ -558,7 +558,8 @@ namespace Mesen.Debugger.Controls
 			//  First pixel in the preview image keeps the same data as the tooltip that was active before it
 			//Translate fixes a similar refresh issue when LeftClip/TopClip are not 0 (e.g sprite viewer)
 			//  Bottom/right part of the picture were not getting updated
-			Bounds = viewer.Bounds.Inflate(1).Translate(new Vector(viewer.LeftClipSize*viewer.Zoom, viewer.TopClipSize*viewer.Zoom)) * LayoutHelper.GetLayoutScale(viewer);
+			double scale = LayoutHelper.GetLayoutScale(viewer);
+			Bounds = (viewer.Bounds * scale).Inflate(1 * scale).Translate(new Vector(viewer.LeftClipSize * viewer.Zoom, viewer.TopClipSize * viewer.Zoom));
 			_source = (DynamicBitmap)viewer.Source;
 			_zoom = viewer.Zoom;
 			using(var lockedBuffer = ((WriteableBitmap)_source).Lock()) {
