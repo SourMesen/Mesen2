@@ -506,11 +506,13 @@ namespace Mesen.Windows
 						return;
 					}
 
-					WindowState = WindowState.FullScreen;
-
 					Task.Run(() => {
 						EmuApi.SetExclusiveFullscreenMode(true, TryGetPlatformHandle()?.Handle ?? IntPtr.Zero);
 						_preventFullscreenToggle = false;
+
+						Dispatcher.UIThread.Post(() => {
+							WindowState = WindowState.FullScreen;
+						});
 					});
 				} else {
 					WindowState = WindowState.FullScreen;
