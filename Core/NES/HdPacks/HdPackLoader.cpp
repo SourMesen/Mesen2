@@ -165,7 +165,7 @@ bool HdPackLoader::LoadPack()
 				continue;
 			}
 
-			if(lineContent[lineContent.size() - 1] == '\r') {
+			while(lineContent.size() > 0 && (lineContent[lineContent.size() - 1] == '\r' || lineContent[lineContent.size() - 1] == '\n')) {
 				lineContent = lineContent.substr(0, lineContent.size() - 1);
 			}
 
