@@ -432,7 +432,8 @@ enum class GbaSaveType
 enum class GbaCartridgeType
 {
 	Default,
-	TiltSensor
+	TiltSensor,
+	Rtc
 };
 
 struct GbaConfig

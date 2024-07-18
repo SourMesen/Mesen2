@@ -35,6 +35,8 @@
     <ClInclude Include="Gameboy\Carts\GbMbc7Accelerometer.h" />
     <ClInclude Include="Gameboy\Carts\GbWisdomTree.h" />
     <ClInclude Include="Gameboy\GbxFooter.h" />
+    <ClInclude Include="GBA\Cart\GbaGpio.h" />
+    <ClInclude Include="GBA\Cart\GbaRtc.h" />
     <ClInclude Include="GBA\Cart\GbaTiltSensor.h" />
     <ClInclude Include="GBA\APU\GbaApu.h" />
     <ClInclude Include="GBA\APU\GbaApuFifo.h" />
@@ -776,6 +778,8 @@
     <ClCompile Include="GBA\APU\GbaSquareChannel.cpp" />
     <ClCompile Include="GBA\APU\GbaWaveChannel.cpp" />
     <ClCompile Include="GBA\Cart\GbaCart.cpp" />
+    <ClCompile Include="GBA\Cart\GbaGpio.cpp" />
+    <ClCompile Include="GBA\Cart\GbaRtc.cpp" />
     <ClCompile Include="GBA\Debugger\DummyGbaCpu.cpp" />
     <ClCompile Include="GBA\Debugger\GbaDebugger.cpp" />
     <ClCompile Include="GBA\Debugger\GbaDisUtils.cpp" />

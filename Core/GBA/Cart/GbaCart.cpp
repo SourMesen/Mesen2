@@ -5,7 +5,10 @@
 #include "GBA/Cart/GbaEeprom.h"
 #include "GBA/Cart/GbaFlash.h"
 #include "GBA/Cart/GbaTiltSensor.h"
+#include "GBA/Cart/GbaGpio.h"
+#include "GBA/Cart/GbaRtc.h"
 #include "Shared/Emulator.h"
+#include "Shared/BatteryManager.h"
 #include "Shared/BaseControlManager.h"
 #include "Utilities/Serializer.h"
 
@@ -21,9 +24,16 @@ void GbaCart::Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryM
 {
 	_emu = emu;
 
-	if(cartType == GbaCartridgeType::TiltSensor) {
-		_tiltSensor.reset(new GbaTiltSensor(emu));
-		console->GetControlManager()->AddSystemControlDevice(_tiltSensor);
+	switch(cartType) {
+		case GbaCartridgeType::TiltSensor:
+			_tiltSensor.reset(new GbaTiltSensor(emu));
+			console->GetControlManager()->AddSystemControlDevice(_tiltSensor);
+			break;
+
+		case GbaCartridgeType::Rtc:
+			_rtc.reset(new GbaRtc(emu));
+			_gpio.reset(new GbaGpio(_rtc.get()));
+			break;
 	}
 
 	_prgRom = (uint8_t*)_emu->GetMemory(MemoryType::GbaPrgRom).Memory;
@@ -58,6 +68,8 @@ void GbaCart::WriteRom(uint32_t addr, uint8_t value)
 {
 	if((addr & _eepromMask) == _eepromAddr) {
 		WriteEeprom(addr, value);
+	} else if(_gpio && addr >= 0x80000C4 && addr <= 0x80000C9) {
+		_gpio->Write(addr, value);
 	}
 }
 
@@ -145,6 +157,28 @@ void GbaCart::DebugWriteRam(uint32_t addr, uint8_t value)
 	}
 }
 
+void GbaCart::LoadBattery()
+{
+	if(_saveRam) {
+		_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
+	}
+
+	if(_rtc) {
+		_rtc->LoadBattery();
+	}
+}
+
+void GbaCart::SaveBattery()
+{
+	if(_saveRam && (_flash || _eeprom || _saveRamDirty)) {
+		_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
+	}
+
+	if(_rtc) {
+		_rtc->SaveBattery();
+	}
+}
+
 void GbaCart::Serialize(Serializer& s)
 {
 	if(_eeprom) {
@@ -155,5 +189,11 @@ void GbaCart::Serialize(Serializer& s)
 	}
 	if(_tiltSensor) {
 		SV(_tiltSensor);
+	}
+	if(_gpio) {
+		SV(_gpio);
+	}
+	if(_rtc) {
+		SV(_rtc);
 	}
 }

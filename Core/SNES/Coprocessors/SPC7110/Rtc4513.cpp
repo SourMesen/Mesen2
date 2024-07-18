@@ -123,7 +123,8 @@ void Rtc4513::UpdateTime()
 	_regs[10] = year % 10;
 	_regs[11] = year / 10;
 	
-	_regs[12] = (newTm.tm_wday - dowGap) % 7;
+	int dow = newTm.tm_wday - dowGap;
+	_regs[12] = dow < 0 ? (dow + 7) : (dow % 7);
 
 	_lastTime = currentTime;
 }

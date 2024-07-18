@@ -151,7 +151,14 @@ void GbaConsole::InitCart(VirtualFile& romFile, vector<uint8_t>& romData)
 	_cartType = GbaCartridgeType::Default;
 
 	if(gameCode == "KYGE" || gameCode == "KHPJ") {
+		MessageManager::Log("Tilt Sensor detected.");
 		_cartType = GbaCartridgeType::TiltSensor;
+	}
+
+	string rtcMarker = "SIIRTC_V001";
+	if(std::search(romData.begin(), romData.end(), rtcMarker.begin(), rtcMarker.end()) != romData.end()) {
+		MessageManager::Log("RTC detected.");
+		_cartType = GbaCartridgeType::Rtc;
 	}
 
 	InitSaveRam(gameCode, romData);
@@ -240,18 +247,12 @@ void GbaConsole::InitSaveRam(string& gameCode, vector<uint8_t>& romData)
 
 void GbaConsole::LoadBattery()
 {
-	if(_saveType != GbaSaveType::None) {
-		_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
-	}
+	_cart->LoadBattery();
 }
 
 void GbaConsole::SaveBattery()
 {
-	if(_saveType != GbaSaveType::None) {
-		if(_saveType != GbaSaveType::Sram || _cart->IsSaveRamDirty()) {
-			_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
-		}
-	}
+	_cart->SaveBattery();
 }
 
 GbaState GbaConsole::GetState()
