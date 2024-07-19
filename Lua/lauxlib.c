@@ -777,6 +777,7 @@ int SANDBOX_ALLOW_LOADFILE = 0;
 LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
                                              const char *mode) {
   if (!SANDBOX_ALLOW_LOADFILE) {
+	 luaL_error(L, "I/O functions are disabled by default for security.\nYou can enable them here:\nScript->Settings->Script Window->Restrictions->Allow access to I/O and OS functions.");
     return LUA_ERRERR;
   }
   // ##### MESEN MODIFICATION #####

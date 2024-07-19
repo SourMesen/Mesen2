@@ -72,6 +72,12 @@ public:
 		}
 		return true;
 	}
+	
+	static bool Contains(string& str, const char* content)
+	{
+		size_t length = strlen(content);
+		return std::search(str.begin(), str.end(), content, content+length) != str.end();
+	}
 
 	static string GetString(char* src, uint32_t maxLen)
 	{
