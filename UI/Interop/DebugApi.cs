@@ -253,6 +253,16 @@ namespace Mesen.Interop
 			return indexes;
 		}
 
+		[DllImport(DllPath, EntryPoint = "GetRomHeader")] private static extern void GetRomHeaderWrapper([In, Out] byte[] headerData, ref UInt32 size);
+		public static byte[] GetRomHeader()
+		{
+			UInt32 size = 0x1000;
+			byte[] headerData = new byte[size];
+			DebugApi.GetRomHeaderWrapper(headerData, ref size);
+			Array.Resize(ref headerData, (Int32)size);
+			return headerData;
+		}
+
 		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, [MarshalAs(UnmanagedType.I1)] bool saveAsIps, CdlStripOption cdlStripOption);
 
 		[DllImport(DllPath, EntryPoint = "GetMemoryValues")] private static extern void GetMemoryValuesWrapper(MemoryType type, UInt32 start, UInt32 end, [In, Out] byte[] buffer);

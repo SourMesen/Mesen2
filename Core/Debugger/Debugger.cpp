@@ -152,6 +152,11 @@ DebuggerType* Debugger::GetDebugger()
 	return (DebuggerType*)_debuggers[(int)type].Debugger.get();
 }
 
+IDebugger* Debugger::GetMainDebugger()
+{
+	return _debuggers[(int)_mainCpuType].Debugger.get();
+}
+
 template<CpuType type>
 uint64_t Debugger::GetCpuCycleCount()
 {

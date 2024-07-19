@@ -32,18 +32,12 @@ public class NesHeaderEditViewModel : DisposableViewModel
 
 	public NesHeaderEditViewModel()
 	{
-		byte[] headerBytes = new byte[16];
-		_romInfo = EmuApi.GetRomInfo();
-		string romPath = _romInfo.RomPath;
-		try {
-			//TODOv2, get header from core (to support for patches, etc.)
-			using(FileStream? fileStream = FileHelper.OpenRead(romPath)) {
-				if(fileStream != null) {
-					fileStream.Read(headerBytes, 0, 16);
-				}
-			}
-		} catch { }
+		byte[] headerBytes = DebugApi.GetRomHeader();
+		if(headerBytes.Length < 16) {
+			Array.Resize(ref headerBytes, 16);
+		}
 
+		_romInfo = EmuApi.GetRomInfo();
 		Header = NesHeader.FromBytes(headerBytes);
 
 		AddDisposable(this.WhenAnyValue(x => x.Header.SaveRam, x => x.Header.ChrRamBattery).Subscribe(x => {

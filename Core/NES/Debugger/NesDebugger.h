@@ -91,6 +91,7 @@ public:
 	ITraceLogger* GetTraceLogger() override;
 	PpuTools* GetPpuTools() override;
 	bool SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
+	void GetRomHeader(uint8_t* headerData, uint32_t& size) override;
 	CallstackManager* GetCallstackManager() override;
 	IAssembler* GetAssembler() override;
 	BaseEventManager* GetEventManager() override;

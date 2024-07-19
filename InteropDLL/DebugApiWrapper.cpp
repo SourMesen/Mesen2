@@ -2,6 +2,7 @@
 #include "Core/Shared/Emulator.h"
 #include "Core/Shared/DebuggerRequest.h"
 #include "Core/Debugger/Debugger.h"
+#include "Core/Debugger/IDebugger.h"
 #include "Core/Debugger/MemoryDumper.h"
 #include "Core/Debugger/MemoryAccessCounter.h"
 #include "Core/Debugger/CdlManager.h"
@@ -191,5 +192,6 @@ extern "C"
 
 	DllExport uint32_t __stdcall AssembleCode(CpuType cpuType, char* code, uint32_t startAddress, int16_t* assembledOutput) { return WithTool(uint32_t, GetAssembler(cpuType), AssembleCode(code, startAddress, assembledOutput)); }
 	
+	DllExport void __stdcall GetRomHeader(uint8_t* headerData, uint32_t& size) { WithToolVoid(GetMainDebugger(), GetRomHeader(headerData, size)); }
 	DllExport bool __stdcall SaveRomToDisk(char* filename, bool saveIpsFile, CdlStripOption cdlStripOption) { return WithDebugger(bool, SaveRomToDisk(filename, saveIpsFile, cdlStripOption)); }
 };

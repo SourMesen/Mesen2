@@ -178,6 +178,7 @@ public:
 	uint32_t GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t maxLineCount);
 	
 	CpuType GetMainCpuType() { return _mainCpuType; }
+	IDebugger* GetMainDebugger();
 
 	TraceLogFileSaver* GetTraceLogFileSaver() { return _traceLogSaver.get(); }
 	MemoryDumper* GetMemoryDumper() { return _memoryDumper.get(); }

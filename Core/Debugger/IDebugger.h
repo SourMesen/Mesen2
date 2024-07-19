@@ -72,6 +72,8 @@ public:
 	virtual ITraceLogger* GetTraceLogger() = 0;
 	virtual PpuTools* GetPpuTools() { return nullptr; }
 
+	virtual void GetRomHeader(uint8_t* headerData, uint32_t& size) {}
+
 	virtual BaseState& GetState() = 0;
 	virtual void GetPpuState(BaseState& state) {};
 	virtual void SetPpuState(BaseState& state) {};

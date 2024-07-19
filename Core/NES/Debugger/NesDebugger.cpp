@@ -502,6 +502,17 @@ bool NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption 
 	return false;
 }
 
+void NesDebugger::GetRomHeader(uint8_t* headerData, uint32_t& size)
+{
+	if(size < sizeof(NesHeader) || _console->GetRomFormat() != RomFormat::iNes) {
+		size = 0;
+		return;
+	}
+
+	NesHeader header = _mapper->GetRomInfo().Header;
+	memcpy(headerData, &header, sizeof(NesHeader));
+}
+
 void NesDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])
 {
 	BaseControlManager* controlManager = _console->GetControlManager();

@@ -61,6 +61,7 @@ uint64_t GbaRtc::ToDateTime()
 uint8_t GbaRtc::GetCommandLength(Command cmd)
 {
 	switch(cmd) {
+		default:
 		case Command::Reset: return 0;
 		case Command::Status: return 8;
 		case Command::DateTime: return 8 * 7;
