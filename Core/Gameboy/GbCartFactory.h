@@ -7,6 +7,7 @@
 #include "Gameboy/Carts/GbMbc5.h"
 #include "Gameboy/Carts/GbMbc6.h"
 #include "Gameboy/Carts/GbMbc7.h"
+#include "Gameboy/Carts/GbMmm01.h"
 #include "Gameboy/Carts/GbHuc1.h"
 #include "Gameboy/Carts/GbWisdomTree.h"
 #include "Gameboy/GbxFooter.h"
@@ -46,6 +47,8 @@ private:
 			return new GbHuc1();
 		} else if(mapperId == "WISD") {
 			return new GbWisdomTree();
+		} else if(mapperId == "MMM1") {
+			return new GbMmm01();
 		}
 
 		return nullptr;
@@ -68,8 +71,7 @@ private:
 				return new GbMbc2();
 
 			case 0x0B: case 0x0C: case 0x0D:
-				//MMM01
-				break;
+				return new GbMmm01();
 
 			case 0x0F: case 0x10:
 			case 0x11: case 0x12: case 0x13:

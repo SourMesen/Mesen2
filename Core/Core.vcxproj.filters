@@ -2832,6 +2832,9 @@
     <ClInclude Include="GBA\Cart\GbaGpio.h">
       <Filter>GBA\Cart</Filter>
     </ClInclude>
+    <ClInclude Include="Gameboy\Carts\GbMmm01.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

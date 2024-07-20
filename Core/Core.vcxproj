@@ -33,6 +33,7 @@
     <ClInclude Include="Gameboy\Carts\GbMbc6.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc7.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc7Accelerometer.h" />
+    <ClInclude Include="Gameboy\Carts\GbMmm01.h" />
     <ClInclude Include="Gameboy\Carts\GbWisdomTree.h" />
     <ClInclude Include="Gameboy\GbxFooter.h" />
     <ClInclude Include="GBA\Cart\GbaGpio.h" />

@@ -22,9 +22,10 @@
 #include "Shared/BaseControlManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
+#include "Shared/FirmwareHelper.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"
-#include "Shared/FirmwareHelper.h"
+#include "Utilities/CRC32.h"
 
 Gameboy::Gameboy(Emulator* emu, bool allowSgb)
 {
@@ -311,13 +312,6 @@ int32_t Gameboy::GetRelativeAddress(AddressInfo& absAddress)
 	return -1;
 }
 
-GameboyHeader Gameboy::GetHeader()
-{
-	GameboyHeader header;
-	memcpy(&header, _prgRom + Gameboy::HeaderOffset, sizeof(GameboyHeader));
-	return header;
-}
-
 bool Gameboy::IsCpuStopped()
 {
 	return _cpu->GetState().Stopped;
@@ -424,8 +418,7 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 			romData.insert(romData.end(), 0x4000 - (romData.size() & 0x3FFF), 0);
 		}
 
-		GameboyHeader header;
-		memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
+		GameboyHeader header = GetHeader(romData.data(), (uint32_t)romData.size());
 
 		_model = GetEffectiveModel(header);
 		if(_allowSgb && _model != GameboyModel::SuperGameboy) {
@@ -469,6 +462,36 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 	}
 
 	return LoadRomResult::UnknownType;
+}
+
+GameboyHeader Gameboy::GetHeader(uint8_t* romData, uint32_t romSize)
+{
+	int offset = Gameboy::HeaderOffset;
+	if(romSize > 0x8000) {
+		uint32_t logoPosition = (uint32_t)(romSize - 0x8000 + 0x104);
+		if(CRC32::GetCRC(&romData[logoPosition], 0x30) == 0x46195417) {
+			//Found logo at the end of the rom, use this header instead
+			//MMM01 games have the header here because of their default mappings at power on
+			offset = (int)(romSize - 0x8000 + Gameboy::HeaderOffset);
+		}
+	}
+
+	GameboyHeader header;
+	memcpy(&header, romData + offset, sizeof(GameboyHeader));
+
+	if(offset != Gameboy::HeaderOffset) {
+		if(header.CartType == 0x11) {
+			//Mani 4-in-1 has carttype set as $11, but is actually a MMM01 cart
+			header.CartType = 0x0B;
+		}
+	}
+
+	return header;
+}
+
+GameboyHeader Gameboy::GetHeader()
+{
+	return GetHeader(_prgRom, _prgRomSize);
 }
 
 GameboyModel Gameboy::GetEffectiveModel(GameboyHeader& header)
