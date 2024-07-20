@@ -616,7 +616,7 @@ void NesConsole::InitializeInputDevices(GameInputType inputType, GameSystem syst
 void NesConsole::ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_t& value)
 {
 	if(code.Type == CheatType::NesGameGenie && addr >= 0xC020) {
-		if(GetNesConfig().DisableGameGenieBusConflicts) {
+		if(GetNesConfig().DisableGameGenieBusConflicts || _mapper->HasDefaultWorkRam()) {
 			return;
 		}
 

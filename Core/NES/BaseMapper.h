@@ -33,6 +33,7 @@ private:
 	uint32_t _internalRamMask = 0x7FF;
 
 	bool _hasBusConflicts = false;
+	bool _hasDefaultWorkRam = false;
 	
 	bool _allowRegisterRead = false;
 	bool _isReadRegisterAddr[0x10000] = {};
@@ -170,6 +171,8 @@ public:
 
 	GameSystem GetGameSystem();
 	PpuModel GetPpuModel();
+	
+	bool HasDefaultWorkRam();
 
 	virtual void SetRegion(ConsoleRegion region) { }
 	virtual void ProcessCpuClock() { }

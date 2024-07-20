@@ -217,12 +217,6 @@ void GameDatabase::SetGameInfo(uint32_t romCrc, RomData &romData, bool updateRom
 	bool foundInDatabase = result != _gameDatabase.end();
 	if(foundInDatabase) {
 		info = result->second;
-		if(!forHeaderlessRom && info.Board == "UNK") {
-			//Boards marked as UNK should only be used for headerless roms (since their data is unverified)
-			romData.Info.DatabaseInfo = {};
-			return;
-		}
-
 		MessageManager::Log("[DB] Game found in database");
 
 		MessageManager::Log("[DB] Mapper: " + std::to_string(info.MapperID) + "  Sub: " + std::to_string(GetSubMapper(info)));

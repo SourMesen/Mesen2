@@ -478,6 +478,11 @@ void BaseMapper::InitializeChrRam(int32_t chrRamSize)
 	}
 }
 
+bool BaseMapper::HasDefaultWorkRam()
+{
+	return _hasDefaultWorkRam;
+}
+
 void BaseMapper::SetupDefaultWorkRam()
 {
 	//Setup a default work/save ram in 0x6000-0x7FFF space
@@ -576,6 +581,7 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 
 	if(romData.SaveRamSize == -1) {
 		_saveRamSize = HasBattery() ? GetSaveRamSize() : 0;
+		_hasDefaultWorkRam = _saveRamSize > 0;
 	} else if(ForceSaveRamSize()) {
 		_saveRamSize = GetSaveRamSize();
 	} else {
@@ -584,6 +590,7 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 
 	if(romData.WorkRamSize == -1) {
 		_workRamSize = HasBattery() ? 0 : GetWorkRamSize();
+		_hasDefaultWorkRam = _workRamSize > 0;
 	} else if(ForceWorkRamSize()) {
 		_workRamSize = GetWorkRamSize();
 	} else {
