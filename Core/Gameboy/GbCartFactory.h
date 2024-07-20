@@ -8,6 +8,7 @@
 #include "Gameboy/Carts/GbMbc6.h"
 #include "Gameboy/Carts/GbMbc7.h"
 #include "Gameboy/Carts/GbMmm01.h"
+#include "Gameboy/Carts/GbM161.h"
 #include "Gameboy/Carts/GbHuc1.h"
 #include "Gameboy/Carts/GbWisdomTree.h"
 #include "Gameboy/GbxFooter.h"
@@ -49,6 +50,8 @@ private:
 			return new GbWisdomTree();
 		} else if(mapperId == "MMM1") {
 			return new GbMmm01();
+		} else if(mapperId == "M161") {
+			return new GbM161();
 		}
 
 		return nullptr;
@@ -56,6 +59,11 @@ private:
 
 	static GbCart* LoadFromGbHeader(Emulator* emu, GameboyHeader& header, vector<uint8_t>& prgRom)
 	{
+		GbCart* cart = ProcessExceptions(header);
+		if(cart) {
+			return cart;
+		}
+
 		switch(header.CartType) {
 			case 0x00:
 				return new GbCart();
@@ -100,6 +108,15 @@ private:
 				return new GbHuc1();
 		};
 
+		return nullptr;
+	}
+
+	static GbCart* ProcessExceptions(GameboyHeader& header)
+	{
+		if(header.CartType == 0x10 && header.GetCartName() == "TETRIS SET") {
+			MessageManager::Log("Auto-detected cart type: M161");
+			return new GbM161();
+		}
 		return nullptr;
 	}
 

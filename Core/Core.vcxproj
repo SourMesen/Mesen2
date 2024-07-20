@@ -29,6 +29,7 @@
     <ClInclude Include="Gameboy\APU\GbEnvelope.h" />
     <ClInclude Include="Gameboy\Carts\Eeprom93Lc56.h" />
     <ClInclude Include="Gameboy\Carts\GbHuc1.h" />
+    <ClInclude Include="Gameboy\Carts\GbM161.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc3Rtc.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc6.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc7.h" />
