@@ -27,6 +27,7 @@ enum class RomFormat
 	Sms,
 	GameGear,
 	Sg,
+	ColecoVision,
 
 	Gba,
 };

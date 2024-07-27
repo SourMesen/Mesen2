@@ -302,9 +302,16 @@ namespace Mesen.Utilities
 					break;
 
 				case ConsoleType.Sms:
-					switch(layer) {
-						case VideoLayer.Bg1: return (() => ConfigManager.Config.Sms.DisableBackground, (val) => ConfigManager.Config.Sms.DisableBackground = val);
-						case VideoLayer.Sprite1: return (() => ConfigManager.Config.Sms.DisableSprites, (val) => ConfigManager.Config.Sms.DisableSprites = val);
+					if(MainWindowViewModel.Instance.RomInfo.Format == RomFormat.ColecoVision) {
+						switch(layer) {
+							case VideoLayer.Bg1: return (() => ConfigManager.Config.Cv.DisableBackground, (val) => ConfigManager.Config.Cv.DisableBackground = val);
+							case VideoLayer.Sprite1: return (() => ConfigManager.Config.Cv.DisableSprites, (val) => ConfigManager.Config.Cv.DisableSprites = val);
+						}
+					} else {
+						switch(layer) {
+							case VideoLayer.Bg1: return (() => ConfigManager.Config.Sms.DisableBackground, (val) => ConfigManager.Config.Sms.DisableBackground = val);
+							case VideoLayer.Sprite1: return (() => ConfigManager.Config.Sms.DisableSprites, (val) => ConfigManager.Config.Sms.DisableSprites = val);
+						}
 					}
 					break;
 			}
@@ -328,6 +335,7 @@ namespace Mesen.Utilities
 				ConfigManager.Config.Gba.ApplyConfig();
 				ConfigManager.Config.PcEngine.ApplyConfig();
 				ConfigManager.Config.Sms.ApplyConfig();
+				ConfigManager.Config.Cv.ApplyConfig();
 			}
 		}
 
@@ -358,6 +366,7 @@ namespace Mesen.Utilities
 			ConfigManager.Config.Gameboy.ApplyConfig();
 			ConfigManager.Config.PcEngine.ApplyConfig();
 			ConfigManager.Config.Sms.ApplyConfig();
+			ConfigManager.Config.Cv.ApplyConfig();
 
 			DisplayMessageHelper.DisplayMessage("Debug", ResourceHelper.GetMessage("AllLayersEnabled"));
 		}

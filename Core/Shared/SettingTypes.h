@@ -229,6 +229,7 @@ enum class ControllerType
 	//SMS
 	SmsController,
 	SmsLightPhaser,
+	ColecoVisionController,
 
 	//GBA
 	GbaController,
@@ -686,6 +687,21 @@ struct SmsConfig
 
 	OverscanDimensions NtscOverscan = {};
 	OverscanDimensions PalOverscan = {};
+};
+
+struct CvConfig
+{
+	ControllerConfig Port1;
+	ControllerConfig Port2;
+
+	ConsoleRegion Region = ConsoleRegion::Auto;
+	RamState RamPowerOnState = RamState::Random;
+
+	bool RemoveSpriteLimit = false;
+	bool DisableSprites = false;
+	bool DisableBackground = false;
+
+	uint32_t ChannelVolumes[4] = {};
 };
 
 struct AudioPlayerConfig

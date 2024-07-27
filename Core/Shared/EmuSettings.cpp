@@ -251,6 +251,16 @@ SmsConfig& EmuSettings::GetSmsConfig()
 	return _sms;
 }
 
+void EmuSettings::SetCvConfig(CvConfig& config)
+{
+	_cv = config;
+}
+
+CvConfig& EmuSettings::GetCvConfig()
+{
+	return _cv;
+}
+
 void EmuSettings::SetGameConfig(GameConfig& config)
 {
 	_game = config;
@@ -380,8 +390,7 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case RomFormat::Nsf:
 		case RomFormat::PceHes:
 		case RomFormat::GameGear:
-		case RomFormat::Gba:
-			//No overscan for music players/GG/GBA
+			//No overscan for music players/GG
 			return OverscanDimensions {};
 
 		case RomFormat::Gb:
@@ -404,7 +413,12 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case ConsoleType::Snes: return _snes.Overscan;
 		case ConsoleType::Nes: return _emu->GetRegion() == ConsoleRegion::Ntsc ? _nes.NtscOverscan : _nes.PalOverscan;
 		case ConsoleType::PcEngine: return _pce.Overscan;
-		case ConsoleType::Sms: return  _emu->GetRegion() == ConsoleRegion::Ntsc ? _sms.NtscOverscan : _sms.PalOverscan;
+		case ConsoleType::Sms:
+			if(romFormat == RomFormat::ColecoVision) {
+				return { 0, 0, 24, 24 };
+			} else {
+				return  _emu->GetRegion() == ConsoleRegion::Ntsc ? _sms.NtscOverscan : _sms.PalOverscan;
+			}
 
 		case ConsoleType::Gameboy:
 		case ConsoleType::Gba:

@@ -275,7 +275,7 @@
 			<Control ID="chkUseCustomVsPalette">Use this palette for VS System games</Control>
 
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flickering)</Control>
-			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit as needed to prevent graphical glitches when possible</Control>
+			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit to prevent graphical glitches, when possible</Control>
 			<Control ID="chkEnablePalBorders">Enable PAL black borders</Control>
 			<Control ID="chkDisableBackground">Disable background</Control>
 			<Control ID="chkDisableSprites">Disable sprites</Control>
@@ -502,7 +502,7 @@
 
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
-			<Control ID="chkUseSgPalette">Use SG-1000 palette in legacy video modes</Control>
+			<Control ID="chkUseSgPalette">Use SG-1000 palette when running SG-1000 software</Control>
 			<Control ID="chkGgBlendFrames">Enable LCD frame blending (Game Gear)</Control>
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit</Control>
 			<Control ID="chkDisableBackground">Disable background</Control>
@@ -521,6 +521,40 @@
 			<Control ID="lblController2">Port 2:</Control>
 
 			<Control ID="grpGeneral">General</Control>
+		</Form>
+
+		<Form ID="OtherConsolesConfigView">
+			<Control ID="tabColecoVision">ColecoVision</Control>
+		</Form>
+
+		<Form ID="CvConfigView">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="lblRegion">Region:</Control>
+
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="grpVolume">Volume</Control>
+			<Control ID="lblChannel1">Tone 1</Control>
+			<Control ID="lblChannel2">Tone 2</Control>
+			<Control ID="lblChannel3">Tone 3</Control>
+			<Control ID="lblChannel4">Noise</Control>
+
+			<Control ID="tpgEmulation">Emulation</Control>
+			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
+			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
+
+			<Control ID="tpgInput">Input</Control>
+
+			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
+			<Control ID="chkRemoveSpriteLimit">Remove sprite limit</Control>
+			<Control ID="chkDisableBackground">Disable background</Control>
+			<Control ID="chkDisableSprites">Disable sprites</Control>
+
+			<Control ID="grpControllers">Controllers</Control>
+
+			<Control ID="btnSetup">Setup</Control>
+			<Control ID="lblController1">Port 1:</Control>
+			<Control ID="lblController2">Port 2:</Control>
 		</Form>
 		
 		<Form ID="ShortcutKeysTabView">
@@ -547,6 +581,7 @@
 			<Control ID="tabGba">GBA</Control>
 			<Control ID="tabPcEngine">PC Engine</Control>
 			<Control ID="tabSms">SMS</Control>
+			<Control ID="tabOtherConsoles">Other systems</Control>
 			<Control ID="tabPreferences">Preferences</Control>
 
 			<Control ID="btnOpenMesenFolder">Open Mesen folder</Control>
@@ -600,6 +635,7 @@
 			<Control ID="chkSmsRomFiles">SMS roms: .sms</Control>
 			<Control ID="chkGameGearRomFiles">Game Gear roms: .gg</Control>
 			<Control ID="chkSgRomFiles">SG-1000 roms: .sg</Control>
+			<Control ID="chkCvRomFiles">ColecoVision roms: .col</Control>
 
 			<Control ID="grpDataStorageLocation">Data Storage Folder</Control>
 			<Control ID="btnChangeStorageFolder">Change folder...</Control>
@@ -1879,6 +1915,7 @@ E
 
 			<Value ID="SmsController">SMS Controller</Value>
 			<Value ID="SmsLightPhaser">Light Phaser</Value>
+			<Value ID="ColecoVisionController">ColecoVision Controller</Value>
 		</Enum>
 		<Enum ID="NesJissenMahjongButtons">
 			<Value ID="A">A</Value>
@@ -2179,7 +2216,27 @@ E
 		<Enum ID="SmsLightPhaserButtons">
 			<Value ID="Fire">Fire</Value>
 			<Value ID="AimOffscreen">Aim offscreen (hold)</Value>
-		</Enum>		
+		</Enum>
+		<Enum ID="ColecoVisionControllerButtons">
+			<Value ID="Num0">Number 0</Value>
+			<Value ID="Num1">Number 1</Value>
+			<Value ID="Num2">Number 2</Value>
+			<Value ID="Num3">Number 3</Value>
+			<Value ID="Num4">Number 4</Value>
+			<Value ID="Num5">Number 5</Value>
+			<Value ID="Num6">Number 6</Value>
+			<Value ID="Num7">Number 7</Value>
+			<Value ID="Num8">Number 8</Value>
+			<Value ID="Num9">Number 9</Value>
+			<Value ID="Pound">Pound (#)</Value>
+			<Value ID="Star">Star (*)</Value>
+			<Value ID="Up">D-Pad - Up</Value>
+			<Value ID="Down">D-Pad - Down</Value>
+			<Value ID="Left">D-Pad - Left</Value>
+			<Value ID="Right">D-Pad - Right</Value>
+			<Value ID="R">Button - Right</Value>
+			<Value ID="L">Button - Left</Value>
+		</Enum>
 		<Enum ID="NesConsoleType">
 			<Value ID="Nes001">NES - Front loader (NES-001)</Value>
 			<Value ID="Nes101">NES - Top loader (NES-101)</Value>
@@ -2290,7 +2347,7 @@ E
 			<Value ID="Arcade">Arcade CD-ROM² (recommended)</Value>
 		</Enum>
 		<Enum ID="RamState">
-			<Value ID="Random">Random Values (default)</Value>
+			<Value ID="Random">Random Values</Value>
 			<Value ID="AllZeros">All 0s</Value>
 			<Value ID="AllOnes">All 1s</Value>
 		</Enum>
@@ -2523,6 +2580,7 @@ E
 			<Value ID="StudyBox">Study Box</Value>
 			<Value ID="PceSuperCd">Super CD-ROM²</Value>
 			<Value ID="PceGamesExpress">Games Express Card</Value>
+			<Value ID="ColecoVision">ColecoVision</Value>
 		</Enum>
 
 		<Enum ID="CpuType">
@@ -3297,6 +3355,7 @@ E
 			<Value ID="Gba">GBA</Value>
 			<Value ID="PcEngine">PC Engine</Value>
 			<Value ID="Sms">SMS</Value>
+			<Value ID="OtherConsoles">Other systems</Value>
 
 			<Value ID="Resume">Resume</Value>
 			<Value ID="Pause">Pause</Value>

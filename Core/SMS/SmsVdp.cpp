@@ -23,8 +23,6 @@ void SmsVdp::Init(Emulator* emu, SmsConsole* console, SmsCpu* cpu, SmsControlMan
 	_controlManager = controlManager;
 	_memoryManager = memoryManager;
 
-	_activeSgPalette = _emu->GetSettings()->GetSmsConfig().UseSgPalette ? _originalSgPalette : _smsSgPalette;
-
 	_outputBuffers[0] = new uint16_t[256 * 240];
 	_outputBuffers[1] = new uint16_t[256 * 240];
 	_currentOutputBuffer = _outputBuffers[0];
@@ -44,11 +42,16 @@ void SmsVdp::Init(Emulator* emu, SmsConsole* console, SmsCpu* cpu, SmsControlMan
 
 	console->InitializeRam(_paletteRam, 0x40);
 
-	if(_console->GetModel() == SmsModel::Sms) {
+	_model = _console->GetModel();
+	if(_model == SmsModel::Sms) {
 		if(!_console->HasBios()) {
 			InitSmsPostBiosState();
 		}
 
+		for(int i = 0; i < 0x20; i++) {
+			WriteSmsPalette(i, _paletteRam[i]);
+		}
+	} else if(_model == SmsModel::ColecoVision) {
 		for(int i = 0; i < 0x20; i++) {
 			WriteSmsPalette(i, _paletteRam[i]);
 		}
@@ -59,8 +62,9 @@ void SmsVdp::Init(Emulator* emu, SmsConsole* console, SmsCpu* cpu, SmsControlMan
 			WriteGameGearPalette(i, _paletteRam[i] | (_paletteRam[i + 1] << 8));
 		}
 	}
-	_emu->RegisterMemory(MemoryType::SmsPaletteRam, _paletteRam, _console->GetModel() == SmsModel::Sms ? 0x20 : 0x40);
+	_emu->RegisterMemory(MemoryType::SmsPaletteRam, _paletteRam, _model == SmsModel::GameGear ? 0x40 : 0x20);
 
+	UpdateConfig();
 	UpdateDisplayMode();
 }
 
@@ -80,9 +84,19 @@ void SmsVdp::Run(uint64_t runTo)
 	} while(_lastMasterClock < runTo - 1);
 }
 
+void SmsVdp::UpdateConfig()
+{
+	bool useSgPalette = _model == SmsModel::ColecoVision || (_model == SmsModel::Sg && _emu->GetSettings()->GetSmsConfig().UseSgPalette);
+	_activeSgPalette = useSgPalette ? _originalSgPalette : _smsSgPalette;
+
+	_disableBackground = _model == SmsModel::ColecoVision ? _emu->GetSettings()->GetCvConfig().DisableBackground : _emu->GetSettings()->GetSmsConfig().DisableBackground;
+	_disableSprites = _model == SmsModel::ColecoVision ? _emu->GetSettings()->GetCvConfig().DisableSprites : _emu->GetSettings()->GetSmsConfig().DisableSprites;
+	_removeSpriteLimit  = _model == SmsModel::ColecoVision ? _emu->GetSettings()->GetCvConfig().RemoveSpriteLimit : _emu->GetSettings()->GetSmsConfig().RemoveSpriteLimit;
+}
+
 void SmsVdp::UpdateIrqState()
 {
-	if(_state.VerticalBlankIrqPending && _state.EnableVerticalBlankIrq) {
+	if(_state.VerticalBlankIrqPending && _state.EnableVerticalBlankIrq && _model != SmsModel::ColecoVision) {
 		_cpu->SetIrqSource(SmsIrqSource::Vdp);
 	} else if(_state.ScanlineIrqPending && _state.EnableScanlineIrq) {
 		_cpu->SetIrqSource(SmsIrqSource::Vdp);
@@ -269,7 +283,7 @@ void SmsVdp::LoadBgTilesSms()
 				_bgShifters[3] |= _videoRam[_bgTileAddr + 3] << (16 - _pixelsAvailable);
 			}
 
-			if(_emu->GetSettings()->GetSmsConfig().DisableBackground) {
+			if(_disableBackground) {
 				memset(_bgShifters, 0, sizeof(_bgShifters));
 				_bgPriority = 0;
 			}
@@ -281,7 +295,13 @@ void SmsVdp::LoadBgTilesSms()
 
 void SmsVdp::LoadBgTilesSg()
 {
-	switch(GetVisiblePixelIndex() & 0x07) {
+	if(_state.M1_Use224LineMode) {
+		LoadBgTilesSgTextMode();
+		return;
+	}
+
+	uint16_t cycle = _state.Cycle - 5;
+	switch(cycle & 0x07) {
 		case 0: {
 			uint8_t x = (uint8_t)_state.Cycle;
 			uint16_t y = _state.Scanline;
@@ -290,12 +310,17 @@ void SmsVdp::LoadBgTilesSg()
 
 			uint8_t tileRow = (y & 0x07);
 			_bgTileIndex = _videoRam[ntAddr];
-			if(_state.M2_AllowHeightChange) {
+			if(_state.M3_Use240LineMode) {
+				//Mode 3 - "Multicolor"
+				_bgTileAddr = (_state.BgPatternTableAddress & 0x3800) + (_bgTileIndex * 8) + (tilemapRow & 0x03) * 2 + (tileRow >= 4 ? 1 : 0);
+			} else if(_state.M2_AllowHeightChange) {
+				//Mode 2 - "Graphic 2"
 				//Move to the next 256 tiles after every 8 tile rows
 				_bgTileIndex += (tilemapRow & 0x18) << 5;
 				uint16_t mask = ((_state.BgPatternTableAddress >> 3) | 0xFF) & 0x3FF;
 				_bgTileAddr = (_state.BgPatternTableAddress & 0x2000) + ((_bgTileIndex & mask) * 8) + tileRow;
 			} else {
+				//Mode 0 - "Graphic 1"
 				_bgTileAddr = (_state.BgPatternTableAddress & 0x3800) + (_bgTileIndex * 8) + tileRow;
 			}
 			break;
@@ -317,27 +342,34 @@ void SmsVdp::LoadBgTilesSg()
 			break;
 
 		case 6: {
-			uint16_t colorTableAddr;
-			if(_state.M2_AllowHeightChange) {
+			uint8_t color;
+			if(_state.M3_Use240LineMode) {
+				//Mode 3 - "Multicolor"
+				color = _bgPatternData;
+			} else if(_state.M2_AllowHeightChange) {
+				//Mode 2 - "Graphic 2"
 				uint16_t mask = ((_state.ColorTableAddress >> 3) | 0x07) & 0x3FF;
 				uint8_t tileRow = (_state.Scanline & 0x07);
-				colorTableAddr = (_state.ColorTableAddress & 0x2000) | ((_bgTileIndex & mask) << 3) + tileRow;
+				uint16_t colorTableAddr = (_state.ColorTableAddress & 0x2000) | ((_bgTileIndex & mask) << 3) + tileRow;
+				color = _videoRam[colorTableAddr];
 			} else {
-				colorTableAddr = (_state.ColorTableAddress & 0x3FC0) | ((_bgTileIndex >> 3) & 0x1F);
+				//Mode 0 - "Graphic 1"
+				uint16_t colorTableAddr = (_state.ColorTableAddress & 0x3FC0) | ((_bgTileIndex >> 3) & 0x1F);
+				color = _videoRam[colorTableAddr];
 			}
-			uint8_t color = _videoRam[colorTableAddr];
 
 			for(int i = 0; i < 8; i++) {
-				uint8_t pixelColor = (_bgPatternData & 0x80) ? (color >> 4) : (color & 0xF);
+				uint8_t pixelColor;
+				if(_state.M3_Use240LineMode) {
+					pixelColor = i < 4 ? (color >> 4) : (color & 0xF);
+				} else {
+					pixelColor = (_bgPatternData & 0x80) ? (color >> 4) : (color & 0xF);
+				}
 				_bgPatternData <<= 1;
-
-				_bgShifters[0] |= (pixelColor & 0x01) << (23 - i - _pixelsAvailable);
-				_bgShifters[1] |= ((pixelColor >> 1) & 0x01) << (23 - i - _pixelsAvailable);
-				_bgShifters[2] |= ((pixelColor >> 2) & 0x01) << (23 - i - _pixelsAvailable);
-				_bgShifters[3] |= ((pixelColor >> 3) & 0x01) << (23 - i - _pixelsAvailable);
+				PushBgPixel(pixelColor, i);
 			}
-						
-			if(_emu->GetSettings()->GetSmsConfig().DisableBackground) {
+
+			if(_disableBackground) {
 				memset(_bgShifters, 0, sizeof(_bgShifters));
 				_bgPriority = 0;
 			}
@@ -346,6 +378,70 @@ void SmsVdp::LoadBgTilesSg()
 			break;
 		}
 	}
+}
+
+void SmsVdp::LoadBgTilesSgTextMode()
+{
+	if(_state.Cycle < 10 || _state.Cycle > 250) {
+		_textModeStep = 0;
+		return;
+	}
+
+	switch(_textModeStep++) {
+		case 0: {
+			uint8_t x = (uint8_t)_state.Cycle - 8;
+			uint16_t y = _state.Scanline;
+			uint8_t tilemapRow = (y / 8);
+			uint16_t ntAddr = _state.NametableAddress + ((x / 6) + tilemapRow * 40);
+			uint8_t tileRow = (y & 0x07);
+			_bgTileIndex = _videoRam[ntAddr];
+			_bgTileAddr = (_state.BgPatternTableAddress & 0x3800) + (_bgTileIndex * 8) + tileRow;
+			break;
+		}
+
+		case 2:
+			//CPU slot
+			if(_writePending != SmsVdpWriteType::None) {
+				ProcessVramWrite();
+			}
+			break;
+
+		case 4:
+			_bgPatternData = _videoRam[_bgTileAddr];
+
+			for(int i = 0; i < 6; i++) {
+				uint8_t color = (_bgPatternData & 0x80) ? _state.TextColorIndex : _state.BackgroundColorIndex;
+				_bgPatternData <<= 1;
+				PushBgPixel(color, i);
+			}
+
+			if(_disableBackground) {
+				memset(_bgShifters, 0, sizeof(_bgShifters));
+				_bgPriority = 0;
+			}
+
+			if(_state.Cycle == 249) {
+				for(int i = 0; i < 8; i++) {
+					PushBgPixel(_state.BackgroundColorIndex, i);
+				}
+				_pixelsAvailable += 8;
+			}
+
+			_pixelsAvailable += 6;
+			break;
+
+		case 5:
+			_textModeStep = 0;
+			break;
+	}
+}
+
+void SmsVdp::PushBgPixel(uint8_t color, int index)
+{
+	_bgShifters[0] |= (color & 0x01) << (23 - index - _pixelsAvailable);
+	_bgShifters[1] |= ((color >> 1) & 0x01) << (23 - index - _pixelsAvailable);
+	_bgShifters[2] |= ((color >> 2) & 0x01) << (23 - index - _pixelsAvailable);
+	_bgShifters[3] |= ((color >> 3) & 0x01) << (23 - index - _pixelsAvailable);
 }
 
 uint8_t SmsVdp::ReverseBitOrder(uint8_t val)
@@ -381,10 +477,14 @@ void SmsVdp::ProcessScanlineEvents()
 			if(_state.Scanline == _state.VisibleScanlineCount) {
 				_state.VerticalBlankIrqPending = true;
 				UpdateIrqState();
+				if(_state.EnableVerticalBlankIrq && _model == SmsModel::ColecoVision) {
+					_cpu->SetNmiLevel(true);
+					_cpu->SetNmiLevel(false);
+				}
 			}
 
 			_state.VCounter++;
-			if(_state.VCounter == _state.VisibleScanlineCount && _console->GetModel() == SmsModel::Sms) {
+			if(_state.VCounter == _state.VisibleScanlineCount && _model == SmsModel::Sms) {
 				_cpu->SetNmiLevel(_controlManager->IsPausePressed());
 			} else if(_state.VCounter >= _scanlineCount) {
 				_state.VCounter = 0;
@@ -396,7 +496,8 @@ void SmsVdp::ProcessScanlineEvents()
 				if(_state.UseMode4) {
 					//TODOSMS - fix timing, tile loading + sprite evaluation should be done throughout the scanline
 					LoadSpritesSms();
-				} else {
+				} else if(!_state.M1_Use224LineMode) {
+					//Only load sprites if not in text mode
 					LoadSpritesSg();
 				}
 			}
@@ -424,14 +525,15 @@ void SmsVdp::ProcessScanlineEvents()
 
 				_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-				uint32_t width = _console->GetModel() == SmsModel::Sms ? 256 : 160;
-				uint32_t height = _console->GetModel() == SmsModel::Sms ? 240 : 144;
+				uint32_t width = _model == SmsModel::GameGear ? 160 : 256;
+				uint32_t height = _model == SmsModel::GameGear ? 144 : 240;
 				RenderedFrame frame(_currentOutputBuffer, width, height, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
 				bool rewinding = _emu->GetRewindManager()->IsRewinding();
 				_emu->GetVideoDecoder()->UpdateFrame(frame, rewinding, rewinding);
 
 				_currentOutputBuffer = _currentOutputBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
-				_activeSgPalette = _emu->GetSettings()->GetSmsConfig().UseSgPalette ? _originalSgPalette : _smsSgPalette;
+
+				UpdateConfig();
 
 				_console->ProcessEndOfFrame();
 				_emu->ProcessEndOfFrame();
@@ -448,25 +550,29 @@ void SmsVdp::ProcessScanlineEvents()
 			_bgPriority = 0;
 			_bgPalette = 0;
 
+			uint8_t borderWidth = 0;
 			if(_state.UseMode4) {
 				if(_state.Scanline < 16 && _state.HorizontalScrollLock) {
-					_pixelsAvailable = 0;
+					borderWidth = 0;
 				} else {
-					_pixelsAvailable = (_state.HorizontalScrollLatch & 0x07);
+					borderWidth = (_state.HorizontalScrollLatch & 0x07);
 				}
 			} else {
-				_pixelsAvailable = 0;
+				//Add 8 pixels of border on the left when in text mode
+				borderWidth = _state.M1_Use224LineMode ? 8 : 0;
 			}
 
-			for(int i = 0; i < _pixelsAvailable; i++) {
-				_bgShifters[0] |= (_state.BackgroundColorIndex & 0x01) << (23 - i);
-				_bgShifters[1] |= ((_state.BackgroundColorIndex >> 1) & 0x01) << (23 - i);
-				_bgShifters[2] |= ((_state.BackgroundColorIndex >> 2) & 0x01) << (23 - i);
-				_bgShifters[3] |= ((_state.BackgroundColorIndex >> 3) & 0x01) << (23 - i);
+			_pixelsAvailable = 0;
+			for(int i = 0; i < borderWidth; i++) {
+				PushBgPixel(_state.BackgroundColorIndex, i);
 				_bgPalette |= 0x800000 >> i;
 			}
+			_pixelsAvailable = borderWidth;
 
-			_minDrawCycle = _state.RenderingEnabled ? (_state.MaskFirstColumn ? (SmsVdp::SmsVdpLeftBorder + 8): SmsVdp::SmsVdpLeftBorder) : 342;
+			//Mask feature only works in mode 4
+			bool maskFirstColumn = _state.UseMode4 ? _state.MaskFirstColumn : false;
+
+			_minDrawCycle = _state.RenderingEnabled ? (maskFirstColumn ? (SmsVdp::SmsVdpLeftBorder + 8): SmsVdp::SmsVdpLeftBorder) : 342;
 			_bgOffsetY = _state.Scanline + _state.VerticalScrollLatch;
 			if(_bgOffsetY >= _state.NametableHeight) {
 				_bgOffsetY -= _state.NametableHeight;
@@ -494,7 +600,7 @@ void SmsVdp::LoadSpritesSms()
 		if(scanline >= sprY && scanline < sprY + spriteHeight) {
 			if(_spriteCount >= 8) {
 				_state.SpriteOverflow = true;
-				if(!_emu->GetSettings()->GetSmsConfig().RemoveSpriteLimit) {
+				if(!_removeSpriteLimit) {
 					break;
 				}
 			}
@@ -534,18 +640,21 @@ void SmsVdp::LoadSpritesSg()
 		scanline -= _scanlineCount;
 	}
 
+	bool spriteOverflow = false;
 	for(int i = 0; i < 32; i++) {
 		uint8_t sprY = _videoRam[spriteAddr + i * 4] + 17; //+17 to force wraparound to the top when sprite is at Y >= 241 (16x16 sprites)
-		if(_state.VisibleScanlineCount == 192 && sprY == 0xD0 + 17) {
+		if(sprY == 0xD0 + 17) {
 			//Don't check/draw any more sprites
 			break;
 		}
 
 		if(scanline >= sprY && scanline < sprY + spriteSize) {
-			if(!_state.SpriteOverflow && sgSpriteCount >= 4) {
-				_state.SpriteOverflowIndex = i;
-				_state.SpriteOverflow = true;
-				if(!_emu->GetSettings()->GetSmsConfig().RemoveSpriteLimit) {
+			if(sgSpriteCount >= 4) {
+				if(!spriteOverflow) {
+					_state.SpriteOverflowIndex = i;
+				}
+				spriteOverflow = true;
+				if(!_removeSpriteLimit) {
 					break;
 				}
 			}
@@ -570,7 +679,7 @@ void SmsVdp::LoadSpritesSg()
 			if(_state.UseLargeSprites) {
 				_spriteShifters[_spriteCount].TileData[0] = _videoRam[sprTileAddr + 16];
 				_spriteShifters[_spriteCount].TileData[1] = attributes & 0x0F; //sprite color
-				_spriteShifters[_spriteCount].SpriteX = _videoRam[spriteAddr + i * 4 + 1] + 8;
+				_spriteShifters[_spriteCount].SpriteX = _videoRam[spriteAddr + i * 4 + 1] + (_state.EnableDoubleSpriteSize ? 16 : 8);
 				if(attributes & 0x80) {
 					ShiftSpriteSg(_spriteCount);
 				}
@@ -580,6 +689,7 @@ void SmsVdp::LoadSpritesSg()
 			sgSpriteCount++;
 		}
 	}
+	_state.SpriteOverflow = spriteOverflow;
 }
 
 void SmsVdp::ShiftSprite(uint8_t sprIndex)
@@ -613,7 +723,7 @@ bool SmsVdp::IsZoomedSpriteAllowed(int spriteIndex)
 	// -If the scanline has 8 sprites, 4 sprites will be zoomed.
 	//Which sprites get zoomed is based on their draw priority (i.e the earlier entries in sprite ram get zoomed first)
 	//See thread/test rom: https://www.smspower.org/forums/19189-SMS1DoubleSizeSpritesBitTest
-	return _state.EnableDoubleSpriteSize && (spriteIndex < ((int)_spriteCount - 4) || _console->GetRevision() != SmsRevision::Sms1);
+	return _state.EnableDoubleSpriteSize && (!_state.UseMode4 || spriteIndex < ((int)_spriteCount - 4) || _console->GetRevision() != SmsRevision::Sms1);
 }
 
 uint16_t SmsVdp::GetPixelColor()
@@ -681,7 +791,7 @@ uint16_t SmsVdp::GetPixelColor()
 	);
 
 	bool highPriority = (_bgPriority & 0x800000);
-	if(!spriteDrawn || (highPriority && color != 0) || _emu->GetSettings()->GetSmsConfig().DisableSprites) {
+	if(!spriteDrawn || (highPriority && color != 0) || _disableSprites) {
 		uint8_t paletteOffset = (_bgPalette & 0x800000) ? 0x10 : 0;
 		if(_state.UseMode4) {
 			return _internalPaletteRam[paletteOffset + color];
@@ -698,7 +808,13 @@ void SmsVdp::WriteRegister(uint8_t reg, uint8_t value)
 		case 0:
 			_state.SyncDisabled = (value & 0x01) != 0; //TODOSMS not implemented
 			_state.M2_AllowHeightChange = (value & 0x02) != 0;
-			_state.UseMode4 = (value & 0x04) != 0;
+
+			if(_model == SmsModel::Sms || _model == SmsModel::GameGear) {
+				_state.UseMode4 = (value & 0x04) != 0;
+			} else {
+				_state.UseMode4 = false;
+			}
+
 			_state.ShiftSpritesLeft = (value & 0x08) != 0;
 			_state.EnableScanlineIrq = (value & 0x10) != 0;
 			_state.MaskFirstColumn = (value & 0x20) != 0;
@@ -729,7 +845,11 @@ void SmsVdp::WriteRegister(uint8_t reg, uint8_t value)
 		case 4: _state.BgPatternTableAddress = (value & 0x07) << 11; break;
 		case 5: _state.SpriteTableAddress = (value & 0x7F) << 7; break;
 		case 6: _state.SpritePatternSelector = (value & 0x07) << 11; break;
-		case 7: _state.BackgroundColorIndex = value & 0x0F; break;
+		case 7:
+			_state.TextColorIndex = (value >> 4) & 0x0F;
+			_state.BackgroundColorIndex = value & 0x0F;
+			break;
+
 		case 8: _state.HorizontalScroll = value; break;
 		case 9: _state.VerticalScroll = value; break;
 		case 10: _state.ScanlineCounter = value; break;
@@ -790,7 +910,7 @@ void SmsVdp::WritePort(uint8_t port, uint8_t value)
 		//TODOSMS break option for write while previous write is pending?
 		if(_state.CodeReg == 3) {
 			//Palette write
-			if(_console->GetModel() == SmsModel::GameGear) {
+			if(_model == SmsModel::GameGear) {
 				//TODOSMS - does this also need an external cpu access slot on GG?
 				if(_state.AddressReg & 0x01) {
 					uint8_t addr = (_state.AddressReg & 0x3E);
@@ -908,7 +1028,7 @@ void SmsVdp::SetRegion(ConsoleRegion region)
 
 void SmsVdp::DebugSendFrame()
 {
-	uint32_t width = _console->GetModel() == SmsModel::Sms ? 256 : 160;
+	uint32_t width = _model == SmsModel::GameGear ? 160 : 256;
 
 	int offset = std::max(0, std::min((int)GetVisiblePixelIndex(), 256)) + (_state.Scanline * 256);
 	int pixelsToClear = 256*240 - offset;
@@ -916,7 +1036,7 @@ void SmsVdp::DebugSendFrame()
 		memset(_currentOutputBuffer + offset, 0, pixelsToClear * sizeof(uint16_t));
 	}
 	
-	uint32_t height = _console->GetModel() == SmsModel::Sms ? 240 : 144;
+	uint32_t height = _model == SmsModel::GameGear ? 144 : 240;
 	RenderedFrame frame(_currentOutputBuffer, width, height, 1.0, _state.FrameCount);
 	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 }
@@ -939,15 +1059,15 @@ int SmsVdp::GetViewportYOffset()
 
 void SmsVdp::DebugWritePalette(uint8_t addr, uint8_t value)
 {
-	if(_console->GetModel() == SmsModel::Sms) {
-		_paletteRam[addr] = value & 0x3F;
-		_internalPaletteRam[addr] = ColorUtilities::Rgb222To555(value);
-	} else {
+	if(_model == SmsModel::GameGear) {
 		if(addr & 0x01) {
 			value &= 0x0F;
 		}
 		_paletteRam[addr] = value;
 		_internalPaletteRam[addr >> 1] = ColorUtilities::Rgb444To555(_paletteRam[addr & ~0x01] | (_paletteRam[addr | 0x01] << 8));
+	} else {
+		_paletteRam[addr] = value & 0x3F;
+		_internalPaletteRam[addr] = ColorUtilities::Rgb222To555(value);
 	}
 }
 
@@ -1013,6 +1133,7 @@ void SmsVdp::Serialize(Serializer& s)
 	SV(_state.SpritePatternSelector);
 	SV(_state.NametableHeight);
 	SV(_state.VisibleScanlineCount);
+	SV(_state.TextColorIndex);
 	SV(_state.BackgroundColorIndex);
 	SV(_state.HorizontalScroll);
 	SV(_state.HorizontalScrollLatch);
@@ -1069,6 +1190,7 @@ void SmsVdp::Serialize(Serializer& s)
 		SV(_writeBuffer);
 		SV(_bgTileIndex);
 		SV(_bgPatternData);
+		SV(_textModeStep);
 
 		SV(_needCramDot);
 		SV(_cramDotColor);

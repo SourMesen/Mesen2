@@ -490,6 +490,10 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.Sms,
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Sms)
 				},
+				new MainMenuAction() {
+					ActionType = ActionType.OtherConsoles,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.OtherConsoles)
+				},
 				new ContextMenuSeparator(),
 
 				new MainMenuAction() {
@@ -538,7 +542,13 @@ namespace Mesen.ViewModels
 				IsSelected = () => MainWindow.RomInfo.ConsoleType switch {
 					ConsoleType.Snes => ConfigManager.Config.Snes.Region == region,
 					ConsoleType.Nes => ConfigManager.Config.Nes.Region == region,
-					ConsoleType.Sms => (MainWindow.RomInfo.Format == RomFormat.GameGear ? ConfigManager.Config.Sms.GameGearRegion : ConfigManager.Config.Sms.Region) == region,
+					ConsoleType.Sms => (
+						MainWindow.RomInfo.Format switch {
+							RomFormat.ColecoVision => ConfigManager.Config.Cv.Region,
+							RomFormat.GameGear => ConfigManager.Config.Sms.GameGearRegion,
+							_ => ConfigManager.Config.Sms.Region
+						} == region
+					),
 					_ => region == ConsoleRegion.Auto
 				},
 				OnClick = () => {
@@ -554,12 +564,13 @@ namespace Mesen.ViewModels
 							break;
 
 						case ConsoleType.Sms:
-							if(MainWindow.RomInfo.Format == RomFormat.GameGear) {
-								ConfigManager.Config.Sms.GameGearRegion = region;
-							} else {
-								ConfigManager.Config.Sms.Region = region;
+							switch(MainWindow.RomInfo.Format) {
+								default: case RomFormat.Sms: ConfigManager.Config.Sms.GameGearRegion = region; break;
+								case RomFormat.GameGear: ConfigManager.Config.Sms.GameGearRegion = region; break;
+								case RomFormat.ColecoVision: ConfigManager.Config.Cv.Region = region; break;
 							}
 							ConfigManager.Config.Sms.ApplyConfig();
+							ConfigManager.Config.Cv.ApplyConfig();
 							break;
 
 						default:

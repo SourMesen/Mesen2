@@ -343,6 +343,7 @@ namespace Mesen.Config
 		//SMS
 		SmsController,
 		SmsLightPhaser,
+		ColecoVisionController,
 
 		//GBA
 		GbaController
@@ -364,6 +365,7 @@ namespace Mesen.Config
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
 				case ControllerType.SmsController:
+				case ControllerType.ColecoVisionController:
 					return true;
 			}
 
@@ -427,6 +429,7 @@ namespace Mesen.Config
 				case ControllerType.BandaiMicrophone:
 				case ControllerType.SmsController:
 				case ControllerType.SmsLightPhaser:
+				case ControllerType.ColecoVisionController:
 					return true;
 			}
 

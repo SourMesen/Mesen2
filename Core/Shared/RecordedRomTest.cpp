@@ -129,6 +129,7 @@ void RecordedRomTest::Record(string filename, bool reset)
 		settings->GetGameboyConfig().RamPowerOnState = RamState::AllZeros;
 		settings->GetPcEngineConfig().RamPowerOnState = RamState::AllZeros;
 		settings->GetSmsConfig().RamPowerOnState = RamState::AllZeros;
+		settings->GetCvConfig().RamPowerOnState = RamState::AllZeros;
 		settings->GetGbaConfig().RamPowerOnState = RamState::AllZeros;
 
 		settings->GetSnesConfig().DisableFrameSkipping = true;
@@ -216,6 +217,7 @@ RomTestResult RecordedRomTest::Run(string filename)
 		settings->GetGameboyConfig().RamPowerOnState = RamState::AllZeros;
 		settings->GetPcEngineConfig().RamPowerOnState = RamState::AllZeros;
 		settings->GetSmsConfig().RamPowerOnState = RamState::AllZeros;
+		settings->GetCvConfig().RamPowerOnState = RamState::AllZeros;
 		settings->GetGbaConfig().RamPowerOnState = RamState::AllZeros;
 
 		settings->GetSnesConfig().DisableFrameSkipping = true;

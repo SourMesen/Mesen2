@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SMS\Input\ColecoVisionController.h" />
     <ClInclude Include="Debugger\AddressInfo.h" />
     <ClInclude Include="Debugger\Base6502Assembler.h" />
     <ClInclude Include="Debugger\CdlManager.h" />

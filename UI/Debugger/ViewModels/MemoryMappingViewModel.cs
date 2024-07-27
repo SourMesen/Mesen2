@@ -447,6 +447,7 @@ namespace Mesen.Debugger.ViewModels
 			};
 
 			AddressInfo prevAddr = new();
+			bool isUnmapped = false;
 			for(int i = 0; i < 64; i++) {
 				AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = i * 0x400, Type = MemoryType.SmsMemory });
 				if(!mainColors.ContainsKey(absAddr.Type)) {
@@ -466,13 +467,19 @@ namespace Mesen.Debugger.ViewModels
 						Note = accessNotes[memType],
 						Color = (i % 4 == 0) ? mainColors[memType] : altColors[memType]
 					});
+					isUnmapped = false;
 				} else {
-					mappings.Add(new MemoryMappingBlock() {
-						Length = 0x400,
-						Name = "N/A",
-						Note = "OB",
-						Color = Color.FromRgb(222, 222, 222)
-					});
+					if(isUnmapped) {
+						mappings[^1].Length += 0x400;
+					} else {
+						mappings.Add(new MemoryMappingBlock() {
+							Length = 0x400,
+							Name = "N/A",
+							Note = "OB",
+							Color = Color.FromRgb(222, 222, 222)
+						});
+						isUnmapped = true;
+					}
 				}
 				prevAddr = absAddr;
 			}

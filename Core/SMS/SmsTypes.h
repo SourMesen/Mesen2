@@ -6,7 +6,9 @@
 enum class SmsModel
 {
 	Sms,
-	GameGear
+	GameGear,
+	Sg,
+	ColecoVision
 };
 
 struct SmsCpuState : public BaseState
@@ -104,6 +106,7 @@ struct SmsVdpState : public BaseState
 	uint16_t NametableHeight;
 	uint8_t VisibleScanlineCount;
 
+	uint8_t TextColorIndex;
 	uint8_t BackgroundColorIndex;
 	uint8_t HorizontalScroll;
 	uint8_t HorizontalScrollLatch;

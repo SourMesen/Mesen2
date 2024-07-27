@@ -379,6 +379,12 @@
     <Compile Update="Views\PceAvenuePad6View.axaml.cs">
       <DependentUpon>PceAvenuePad6View.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\OtherConsolesConfigView.axaml.cs">
+      <DependentUpon>OtherConsolesConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\CvConfigView.axaml.cs">
+      <DependentUpon>CvConfigView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\SmsInputConfigView.axaml.cs">
       <DependentUpon>SmsInputConfigView.axaml</DependentUpon>
     </Compile>

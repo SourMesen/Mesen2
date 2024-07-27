@@ -14,10 +14,14 @@ private:
 	SmsVdp* _vdp = nullptr;
 	SmsControlManagerState _state = {};
 	SmsConfig _prevConfig = {};
+	CvConfig _prevCvConfig = {};
 
 	bool GetTh(bool portB);
 	bool GetTr(bool portB);
 	uint8_t InternalReadPort(uint8_t port);
+
+	uint8_t ReadColecoVisionPort(uint8_t port);
+	void WriteColecoVisionPort(uint8_t value);
 
 public:
 	SmsControlManager(Emulator* emu, SmsConsole* console, SmsVdp* vdp);

@@ -21,6 +21,7 @@ namespace Mesen.ViewModels
 		[Reactive] public GbaConfigViewModel? Gba { get; set; }
 		[Reactive] public PceConfigViewModel? PcEngine { get; set; }
 		[Reactive] public SmsConfigViewModel? Sms { get; set; }
+		[Reactive] public OtherConsolesConfigViewModel? OtherConsoles { get; set; }
 
 		[Reactive] public ConfigWindowTab SelectedIndex { get; set; }
 		public bool AlwaysOnTop { get; }
@@ -58,6 +59,7 @@ namespace Mesen.ViewModels
 				case ConfigWindowTab.Gba: Gba ??= AddDisposable(new GbaConfigViewModel()); break;
 				case ConfigWindowTab.PcEngine: PcEngine ??= AddDisposable(new PceConfigViewModel()); break;
 				case ConfigWindowTab.Sms: Sms ??= AddDisposable(new SmsConfigViewModel()); break;
+				case ConfigWindowTab.OtherConsoles: OtherConsoles ??= AddDisposable(new OtherConsolesConfigViewModel()); break;
 
 				case ConfigWindowTab.Preferences: Preferences ??= AddDisposable(new PreferencesConfigViewModel()); break;
 			}
@@ -85,6 +87,7 @@ namespace Mesen.ViewModels
 			ConfigManager.Config.Gba = Gba?.OriginalConfig ?? ConfigManager.Config.Gba;
 			ConfigManager.Config.PcEngine = PcEngine?.OriginalConfig ?? ConfigManager.Config.PcEngine;
 			ConfigManager.Config.Sms = Sms?.OriginalConfig ?? ConfigManager.Config.Sms;
+			ConfigManager.Config.Cv = OtherConsoles?.CvOriginalConfig ?? ConfigManager.Config.Cv;
 			ConfigManager.Config.ApplyConfig();
 			ConfigManager.Config.Save();
 		}
@@ -102,7 +105,8 @@ namespace Mesen.ViewModels
 				Gameboy?.OriginalConfig.IsIdentical(ConfigManager.Config.Gameboy) == false ||
 				Gba?.OriginalConfig.IsIdentical(ConfigManager.Config.Gba) == false ||
 				PcEngine?.OriginalConfig.IsIdentical(ConfigManager.Config.PcEngine) == false ||
-				Sms?.OriginalConfig.IsIdentical(ConfigManager.Config.Sms) == false
+				Sms?.OriginalConfig.IsIdentical(ConfigManager.Config.Sms) == false ||
+				OtherConsoles?.CvOriginalConfig.IsIdentical(ConfigManager.Config.Cv) == false
 			);
 		}
    }
@@ -120,7 +124,8 @@ namespace Mesen.ViewModels
 		Gba = 8,
 		PcEngine = 9,
 		Sms = 10,
+		OtherConsoles = 11,
 		//separator
-		Preferences = 12
+		Preferences = 13
 	}
 }
