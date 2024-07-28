@@ -287,7 +287,7 @@
 
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flickering)</Control>
 			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit to prevent graphical glitches, when possible</Control>
-			<Control ID="chkEnablePalBorders">Enable PAL black borders</Control>
+			<Control ID="chkEnablePalBorders">Enable PAL black borders (when running in PAL/Dendy mode)</Control>
 			<Control ID="chkDisableBackground">Disable background</Control>
 			<Control ID="chkDisableSprites">Disable sprites</Control>
 			<Control ID="chkForceBackgroundFirstColumn">Force background display in first column</Control>
@@ -690,7 +690,7 @@
 			<Control ID="chkGameSelectionScreenResetGame">Start game from power-on instead of resuming the previous gameplay session</Control>
 			<Control ID="lblGameSelectionScreen">Game selection screen:</Control>
 
-			<Control ID="chkDisableGameDatabase">Disable built-in game database</Control>
+			<Control ID="chkDisableGameDatabase">Disable game database</Control>
 			<Control ID="chkDisableHighResolutionTimer">Disable high resolution timer</Control>
 			<Control ID="chkDisableOsd">Hide on-screen messages</Control>
 
