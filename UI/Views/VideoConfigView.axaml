@@ -116,7 +116,7 @@
 					<StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top">
 						<Button Content="{l:Translate btnSelectPreset}" Click="btnPreset_OnClick">
 							<Button.ContextMenu>
-								<ContextMenu PlacementMode="Bottom">
+								<ContextMenu Placement="BottomEdgeAlignedLeft">
 									<MenuItem Header="{l:Translate mnuPresetComposite}" Command="{Binding PresetCompositeCommand}" />
 									<MenuItem Header="{l:Translate mnuPresetSVideo}" Command="{Binding PresetSVideoCommand}" />
 									<MenuItem Header="{l:Translate mnuPresetRgb}" Command="{Binding PresetRgbCommand}" />

@@ -105,7 +105,7 @@
 								Click="btnSelectPreset_OnClick"
 							>
 								<Button.ContextMenu>
-									<ContextMenu PlacementMode="Bottom">
+									<ContextMenu Placement="BottomEdgeAlignedLeft">
 										<MenuItem Header="{l:Translate lblGrayscale}" Click="mnuGrayscalePreset_Click" />
 										<MenuItem Header="{l:Translate lblGrayscaleHighContrast}" Click="mnuGrayscaleHighContrastPreset_Click" />
 										<MenuItem Header="{l:Translate lblGreen}" Click="mnuGreenPreset_Click" />

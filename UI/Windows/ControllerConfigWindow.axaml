@@ -49,7 +49,7 @@
 				IsVisible="{Binding ShowPresets}"
 			>
 				<Button.ContextMenu>
-					<ContextMenu Name="Preset" PlacementMode="Bottom">
+					<ContextMenu Name="Preset" Placement="BottomEdgeAlignedLeft">
 						<MenuItem Header="{l:Translate mnuKeyboard}">
 							<MenuItem Header="{l:Translate mnuWasdLayout}" Click="mnuWasdLayout_OnClick" />
 							<MenuItem Header="{l:Translate mnuArrowLayout}" Click="mnuArrowLayout_OnClick" />
