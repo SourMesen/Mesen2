@@ -70,7 +70,10 @@ public class DataBox : TemplatedControl
 	public static readonly StyledProperty<bool> CanUserResizeColumnsProperty = 
         AvaloniaProperty.Register<DataBox, bool>(nameof(CanUserResizeColumns));
 
-    public static readonly StyledProperty<DataBoxGridLinesVisibility> GridLinesVisibilityProperty = 
+	public static readonly StyledProperty<bool> DisableSearchProperty =
+		  AvaloniaProperty.Register<DataBox, bool>(nameof(DisableSearch));
+
+	public static readonly StyledProperty<DataBoxGridLinesVisibility> GridLinesVisibilityProperty = 
         AvaloniaProperty.Register<DataBox, DataBoxGridLinesVisibility>(nameof(GridLinesVisibility));
 
 	public static readonly StyledProperty<SelectionMode> SelectionModeProperty =
@@ -140,6 +143,12 @@ public class DataBox : TemplatedControl
 	{
 		get => GetValue(ColumnWidthsProperty);
 		set => SetValue(ColumnWidthsProperty, value);
+	}
+
+	public bool DisableSearch
+	{
+		get => GetValue(DisableSearchProperty);
+		set => SetValue(DisableSearchProperty, value);
 	}
 
 	public bool CanUserResizeColumns
@@ -310,7 +319,7 @@ public class DataBox : TemplatedControl
 
 	private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 	{
-		if(e.Key == Key.Space) {
+		if(e.Key == Key.Space && !DisableSearch) {
 			ProcessKeyPress(" ");
 			e.Handled = true;
 		} else if(IsKeyboardFocusWithin && TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() is CheckBox) {
@@ -321,7 +330,7 @@ public class DataBox : TemplatedControl
 
 	private void ProcessKeyPress(string keyText)
 	{
-		if(Items == null || _rowsPresenter == null) {
+		if(Items == null || _rowsPresenter == null || DisableSearch) {
 			return;
 		}
 

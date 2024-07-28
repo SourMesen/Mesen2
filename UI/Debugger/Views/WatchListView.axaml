@@ -58,6 +58,7 @@
 			SelectionMode="Multiple"
 			GridLinesVisibility="All"
 			ColumnWidths="{Binding ColumnWidths}"
+			DisableSearch="True"
 		>
 			<DataBox.Columns>
 				<DataBoxTemplateColumn Header="{l:Translate colName}" CanUserResize="True" InitialWidth="200">
