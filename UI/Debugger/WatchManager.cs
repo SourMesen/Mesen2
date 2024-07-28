@@ -136,11 +136,6 @@ namespace Mesen.Debugger
 			}
 		}
 
-		public bool IsArraySyntax(string expression)
-		{
-			return _arrayWatchRegex.IsMatch(expression);
-		}
-
 		private bool ProcessFormatSpecifier(ref string expression, ref WatchFormatStyle style, ref int byteLength)
 		{
 			Match match = WatchManager.FormatSuffixRegex.Match(expression);
@@ -170,18 +165,25 @@ namespace Mesen.Debugger
 		private string ProcessArrayDisplaySyntax(WatchFormatStyle style, ref bool forceHasChanged, Match match)
 		{
 			string newValue;
-			int address;
+			Int64 address;
 			if(match.Groups[2].Value.Length > 0) {
-				address = int.Parse(match.Groups[2].Value.Substring(1), System.Globalization.NumberStyles.HexNumber);
+				address = Int64.Parse(match.Groups[2].Value.Substring(1), System.Globalization.NumberStyles.HexNumber);
 			} else if(match.Groups[3].Value.Length > 0) {
-				address = int.Parse(match.Groups[3].Value);
+				address = Int64.Parse(match.Groups[3].Value);
 			} else if(match.Groups[4].Value.Length > 0) {
-				CodeLabel? label = LabelManager.GetLabel(match.Groups[4].Value);
+				string token = match.Groups[4].Value.Trim();
+				CodeLabel? label = LabelManager.GetLabel(token);
 				if(label == null) {
-					forceHasChanged = true;
-					return "<invalid label>";
+					Int64 value = DebugApi.EvaluateExpression(token, _cpuType, out EvalResultType result, true);
+					if(result == EvalResultType.Numeric) {
+						address = value;
+					} else {
+						forceHasChanged = true;
+						return "<invalid label>";
+					}
+				} else {
+					address = label.GetRelativeAddress(_cpuType).Address;
 				}
-				address = label.GetRelativeAddress(_cpuType).Address;
 			} else {
 				return "<invalid expression>";
 			}
@@ -191,8 +193,11 @@ namespace Mesen.Debugger
 			if(address >= 0) {
 				List<string> values = new List<string>(elemCount);
 				MemoryType memType = _cpuType.ToMemoryType();
-				for(int j = address, end = address + elemCount; j < end; j++) {
-					int memValue = DebugApi.GetMemoryValue(memType, (uint)j);
+				for(Int64 j = address, end = address + elemCount; j < end; j++) {
+					if(j > UInt32.MaxValue) {
+						break;
+					}
+					int memValue = DebugApi.GetMemoryValue(memType, (UInt32)j);
 					values.Add(FormatValue(memValue, style, 1));
 				}
 				newValue = string.Join(" ", values);
