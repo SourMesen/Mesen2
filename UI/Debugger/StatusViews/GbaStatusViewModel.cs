@@ -28,7 +28,8 @@ namespace Mesen.Debugger.StatusViews
 
 		[Reactive] public UInt32 RegCpsr { get; set; }
 
-		[Reactive] public int Mode { get; set; }
+		[Reactive] public GbaCpuMode Mode { get; set; }
+		[Reactive] public string ModeString { get; set; } = GbaCpuMode.User.ToString();
 
 		[Reactive] public bool FlagZero { get; set; }
 		[Reactive] public bool FlagCarry { get; set; }
@@ -59,7 +60,7 @@ namespace Mesen.Debugger.StatusViews
 				(FlagIrqDisable ? (1 << 7) : 0) |
 				(FlagFiqDisable ? (1 << 6) : 0) |
 				(FlagThumb ? (1 << 5) : 0) |
-				((byte)Mode & 0x07)
+				(byte)Mode
 			);
 		}
 
@@ -94,7 +95,12 @@ namespace Mesen.Debugger.StatusViews
 			FlagFiqDisable = cpu.CPSR.FiqDisable;
 			FlagThumb = cpu.CPSR.Thumb;
 
-			Mode = (int)cpu.CPSR.Mode;
+			Mode = cpu.CPSR.Mode;
+			if(cpu.CPSR.Mode == GbaCpuMode.Irq || cpu.CPSR.Mode == GbaCpuMode.Fiq) {
+				ModeString = cpu.CPSR.Mode.ToString().ToUpper();
+			} else {
+				ModeString = cpu.CPSR.Mode.ToString();
+			}
 
 			Scanline = ppu.Scanline;
 			Cycle = ppu.Cycle;
@@ -128,8 +134,6 @@ namespace Mesen.Debugger.StatusViews
 			cpu.CPSR.IrqDisable = FlagIrqDisable;
 			cpu.CPSR.FiqDisable = FlagFiqDisable;
 			cpu.CPSR.Thumb = FlagThumb;
-
-			cpu.CPSR.Mode = (GbaCpuMode)Mode;
 
 			DebugApi.SetCpuState(cpu, CpuType.Gba);
 		}

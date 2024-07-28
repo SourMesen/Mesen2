@@ -114,9 +114,16 @@
 				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 2" />
 
 				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock>CPSR:</TextBlock>
-						<c:MesenNumericTextBox Value="{Binding RegCpsr}" Hex="True" Max="0xFFFFFFFF" IsEnabled="False" />
+					<StackPanel Orientation="Vertical">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock>Mode:</TextBlock>
+							<TextBlock Text="{Binding ModeString}" />
+						</StackPanel>
+						
+						<StackPanel Orientation="Horizontal">
+							<TextBlock>CPSR:</TextBlock>
+							<c:MesenNumericTextBox Value="{Binding RegCpsr}" Hex="True" Max="0xFFFFFFFF" IsEnabled="False" />
+						</StackPanel>
 					</StackPanel>
 					<WrapPanel>
 						<StackPanel>
@@ -133,10 +140,6 @@
 						</StackPanel>
 						<StackPanel>
 							<CheckBox IsChecked="{Binding FlagThumb}" Content="Thumb" />
-							<StackPanel Orientation="Horizontal">
-								<TextBlock>Mode:</TextBlock>
-								<c:MesenNumericTextBox Value="{Binding Mode}" Hex="True" Max="0x7" IsEnabled="False" />
-							</StackPanel>
 						</StackPanel>
 					</WrapPanel>
 				</WrapPanel>

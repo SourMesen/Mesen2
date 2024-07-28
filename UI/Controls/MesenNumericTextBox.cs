@@ -6,6 +6,7 @@ using Avalonia.Styling;
 using Avalonia.Input;
 using Mesen.Debugger.Utilities;
 using System.Globalization;
+using Avalonia.Threading;
 
 namespace Mesen.Controls
 {
@@ -60,9 +61,15 @@ namespace Mesen.Controls
 					return;
 				}
 
-				x.SetNewValue(x.Value);
-				x.UpdateText();
-				x.MaxLength = x.GetMaxLength();
+				//This seems to sometimes cause a stack overflow when the code tries to update
+				//value based on the min/max values, which seems to trigger an infinite loop
+				//of value updates (unsure if this is an Avalonia bug?) - updating after the event
+				//prevents the stack overflow/crash.
+				Dispatcher.UIThread.Post(() => {
+					x.SetNewValue(x.Value);
+					x.UpdateText();
+					x.MaxLength = x.GetMaxLength();
+				});
 			});
 
 			MaxProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
