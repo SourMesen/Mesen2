@@ -202,6 +202,15 @@
 
 			<Control ID="lblRegion">Region:</Control>
 		</Form>
+
+		<Form ID="VideoConfigOverrideView">
+			<Control ID="lblHeader">Global settings overrides</Control>
+
+			<Control ID="chkOverrideVideoFilter">Override video filter:</Control>
+			<Control ID="chkOverrideAspectRatio">Override aspect ratio:</Control>
+			<Control ID="lblCustomRatio">Custom Ratio: </Control>
+		</Form>
+
 		<Form ID="SnesConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblRegion">Region:</Control>
@@ -242,6 +251,8 @@
 			<Control ID="lblTime">Time: </Control>
 
 			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
+
 			<Control ID="chkBlendHighResolutionModes">Blend high resolution modes</Control>
 			<Control ID="chkHideBgLayer1">Hide background layer 1</Control>
 			<Control ID="chkHideBgLayer2">Hide background layer 2</Control>
@@ -329,6 +340,7 @@
 			<Control ID="lblConsoleType">Console model:</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 		</Form>
+
 		<Form ID="GameboyConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblModel">Model</Control>

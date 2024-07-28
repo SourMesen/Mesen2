@@ -508,9 +508,20 @@ namespace Mesen.ViewModels
 			return new MainMenuAction() {
 				ActionType = ActionType.Custom,
 				CustomText = ResourceHelper.GetEnumText(aspectRatio),
-				IsSelected = () => aspectRatio == ConfigManager.Config.Video.AspectRatio,
+				IsSelected = () => {
+					ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+					if(overrides?.OverrideAspectRatio == true) {
+						return aspectRatio == overrides.AspectRatio;
+					}
+					return aspectRatio == ConfigManager.Config.Video.AspectRatio;
+				},
 				OnClick = () => {
-					ConfigManager.Config.Video.AspectRatio = aspectRatio;
+					ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+					if(overrides?.OverrideAspectRatio == true) {
+						overrides.AspectRatio = aspectRatio;
+					} else {
+						ConfigManager.Config.Video.AspectRatio = aspectRatio;
+					}
 					ConfigManager.Config.Video.ApplyConfig();
 				}
 			};
@@ -620,10 +631,21 @@ namespace Mesen.ViewModels
 			return new MainMenuAction() {
 				ActionType = ActionType.Custom,
 				CustomText = ResourceHelper.GetEnumText(filter),
-				IsSelected = () => ConfigManager.Config.Video.VideoFilter == filter,
 				IsEnabled = () => AllowFilterType(filter),
+				IsSelected = () => {
+					ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+					if(overrides?.OverrideVideoFilter == true) {
+						return filter == overrides.VideoFilter;
+					}
+					return filter == ConfigManager.Config.Video.VideoFilter;
+				},
 				OnClick = () => {
-					ConfigManager.Config.Video.VideoFilter = filter;
+					ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+					if(overrides?.OverrideVideoFilter == true) {
+						overrides.VideoFilter = filter;
+					} else {
+						ConfigManager.Config.Video.VideoFilter = filter;
+					}
 					ConfigManager.Config.Video.ApplyConfig();
 				}
 			};

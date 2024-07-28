@@ -61,10 +61,24 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 		{
+			double customAspectRatio = CustomAspectRatio;
+			VideoAspectRatio aspectRatio = AspectRatio;
+			VideoFilterType videoFilter = VideoFilter;
+
+			ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+			if(overrides?.OverrideVideoFilter == true) {
+				videoFilter = overrides.VideoFilter;
+			}
+
+			if(overrides?.OverrideAspectRatio == true) {
+				aspectRatio = overrides.AspectRatio;
+				customAspectRatio = overrides.CustomAspectRatio;
+			}
+
 			ConfigApi.SetVideoConfig(new InteropVideoConfig() {
-				CustomAspectRatio = this.CustomAspectRatio,
-				VideoFilter = this.VideoFilter,
-				AspectRatio = this.AspectRatio,
+				CustomAspectRatio = customAspectRatio,
+				VideoFilter = videoFilter,
+				AspectRatio = aspectRatio,
 
 				UseBilinearInterpolation = this.UseBilinearInterpolation,
 				UseSrgbTextureFormat = this.UseSrgbTextureFormat,

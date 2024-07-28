@@ -272,7 +272,14 @@ namespace Mesen.Windows
 					
 					Dispatcher.UIThread.Post(() => {
 						bool wasAudioFile = _model.AudioPlayer != null;
+						bool updateConfig = _model.RomInfo.Format != romInfo.Format;
 						_model.RomInfo = romInfo;
+
+						if(updateConfig) {
+							//Make sure any config overrides (video filter/aspect ratio) are applied when loading a different file
+							ConfigManager.Config.Video.ApplyConfig();
+						}
+
 						bool isAudioFile = _model.AudioPlayer != null;
 						if(wasAudioFile != isAudioFile) {
 							//Force window size update when switching between an audio file and a regular rom

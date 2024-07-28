@@ -94,7 +94,9 @@
 		<TabItem Header="{l:Translate tpgVideo}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
+					<v:VideoConfigOverrideView DataContext="{Binding Config.ConfigOverrides}" />
+
+					<c:OptionSection Header="{l:Translate lblMiscSettings}">
 						<CheckBox IsChecked="{Binding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.ForceFixedResolution}" Text="{l:Translate chkForceFixedResolution}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />

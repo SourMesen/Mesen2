@@ -21,7 +21,9 @@
 
 	<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 		<StackPanel>
-			<c:OptionSection Header="{l:Translate tpgGeneral}" Margin="0">
+			<v:VideoConfigOverrideView DataContext="{Binding CvConfig.ConfigOverrides}" />
+
+			<c:OptionSection Header="{l:Translate tpgGeneral}">
 				<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
 					<TextBlock Text="{l:Translate lblRegion}"/>
 					<c:EnumComboBox

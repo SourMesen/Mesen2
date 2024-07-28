@@ -358,7 +358,9 @@
 		<TabItem Header="{l:Translate tpgVideo}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
+					<v:VideoConfigOverrideView DataContext="{Binding Config.ConfigOverrides}" ShowBisqwitFilter="True" />
+
+					<c:OptionSection Header="{l:Translate lblMiscSettings}">
 						<CheckBox IsChecked="{Binding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
 						<CheckBox Margin="10 0 0 0" IsChecked="{Binding Config.AdaptiveSpriteLimit}" Content="{l:Translate chkAdaptiveSpriteLimit}" IsEnabled="{Binding Config.RemoveSpriteLimit}" />
 						<CheckBox IsChecked="{Binding Config.EnablePalBorders}" Content="{l:Translate chkEnablePalBorders}" />

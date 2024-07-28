@@ -11,6 +11,8 @@ namespace Mesen.Config;
 
 public class CvConfig : BaseConfig<CvConfig>
 {
+	[Reactive] public ConsoleOverrideConfig ConfigOverrides { get; set; } = new();
+
 	[Reactive] public CvControllerConfig Port1 { get; set; } = new();
 	[Reactive] public CvControllerConfig Port2 { get; set; } = new();
 
@@ -30,6 +32,8 @@ public class CvConfig : BaseConfig<CvConfig>
 
 	public void ApplyConfig()
 	{
+		ConfigManager.Config.Video.ApplyConfig();
+
 		ConfigApi.SetCvConfig(new InteropCvConfig() {
 			Port1 = Port1.ToInterop(),
 			Port2 = Port2.ToInterop(),

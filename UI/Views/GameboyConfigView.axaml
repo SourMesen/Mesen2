@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:c="using:Mesen.Controls"
+	xmlns:v="using:Mesen.Views"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:cfg="using:Mesen.Config"
 	xmlns:l="using:Mesen.Localization"
@@ -90,7 +91,9 @@
 		<TabItem Header="{l:Translate tpgVideo}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:OptionSection Header="{l:Translate lblGameboyPalette}" Margin="0">
+					<v:VideoConfigOverrideView DataContext="{Binding Config.ConfigOverrides}" />
+
+					<c:OptionSection Header="{l:Translate lblGameboyPalette}">
 						<Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto">
 							<TextBlock Text="{l:Translate lblGbBackground}" />
 							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Width="82">

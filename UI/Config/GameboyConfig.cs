@@ -11,6 +11,8 @@ namespace Mesen.Config
 {
 	public class GameboyConfig : BaseConfig<GameboyConfig>
 	{
+		[Reactive] public ConsoleOverrideConfig ConfigOverrides { get; set; } = new();
+
 		[Reactive] public ControllerConfig Controller { get; set; } = new();
 
 		[Reactive] public GameboyModel Model { get; set; } = GameboyModel.AutoFavorGbc;
@@ -37,6 +39,8 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 		{
+			ConfigManager.Config.Video.ApplyConfig();
+
 			ConfigApi.SetGameboyConfig(new InteropGameboyConfig() {
 				Controller = Controller.ToInterop(),
 				Model = Model,

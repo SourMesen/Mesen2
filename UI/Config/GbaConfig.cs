@@ -11,6 +11,8 @@ namespace Mesen.Config
 {
 	public class GbaConfig : BaseConfig<GbaConfig>
 	{
+		[Reactive] public ConsoleOverrideConfig ConfigOverrides { get; set; } = new();
+
 		[Reactive] public ControllerConfig Controller { get; set; } = new();
 
 		[Reactive] public bool SkipBootScreen { get; set; } = false;
@@ -38,6 +40,8 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 {
+			ConfigManager.Config.Video.ApplyConfig();
+
 			ConfigApi.SetGbaConfig(new InteropGbaConfig() {
 				Controller = Controller.ToInterop(),
 

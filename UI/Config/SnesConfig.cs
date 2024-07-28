@@ -11,6 +11,8 @@ namespace Mesen.Config
 {
 	public class SnesConfig : BaseConfig<SnesConfig>
 	{
+		[Reactive] public ConsoleOverrideConfig ConfigOverrides { get; set; } = new();
+
 		//Input
 		[Reactive] public SnesControllerConfig Port1 { get; set; } = new SnesControllerConfig();
 		[Reactive] public SnesControllerConfig Port2 { get; set; } = new SnesControllerConfig();
@@ -69,6 +71,8 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 		{
+			ConfigManager.Config.Video.ApplyConfig();
+
 			ConfigApi.SetSnesConfig(new InteropSnesConfig() {
 				Port1 = Port1.ToInterop(),
 				Port1A = Port1A.ToInterop(),

@@ -13,6 +13,8 @@ namespace Mesen.Config;
 
 public class SmsConfig : BaseConfig<SmsConfig>
 {
+	[Reactive] public ConsoleOverrideConfig ConfigOverrides { get; set; } = new();
+
 	[Reactive] public SmsControllerConfig Port1 { get; set; } = new();
 	[Reactive] public SmsControllerConfig Port2 { get; set; } = new();
 
@@ -44,6 +46,8 @@ public class SmsConfig : BaseConfig<SmsConfig>
 
 	public void ApplyConfig()
 	{
+		ConfigManager.Config.Video.ApplyConfig();
+
 		ConfigApi.SetSmsConfig(new InteropSmsConfig() {
 			Port1 = Port1.ToInterop(),
 			Port2 = Port2.ToInterop(),
