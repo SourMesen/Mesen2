@@ -6,6 +6,7 @@ using Avalonia.Metadata;
 using Mesen.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.Views;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -22,6 +23,8 @@ namespace Mesen.Debugger.Windows
 			get { return GetValue(AddressProperty); }
 			set { SetValue(AddressProperty, value); }
 		}
+
+		public string HelpTooltip { get; } = ResourceHelper.GetMessage("GoToWindowHint");
 
 		private static string _lastAddress = "";
 		private int _maximum = 0;

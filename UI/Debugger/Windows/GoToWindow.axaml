@@ -15,7 +15,7 @@
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d"
 	x:Class="Mesen.Debugger.Windows.GoToWindow"
-	Width="290" Height="55"
+	Width="320" Height="55"
 	ShowInTaskbar="False"
 	CanResize="False"
 	Name="root"
@@ -29,6 +29,15 @@
 
 		<DockPanel>
 			<TextBlock Text="{l:Translate lblAddress}" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0 0 5 0" />
+			<Image
+				DockPanel.Dock="Right"
+				Margin="3 -1 3 0"
+				Stretch="None"
+				Source="/Assets/Help.png"
+				ToolTip.Tip="{Binding HelpTooltip, ElementName=root}"
+				ToolTip.Placement="Right"
+				ToolTip.ShowDelay="100"
+			/>
 			<TextBox
 				Name="txtAddress"
 				HorizontalAlignment="Stretch"

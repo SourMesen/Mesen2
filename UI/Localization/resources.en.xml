@@ -1741,6 +1741,8 @@ E
 		<Message ID="HexEditor_Selection">Selection: ${0} - ${1}</Message>
 		<Message ID="HexEditor_Length">Length: {0} bytes (${1})</Message>
 
+		<Message ID="GoToWindowHint">Hex addresses, labels, and any expression&#13;supported by the watch window can be used.</Message>
+
 		<Message ID="ViewInAction">View in {0}</Message>
 
 		<Message ID="btnOK">OK</Message>
