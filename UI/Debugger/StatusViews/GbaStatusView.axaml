@@ -23,7 +23,7 @@
 	<ScrollViewer>
 		<DockPanel>
 			<StackPanel DockPanel.Dock="Top" IsEnabled="{Binding EditAllowed}">
-				<WrapPanel MaxWidth="400" HorizontalAlignment="Left">
+				<WrapPanel MaxWidth="500" HorizontalAlignment="Left">
 					<WrapPanel.Styles>
 						<Style Selector="StackPanel > TextBlock">
 							<Setter Property="MinWidth" Value="25" />
@@ -50,9 +50,6 @@
 							<TextBlock>R3:</TextBlock>
 							<c:MesenNumericTextBox Value="{Binding Reg3}" Hex="True" Max="0xFFFFFFFF" />
 						</StackPanel>
-					</StackPanel>
-
-					<StackPanel Orientation="Vertical">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>R4:</TextBlock>
 							<c:MesenNumericTextBox Value="{Binding Reg4}" Hex="True" Max="0xFFFFFFFF" />
@@ -72,25 +69,22 @@
 					</StackPanel>
 
 					<StackPanel Orientation="Vertical">
-						<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 							<TextBlock>R8:</TextBlock>
 							<c:MesenNumericTextBox Value="{Binding Reg8}" Hex="True" Max="0xFFFFFFFF" />
 						</StackPanel>
-						<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 							<TextBlock>R9:</TextBlock>
 							<c:MesenNumericTextBox Value="{Binding Reg9}" Hex="True" Max="0xFFFFFFFF" />
 						</StackPanel>
-						<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 							<TextBlock>R10:</TextBlock>
 							<c:MesenNumericTextBox Value="{Binding Reg10}" Hex="True" Max="0xFFFFFFFF" />
 						</StackPanel>
-						<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 							<TextBlock>R11:</TextBlock>
 							<c:MesenNumericTextBox Value="{Binding Reg11}" Hex="True" Max="0xFFFFFFFF" />
 						</StackPanel>
-					</StackPanel>
-
-					<StackPanel Orientation="Vertical">
 						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 							<TextBlock>R12:</TextBlock>
 							<c:MesenNumericTextBox Value="{Binding Reg12}" Hex="True" Max="0xFFFFFFFF" />
@@ -108,8 +102,20 @@
 							<c:MesenNumericTextBox Value="{Binding Reg15}" Hex="True" Max="0xFFFFFFFF" />
 						</StackPanel>
 					</StackPanel>
-				</WrapPanel>
 
+					<StackPanel HorizontalAlignment="Left" Margin="15 0 0 0">
+						<TextBlock Text="Stack: " Margin="0" />
+						<TextBox
+							TextWrapping="Wrap"
+							Width="100"
+							Height="135"
+							AcceptsReturn="True"
+							IsReadOnly="True"
+							ScrollViewer.VerticalScrollBarVisibility="Visible"
+							Text="{Binding StackPreview}"
+						/>
+					</StackPanel>
+				</WrapPanel>
 
 				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 2" />
 

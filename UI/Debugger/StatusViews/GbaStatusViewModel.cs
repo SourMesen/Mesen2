@@ -40,6 +40,8 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public bool FlagIrqDisable { get; set; }
 		[Reactive] public bool FlagFiqDisable { get; set; }
 
+		[Reactive] public string StackPreview { get; set; } = "";
+
 		[Reactive] public UInt16 Scanline { get; set; }
 		[Reactive] public UInt16 Cycle { get; set; }
 
@@ -101,6 +103,14 @@ namespace Mesen.Debugger.StatusViews
 			} else {
 				ModeString = cpu.CPSR.Mode.ToString();
 			}
+
+			StringBuilder sb = new StringBuilder();
+			byte[] stackValues = DebugApi.GetMemoryValues(MemoryType.GbaMemory, cpu.R[13], cpu.R[13] + 30 * 4 - 1);
+			for(int i = 0; i < stackValues.Length; i+=4) {
+				UInt32 value = (uint)stackValues[i] | (uint)(stackValues[i+1] << 8) | (uint)(stackValues[i+2] << 16) | (uint)(stackValues[i+3] << 24);
+				sb.Append($"${value:X8} ");
+			}
+			StackPreview = sb.ToString();
 
 			Scanline = ppu.Scanline;
 			Cycle = ppu.Cycle;
