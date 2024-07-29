@@ -2,26 +2,41 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Metadata;
 using Mesen.Controls;
+using Mesen.Debugger.Labels;
+using Mesen.Interop;
+using Mesen.Views;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Globalization;
 
 namespace Mesen.Debugger.Windows
 {
 	public class GoToWindow : MesenWindow
 	{
-		private static int _lastAddress { get; set; } = 0;
+		public static readonly StyledProperty<string> AddressProperty = AvaloniaProperty.Register<GoToWindow, string>(nameof(Address), "");
 
-		public int Address { get; set; }
-		public int Maximum { get; set; }
+		public string Address
+		{
+			get { return GetValue(AddressProperty); }
+			set { SetValue(AddressProperty, value); }
+		}
+
+		private static string _lastAddress = "";
+		private int _maximum = 0;
+		private CpuType _cpuType;
+		private MemoryType _memType;
 
 		[Obsolete("For designer only")]
-		public GoToWindow() : this(0) { }
+		public GoToWindow() : this(CpuType.Snes, MemoryType.SnesMemory, 0) { }
 
-		public GoToWindow(int maximum)
+		public GoToWindow(CpuType cpuType, MemoryType memType, int maximum)
 		{
-			Address = _lastAddress < maximum ? _lastAddress : 0;
-			Maximum = maximum;
+			Address = _lastAddress;
+			_maximum = maximum;
+			_cpuType = cpuType;
+			_memType = memType;
 
 			InitializeComponent();
 #if DEBUG
@@ -37,13 +52,57 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.GetControl<MesenNumericTextBox>("txtAddress").Focus();
+			this.GetControl<TextBox>("txtAddress").Focus();
+			this.GetControl<TextBox>("txtAddress").SelectAll();
 		}
 
-		private void Ok_OnClick(object sender, RoutedEventArgs e)
+		private int GetEffectiveAddress()
 		{
-			_lastAddress = Address;
-			Close(Address);
+			string textValue = Address.Trim();
+
+			CodeLabel? label = LabelManager.GetLabel(textValue);
+			if(label != null) {
+				if(label.GetAbsoluteAddress().Type == _memType) {
+					return label.GetAbsoluteAddress().Address;
+				} else {
+					AddressInfo relAddr = label.GetRelativeAddress(_cpuType);
+					if(relAddr.Address > 0 && relAddr.Type == _memType) {
+						return relAddr.Address;
+					}
+				}
+			}
+
+			if(int.TryParse(textValue, out int numericValue)) {
+				//numeric-only value, interpret as hex string (otherwise EvaluateExpression will parse it as a decimal string)
+				if(!long.TryParse(textValue, NumberStyles.HexNumber, null, out long parsedValue) || parsedValue < 0 || parsedValue > _maximum) {
+					return -1;
+				}
+				return (int)parsedValue;
+			}
+
+			long value = DebugApi.EvaluateExpression(textValue, _cpuType, out EvalResultType resultType, false);
+			if(resultType != EvalResultType.Numeric || value < 0 || value > _maximum) {
+				if(!long.TryParse(textValue, NumberStyles.HexNumber, null, out long parsedValue) || parsedValue < 0 || parsedValue > _maximum) {
+					return -1;
+				}
+				return (int)parsedValue;
+			}
+			return (int)value;
+		}
+
+		[DependsOn(nameof(Address))]
+		public bool CanOkClick(object parameter)
+		{
+			return GetEffectiveAddress() >= 0;
+		}
+
+		public void OkClick(object parameter)
+		{
+			int effectiveAddr = GetEffectiveAddress();
+			if(effectiveAddr >= 0) {
+				_lastAddress = Address;
+				Close(effectiveAddr);
+			}
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)

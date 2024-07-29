@@ -226,7 +226,8 @@ namespace Mesen.Debugger.Windows
 					ActionType = ActionType.GoToAddress,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAddress),
 					OnClick = async () => {
-						int? address = await new GoToWindow(DebugApi.GetMemorySize(_model.Config.MemoryType) - 1).ShowCenteredDialog<int?>(this);
+						MemoryType memType = _model.Config.MemoryType;
+						int? address = await new GoToWindow(memType.ToCpuType(), memType, DebugApi.GetMemorySize(memType) - 1).ShowCenteredDialog<int?>(this);
 						if(address != null) {
 							_editor.SetCursorPosition(address.Value, scrollToTop: true);
 							_editor.Focus();

@@ -15,7 +15,7 @@
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d"
 	x:Class="Mesen.Debugger.Windows.GoToWindow"
-	Width="250" Height="55"
+	Width="290" Height="55"
 	ShowInTaskbar="False"
 	CanResize="False"
 	Name="root"
@@ -23,20 +23,16 @@
 >
 	<DockPanel Margin="3">
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-			<Button MinWidth="70" HorizontalContentAlignment="Center" IsDefault="true" Click="Ok_OnClick" Content="{l:Translate btnOk}" />
+			<Button MinWidth="70" HorizontalContentAlignment="Center" IsDefault="true" Command="{Binding OkClick, ElementName=root}" Content="{l:Translate btnOk}" />
 			<Button MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 		</StackPanel>
 
 		<DockPanel>
 			<TextBlock Text="{l:Translate lblAddress}" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0 0 5 0" />
-			<c:MesenNumericTextBox
+			<TextBox
 				Name="txtAddress"
 				HorizontalAlignment="Stretch"
-				Hex="True"
-				Trim="True"
-				Min="0"
-				Max="{Binding Maximum, ElementName=root}"
-				Value="{Binding Address, ElementName=root}"
+				Text="{Binding Address, ElementName=root}"
 			/>
 		</DockPanel>
 	</DockPanel>

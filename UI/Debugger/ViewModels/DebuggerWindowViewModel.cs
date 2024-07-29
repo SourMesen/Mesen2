@@ -479,7 +479,8 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.GoToAddress,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAddress),
 					OnClick = async () => {
-						int? address = await new GoToWindow(DebugApi.GetMemorySize(CpuType.ToMemoryType()) - 1).ShowCenteredDialog<int?>(wnd);
+						MemoryType memType = CpuType.ToMemoryType();
+						int? address = await new GoToWindow(CpuType, memType, DebugApi.GetMemorySize(memType) - 1).ShowCenteredDialog<int?>(wnd);
 						if(address != null) {
 							ScrollToAddress(address.Value);
 						}
