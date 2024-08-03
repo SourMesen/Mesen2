@@ -1,6 +1,8 @@
 [
 {
 	"name": "addCheat",
+	"category": "Miscellaneous",
+	"subcategory": "Cheats",
 	"description": "Adds the specified cheat code.\n\nNote: Cheat codes added via this function are not permanent and not visible in the UI.",
 	"parameters": [
 		{ "name": "cheatType", "type": "Enum", "enumName": "cheatType", "description": "Cheat type/format" },
@@ -9,6 +11,7 @@
 },
 {
 	"name": "addEventCallback",
+	"category": "Callbacks",
 	"description": "Registers a callback function to be called whenever the specified event occurs.\nThe callback function receives 1 parameter (\"cpuType\") which is an enum value (emu.cpuType) which indicates which CPU triggered the event (useful to distinguish between identical events triggered by different CPUs, e.g Super Game Boy).",
 	"parameters": [
 		{ "name": "callback", "type": "Function", "description": "Lua function to call when the event occurs" },
@@ -18,6 +21,7 @@
 },
 {
 	"name": "addMemoryCallback",
+	"category": "Callbacks",
 	"description": "Registers a callback function to be called whenever the specified event occurs.\nThe callback function receives 2 parameters (\"address\" and \"value\") that correspond to the address being written to or read from, and the value that is being read/written.\n\nFor reads, the callback is called after the read is performed.\nFor writes, the callback is called before the write is performed.\n\nIf the callback returns an integer value, it will replace the value - you can alter the results of read/write operation by using this.",
 	"parameters": [
 		{ "name": "callback", "type": "Function", "description": "Lua function to call when the event occurs" },
@@ -31,19 +35,24 @@
 },
 {
 	"name": "breakExecution",
+	"category": "Emulation",
 	"description": "Breaks the execution."
 },
 {
 	"name": "clearCheats",
+	"category": "Miscellaneous",
+	"subcategory": "Cheats",
 	"description": "Removes all active cheat codes.\n\nNote: This has no impact on cheat codes saved in the UI, but it will disable them temporarily."
 },
 {
 	"name": "clearScreen",
+	"category": "Drawing",
 	"description": "Removes all drawn shapes from the screen."
 },
 {
 	"name": "convertAddress",
-	"description": "Converts an address between CPU addressing mode and ROM/RAM addressing mode.\nWhen a ROM/RAM address is given, a CPU address matching that value is returned, if the value is mapped.\nWhen a CPU address is given, the corresponding ROM/RAM address is returned, if the address is mapped to ROM/RAM.",
+	"category": "MemoryAccess",
+	"description": "Converts an address between CPU addressing mode and ROM/RAM addressing mode.\nWhen a ROM/RAM address is given, a CPU address matching that value is returned, if the address is mapped.\nWhen a CPU address is given, the corresponding ROM/RAM address is returned, if the address is mapped to ROM/RAM.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to convert" },
 		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type", "defaultValue": "main CPU memory" },
@@ -53,11 +62,14 @@
 },
 {
 	"name": "createSavestate",
+	"category": "Miscellaneous",
+	"subcategory": "SaveStates",
 	"description": "Creates a savestate and returns it as a binary string.\n\nNote: This can only be called from inside an \"exec\" memory callback.",
 	"returnValue": { "type": "String", "description": "Binary string containing the savestate." }
 },
 {
 	"name": "displayMessage",
+	"category": "Logging",
 	"description": "Displays a message on the main window in the format \"[category] text\"",
 	"parameters": [
 		{ "name": "category", "type": "String", "description": "The category is the portion shown between brackets" },
@@ -66,6 +78,7 @@
 },
 {
 	"name": "drawLine",
+	"category": "Drawing",
 	"description": "Draws a line between (x, y) to (x2, y2) using the specified color for a specific number of frames.",
 	"parameters": [
 		{ "name": "x", "type": "Int", "description": "X position (start of line)" },
@@ -79,6 +92,7 @@
 },
 {
 	"name": "drawPixel",
+	"category": "Drawing",
 	"description": "Draws a pixel at the specified (x, y) coordinates using the specified color for a specific number of frames.",
 	"parameters": [
 		{ "name": "x", "type": "Int", "description": "X position" },
@@ -90,6 +104,7 @@
 },
 {
 	"name": "drawRectangle",
+	"category": "Drawing",
 	"description": "Draws a rectangle between (x, y) to (x+width, y+height) using the specified color for a specific number of frames. If fill is false, only the rectangle's outline will be drawn.",
 	"parameters": [
 		{ "name": "x", "type": "Int", "description": "X position" },
@@ -104,6 +119,7 @@
 },
 {
 	"name": "drawString",
+	"category": "Drawing",
 	"description": "Draws text at (x, y) using the specified text and colors for a specific number of frames.",
 	"parameters": [
 		{ "name": "x", "type": "Int", "description": "X position" },
@@ -118,6 +134,8 @@
 },
 {
 	"name": "getAccessCounters",
+	"category": "Miscellaneous",
+	"subcategory": "AccessCounters",
 	"description": "Returns an array of access counters for the specified memory and operation types.",
 	"parameters": [
 		{ "name": "counterType", "type": "Enum", "enumName": "counterType", "description": "Counter type" },
@@ -127,6 +145,7 @@
 },
 {
 	"name": "getDrawSurfaceSize",
+	"category": "Drawing",
 	"description": "Returns a table containing the full size, visible size and overscan size for the selected draw surface.",
 	"parameters": [
 		{ "name": "surface", "type": "Enum", "enumName": "drawSurface", "description": "Draw surface", "defaultValue": "current draw surface" }
@@ -135,6 +154,7 @@
 },
 {
 	"name": "getInput",
+	"category": "Input",
 	"description": "Returns a table containing the state of all buttons for the selected port/controller. The table's content varies based on the controller type.",
 	"parameters": [
 		{ "name": "port", "type": "Int", "description": "Port number" },
@@ -144,6 +164,7 @@
 },
 {
 	"name": "getLabelAddress",
+	"category": "MemoryAccess",
 	"description": "Returns a table containing the address and memory type for the specified label.",
 	"parameters": [
 		{ "name": "label", "type": "String", "description": "Label" }
@@ -152,14 +173,13 @@
 },
 {
 	"name": "getLogWindowLog",
+	"category": "Logging",
 	"description": "Returns the same text as what is shown in the emulator's log window.",
-	"parameters": [
-		{ "name": "label", "type": "String", "description": "Label" }
-	],
-	"returnValue": { "type": "Table", "description": "A string containing the log shown in the log window" }
+	"returnValue": { "type": "String", "description": "A string containing the log shown in the log window" }
 },
 {
 	"name": "getMemorySize",
+	"category": "MemoryAccess",
 	"description": "Returns the size (in bytes) of the specified memory type.",
 	"parameters": [
 		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type" }
@@ -168,11 +188,13 @@
 },
 {
 	"name": "getMouseState",
+	"category": "Input",
 	"description": "Returns a table containing the position and the state of all 3 buttons.",
 	"returnValue": { "type": "Table", "description": "{ x = int, y = int, relativeX = int, relativeY = int, left = bool, middle = bool, right = bool }" }
 },
 {
 	"name": "getPixel",
+	"category": "Drawing",
 	"description": "Returns the color (in ARGB format) of the screen's output for the specified coordinates.",
 	"parameters": [
 		{ "name": "x", "type": "Int", "description": "X position" },
@@ -182,31 +204,39 @@
 },
 {
 	"name": "getRomInfo",
+	"category": "Miscellaneous",
+	"subcategory": "Others",
 	"description": "Returns information about the ROM file that is currently running.",
 	"returnValue": { "type": "Table", "description": "{ name = string, path = string, fileSha1Hash = string }" }
 },
 {
 	"name": "getScreenBuffer",
+	"category": "Drawing",
 	"description": "Returns an array of ARGB values with the contents of the console's screen - can be used with emu.setScreenBuffer() to modify the screen's contents.\n\nNote: The size of the array varies based on the console, game, and sometimes scene. Use emu.getScreenSize() to get the screen's current dimensions.",
 	"returnValue": { "type": "Array", "description": "Array of ARGB values" }
 },
 {
 	"name": "getScreenSize",
+	"category": "Drawing",
 	"description": "Returns a table containing the size of the console's current screen output.",
 	"returnValue": { "type": "Table", "description": "{ width = int, height = int }" }
 },
 {
 	"name": "getScriptDataFolder",
+	"category": "Miscellaneous",
+	"subcategory": "Others",
 	"description": "This function returns the path to a unique folder (based on the script's filename) where the script should store its data (if any data needs to be saved). The data will be saved in subfolders inside the LuaScriptData folder in Mesen's home folder.\n\nNote: This function will return an empty string if the \"Allow access to I/O and OS functions\" option is disabled.",
 	"returnValue": { "type": "String", "description": "The folder's path" }
 },
 {
 	"name": "getState",
+	"category": "Emulation",
 	"description": "Returns a table containing key-value pairs that describe the console's current state.\n\nNote: The name of the values returned may change from one version to another. Some values may represent the emulator's internal state and may not be useful (these will be hidden in future versions.)",
 	"returnValue": { "type": "Table", "description": "Content varies for each console and game." }
 },
 {
 	"name": "isKeyPressed",
+	"category": "Input",
 	"description": "Returns whether or not a specific key is pressed. The \"keyName\" must be the same as the string shown in the UI when the key is bound to a button.",
 	"parameters": [
 		{ "name": "keyName", "type": "String", "description": "Name of the key to check" }
@@ -215,6 +245,8 @@
 },
 {
 	"name": "loadSavestate",
+	"category": "Miscellaneous",
+	"subcategory": "SaveStates",
 	"description": "Loads a savestate from a binary string.\n\nNote: This can only be called from inside an \"exec\" memory callback.",
 	"parameters": [
 		{ "name": "state", "type": "String", "description": "Binary data containing the savestate" }
@@ -222,6 +254,7 @@
 },
 {
 	"name": "log",
+	"category": "Logging",
 	"description": "Logs the specified string in the script's log window - useful for debugging scripts.",
 	"parameters": [
 		{ "name": "text", "type": "String", "description": "Text to log" }
@@ -229,6 +262,7 @@
 },
 {
 	"name": "measureString",
+	"category": "Drawing",
 	"description": "Measures the specified string and returns a table containing the width and height that the string would take when drawn.",
 	"parameters": [
 		{ "name": "text", "type": "String", "description": "String to measure" },
@@ -238,6 +272,7 @@
 },
 {
 	"name": "read",
+	"category": "MemoryAccess",
 	"description": "Reads an 8-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to read from" },
@@ -248,6 +283,7 @@
 },
 {
 	"name": "read16",
+	"category": "MemoryAccess",
 	"description": "Reads a 16-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to read from" },
@@ -258,6 +294,7 @@
 },
 {
 	"name": "read32",
+	"category": "MemoryAccess",
 	"description": "Reads a 32-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to read from" },
@@ -268,18 +305,23 @@
 },
 {
 	"name": "reset",
+	"category": "Emulation",
 	"description": "Resets the current game. If the console does not have a reset button, this will have the same effect as power cycling."
 },
 {
 	"name": "resetAccessCounters",
+	"category": "Miscellaneous",
+	"subcategory": "AccessCounters",
 	"description": "Resets all access counters."
 },
 {
 	"name": "resume",
+	"category": "Emulation",
 	"description": "Resumes execution after a break."
 },
 {
 	"name": "rewind",
+	"category": "Emulation",
 	"description": "Instantly rewinds the emulation by the number of seconds specified.\n\nNote: This can only be called from inside an \"exec\" memory callback.",
 	"parameters": [
 		{ "name": "seconds", "type": "Int", "description": "Number of seconds to rewind" }
@@ -287,6 +329,7 @@
 },
 {
 	"name": "selectDrawSurface",
+	"category": "Drawing",
 	"description": "Selects the surface on which any subsequent draw call will be drawn to.\n\nconsoleScreen: This surface is the same as the console's output and is a fixed resolution. Anything drawn here will appear in screenshots/videos.\n\nscriptHud: This surface is independent to the console's output and has a configurable resolution. Drawings done on this surface will not appear in screenshots/videos.\n\nNote: setScreenBuffer always draws to the \"consoleScreen\" surface.",
 	"parameters": [
 		{ "name": "surface", "type": "Enum", "enumName": "drawSurface", "description": "Draw surface" },
@@ -295,15 +338,17 @@
 },
 {
 	"name": "setInput",
+	"category": "Input",
 	"description": "Sets the input state for the specified port. Buttons enabled or disabled via setInput will keep their state until the next inputPolled event.\n\nNote: If a button's value is not specified in the \"input\" argument, then the player retains control of that button. For example, \"emu.setInput({ select = false, start = false }, 0)\" will prevent the player 1 from using both the start and select buttons, but all other buttons will still work as normal.\n\nIt is recommended to use this function within a callback for the inputPolled event. Otherwise, the inputs may not be applied before the ROM has the chance to read them.",
 	"parameters": [
-		{ "name": "input", "type": "Table", "description": "Controller state to apply to the port, same format as the return value of getState()." },
+		{ "name": "input", "type": "Table", "description": "Controller state to apply to the port, same format as the return value of getInput()." },
 		{ "name": "port", "type": "Int", "description": "Port number" },
 		{ "name": "subPort", "type": "Int", "description": "Subport number - this is used for multitap-like adapters.", "defaultValue": "0" }
 	]
 },
 {
 	"name": "setScreenBuffer",
+	"category": "Drawing",
 	"description": "Replaces the current frame with the contents of the specified array.",
 	"parameters": [
 		{ "name": "screenBuffer", "type": "Array", "description": "Array of integers in ARGB format" }
@@ -311,6 +356,7 @@
 },
 {
 	"name": "setState",
+	"category": "Emulation",
 	"description": "Changes the state of the emulator to match the values provided in the \"state\" parameter.\n\nNote: The name of the values returned may change from one version to another. Some values may represent the emulator's internal state and should not be changed (access to these will be removed in future versions.)",
 	"parameters": [
 		{ "name": "state", "type": "Table", "description": "A key-value table containing the state to be applied." }
@@ -318,6 +364,7 @@
 },
 {
 	"name": "step",
+	"category": "Emulation",
 	"description": "Breaks the emulation's execution when the step conditions are reached.",
 	"parameters": [
 		{ "name": "count", "type": "Int", "description": "Number of cycles/frames/etc." },
@@ -327,6 +374,7 @@
 },
 {
 	"name": "stop",
+	"category": "Emulation",
 	"description": "Stops the emulation and returns the specified exit code (when used with the --testRunner command line option).",
 	"parameters": [
 		{ "name": "exitCode", "type": "Int", "description": "The exit code that the Mesen process will return." }
@@ -334,11 +382,14 @@
 },
 {
 	"name": "takeScreenshot",
+	"category": "Miscellaneous",
+	"subcategory": "Others",
 	"description": "Takes a screenshot and returns a PNG file as a string. The screenshot is not saved to the disk.",
 	"returnValue": { "type": "String", "description": "A binary string containing a PNG image." }
 },
 {
 	"name": "removeEventCallback",
+	"category": "Callbacks",
 	"description": "Removes a previously registered callback function.",
 	"parameters": [
 		{ "name": "reference", "type": "Int", "description": "Value returned by the call to emu.addEventCallback()" },
@@ -347,6 +398,7 @@
 },
 {
 	"name": "removeMemoryCallback",
+	"category": "Callbacks",
 	"description": "Removes a previously registered callback function.",
 	"parameters": [
 		{ "name": "reference", "type": "Int", "description": "Value returned by the call to emu.addMemoryCallback()" },
@@ -359,6 +411,7 @@
 },
 {
 	"name": "write",
+	"category": "MemoryAccess",
 	"description": "Writes an 8-bit value to the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from writing a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to write to" },
@@ -368,6 +421,7 @@
 },
 {
 	"name": "write16",
+	"category": "MemoryAccess",
 	"description": "Writes a 16-bit value to the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from writing a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to write to" },
@@ -377,6 +431,7 @@
 },
 {
 	"name": "write32",
+	"category": "MemoryAccess",
 	"description": "Writes a 32-bit value to the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from writing a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to write to" },
@@ -386,6 +441,7 @@
 },
 {
 	"name": "callbackType",
+	"category": "Enums",
 	"description": "Used by emu.addMemoryCallback() and emu.removeMemoryCallback()",
 	"enumValues": [
 		{ "name": "read", "description": "Callback is called when data is read" },
@@ -395,6 +451,7 @@
 },
 {
 	"name": "cheatType",
+	"category": "Enums",
 	"description": "Used by emu.addCheat()",
 	"enumValues": [
 		{ "name": "nesGameGenie", "description": "Game Genie (NES)" },
@@ -412,6 +469,7 @@
 },
 {
 	"name": "counterType",
+	"category": "Enums",
 	"description": "Used by emu.getAccessCounters()",
 	"enumValues": [
 		{ "name": "readCount", "description": "Returns the number of times each byte was read" },
@@ -424,6 +482,7 @@
 },
 {
 	"name": "cpuType",
+	"category": "Enums",
 	"description": "Used by several APIs to specify which CPU the API call applies to.",
 	"enumValues": [
 		{ "name": "snes", "description": "SNES - Main CPU - S-CPU 5A22 (65186)" },
@@ -440,6 +499,7 @@
 },
 {
 	"name": "drawSurface",
+	"category": "Enums",
 	"description": "Used by emu.selectDrawSurface() and emu.getDrawSurfaceSize()",
 	"enumValues": [
 		{ "name": "consoleScreen", "description": "Console's framebuffer. Drawings appear in screenshots/videos." },
@@ -448,6 +508,7 @@
 },
 {
 	"name": "eventType",
+	"category": "Enums",
 	"description": "Used by emu.addEventCallback() and emu.removeEventCallback()",
 	"enumValues": [
 		{ "name": "nmi", "description": "Triggered when an NMI occurs (not available on some consoles)" },
@@ -464,6 +525,7 @@
 },
 {
 	"name": "memType",
+	"category": "Enums",
 	"description": "Used by several APIs to specify which memory type to access/use.",
 	"enumValues": [
 		{ "name": "snesMemory", "description": "SNES - S-CPU memory" },
@@ -561,6 +623,7 @@
 },
 {
 	"name": "stepType",
+	"category": "Enums",
 	"description": "Used by emu.step()",
 	"enumValues": [
 		{ "name": "step", "description": "Steps the specified number of instructions" },

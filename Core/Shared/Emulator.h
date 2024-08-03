@@ -160,6 +160,8 @@ public:
 	void Resume();
 	bool IsPaused();
 
+	void OnBeforePause(bool clearAudioBuffer);
+
 	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true, bool forPowerCycle = false);
 	RomInfo& GetRomInfo() { return _rom; }
 	string GetHash(HashType type);

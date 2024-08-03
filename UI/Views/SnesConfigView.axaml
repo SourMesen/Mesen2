@@ -155,14 +155,18 @@
 		<TabItem Header="{l:Translate tpgVideo}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<CheckBox IsChecked="{Binding Config.BlendHighResolutionModes}" Content="{l:Translate chkBlendHighResolutionModes}" />
-					<c:CheckBoxWarning IsChecked="{Binding Config.ForceFixedResolution}" Text="{l:Translate chkForceFixedResolution}" />
-					<c:CheckBoxWarning IsChecked="{Binding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
-					<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
-					<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
-					<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
-					<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer4}" Text="{l:Translate chkHideBgLayer4}" />
-					<c:CheckBoxWarning IsChecked="{Binding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
+					<v:VideoConfigOverrideView DataContext="{Binding Config.ConfigOverrides}" />
+
+					<c:OptionSection Header="{l:Translate lblMiscSettings}">
+						<CheckBox IsChecked="{Binding Config.BlendHighResolutionModes}" Content="{l:Translate chkBlendHighResolutionModes}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.ForceFixedResolution}" Text="{l:Translate chkForceFixedResolution}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer4}" Text="{l:Translate chkHideBgLayer4}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
+					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblOverscan}">
 						<c:OverscanInput Overscan="{Binding Config.Overscan}" />

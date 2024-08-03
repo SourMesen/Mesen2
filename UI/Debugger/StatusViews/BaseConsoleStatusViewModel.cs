@@ -14,6 +14,9 @@ namespace Mesen.Debugger.StatusViews
 		private bool _isUpdatingUi = false;
 		private bool _needUpdate = false;
 
+		private UInt64 _lastBreakCycleCount = 0;
+		private bool _isRunning = false;
+
 		public BaseConsoleStatusViewModel()
 		{
 			PropertyChanged += BaseConsoleStatusViewModel_PropertyChanged;
@@ -34,19 +37,29 @@ namespace Mesen.Debugger.StatusViews
 
 		public void UpdateCycleCount(UInt64 newCycleCount)
 		{
-			if(newCycleCount > CycleCount) {
-				ElapsedCycles = newCycleCount - CycleCount;
+			CycleCount = newCycleCount;
+
+			if(_isRunning) {
+				//Don't reset elapsed value if refresh done because "refresh while running" is enabled
+				return;
+			}
+
+			if(newCycleCount > _lastBreakCycleCount) {
+				ElapsedCycles = newCycleCount - _lastBreakCycleCount;
 			} else {
 				ElapsedCycles = 0;
 			}
-			CycleCount = newCycleCount;
+
+			_lastBreakCycleCount = newCycleCount;
 		}
 
-		public void UpdateUiState()
+		public void UpdateUiState(bool isRunning = false)
 		{
 			_isUpdatingUi = true;
 			_needUpdate = false;
+			_isRunning = isRunning;
 			InternalUpdateUiState();
+			_isRunning = false;
 			_isUpdatingUi = false;
 			_needUpdate = false;
 		}

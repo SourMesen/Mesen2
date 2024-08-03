@@ -11,9 +11,10 @@
 #include "Debugger/ScriptManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/EventType.h"
 #include "Shared/SaveStateManager.h"
 #include "Utilities/magic_enum.hpp"
-#include "Shared/EventType.h"
+#include "Utilities/StringUtilities.h"
 
 ScriptingContext* ScriptingContext::_context = nullptr;
 
@@ -104,9 +105,21 @@ bool ScriptingContext::LoadScript(string scriptName, string path, string scriptC
 	}
 
 	if(lua_isstring(_lua, -1)) {
-		Log(lua_tostring(_lua, -1));
+		ProcessLuaError();
 	}
 	return false;
+}
+
+void ScriptingContext::ProcessLuaError()
+{
+	string errorMsg = lua_tostring(_lua, -1);
+	if(StringUtilities::Contains(errorMsg, "attempt to call a nil value (global 'require')") || StringUtilities::Contains(errorMsg, "attempt to index a nil value (global 'os')") || StringUtilities::Contains(errorMsg, "attempt to index a nil value (global 'io')")) {
+		Log("I/O and OS libraries are disabled by default for security.\nYou can enable them here:\nScript->Settings->Script Window->Restrictions->Allow access to I/O and OS functions.");
+	} else if(StringUtilities::Contains(errorMsg, "module 'socket.core' not found")) {
+		Log("Lua sockets are disabled by default for security.\nYou can enable them here:\nScript->Settings->Script Window->Restrictions->Allow network access.");
+	} else {
+		Log(errorMsg);
+	}
 }
 
 void ScriptingContext::ExecutionCountHook(lua_State* lua)
@@ -308,7 +321,7 @@ void ScriptingContext::InternalCallMemoryCallback(AddressInfo relAddr, T& value,
 		lua_pushinteger(_lua, relAddr.Address);
 		lua_pushinteger(_lua, value);
 		if(lua_pcall(_lua, 2, LUA_MULTRET, 0) != 0) {
-			Log(lua_tostring(_lua, -1));
+			ProcessLuaError();
 		} else {
 			int returnParamCount = lua_gettop(_lua) - top;
 			if(returnParamCount && lua_isinteger(_lua, -1)) {
@@ -335,7 +348,7 @@ int ScriptingContext::CallEventCallback(EventType type, CpuType cpuType)
 		lua_rawgeti(_lua, LUA_REGISTRYINDEX, ref);
 		lua_pushinteger(_lua, (int)cpuType);
 		if(lua_pcall(_lua, 1, 0, 0) != 0) {
-			Log(lua_tostring(_lua, -1));
+			ProcessLuaError();
 		}
 	}
 	return l.ReturnCount();

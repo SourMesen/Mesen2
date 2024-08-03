@@ -114,7 +114,7 @@ namespace Mesen.Debugger.Utilities
 
 		public void Viewer_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
 		{
-			_model.Scroll((int)(-e.Delta.Y * 3));
+			_model.Scroll((int)(-e.GetDeltaY() * 3));
 		}
 
 		private void Viewer_KeyDown(object? sender, KeyEventArgs e)

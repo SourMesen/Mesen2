@@ -490,6 +490,10 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.Sms,
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Sms)
 				},
+				new MainMenuAction() {
+					ActionType = ActionType.OtherConsoles,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.OtherConsoles)
+				},
 				new ContextMenuSeparator(),
 
 				new MainMenuAction() {
@@ -504,9 +508,20 @@ namespace Mesen.ViewModels
 			return new MainMenuAction() {
 				ActionType = ActionType.Custom,
 				CustomText = ResourceHelper.GetEnumText(aspectRatio),
-				IsSelected = () => aspectRatio == ConfigManager.Config.Video.AspectRatio,
+				IsSelected = () => {
+					ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+					if(overrides?.OverrideAspectRatio == true) {
+						return aspectRatio == overrides.AspectRatio;
+					}
+					return aspectRatio == ConfigManager.Config.Video.AspectRatio;
+				},
 				OnClick = () => {
-					ConfigManager.Config.Video.AspectRatio = aspectRatio;
+					ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+					if(overrides?.OverrideAspectRatio == true) {
+						overrides.AspectRatio = aspectRatio;
+					} else {
+						ConfigManager.Config.Video.AspectRatio = aspectRatio;
+					}
 					ConfigManager.Config.Video.ApplyConfig();
 				}
 			};
@@ -538,7 +553,13 @@ namespace Mesen.ViewModels
 				IsSelected = () => MainWindow.RomInfo.ConsoleType switch {
 					ConsoleType.Snes => ConfigManager.Config.Snes.Region == region,
 					ConsoleType.Nes => ConfigManager.Config.Nes.Region == region,
-					ConsoleType.Sms => (MainWindow.RomInfo.Format == RomFormat.GameGear ? ConfigManager.Config.Sms.GameGearRegion : ConfigManager.Config.Sms.Region) == region,
+					ConsoleType.Sms => (
+						MainWindow.RomInfo.Format switch {
+							RomFormat.ColecoVision => ConfigManager.Config.Cv.Region,
+							RomFormat.GameGear => ConfigManager.Config.Sms.GameGearRegion,
+							_ => ConfigManager.Config.Sms.Region
+						} == region
+					),
 					_ => region == ConsoleRegion.Auto
 				},
 				OnClick = () => {
@@ -554,12 +575,13 @@ namespace Mesen.ViewModels
 							break;
 
 						case ConsoleType.Sms:
-							if(MainWindow.RomInfo.Format == RomFormat.GameGear) {
-								ConfigManager.Config.Sms.GameGearRegion = region;
-							} else {
-								ConfigManager.Config.Sms.Region = region;
+							switch(MainWindow.RomInfo.Format) {
+								default: case RomFormat.Sms: ConfigManager.Config.Sms.GameGearRegion = region; break;
+								case RomFormat.GameGear: ConfigManager.Config.Sms.GameGearRegion = region; break;
+								case RomFormat.ColecoVision: ConfigManager.Config.Cv.Region = region; break;
 							}
 							ConfigManager.Config.Sms.ApplyConfig();
+							ConfigManager.Config.Cv.ApplyConfig();
 							break;
 
 						default:
@@ -609,10 +631,21 @@ namespace Mesen.ViewModels
 			return new MainMenuAction() {
 				ActionType = ActionType.Custom,
 				CustomText = ResourceHelper.GetEnumText(filter),
-				IsSelected = () => ConfigManager.Config.Video.VideoFilter == filter,
 				IsEnabled = () => AllowFilterType(filter),
+				IsSelected = () => {
+					ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+					if(overrides?.OverrideVideoFilter == true) {
+						return filter == overrides.VideoFilter;
+					}
+					return filter == ConfigManager.Config.Video.VideoFilter;
+				},
 				OnClick = () => {
-					ConfigManager.Config.Video.VideoFilter = filter;
+					ConsoleOverrideConfig? overrides = ConsoleOverrideConfig.GetActiveOverride();
+					if(overrides?.OverrideVideoFilter == true) {
+						overrides.VideoFilter = filter;
+					} else {
+						ConfigManager.Config.Video.VideoFilter = filter;
+					}
 					ConfigManager.Config.Video.ApplyConfig();
 				}
 			};
@@ -970,7 +1003,7 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.OpenProfiler,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenProfiler),
 					IsEnabled = () => IsGameRunning,
-					OnClick = () => DebugWindowManager.GetOrOpenDebugWindow(() => new ProfilerWindow(new ProfilerWindowViewModel()))
+					OnClick = () => DebugWindowManager.GetOrOpenDebugWindow(() => new ProfilerWindow())
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.OpenScriptWindow,
@@ -1054,6 +1087,7 @@ namespace Mesen.ViewModels
 			HelpMenuItems = new List<object>() {
 				new MainMenuAction() {
 					ActionType = ActionType.OnlineHelp,
+					IsVisible = () => false,
 					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/documentation/")
 				},
 				new MainMenuAction() {
@@ -1066,6 +1100,7 @@ namespace Mesen.ViewModels
 				},
 				new MainMenuAction() {
 					ActionType = ActionType.ReportBug,
+					IsVisible = () => false,
 					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/reportbug/")
 				},
 				new ContextMenuSeparator(),

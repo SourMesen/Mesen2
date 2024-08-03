@@ -72,7 +72,7 @@ public:
 	SnesConsole(Emulator* emu);
 	~SnesConsole();
 	
-	static vector<string> GetSupportedExtensions() { return { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" }; }
+	static vector<string> GetSupportedExtensions() { return { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".gbx", ".spc" }; }
 	static vector<string> GetSupportedSignatures() { return { "SNES-SPC700 Sound File Data" }; }
 
 	void Initialize();

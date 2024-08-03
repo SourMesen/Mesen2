@@ -219,6 +219,7 @@ enum class ControllerType
 
 	//Game Boy
 	GameboyController,
+	GameboyAccelerometer,
 
 	//PC Engine
 	PceController,
@@ -228,6 +229,7 @@ enum class ControllerType
 	//SMS
 	SmsController,
 	SmsLightPhaser,
+	ColecoVisionController,
 
 	//GBA
 	GbaController,
@@ -324,6 +326,8 @@ struct InputConfig
 	InputDisplayPosition DisplayInputPosition = InputDisplayPosition::TopLeft;
 	bool DisplayInputPort[8] = { };
 	bool DisplayInputHorizontally = true;
+
+	double ForceFeedbackIntensity = 1.0;
 };
 
 enum class RamState
@@ -426,11 +430,18 @@ enum class GbaSaveType
 	Flash128
 };
 
+enum class GbaCartridgeType
+{
+	Default,
+	TiltSensor,
+	Rtc
+};
+
 struct GbaConfig
 {
 	ControllerConfig Controller;
 
-	bool SkipBootScreen = true;
+	bool SkipBootScreen = false;
 	bool DisableFrameSkipping = false;
 
 	bool BlendFrames = true;
@@ -442,6 +453,7 @@ struct GbaConfig
 	RamState RamPowerOnState = RamState::AllZeros;
 	GbaSaveType SaveType = GbaSaveType::AutoDetect;
 	bool AllowInvalidInput = false;
+	bool EnableMgbaLogApi = false;
 
 	uint32_t ChannelAVol = 100;
 	uint32_t ChannelBVol = 100;
@@ -675,6 +687,21 @@ struct SmsConfig
 
 	OverscanDimensions NtscOverscan = {};
 	OverscanDimensions PalOverscan = {};
+};
+
+struct CvConfig
+{
+	ControllerConfig Port1;
+	ControllerConfig Port2;
+
+	ConsoleRegion Region = ConsoleRegion::Auto;
+	RamState RamPowerOnState = RamState::Random;
+
+	bool RemoveSpriteLimit = false;
+	bool DisableSprites = false;
+	bool DisableBackground = false;
+
+	uint32_t ChannelVolumes[4] = {};
 };
 
 struct AudioPlayerConfig

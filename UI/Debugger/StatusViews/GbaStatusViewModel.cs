@@ -28,7 +28,8 @@ namespace Mesen.Debugger.StatusViews
 
 		[Reactive] public UInt32 RegCpsr { get; set; }
 
-		[Reactive] public int Mode { get; set; }
+		[Reactive] public GbaCpuMode Mode { get; set; }
+		[Reactive] public string ModeString { get; set; } = GbaCpuMode.User.ToString();
 
 		[Reactive] public bool FlagZero { get; set; }
 		[Reactive] public bool FlagCarry { get; set; }
@@ -38,6 +39,8 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public bool FlagThumb { get; set; }
 		[Reactive] public bool FlagIrqDisable { get; set; }
 		[Reactive] public bool FlagFiqDisable { get; set; }
+
+		[Reactive] public string StackPreview { get; set; } = "";
 
 		[Reactive] public UInt16 Scanline { get; set; }
 		[Reactive] public UInt16 Cycle { get; set; }
@@ -59,7 +62,7 @@ namespace Mesen.Debugger.StatusViews
 				(FlagIrqDisable ? (1 << 7) : 0) |
 				(FlagFiqDisable ? (1 << 6) : 0) |
 				(FlagThumb ? (1 << 5) : 0) |
-				((byte)Mode & 0x07)
+				(byte)Mode
 			);
 		}
 
@@ -94,7 +97,20 @@ namespace Mesen.Debugger.StatusViews
 			FlagFiqDisable = cpu.CPSR.FiqDisable;
 			FlagThumb = cpu.CPSR.Thumb;
 
-			Mode = (int)cpu.CPSR.Mode;
+			Mode = cpu.CPSR.Mode;
+			if(cpu.CPSR.Mode == GbaCpuMode.Irq || cpu.CPSR.Mode == GbaCpuMode.Fiq) {
+				ModeString = cpu.CPSR.Mode.ToString().ToUpper();
+			} else {
+				ModeString = cpu.CPSR.Mode.ToString();
+			}
+
+			StringBuilder sb = new StringBuilder();
+			byte[] stackValues = DebugApi.GetMemoryValues(MemoryType.GbaMemory, cpu.R[13], cpu.R[13] + 30 * 4 - 1);
+			for(int i = 0; i < stackValues.Length; i+=4) {
+				UInt32 value = (uint)stackValues[i] | (uint)(stackValues[i+1] << 8) | (uint)(stackValues[i+2] << 16) | (uint)(stackValues[i+3] << 24);
+				sb.Append($"${value:X8} ");
+			}
+			StackPreview = sb.ToString();
 
 			Scanline = ppu.Scanline;
 			Cycle = ppu.Cycle;
@@ -128,8 +144,6 @@ namespace Mesen.Debugger.StatusViews
 			cpu.CPSR.IrqDisable = FlagIrqDisable;
 			cpu.CPSR.FiqDisable = FlagFiqDisable;
 			cpu.CPSR.Thumb = FlagThumb;
-
-			cpu.CPSR.Mode = (GbaCpuMode)Mode;
 
 			DebugApi.SetCpuState(cpu, CpuType.Gba);
 		}

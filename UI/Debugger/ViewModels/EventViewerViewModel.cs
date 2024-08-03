@@ -310,39 +310,50 @@ namespace Mesen.Debugger.ViewModels
 				Height = 2
 			};
 
+			int xPos;
+			int yPos;
 			switch(CpuType) {
 				case CpuType.Snes:
 					result.X = p.X;
-					result.DisplayValue = $"{result.X * 2}, {result.Y / 2}";
+					xPos = result.X * 2;
+					yPos = result.Y / 2;
 					break;
 
 				case CpuType.Nes:
 					result.X = p.X / 2 * 2;
-					result.DisplayValue = $"{result.X / 2}, {result.Y / 2 - 1}";
+					xPos = result.X / 2;
+					yPos = result.Y / 2 - 1;
 					break;
 
 				case CpuType.Gameboy:
 					result.X = p.X / 2 * 2;
-					result.DisplayValue = $"{result.X / 2}, {result.Y / 2}";
+					xPos = result.X / 2;
+					yPos = result.Y / 2;
 					break;
 
 				case CpuType.Pce:
 					result.X = p.X;
-					result.DisplayValue = $"{result.X}, {result.Y / 2}";
+					xPos = result.X;
+					yPos = result.Y / 2;
 					break;
 
 				case CpuType.Sms:
 					result.X = p.X / 2 * 2;
-					result.DisplayValue = $"{result.X / 2}, {result.Y / 2}";
+					xPos = result.X / 2;
+					yPos = result.Y / 2;
 					break;
 
 				case CpuType.Gba:
 					result.X = p.X;
-					result.DisplayValue = $"{result.X}, {result.Y / 4}";
+					xPos = result.X;
+					yPos = result.Y / 4;
 					break;
+
 				default:
 					throw new Exception("Invalid cpu type");
 			}
+
+			result.DisplayValue = $"X: {xPos}\nY: {yPos}";
 
 			GridHighlightPoint = result;
 		}

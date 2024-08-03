@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Mesen.Config;
@@ -57,6 +58,10 @@ namespace Mesen.Debugger.Controls
 				int maxWidth = 0;
 				Typeface typeface = new Typeface(mesenFont, FontStyle.Normal, FontWeight.Bold);
 				foreach(var item in Items) {
+					if(item is TooltipSeparator || item is CustomTooltipEntry) {
+						continue;
+					}
+
 					var text = new FormattedText(item.Name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, fontSize, null);
 					maxWidth = Math.Max(maxWidth, (int)text.Width + 5);
 				}
@@ -92,6 +97,8 @@ namespace Mesen.Debugger.Controls
 		[Reactive] public object Value { get; set; } = "";
 		[Reactive] public bool UseMonoFont { get; set; } = false;
 
+		public virtual VerticalAlignment VerticalAlignment => Value is bool ? VerticalAlignment.Center : VerticalAlignment.Top;
+
 		public TooltipEntry(string name, object value, bool useMonoFont = false)
 		{
 			Name = name;
@@ -103,6 +110,15 @@ namespace Mesen.Debugger.Controls
 	public class CustomTooltipEntry : TooltipEntry
 	{
 		public CustomTooltipEntry(string name, object value, bool useMonoFont = false) : base(name, value, useMonoFont)
+		{
+		}
+	}
+
+	public class TooltipSeparator : TooltipEntry
+	{
+		[Reactive] public bool Hidden { get; set; } = false;
+
+		public TooltipSeparator(string name) : base(name, false, false)
 		{
 		}
 	}
@@ -160,6 +176,17 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
+		public void AddSeparator(string name)
+		{
+			_updatedKeys.Add(name);
+			if(!_entries.TryGetValue(name, out _)) {
+				TooltipEntry? entry = new TooltipSeparator(name);
+				_entries[name] = entry;
+				base.Insert(_updatedKeys.Count - 1, new TooltipSeparator(name));
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			}
+		}
+
 		public void AddEntry(string name, NullableBoolean value)
 		{
 			if(value != NullableBoolean.Undefined) {
@@ -198,6 +225,15 @@ namespace Mesen.Debugger.Controls
 					_entries.Remove(this[i].Name);
 					RemoveAt(i);
 					updated = true;
+				}
+			}
+
+			for(int i = 0; i < Count; i++) {
+				if(this[i] is TooltipSeparator sep) {
+					bool hideSeparator = (i < Count - 1 && this[i + 1] is TooltipSeparator) || i == Count - 1;
+					if(sep.Hidden != hideSeparator) {
+						sep.Hidden = hideSeparator;
+					}
 				}
 			}
 

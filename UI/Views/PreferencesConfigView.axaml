@@ -51,20 +51,21 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgShortcuts}">
-			<v:ShortcutKeysTabView />
+			<v:ShortcutKeysTabView ShortcutKeys="{Binding ShortcutKeys}" />
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgFiles}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0" IsVisible="{Binding !IsOsx}">
-						<Grid ColumnDefinitions="Auto,20,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+						<Grid ColumnDefinitions="Auto,20,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 							<CheckBox Grid.Row="0" Content="{l:Translate chkNesRomFiles}" IsChecked="{Binding Config.AssociateNesRomFiles}" />
 							<CheckBox Grid.Row="1" Content="{l:Translate chkNesMusicFiles}" IsChecked="{Binding Config.AssociateNesMusicFiles}" />
 							<CheckBox Grid.Row="2" Content="{l:Translate chkSnesRomFiles}" IsChecked="{Binding Config.AssociateSnesRomFiles}" />
 							<CheckBox Grid.Row="3" Content="{l:Translate chkSnesMusicFiles}" IsChecked="{Binding Config.AssociateSnesMusicFiles}" />
 							<CheckBox Grid.Row="4" Content="{l:Translate chkSmsRomFiles}" IsChecked="{Binding Config.AssociateSmsRomFiles}" />
 							<CheckBox Grid.Row="5" Content="{l:Translate chkGameGearRomFiles}" IsChecked="{Binding Config.AssociateGameGearRomFiles}" />
+							<CheckBox Grid.Row="6" Content="{l:Translate chkCvRomFiles}" IsChecked="{Binding Config.AssociateCvRomFiles}" />
 							<CheckBox Grid.Row="0" Grid.Column="2" Content="{l:Translate chkGbRomFiles}" IsChecked="{Binding Config.AssociateGbRomFiles}" />
 							<CheckBox Grid.Row="1" Grid.Column="2" Content="{l:Translate chkGbMusicFiles}" IsChecked="{Binding Config.AssociateGbMusicFiles}" />
 							<CheckBox Grid.Row="2" Grid.Column="2" Content="{l:Translate chkGbaRomFiles}" IsChecked="{Binding Config.AssociateGbaRomFiles}" />

@@ -12,7 +12,7 @@
 	x:Class="Mesen.Debugger.Controls.ColorPickerField"
 >
 	<UserControl.Resources>
-		<cp:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
+		<u:ArgbColorToBrushConverter x:Key="ColorToBrushConverter" />
 	</UserControl.Resources>
 	
 	<StackPanel Orientation="Horizontal" DataContext="{Binding ElementName=root}">

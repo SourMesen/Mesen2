@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SMS\Input\ColecoVisionController.h" />
     <ClInclude Include="Debugger\AddressInfo.h" />
     <ClInclude Include="Debugger\Base6502Assembler.h" />
     <ClInclude Include="Debugger\CdlManager.h" />
@@ -27,10 +28,19 @@
     <ClInclude Include="Debugger\StepBackManager.h" />
     <ClInclude Include="Gameboy\APU\GbChannelDac.h" />
     <ClInclude Include="Gameboy\APU\GbEnvelope.h" />
+    <ClInclude Include="Gameboy\Carts\Eeprom93Lc56.h" />
     <ClInclude Include="Gameboy\Carts\GbHuc1.h" />
+    <ClInclude Include="Gameboy\Carts\GbM161.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc3Rtc.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc6.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc7.h" />
+    <ClInclude Include="Gameboy\Carts\GbMbc7Accelerometer.h" />
+    <ClInclude Include="Gameboy\Carts\GbMmm01.h" />
+    <ClInclude Include="Gameboy\Carts\GbWisdomTree.h" />
+    <ClInclude Include="Gameboy\GbxFooter.h" />
+    <ClInclude Include="GBA\Cart\GbaGpio.h" />
+    <ClInclude Include="GBA\Cart\GbaRtc.h" />
+    <ClInclude Include="GBA\Cart\GbaTiltSensor.h" />
     <ClInclude Include="GBA\APU\GbaApu.h" />
     <ClInclude Include="GBA\APU\GbaApuFifo.h" />
     <ClInclude Include="GBA\APU\GbaEnvelope.h" />
@@ -60,6 +70,7 @@
     <ClInclude Include="GBA\GbaTimer.h" />
     <ClInclude Include="GBA\GbaTypes.h" />
     <ClInclude Include="GBA\Input\GbaController.h" />
+    <ClInclude Include="GBA\Debugger\MgbaLogHandler.h" />
     <ClInclude Include="NES\HdPacks\HdBuilderPpu.h" />
     <ClInclude Include="NES\HdPacks\HdPackBuilder.h" />
     <ClInclude Include="PCE\CdRom\PceCdSeekDelay.h" />
@@ -770,6 +781,8 @@
     <ClCompile Include="GBA\APU\GbaSquareChannel.cpp" />
     <ClCompile Include="GBA\APU\GbaWaveChannel.cpp" />
     <ClCompile Include="GBA\Cart\GbaCart.cpp" />
+    <ClCompile Include="GBA\Cart\GbaGpio.cpp" />
+    <ClCompile Include="GBA\Cart\GbaRtc.cpp" />
     <ClCompile Include="GBA\Debugger\DummyGbaCpu.cpp" />
     <ClCompile Include="GBA\Debugger\GbaDebugger.cpp" />
     <ClCompile Include="GBA\Debugger\GbaDisUtils.cpp" />

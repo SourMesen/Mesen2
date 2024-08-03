@@ -174,6 +174,9 @@ namespace Mesen.Debugger.Windows
 					}
 					_prevTooltipEntry = entry;
 				}
+			} else {
+				TooltipHelper.HideTooltip(_textEditor.TextArea.TextView);
+				_prevTooltipEntry = null;
 			}
 		}
 

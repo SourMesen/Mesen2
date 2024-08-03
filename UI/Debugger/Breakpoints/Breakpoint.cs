@@ -101,7 +101,7 @@ namespace Mesen.Debugger
 			};
 
 			bp.Condition = new byte[1000];
-			byte[] condition = Encoding.UTF8.GetBytes(Condition.Replace(Environment.NewLine, " "));
+			byte[] condition = Encoding.UTF8.GetBytes(Condition.Replace(Environment.NewLine, " ").Trim());
 			Array.Copy(condition, bp.Condition, condition.Length);
 			return bp;
 		}

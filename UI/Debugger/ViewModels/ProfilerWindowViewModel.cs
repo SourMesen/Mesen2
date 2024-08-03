@@ -1,10 +1,12 @@
 ﻿using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
+using Avalonia.VisualTree;
 using Avalonia.Threading;
 using DataBoxControl;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
+using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
@@ -15,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -22,10 +25,13 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public List<ProfilerTab> ProfilerTabs { get; set; } = new List<ProfilerTab>();
 		[Reactive] public ProfilerTab? SelectedTab { get; set; } = null;
+		
+		public List<object> FileMenuActions { get; } = new();
+		public List<object> ViewMenuActions { get; } = new();
 
 		public ProfilerConfig Config { get; }
 
-		public ProfilerWindowViewModel()
+		public ProfilerWindowViewModel(Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.Profiler;
 
@@ -40,6 +46,49 @@ namespace Mesen.Debugger.ViewModels
 					RefreshData();
 				}
 			});
+
+			FileMenuActions = AddDisposables(new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.ResetProfilerData,
+					OnClick = () => SelectedTab?.ResetData()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.CopyToClipboard,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Copy),
+					OnClick = () => wnd?.GetVisualDescendants().Where(a => a is DataBox).Cast<DataBox>().FirstOrDefault()?.CopyToClipboard()
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Exit,
+					OnClick = () => wnd?.Close()
+				}
+			});
+
+			ViewMenuActions = AddDisposables(new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Refresh,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
+					OnClick = () => RefreshData()
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.EnableAutoRefresh,
+					IsSelected = () => Config.AutoRefresh,
+					OnClick = () => Config.AutoRefresh = !Config.AutoRefresh
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RefreshOnBreakPause,
+					IsSelected = () => Config.RefreshOnBreakPause,
+					OnClick = () => Config.RefreshOnBreakPause = !Config.RefreshOnBreakPause
+				}
+			});
+
+			if(Design.IsDesignMode || wnd == null) {
+				return;
+			}
+
+			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
+			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 
 			LabelManager.OnLabelUpdated += LabelManager_OnLabelUpdated;
 		}

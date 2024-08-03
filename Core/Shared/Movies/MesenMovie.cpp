@@ -38,17 +38,16 @@ void MesenMovie::Stop()
 			MessageManager::DisplayMessage("Movies", isEndOfMovie ? "MovieEnded" : "MovieStopped");
 		}
 
-		if(!_emu->IsEmulationThread()) {
-			EmuSettings* settings = _emu->GetSettings();
-			if(isEndOfMovie && settings->GetPreferences().PauseOnMovieEnd) {
-				_emu->Pause();
-			}
-			_emu->GetCheatManager()->SetCheats(_originalCheats);
-
-			Serializer backup(0, false);
-			backup.LoadFrom(_emuSettingsBackup);
-			backup.Stream(*settings, "", -1);
+		EmuSettings* settings = _emu->GetSettings();
+		if(isEndOfMovie && settings->GetPreferences().PauseOnMovieEnd) {
+			_emu->PauseOnNextFrame();
 		}
+
+		_emu->GetCheatManager()->SetCheats(_originalCheats);
+
+		Serializer backup(0, false);
+		backup.LoadFrom(_emuSettingsBackup);
+		backup.Stream(*settings, "", -1);
 
 		_playing = false;
 	}

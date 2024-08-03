@@ -9,6 +9,7 @@
 	x:Class="Mesen.Windows.MessageBox"
 	SizeToContent="WidthAndHeight"
 	CanResize="False"
+	Focusable="True"
 >
 	<StackPanel HorizontalAlignment="Stretch">
 		<Panel Margin="20">

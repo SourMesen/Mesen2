@@ -25,7 +25,7 @@ namespace Mesen.Utilities
 		public const int MouseButton4KeyCode = 0x203;
 		public const int MouseButton5KeyCode = 0x204;
 
-		private DispatcherTimer _timer = new DispatcherTimer();
+		private DispatcherTimer _timer = new DispatcherTimer(DispatcherPriority.Normal);
 
 		private Control _renderer;
 		private bool _usesSoftwareRenderer;

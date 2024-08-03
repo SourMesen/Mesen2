@@ -310,6 +310,8 @@ namespace Mesen.Debugger.ViewModels
 			);
 			entries.AddEntry("Size", sprite.Width + "x" + sprite.Height);
 
+			entries.AddSeparator("TileSeparator");
+
 			entries.AddEntry("Tile index", "$" + sprite.TileIndex.ToString("X2"));
 
 			MemoryType memType = CpuType.GetVramMemoryType(sprite.UseExtendedVram);
@@ -323,10 +325,16 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				entries.AddEntry("Tile address", FormatAddress(sprite.TileAddress, memType));
 			}
+
+			entries.AddSeparator("PaletteSeparator");
+
 			entries.AddEntry("Palette index", sprite.Palette.ToString());
 			if(sprite.PaletteAddress >= 0) {
 				entries.AddEntry("Palette address", "$" + sprite.PaletteAddress.ToString("X2"));
 			}
+
+			entries.AddSeparator("MiscSeparator");
+
 			entries.AddEntry("Visibility", ResourceHelper.GetEnumText(sprite.Visibility));
 			entries.AddEntry("Horizontal mirror", sprite.HorizontalMirror);
 			entries.AddEntry("Vertical mirror", sprite.VerticalMirror);
@@ -386,9 +394,9 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				for(int i = 0; i < spriteCount; i++) {
-					SpritePreviewPanel preview = new SpritePreviewPanel();
-					preview.Height = 2 + 32.0 / dpiScale;
-					preview.Width = 2 + 32.0 / dpiScale;
+					SpritePreviewPanel preview = new SpritePreviewPanel(SpritePreviews[i], Config);
+					preview.InnerHeight = (32.0 / dpiScale);
+					preview.InnerWidth = (32.0 / dpiScale);
 					Grid.SetColumn(preview, i % 8);
 					Grid.SetRow(preview, i / 8);
 

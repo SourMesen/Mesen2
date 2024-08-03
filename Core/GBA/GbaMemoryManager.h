@@ -16,6 +16,7 @@ class GbaApu;
 class GbaCart;
 class GbaSerial;
 class GbaRomPrefetch;
+class MgbaLogHandler;
 
 class GbaMemoryManager final : public ISerializable
 {
@@ -30,6 +31,8 @@ private:
 	GbaCart* _cart;
 	GbaSerial* _serial;
 	GbaRomPrefetch* _prefetch;
+
+	unique_ptr<MgbaLogHandler> _mgbaLog;
 
 	uint64_t _masterClock = 0;
 	bool _hasPendingUpdates = false;
@@ -58,6 +61,9 @@ private:
 	__forceinline void ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr);
 
 	__noinline void ProcessVramStalling(uint32_t addr);
+
+	template<uint8_t width>
+	void UpdateOpenBus(GbaAccessModeVal mode, uint32_t addr, uint32_t value);
 
 	template<bool debug = false>
 	uint32_t RotateValue(GbaAccessModeVal mode, uint32_t addr, uint32_t value, bool isSigned);

@@ -51,6 +51,7 @@ private:
 
 	static void ExecutionCountHook(lua_State* lua);
 	void LuaOpenLibs(lua_State* L, bool allowIoOsAccess);
+	void ProcessLuaError();
 
 protected:
 	string _scriptName;

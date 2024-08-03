@@ -11,9 +11,6 @@
 	x:Class="Mesen.Debugger.Controls.DynamicTooltip"
 >
 	<UserControl.Styles>
-		<Style Selector="TextBlock">
-			<Setter Property="VerticalAlignment" Value="Top" />
-		</Style>
 		<Style Selector="TextBox">
 			<Setter Property="Background" Value="Transparent" />
 			<Setter Property="VerticalAlignment" Value="Top" />
@@ -29,6 +26,15 @@
 	</UserControl.Styles>
 
 	<UserControl.DataTemplates>
+		<DataTemplate DataType="dc:TooltipSeparator">
+			<Rectangle
+				Height="1"
+				Fill="{StaticResource MesenGrayBorderColor}"
+				Margin="5 3"
+				IsVisible="{Binding !Hidden}"
+			/>
+		</DataTemplate>
+		
 		<DataTemplate DataType="dc:CustomTooltipEntry">
 			<ContentControl Content="{Binding Value}" />
 		</DataTemplate>
@@ -42,6 +48,7 @@
 				<TextBlock
 					Name="Header"
 					Text="{Binding Name}"
+					VerticalAlignment="{Binding VerticalAlignment}"
 					MinWidth="{Binding FirstColumnWidth, ElementName=root}"
 					IsVisible="{Binding Name.Length}"
 					Margin="0 0 10 2"
@@ -64,7 +71,7 @@
 							/>
 						</DataTemplate>
 						<DataTemplate DataType="x:Boolean">
-							<CheckBox IsChecked="{Binding}" IsEnabled="False" />
+							<CheckBox IsChecked="{Binding}" IsEnabled="False" Margin="-3 -3 0 0" />
 						</DataTemplate>
 						<DataTemplate DataType="dc:TooltipPictureEntry">
 							<Border BorderBrush="Gray" Background="#666" BorderThickness="1">

@@ -10,6 +10,7 @@ using Mesen.Interop;
 using System.Collections.Generic;
 using Avalonia.Input;
 using Mesen.Utilities;
+using System.Runtime.CompilerServices;
 
 namespace Mesen.Windows
 {
@@ -26,6 +27,7 @@ namespace Mesen.Windows
 			Version = EmuApi.GetMesenVersion().ToString();
 			BuildDate = EmuApi.GetMesenBuildDate();
 			RuntimeVersion = ".NET " + Environment.Version;
+			RuntimeVersion += RuntimeFeature.IsDynamicCodeSupported ? " (JIT)" : " (AOT)";
 
 			LibraryList = new List<AboutListEntry>() {
 				new("Avalonia", "", "MIT", "https://github.com/AvaloniaUI/Avalonia"),

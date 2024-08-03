@@ -13,8 +13,6 @@ class Emulator;
 class WindowsKeyManager : public IKeyManager
 {
 private:
-	static constexpr int BaseMouseButtonIndex = 0x200;
-	static constexpr int BaseXInputIndex = 0x1000;
 	static constexpr int BaseDirectInputIndex = 0x2000;
 
 	HWND _hWnd;
@@ -40,16 +38,19 @@ public:
 	WindowsKeyManager(Emulator* emu, HWND hWnd);
 	~WindowsKeyManager();
 
-	void RefreshState();
-	bool IsKeyPressed(uint16_t key);
-	bool IsMouseButtonPressed(MouseButton button);
-	vector<uint16_t> GetPressedKeys();
-	string GetKeyName(uint16_t key);
-	uint16_t GetKeyCode(string keyName);
+	void RefreshState() override;
+	bool IsKeyPressed(uint16_t key) override;
+	optional<int16_t> GetAxisPosition(uint16_t key) override;
+	bool IsMouseButtonPressed(MouseButton button) override;
+	vector<uint16_t> GetPressedKeys() override;
+	string GetKeyName(uint16_t key) override;
+	uint16_t GetKeyCode(string keyName) override;
 
-	bool SetKeyState(uint16_t scanCode, bool state);
-	void ResetKeyState();
-	void SetDisabled(bool disabled);
+	bool SetKeyState(uint16_t scanCode, bool state) override;
+	void ResetKeyState() override;
+	void SetDisabled(bool disabled) override;
 
-	void UpdateDevices();
+	void SetForceFeedback(uint16_t magnitude) override;
+
+	void UpdateDevices() override;
 };

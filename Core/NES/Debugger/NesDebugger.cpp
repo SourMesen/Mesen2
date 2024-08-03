@@ -75,7 +75,7 @@ NesDebugger::NesDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 
 	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new NesEventManager(debugger, console));
-	_callstackManager.reset(new CallstackManager(debugger, console));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Nes, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new NesAssembler(_debugger->GetLabelManager()));
@@ -92,7 +92,7 @@ void NesDebugger::Reset()
 	ResetPrevOpCode();
 }
 
-uint64_t NesDebugger::GetCpuCycleCount()
+uint64_t NesDebugger::GetCpuCycleCount(bool forProfiler)
 {
 	return _cpu->GetState().CycleCount;
 }
@@ -500,6 +500,17 @@ bool NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption 
 		return true;
 	}
 	return false;
+}
+
+void NesDebugger::GetRomHeader(uint8_t* headerData, uint32_t& size)
+{
+	if(size < sizeof(NesHeader) || _console->GetRomFormat() != RomFormat::iNes) {
+		size = 0;
+		return;
+	}
+
+	NesHeader header = _mapper->GetRomInfo().Header;
+	memcpy(headerData, &header, sizeof(NesHeader));
 }
 
 void NesDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])

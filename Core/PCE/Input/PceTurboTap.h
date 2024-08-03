@@ -8,7 +8,8 @@ class Emulator;
 class PceTurboTap : public ControllerHub<5>
 {
 private:
-	uint8_t _index = 0;
+	static constexpr uint8_t MaxPort = 5;
+	uint8_t _selectedPort = 0;
 	uint8_t _prevValue = 0;
 
 public:
@@ -16,4 +17,6 @@ public:
 
 	uint8_t ReadRam(uint16_t addr) override;
 	void WriteRam(uint16_t addr, uint8_t value) override;
+
+	void Serialize(Serializer& s) override;
 };

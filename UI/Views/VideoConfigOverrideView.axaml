@@ -1,0 +1,62 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:u="using:Mesen.Utilities"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="150"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:Name="root"
+	x:DataType="cfg:ConsoleOverrideConfig"
+	x:Class="Mesen.Views.VideoConfigOverrideView"
+>
+	<Design.DataContext>
+		<cfg:ConsoleOverrideConfig />
+	</Design.DataContext>
+
+	<UserControl.Resources>
+		<u:EnumMatchConverter x:Key="EnumMatchConverter" />
+	</UserControl.Resources>
+
+	<c:OptionSection Header="{l:Translate lblHeader}" Margin="0">
+		<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+			<CheckBox
+				IsChecked="{Binding OverrideVideoFilter}"
+				Content="{l:Translate chkOverrideVideoFilter}"
+			/>
+			<c:EnumComboBox
+				Grid.Column="1"
+				SelectedItem="{Binding VideoFilter}"
+				Width="160"
+				HorizontalAlignment="Left"
+				IsEnabled="{Binding OverrideVideoFilter}"
+				AvailableValues="{Binding AvailableValues, ElementName=root}"
+			/>
+
+			<CheckBox
+				Grid.Row="1"
+				IsChecked="{Binding OverrideAspectRatio}"
+				Content="{l:Translate chkOverrideAspectRatio}"
+			/>
+			<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+				<c:EnumComboBox SelectedItem="{Binding AspectRatio}" Width="160" IsEnabled="{Binding OverrideAspectRatio}" />
+				<StackPanel Orientation="Horizontal" IsVisible="{Binding AspectRatio, Converter={StaticResource EnumMatchConverter}, ConverterParameter={x:Static cfg:VideoAspectRatio.Custom}}">
+					<TextBlock Text="{l:Translate lblCustomRatio}" VerticalAlignment="Center" Margin="5 0 0 0" />
+					<NumericUpDown
+						Value="{Binding CustomAspectRatio}"
+						FormatString="0.0000"
+						Minimum="0.1"
+						Maximum="5"
+						Increment="0.01"
+						VerticalAlignment="Center"
+						IsEnabled="{Binding OverrideAspectRatio}"
+					/>
+				</StackPanel>
+			</StackPanel>
+		</Grid>
+	</c:OptionSection>
+</UserControl>

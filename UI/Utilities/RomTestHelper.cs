@@ -1,6 +1,7 @@
 ﻿using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
+using Mesen.ViewModels;
 using Mesen.Windows;
 using System;
 using System.Collections.Concurrent;
@@ -21,14 +22,22 @@ namespace Mesen.Utilities
 		{
 			string? filename = await FileDialogHelper.OpenFile(ConfigManager.TestFolder, null, "mtp");
 			if(filename != null) {
-				RomTestResult result = TestApi.RunRecordedTest(filename, false);
+				MainWindowViewModel.Instance.RecentGames.Visible = false;
 
-				string msg = "[Test] " + result.State.ToString();
-				if(result.State != RomTestState.Passed) {
-					msg += ": (" + result.ErrorCode.ToString() + ")";
-				}
+				_ = Task.Run(() => {
+					RomTestResult result = TestApi.RunRecordedTest(filename, true);
 
-				await MessageBox.Show(null, msg, "", MessageBoxButtons.OK, result.State == RomTestState.Failed ? MessageBoxIcon.Error : MessageBoxIcon.Info);
+					Dispatcher.UIThread.Post(async () => {
+						string msg = "[Test] " + result.State.ToString();
+						if(result.State != RomTestState.Passed) {
+							msg += ": (" + result.ErrorCode.ToString() + ")";
+						}
+
+						await MessageBox.Show(null, msg, "", MessageBoxButtons.OK, result.State == RomTestState.Failed ? MessageBoxIcon.Error : MessageBoxIcon.Info);
+						
+						MainWindowViewModel.Instance.RecentGames.Visible = ConfigManager.Config.Preferences.GameSelectionScreenMode != GameSelectionMode.Disabled;
+					});
+				});
 			}
 		}
 

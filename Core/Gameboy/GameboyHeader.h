@@ -32,6 +32,11 @@ struct GameboyHeader
 			return 0x200;
 		}
 
+		if(CartType == 0x22) {
+			//MBC7 has a 256-byte eeprom
+			return 0x100;
+		}
+
 		switch(CartRamSize) {
 			case 0: return 0;
 			case 1: return 0x800;

@@ -61,6 +61,11 @@ extern "C" {
 		_emu->GetSettings()->SetSmsConfig(config);
 	}
 
+	DllExport void __stdcall SetCvConfig(CvConfig config)
+	{
+		_emu->GetSettings()->SetCvConfig(config);
+	}
+
 	DllExport void __stdcall SetGameConfig(GameConfig config)
 	{
 		_emu->GetSettings()->SetGameConfig(config);

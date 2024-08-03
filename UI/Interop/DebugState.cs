@@ -2298,6 +2298,7 @@ namespace Mesen.Interop
 		public UInt16 NametableHeight;
 		public byte VisibleScanlineCount;
 
+		public byte TextColorIndex;
 		public byte BackgroundColorIndex;
 		public byte HorizontalScroll;
 		public byte HorizontalScrollLatch;

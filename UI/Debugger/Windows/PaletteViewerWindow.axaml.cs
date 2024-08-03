@@ -47,9 +47,10 @@ namespace Mesen.Debugger.Windows
 		private void Window_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
 		{
 			if(e.KeyModifiers == KeyModifiers.Control) {
-				if(e.Delta.Y > 0) {
+				double delta = e.GetDeltaY();
+				if(delta > 0) {
 					_model.ZoomIn();
-				} else {
+				} else if(delta < 0) {
 					_model.ZoomOut();
 				}
 				e.Handled = true;

@@ -63,6 +63,7 @@ private:
 
 	void Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRamSize, bool hasBattery);
 	GameboyModel GetEffectiveModel(GameboyHeader& header);
+	static GameboyHeader GetHeader(uint8_t* romData, uint32_t romSize);
 
 public:
 	static constexpr int HeaderOffset = 0x134;
@@ -70,7 +71,7 @@ public:
 	Gameboy(Emulator* emu, bool allowSgb = false);
 	virtual ~Gameboy();
 	
-	static vector<string> GetSupportedExtensions() { return { ".gb", ".gbc", ".gbs" }; }
+	static vector<string> GetSupportedExtensions() { return { ".gb", ".gbc", ".gbx", ".gbs" }; }
 	static vector<string> GetSupportedSignatures() { return { "GBS" }; }
 
 	void PowerOn(SuperGameboy* sgb);

@@ -1,8 +1,15 @@
 #include "pch.h"
+#include "GBA/GbaConsole.h"
 #include "GBA/GbaMemoryManager.h"
 #include "GBA/Cart/GbaCart.h"
 #include "GBA/Cart/GbaEeprom.h"
 #include "GBA/Cart/GbaFlash.h"
+#include "GBA/Cart/GbaTiltSensor.h"
+#include "GBA/Cart/GbaGpio.h"
+#include "GBA/Cart/GbaRtc.h"
+#include "Shared/Emulator.h"
+#include "Shared/BatteryManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Utilities/Serializer.h"
 
 GbaCart::GbaCart()
@@ -13,9 +20,21 @@ GbaCart::~GbaCart()
 {
 }
 
-void GbaCart::Init(Emulator* emu, GbaMemoryManager* memoryManager, GbaSaveType saveType)
+void GbaCart::Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryManager, GbaSaveType saveType, GbaCartridgeType cartType)
 {
 	_emu = emu;
+
+	switch(cartType) {
+		case GbaCartridgeType::TiltSensor:
+			_tiltSensor.reset(new GbaTiltSensor(emu));
+			console->GetControlManager()->AddSystemControlDevice(_tiltSensor);
+			break;
+
+		case GbaCartridgeType::Rtc:
+			_rtc.reset(new GbaRtc(emu));
+			_gpio.reset(new GbaGpio(_rtc.get()));
+			break;
+	}
 
 	_prgRom = (uint8_t*)_emu->GetMemory(MemoryType::GbaPrgRom).Memory;
 	_prgRomSize = _emu->GetMemory(MemoryType::GbaPrgRom).Size;
@@ -49,6 +68,8 @@ void GbaCart::WriteRom(uint32_t addr, uint8_t value)
 {
 	if((addr & _eepromMask) == _eepromAddr) {
 		WriteEeprom(addr, value);
+	} else if(_gpio && addr >= 0x80000C4 && addr <= 0x80000C9) {
+		_gpio->Write(addr, value);
 	}
 }
 
@@ -58,6 +79,8 @@ uint8_t GbaCart::ReadRam(uint32_t addr, uint32_t readAddr)
 		return _flash->Read(readAddr);
 	} else if(_saveRamSize) {
 		return _saveRam[readAddr & (_saveRamSize - 1)];
+	} else if(_tiltSensor && addr >= 0xE008000 && addr <= 0xE008500) {
+		return _tiltSensor->Read(addr);
 	}
 	
 	return 0xFF;
@@ -79,6 +102,8 @@ void GbaCart::WriteRam(GbaAccessModeVal mode, uint32_t addr, uint8_t value, uint
 	} else if(_saveRamSize) {
 		_saveRamDirty = true;
 		_saveRam[writeAddr & (_saveRamSize - 1)] = value;
+	} else if(_tiltSensor && writeAddr >= 0xE008000 && writeAddr <= 0xE008500) {
+		_tiltSensor->Write(addr, value);
 	}
 }
 
@@ -132,6 +157,28 @@ void GbaCart::DebugWriteRam(uint32_t addr, uint8_t value)
 	}
 }
 
+void GbaCart::LoadBattery()
+{
+	if(_saveRam) {
+		_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
+	}
+
+	if(_rtc) {
+		_rtc->LoadBattery();
+	}
+}
+
+void GbaCart::SaveBattery()
+{
+	if(_saveRam && (_flash || _eeprom || _saveRamDirty)) {
+		_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
+	}
+
+	if(_rtc) {
+		_rtc->SaveBattery();
+	}
+}
+
 void GbaCart::Serialize(Serializer& s)
 {
 	if(_eeprom) {
@@ -139,5 +186,14 @@ void GbaCart::Serialize(Serializer& s)
 	}
 	if(_flash) {
 		SV(_flash);
+	}
+	if(_tiltSensor) {
+		SV(_tiltSensor);
+	}
+	if(_gpio) {
+		SV(_gpio);
+	}
+	if(_rtc) {
+		SV(_rtc);
 	}
 }

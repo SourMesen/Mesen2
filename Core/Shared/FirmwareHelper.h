@@ -28,6 +28,7 @@ enum class FirmwareType
 	StudyBox,
 	PceSuperCd,
 	PceGamesExpress,
+	ColecoVision
 };
 
 struct MissingFirmwareMessage
@@ -106,6 +107,11 @@ struct MissingFirmwareMessage
 			case FirmwareType::PceGamesExpress:
 				FileHashes[0] = "4B86BB96A48A4CA8375FC0109631D0B1D64F255A03B01DE70594D40788BA6C3D";
 				FileHashes[1] = "DA173B20694C2B52087B099B8C44E471D3EE08A666C90D4AFD997F8E1382ADD8";
+				break;
+
+			case FirmwareType::ColecoVision:
+				FileHashes[0] = "990BF1956F10207D8781B619EB74F89B00D921C8D45C95C334C16C8CCECA09AD";
+				FileHashes[1] = "FB4A898EB93B19B36773D87A6C70EB28F981B2686BEBDD2D431B05DCDF9CFFD4";
 				break;
 
 			default:
@@ -383,6 +389,25 @@ public:
 			firmware.ReadFile(biosRom);
 			return true;
 		}
+		return false;
+	}
+
+	static bool LoadColecoVisionBios(Emulator* emu, vector<uint8_t>& biosRom)
+	{
+		string filename = "bios.col";
+		uint32_t size = 0x2000;
+		if(AttemptLoadFirmware(biosRom, filename, size)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::ColecoVision, size);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(biosRom, filename, size)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for the ColecoVision");
 		return false;
 	}
 };

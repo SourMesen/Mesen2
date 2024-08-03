@@ -33,6 +33,11 @@ HdPackBuilder::HdPackBuilder(Emulator* emu, PpuModel ppuModel, bool isChrRam, Hd
 	string existingPackDefinition = FolderUtilities::CombinePath(_saveFolder, "hires.txt");
 	if(ifstream(existingPackDefinition)) {
 		HdPackLoader::LoadHdNesPack(existingPackDefinition, _hdData);
+		_hdData.LoadAsync();
+		for(auto& tile : _hdData.Tiles) {
+			tile->Init();
+		}
+
 		for(unique_ptr<HdPackTileInfo> &tile : _hdData.Tiles) {
 			//Mark the tiles in the first PNGs as higher usage (preserves order when adding new tiles to an existing set)
 			AddTile(tile.get(), 0xFFFFFFFF - tile->BitmapIndex);

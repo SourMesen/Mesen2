@@ -13,9 +13,8 @@ using Avalonia;
 using Mesen.Config;
 using Mesen.Utilities;
 using Mesen.Localization;
-using Avalonia.Remote.Protocol.Input;
-using DynamicData;
 using Avalonia.Layout;
+using System.Diagnostics;
 
 namespace Mesen.Windows
 {
@@ -26,6 +25,9 @@ namespace Mesen.Windows
 		private List<UInt16> _prevScanCodes = new List<UInt16>();
 		private TextBlock lblCurrentKey;
 		private bool _allowKeyboardOnly;
+
+		private Stopwatch _stopWatch = Stopwatch.StartNew();
+		private Dictionary<Key, long> _keyPressedStamp = new();
 
 		public string HintLabel { get; }
 		public bool SingleKeyMode { get; set; } = false;
@@ -71,16 +73,31 @@ namespace Mesen.Windows
 		{
 			InputApi.SetKeyState((UInt16)e.Key, true);
 			DbgShortcutKey = new DbgShortKeys(e.KeyModifiers, e.Key);
+			_keyPressedStamp[e.Key] = _stopWatch.ElapsedTicks;
 			e.Handled = true;
 		}
 
 		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
+			e.Handled = true;
+
+			if(e.Key.IsSpecialKey() && !_allowKeyboardOnly && (!_keyPressedStamp.TryGetValue(e.Key, out long stamp) || ((_stopWatch.ElapsedTicks - stamp) * 1000 / Stopwatch.Frequency) < 10)) {
+				//Key up received without key down, or key pressed for less than 10 ms, pretend the key was pressed for 50ms
+				//Some special keys can behave this way (e.g printscreen)
+				DbgShortcutKey = new DbgShortKeys(e.KeyModifiers, e.Key);
+				InputApi.SetKeyState((UInt16)e.Key, true);
+				UpdateKeyDisplay();
+				DispatcherTimer.RunOnce(() => InputApi.SetKeyState((UInt16)e.Key, false), TimeSpan.FromMilliseconds(50), DispatcherPriority.MaxValue);
+				_keyPressedStamp.Remove(e.Key);
+				return;
+			}
+
+			_keyPressedStamp.Remove(e.Key);
+
 			InputApi.SetKeyState((UInt16)e.Key, false);
 			if(_allowKeyboardOnly) {
 				this.Close();
 			}
-			e.Handled = true;
 		}
 
 		protected override void OnOpened(EventArgs e)

@@ -247,7 +247,7 @@ namespace Mesen.Controls
 
 		private void timerInput_Tick(object? sender, EventArgs e)
 		{
-			if(!IsEffectivelyVisible || !IsKeyboardFocusWithin) {
+			if(!IsEffectivelyVisible || !IsKeyboardFocusWithin || Entries == null || Entries.Count == 0) {
 				_entryToLoad = null;
 				_waitForRelease = false;
 				return;

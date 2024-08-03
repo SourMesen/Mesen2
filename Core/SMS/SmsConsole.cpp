@@ -37,10 +37,21 @@ LoadRomResult SmsConsole::LoadRom(VirtualFile& romFile)
 			romData.erase(romData.begin(), romData.begin() + 0x200);
 		}
 
-		bool isGameGear = romFile.GetFileExtension() == ".gg";
-		bool isSg = romFile.GetFileExtension() == ".sg";
-		_romFormat = isGameGear ? RomFormat::GameGear : (isSg ? RomFormat::Sg : RomFormat::Sms);
-		_model = isGameGear ? SmsModel::GameGear : SmsModel::Sms;
+		string ext = romFile.GetFileExtension();
+		bool isGameGear = ext == ".gg";
+		if(isGameGear) {
+			_romFormat = RomFormat::GameGear;
+			_model = SmsModel::GameGear;
+		} else if(ext == ".col") {
+			_romFormat = RomFormat::ColecoVision;
+			_model = SmsModel::ColecoVision;
+		} else if(ext == ".sg") {
+			_romFormat = RomFormat::Sg;
+			_model = SmsModel::Sg;
+		} else {
+			_romFormat = RomFormat::Sms;
+			_model = SmsModel::Sms;
+		}
 
 		_vdp.reset(new SmsVdp());
 		_memoryManager.reset(new SmsMemoryManager());
@@ -52,7 +63,11 @@ LoadRomResult SmsConsole::LoadRom(VirtualFile& romFile)
 		InitCart(romData);
 
 		vector<uint8_t> biosRom;
-		FirmwareHelper::LoadSmsBios(_emu, biosRom, isGameGear);
+		if(_model == SmsModel::ColecoVision) {
+			FirmwareHelper::LoadColecoVisionBios(_emu, biosRom);
+		} else {
+			FirmwareHelper::LoadSmsBios(_emu, biosRom, isGameGear);
+		}
 
 		_memoryManager->Init(_emu, this, romData, biosRom, _vdp.get(), _controlManager.get(), _cart.get(), _psg.get(), _fmAudio.get());
 		_vdp->Init(_emu, this, _cpu.get(), _controlManager.get(), _memoryManager.get());
@@ -145,15 +160,20 @@ void SmsConsole::ProcessEndOfFrame()
 
 void SmsConsole::UpdateRegion(bool forceUpdate)
 {
-	SmsConfig& cfg = _emu->GetSettings()->GetSmsConfig();
-	ConsoleRegion region = _romFormat == RomFormat::GameGear ? cfg.GameGearRegion : cfg.Region;
+	ConsoleRegion region;
+	switch(_model) {
+		default:
+		case SmsModel::Sms: region = _emu->GetSettings()->GetSmsConfig().Region; break;
+		case SmsModel::GameGear: region = _emu->GetSettings()->GetSmsConfig().GameGearRegion; break;
+		case SmsModel::ColecoVision: region = _emu->GetSettings()->GetCvConfig().Region; break;
+	}
 
 	if(region == ConsoleRegion::Auto) {
 		string filename = StringUtilities::ToLower(_emu->GetRomInfo().RomFile.GetFileName());
 		if(filename.find("(europe)") != string::npos || filename.find("(e)") != string::npos) {
 			region = ConsoleRegion::Pal;
 		} else {
-			if(_romFormat == RomFormat::GameGear && (filename.find("(japan)") != string::npos || filename.find("(j)") != string::npos)) {
+			if(_model == SmsModel::GameGear && (filename.find("(japan)") != string::npos || filename.find("(j)") != string::npos)) {
 				region = ConsoleRegion::NtscJapan;
 			} else {
 				region = ConsoleRegion::Ntsc;
@@ -189,7 +209,7 @@ BaseControlManager* SmsConsole::GetControlManager()
 
 SmsRevision SmsConsole::GetRevision()
 {
-	if(_romFormat == RomFormat::Sg) {
+	if(_model == SmsModel::Sg || _model == SmsModel::ColecoVision) {
 		return SmsRevision::Sms1;
 	} else if(_model == SmsModel::GameGear) {
 		return SmsRevision::Sms2;
@@ -219,12 +239,12 @@ uint64_t SmsConsole::GetMasterClock()
 
 uint32_t SmsConsole::GetMasterClockRate()
 {
-	return (_model == SmsModel::Sms && _region == ConsoleRegion::Pal) ? 3546895 : 3579545;
+	return (_model != SmsModel::GameGear && _region == ConsoleRegion::Pal) ? 3546895 : 3579545;
 }
 
 double SmsConsole::GetFps()
 {
-	return (_model == SmsModel::Sms && _region == ConsoleRegion::Pal) ? 49.701460 :  59.9227434;
+	return (_model != SmsModel::GameGear && _region == ConsoleRegion::Pal) ? 49.701460 :  59.9227434;
 }
 
 BaseVideoFilter* SmsConsole::GetVideoFilter(bool getDefaultFilter)
@@ -316,7 +336,7 @@ void SmsConsole::GetConsoleState(BaseState& state, ConsoleType consoleType)
 void SmsConsole::InitializeRam(void* data, uint32_t length)
 {
 	EmuSettings* settings = _emu->GetSettings();
-	RamState ramState = settings->GetSmsConfig().RamPowerOnState;
+	RamState ramState = _model == SmsModel::ColecoVision ? settings->GetCvConfig().RamPowerOnState : settings->GetSmsConfig().RamPowerOnState;
 	settings->InitializeRam(ramState, data, length);
 }
 

@@ -75,7 +75,7 @@
 					</Border>
 					<Popup Name="PART_Popup"
 							 WindowManagerAddShadowHint="False"
-							 PlacementMode="RightEdgeAlignedTop"
+							 Placement="RightEdgeAlignedTop"
 							 HorizontalOffset="{DynamicResource MenuFlyoutSubItemPopupHorizontalOffset}"
 							 IsLightDismissEnabled="False"
 							 IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}">

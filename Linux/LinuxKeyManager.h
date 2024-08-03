@@ -12,9 +12,6 @@ class Emulator;
 class LinuxKeyManager : public IKeyManager
 {
 private:
-	static constexpr int BaseMouseButtonIndex = 0x200;
-	static constexpr int BaseGamepadIndex = 0x1000;
-
 	Emulator* _emu;
 	std::vector<shared_ptr<LinuxGameController>> _controllers;
 
@@ -35,16 +32,19 @@ public:
 	LinuxKeyManager(Emulator* emu);
 	virtual ~LinuxKeyManager();
 
-	void RefreshState();
-	bool IsKeyPressed(uint16_t key);
-	bool IsMouseButtonPressed(MouseButton button);
-	std::vector<uint16_t> GetPressedKeys();
-	string GetKeyName(uint16_t key);
-	uint16_t GetKeyCode(string keyName);
+	void RefreshState() override;
+	bool IsKeyPressed(uint16_t key) override;
+	optional<int16_t> GetAxisPosition(uint16_t key) override;
+	bool IsMouseButtonPressed(MouseButton button) override;
+	std::vector<uint16_t> GetPressedKeys() override;
+	string GetKeyName(uint16_t key) override;
+	uint16_t GetKeyCode(string keyName) override;
 
-	void UpdateDevices();
-	bool SetKeyState(uint16_t scanCode, bool state);
-	void ResetKeyState();
+	void UpdateDevices() override;
+	bool SetKeyState(uint16_t scanCode, bool state) override;
+	void ResetKeyState() override;
 
-	void SetDisabled(bool disabled);
+	void SetDisabled(bool disabled) override;
+
+	void SetForceFeedback(uint16_t magnitude) override;
 };

@@ -24,7 +24,7 @@
 					<c:SystemSpecificSettings ConfigType="Input" />
 
 					<c:OptionSection Header="{l:Translate tpgGeneral}">
-						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 							<TextBlock Grid.Row="0" Text="{l:Translate lblDeadzone}" VerticalAlignment="Top" Margin="0 15 5 0" />
 							<c:MesenSlider
 								Margin="12 2 10 0"
@@ -61,6 +61,25 @@
 							<Grid Grid.Row="3" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="107" HorizontalAlignment="Left" Margin="10 0 5 0">
 								<TextBlock Text="{l:Translate lblLow}" />
 								<TextBlock Text="{l:Translate lblHigh}" Grid.Column="2" />
+							</Grid>
+
+							<TextBlock Grid.Row="4" Text="{l:Translate lblForceFeedbackIntensity}" VerticalAlignment="Top" Margin="0 15 5 0" />
+							<c:MesenSlider
+								Margin="12 2 10 0"
+								HorizontalAlignment="Left"
+								Grid.Row="4"
+								Grid.Column="1"
+								Minimum="0"
+								Maximum="10"
+								TickFrequency="1"
+								Width="100"
+								HideValue="True"
+								Value="{Binding Config.ForceFeedbackIntensity}"
+							/>
+
+							<Grid Grid.Row="5" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="130" HorizontalAlignment="Left" Margin="0 0 5 0">
+								<TextBlock Text="{l:Translate lblForceFeedbackLow}" />
+								<TextBlock Text="{l:Translate lblForceFeedbackHigh}" Grid.Column="2" />
 							</Grid>
 						</Grid>
 

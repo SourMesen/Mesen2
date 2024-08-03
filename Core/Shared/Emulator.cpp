@@ -306,7 +306,7 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave, bool save
 		_console.reset();
 	}
 
-	_soundMixer->StopAudio(true);
+	OnBeforePause(true);
 
 	if(sendNotification) {
 		_notificationManager->SendNotification(ConsoleNotificationType::EmulationStopped);
@@ -794,12 +794,20 @@ bool Emulator::IsPaused()
 	}
 }
 
+void Emulator::OnBeforePause(bool clearAudioBuffer)
+{
+	//Prevent audio from looping endlessly while game is paused
+	_soundMixer->StopAudio(clearAudioBuffer);
+
+	//Stop force feedback
+	KeyManager::SetForceFeedback(0);
+}
+
 void Emulator::WaitForPauseEnd()
 {
 	_notificationManager->SendNotification(ConsoleNotificationType::GamePaused);
 
-	//Prevent audio from looping endlessly while game is paused
-	_soundMixer->StopAudio();
+	OnBeforePause(false);
 	_runLock.Release();
 
 	PlatformUtilities::EnableScreensaver();

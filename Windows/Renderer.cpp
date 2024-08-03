@@ -64,7 +64,8 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 			_screenWidth != rendererSize.Width ||
 			_newFullscreen != _fullscreen ||
 			_useSrgbTextureFormat != cfg.UseSrgbTextureFormat ||
-			(_fullscreen && _fullscreenRefreshRate != refreshRate)
+			(_fullscreen && _fullscreenRefreshRate != refreshRate) ||
+			(_fullscreen && (_realScreenHeight != _monitorHeight || _realScreenWidth != _monitorWidth))
 		);
 	};
 
@@ -100,8 +101,15 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 			_screenWidth = rendererSize.Width;
 
 			if(_fullscreen) {
-				_realScreenHeight = _monitorHeight;
-				_realScreenWidth = _monitorWidth;
+				if(_realScreenHeight != _monitorHeight) {
+					_realScreenHeight = _monitorHeight;
+					needReset = true;
+				}
+
+				if(_realScreenWidth != _monitorWidth) {
+					_realScreenWidth = _monitorWidth;
+					needReset = true;
+				}
 
 				//Ensure the screen width/height is smaller or equal to the fullscreen resolution, no matter the requested scale
 				if(_monitorHeight < _screenHeight || _monitorWidth < _screenWidth) {
@@ -348,6 +356,28 @@ HRESULT Renderer::InitDevice()
 			if(FAILED(hr)) {
 				MessageManager::Log("SetFullscreenState(false) failed - Error:" + std::to_string(hr));
 				return hr;
+			}
+		} else {
+			//Get actual monitor resolution (which might differ from the one that was requested)
+			HMONITOR monitor = MonitorFromWindow(_hWnd, MONITOR_DEFAULTTOPRIMARY);
+			MONITORINFO info = {};
+			info.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(monitor, &info);
+
+			uint32_t monitorWidth = info.rcMonitor.right - info.rcMonitor.left;
+			uint32_t monitorHeight = info.rcMonitor.bottom - info.rcMonitor.top;
+
+			if(_monitorHeight != monitorHeight || _monitorWidth != monitorWidth) {
+				MessageManager::Log(
+					"Requested resolution (" + std::to_string(_monitorWidth) + "x" + std::to_string(_monitorHeight) 
+					+ ") is not available. Resetting to nearest match instead: " +
+					std::to_string(monitorWidth) + "x" + std::to_string(monitorHeight)
+				);
+				_monitorWidth = monitorWidth;
+				_monitorHeight = monitorHeight;
+
+				//Make UI wait until this 2nd reset is over
+				_resetCounter--;
 			}
 		}
 	}

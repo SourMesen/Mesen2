@@ -55,7 +55,7 @@ GbaDebugger::GbaDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 
 	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new GbaEventManager(debugger, _console->GetCpu(), _ppu, _memoryManager, _console->GetDmaController()));
-	_callstackManager.reset(new CallstackManager(debugger, _console));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Gba, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new GbaAssembler(debugger->GetLabelManager()));
@@ -355,7 +355,7 @@ uint32_t GbaDebugger::GetProgramCounter(bool getInstPc)
 	return getInstPc ? _prevProgramCounter : _cpu->GetState().R[15];
 }
 
-uint64_t GbaDebugger::GetCpuCycleCount()
+uint64_t GbaDebugger::GetCpuCycleCount(bool forProfiler)
 {
 	return _memoryManager->GetMasterClock();
 }

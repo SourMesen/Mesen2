@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <vector>
 #include <atomic>
 #include <cstring>
@@ -25,6 +26,7 @@ using std::atomic;
 using std::atomic_flag;
 using std::unordered_map;
 using std::unordered_set;
+using std::optional;
 
 #ifndef _MSC_VER
 	// Some headers have functions marked as `__forceinline` but don't provide the bodies;

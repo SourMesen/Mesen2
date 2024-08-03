@@ -4,6 +4,7 @@
 #include "SMS/SmsVdp.h"
 #include "SMS/Input/SmsController.h"
 #include "SMS/Input/SmsLightPhaser.h"
+#include "SMS/Input/ColecoVisionController.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyManager.h"
@@ -22,13 +23,13 @@ shared_ptr<BaseControlDevice> SmsControlManager::CreateControllerDevice(Controll
 {
 	shared_ptr<BaseControlDevice> device;
 
-	SmsConfig& cfg = _emu->GetSettings()->GetSmsConfig();
+	bool isCv = _console->GetModel() == SmsModel::ColecoVision;
 
 	KeyMappingSet keys;
 	switch(port) {
 		default:
-		case 0: keys = cfg.Port1.Keys; break;
-		case 1: keys = cfg.Port2.Keys; break;
+		case 0: keys = isCv ? _emu->GetSettings()->GetCvConfig().Port1.Keys : _emu->GetSettings()->GetSmsConfig().Port1.Keys; break;
+		case 1: keys = isCv ? _emu->GetSettings()->GetCvConfig().Port2.Keys : _emu->GetSettings()->GetSmsConfig().Port2.Keys; break;
 	}
 
 	switch(type) {
@@ -36,6 +37,7 @@ shared_ptr<BaseControlDevice> SmsControlManager::CreateControllerDevice(Controll
 		case ControllerType::None: break;
 		case ControllerType::SmsController: device.reset(new SmsController(_emu, port, keys)); break;
 		case ControllerType::SmsLightPhaser: device.reset(new SmsLightPhaser(_console, port, keys)); break;
+		case ControllerType::ColecoVisionController: device.reset(new ColecoVisionController(_emu, port, keys)); break;
 	}
 
 	return device;
@@ -44,7 +46,8 @@ shared_ptr<BaseControlDevice> SmsControlManager::CreateControllerDevice(Controll
 void SmsControlManager::UpdateControlDevices()
 {
 	SmsConfig& cfg = _emu->GetSettings()->GetSmsConfig();
-	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg) && _controlDevices.size() > 0) {
+	CvConfig& cvCfg = _emu->GetSettings()->GetCvConfig();
+	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg) && _emu->GetSettings()->IsEqual(_prevCvConfig, cvCfg) && _controlDevices.size() > 0) {
 		//Do nothing if configuration is unchanged
 		return;
 	}
@@ -53,8 +56,14 @@ void SmsControlManager::UpdateControlDevices()
 
 	ClearDevices();
 
+	bool isCv = _console->GetModel() == SmsModel::ColecoVision;
 	for(int i = 0; i < 2; i++) {
-		shared_ptr<BaseControlDevice> device = CreateControllerDevice(i == 0 ? cfg.Port1.Type : cfg.Port2.Type, i);
+		shared_ptr<BaseControlDevice> device;
+		if(isCv) {
+			device = CreateControllerDevice(i == 0 ? cvCfg.Port1.Type : cvCfg.Port2.Type, i);
+		} else {
+			device = CreateControllerDevice(i == 0 ? cfg.Port1.Type : cfg.Port2.Type, i);
+		}
 		if(device) {
 			RegisterControlDevice(device);
 		}
@@ -80,6 +89,10 @@ uint8_t SmsControlManager::InternalReadPort(uint8_t port)
 
 uint8_t SmsControlManager::ReadPort(uint8_t port)
 {
+	if(_console->GetModel() == SmsModel::ColecoVision) {
+		return ReadColecoVisionPort(port);
+	}
+
 	uint8_t value = InternalReadPort(port);
 
 	//Set TR/TH based on the $3F config
@@ -133,13 +146,36 @@ bool SmsControlManager::GetTr(bool portB)
 
 void SmsControlManager::WriteControlPort(uint8_t value)
 {
-	uint8_t thA = GetTh(false);
-	uint8_t thB = GetTh(true);
-	_state.ControlPort = value;
-	uint8_t newThA = GetTh(false);
-	uint8_t newThB = GetTh(true);
-	if((!thA && newThA) || (!thB && newThB)) {
-		_vdp->LatchHorizontalCounter();
+	if(_console->GetModel() == SmsModel::ColecoVision) {
+		WriteColecoVisionPort(value);
+	} else {
+		uint8_t thA = GetTh(false);
+		uint8_t thB = GetTh(true);
+		_state.ControlPort = value;
+		uint8_t newThA = GetTh(false);
+		uint8_t newThB = GetTh(true);
+		if((!thA && newThA) || (!thB && newThB)) {
+			_vdp->LatchHorizontalCounter();
+		}
+	}
+}
+
+uint8_t SmsControlManager::ReadColecoVisionPort(uint8_t port)
+{
+	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
+		if(device->IsConnected() && device->GetPort() == port) {
+			return device->ReadRam(port);
+		}
+	}
+	return 0xFF;
+}
+
+void SmsControlManager::WriteColecoVisionPort(uint8_t value)
+{
+	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
+		if(device->IsConnected()) {
+			device->WriteRam(0, value);
+		}
 	}
 }
 

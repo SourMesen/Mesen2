@@ -22,6 +22,7 @@ using Avalonia.Input.Platform;
 using System.Collections.Generic;
 using Mesen.Controls;
 using Mesen.Localization;
+using System.Diagnostics;
 
 namespace Mesen.Windows
 {
@@ -57,6 +58,9 @@ namespace Mesen.Windows
 		//Used to suppress key-repeat keyup events on Linux
 		private Dictionary<Key, IDisposable> _pendingKeyUpEvents = new();
 		private bool _isLinux = false;
+
+		private Stopwatch _stopWatch = Stopwatch.StartNew();
+		private Dictionary<Key, long> _keyPressedStamp = new();
 
 		static MainWindow()
 		{
@@ -268,7 +272,14 @@ namespace Mesen.Windows
 					
 					Dispatcher.UIThread.Post(() => {
 						bool wasAudioFile = _model.AudioPlayer != null;
+						bool updateConfig = _model.RomInfo.Format != romInfo.Format;
 						_model.RomInfo = romInfo;
+
+						if(updateConfig) {
+							//Make sure any config overrides (video filter/aspect ratio) are applied when loading a different file
+							ConfigManager.Config.Video.ApplyConfig();
+						}
+
 						bool isAudioFile = _model.AudioPlayer != null;
 						if(wasAudioFile != isAudioFile) {
 							//Force window size update when switching between an audio file and a regular rom
@@ -502,11 +513,13 @@ namespace Mesen.Windows
 						return;
 					}
 
-					WindowState = WindowState.FullScreen;
-
 					Task.Run(() => {
 						EmuApi.SetExclusiveFullscreenMode(true, TryGetPlatformHandle()?.Handle ?? IntPtr.Zero);
 						_preventFullscreenToggle = false;
+
+						Dispatcher.UIThread.Post(() => {
+							WindowState = WindowState.FullScreen;
+						});
 					});
 				} else {
 					WindowState = WindowState.FullScreen;
@@ -558,11 +571,6 @@ namespace Mesen.Windows
 			return false;
 		}
 
-		private static bool IsModifierKey(Key key)
-		{
-			return key == Key.LeftShift || key == Key.LeftCtrl || key == Key.LeftAlt || key == Key.RightShift || key == Key.RightCtrl || key == Key.RightAlt;
-		}
-
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
 			if(_testModeEnabled && e.KeyModifiers == KeyModifiers.Alt && ProcessTestModeShortcuts(e.Key)) {
@@ -575,6 +583,8 @@ namespace Mesen.Windows
 			}
 
 			if(e.Key != Key.None) {
+				_keyPressedStamp[e.Key] = _stopWatch.ElapsedTicks;
+
 				if(_isLinux && _pendingKeyUpEvents.TryGetValue(e.Key, out IDisposable? cancelTimer)) {
 					//Cancel any pending key up event
 					cancelTimer.Dispose();
@@ -598,6 +608,17 @@ namespace Mesen.Windows
 			}
 
 			if(e.Key != Key.None) {
+				if(e.Key.IsSpecialKey() && (!_keyPressedStamp.TryGetValue(e.Key, out long stamp) || ((_stopWatch.ElapsedTicks - stamp) * 1000 / Stopwatch.Frequency) < 10)) {
+					//Key up received without key down, or key pressed for less than 10 ms, pretend the key was pressed for 50ms
+					//Some special keys can behave this way (e.g printscreen)
+					InputApi.SetKeyState((UInt16)e.Key, true);
+					DispatcherTimer.RunOnce(() => InputApi.SetKeyState((UInt16)e.Key, false), TimeSpan.FromMilliseconds(50), DispatcherPriority.MaxValue);
+					_keyPressedStamp.Remove(e.Key);
+					return;
+				}
+
+				_keyPressedStamp.Remove(e.Key);
+
 				if(_isLinux) {
 					//Process keyup events after 1ms on Linux to prevent key repeat from triggering key up/down repeatedly
 					IDisposable cancelTimer = DispatcherTimer.RunOnce(() => InputApi.SetKeyState((UInt16)e.Key, false), TimeSpan.FromMilliseconds(1), DispatcherPriority.MaxValue);

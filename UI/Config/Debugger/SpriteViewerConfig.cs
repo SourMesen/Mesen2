@@ -15,6 +15,7 @@ namespace Mesen.Config
 		[Reactive] public SpriteViewerSource Source { get; set; } = SpriteViewerSource.SpriteRam;
 		[Reactive] public int SourceOffset { get; set; } = 0;
 
+		[Reactive] public bool DimOffscreenSprites { get; set; } = true;
 		[Reactive] public bool ShowListView { get; set; } = false;
 		[Reactive] public double ListViewHeight { get; set; } = 100;
 		[Reactive] public List<int> ColumnWidths { get; set; } = new();

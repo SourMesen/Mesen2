@@ -28,6 +28,7 @@ private:
 	NesConfig _nes;
 	PcEngineConfig _pce;
 	SmsConfig _sms;
+	CvConfig _cv;
 	GbaConfig _gba;
 
 	atomic<uint32_t> _flags;
@@ -87,6 +88,9 @@ public:
 
 	void SetSmsConfig(SmsConfig& config);
 	SmsConfig& GetSmsConfig();
+
+	void SetCvConfig(CvConfig& config);
+	CvConfig& GetCvConfig();
 
 	void SetGameConfig(GameConfig& config);
 	GameConfig& GetGameConfig();

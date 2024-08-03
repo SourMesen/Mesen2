@@ -1,0 +1,94 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="350"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:OtherConsolesConfigViewModel"
+	x:Class="Mesen.Views.CvConfigView"
+>
+	<Design.DataContext>
+		<vm:OtherConsolesConfigViewModel />
+	</Design.DataContext>
+
+	<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+		<StackPanel>
+			<v:VideoConfigOverrideView DataContext="{Binding CvConfig.ConfigOverrides}" />
+
+			<c:OptionSection Header="{l:Translate tpgGeneral}">
+				<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
+					<TextBlock Text="{l:Translate lblRegion}"/>
+					<c:EnumComboBox
+						SelectedItem="{Binding CvConfig.Region}"
+						Grid.Column="1"
+						MinWidth="130"
+						AvailableValues="{Binding AvailableRegionsCv}"
+					/>
+				</Grid>
+			</c:OptionSection>
+
+			<c:OptionSection Header="{l:Translate tpgAudio}">
+				<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left">
+					<StackPanel Orientation="Horizontal" Height="120">
+						<StackPanel.Styles>
+							<Style Selector="c|MesenSlider">
+								<Setter Property="Minimum" Value="0" />
+								<Setter Property="Maximum" Value="100" />
+								<Setter Property="Orientation" Value="Vertical" />
+								<Setter Property="Margin" Value="5 0" />
+							</Style>
+						</StackPanel.Styles>
+
+						<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{Binding CvConfig.Tone1Vol}" />
+						<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{Binding CvConfig.Tone2Vol}" />
+						<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{Binding CvConfig.Tone3Vol}" />
+						<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{Binding CvConfig.NoiseVol}" />
+					</StackPanel>
+				</c:GroupBox>
+			</c:OptionSection>
+
+			<c:OptionSection Header="{l:Translate tpgEmulation}">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+					<c:EnumComboBox SelectedItem="{Binding CvConfig.RamPowerOnState}" Width="200" />
+				</StackPanel>
+			</c:OptionSection>
+
+			<c:OptionSection Header="{l:Translate tpgInput}">
+				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Left">
+					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblController1}" />
+					<c:InputComboBox
+						Grid.Row="0" Grid.Column="1"
+						Port="0"
+						Config="{Binding CvConfig.Port1}"
+						ControllerType="{Binding CvConfig.Port1.Type}"
+						AvailableValues="{Binding CvInput.AvailableControllerTypesP12}"
+					/>
+
+					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblController2}" />
+					<c:InputComboBox
+						Grid.Row="1" Grid.Column="1"
+						Port="1"
+						Config="{Binding CvConfig.Port2}"
+						ControllerType="{Binding CvConfig.Port2.Type}"
+						AvailableValues="{Binding CvInput.AvailableControllerTypesP12}"
+					/>
+				</Grid>
+			</c:OptionSection>
+
+			<c:OptionSection Header="{l:Translate tpgVideo}">
+				<CheckBox IsChecked="{Binding CvConfig.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
+				<c:CheckBoxWarning IsChecked="{Binding CvConfig.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+				<c:CheckBoxWarning IsChecked="{Binding CvConfig.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+			</c:OptionSection>
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

@@ -12,6 +12,8 @@ namespace Mesen.Config
 {
 	public class NesConfig : BaseConfig<NesConfig>
 	{
+		[Reactive] public ConsoleOverrideConfig ConfigOverrides { get; set; } = new();
+
 		//Input
 		[Reactive] public NesControllerConfig Port1 { get; set; } = new();
 		[Reactive] public NesControllerConfig Port2 { get; set; } = new();
@@ -125,6 +127,8 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 		{
+			ConfigManager.Config.Video.ApplyConfig();
+
 			UInt32[] palette = new UInt32[512];
 			Array.Copy(UserPalette, palette, UserPalette.Length);
 			bool isFullPalette = UserPalette.Length == 512;

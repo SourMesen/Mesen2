@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:c="using:Mesen.Controls"
+	xmlns:v="using:Mesen.Views"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:cfg="using:Mesen.Config"
 	xmlns:l="using:Mesen.Localization"
@@ -71,6 +72,7 @@
 						<c:EnumComboBox SelectedItem="{Binding Config.SaveType}" MinWidth="150" />
 					</StackPanel>
 					<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+					<c:CheckBoxWarning IsChecked="{Binding Config.EnableMgbaLogApi}" Text="{l:Translate chkEnableMgbaLogApi}" />
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
@@ -92,7 +94,9 @@
 		<TabItem Header="{l:Translate tpgVideo}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:OptionSection Header="{l:Translate lblLcdSettings}" Margin="0">
+					<v:VideoConfigOverrideView DataContext="{Binding Config.ConfigOverrides}" />
+					
+					<c:OptionSection Header="{l:Translate lblLcdSettings}">
 						<CheckBox IsChecked="{Binding Config.GbaAdjustColors}" Content="{l:Translate chkGbaAdjustColors}"/>
 						<CheckBox IsChecked="{Binding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />

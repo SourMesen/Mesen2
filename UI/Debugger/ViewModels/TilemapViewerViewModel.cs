@@ -608,6 +608,9 @@ namespace Mesen.Debugger.ViewModels
 			if(tileInfo.TileMapAddress >= 0) {
 				entries.AddEntry("Tilemap address", FormatAddress(tileInfo.TileMapAddress));
 			}
+
+			entries.AddSeparator("TileSeparator");
+
 			if(tileInfo.TileIndex >= 0) {
 				entries.AddEntry("Tile index", "$" + tileInfo.TileIndex.ToString("X2"));
 			}
@@ -624,6 +627,9 @@ namespace Mesen.Debugger.ViewModels
 					entries.AddEntry("Tile address", FormatAddress(tileInfo.TileAddress));
 				}
 			}
+
+			entries.AddSeparator("PaletteSeparator");
+
 			if(tileInfo.PaletteIndex >= 0) {
 				if(tileInfo.BasePaletteIndex >= 0) {
 					entries.AddEntry("Palette index", $"{tileInfo.BasePaletteIndex} ({tileInfo.PaletteIndex})");
@@ -634,12 +640,18 @@ namespace Mesen.Debugger.ViewModels
 			if(tileInfo.PaletteAddress >= 0) {
 				entries.AddEntry("Palette address", "$" + tileInfo.PaletteAddress.ToString("X2"));
 			}
+
+			entries.AddSeparator("AttributeSeparator");
+
 			if(tileInfo.AttributeAddress >= 0) {
 				entries.AddEntry("Attribute address", "$" + tileInfo.AttributeAddress.ToString("X4"));
 			}
 			if(tileInfo.AttributeData >= 0) {
 				entries.AddEntry("Attribute data", "$" + tileInfo.AttributeData.ToString("X2"));
 			}
+
+			entries.AddSeparator("MiscSeparator");
+
 			if(tileInfo.PixelData >= 0) {
 				entries.AddEntry("Pixel data", "$" + tileInfo.PixelData.ToString("X2"));
 			}

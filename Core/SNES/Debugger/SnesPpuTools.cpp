@@ -300,8 +300,8 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePrevie
 		visible = false;
 	} else {
 		uint16_t scanlineCount = state.OverscanMode ? 239 : 224;
-		uint8_t endY = (spriteY + (state.ObjInterlace ? (height >> 1) : height)) & 0xFF;
-		if(endY >= scanlineCount && spriteY >= scanlineCount) {
+		uint16_t endY = spriteY + (state.ObjInterlace ? (height >> 1) : height);
+		if((endY >= scanlineCount || endY == 256) && spriteY >= scanlineCount) {
 			visible = false;
 		}
 	}

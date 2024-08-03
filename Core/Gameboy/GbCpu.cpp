@@ -868,7 +868,9 @@ void GbCpu::STOP()
 	} else {
 		_state.Stopped = true;
 		_state.HaltCounter = 1;
+#ifndef DUMMYCPU
 		_ppu->SetCpuStopState(true);
+#endif
 	}
 }
 

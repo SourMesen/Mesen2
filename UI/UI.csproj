@@ -89,11 +89,6 @@
 	  <None Remove="Styles\StartupStyles.xaml" />
 	  <None Remove="Utilities\DipSwitchDefinitions.xml" />
 	</ItemGroup>
-	<PropertyGroup>
-		<RestoreSources>
-			https://nuget-feed-nightly.avaloniaui.net/v3/index.json;https://api.nuget.org/v3/index.json
-		</RestoreSources>
-	</PropertyGroup>
 	<ItemGroup>
 		<TrimmerRootAssembly Include="Mesen" />
 		<TrimmerRootAssembly Include="AvaloniaEdit" />
@@ -103,15 +98,15 @@
 		<TrimmerRootAssembly Include="Dock.Settings" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.999-cibuild0045373-beta" />
+    <PackageReference Include="Avalonia" Version="11.1.1" />
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.999-cibuild0045373-beta" />
-    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.0.999-cibuild0045373-beta" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.999-cibuild0045373-beta" Condition="'$(OptimizeUi)'!='true'" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.999-cibuild0045373-beta" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.999-cibuild0045373-beta" />
-    <PackageReference Include="Dock.Avalonia" Version="11.0.10" />
-    <PackageReference Include="Dock.Model.Mvvm" Version="11.0.10" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.1.1" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.1.1" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.1.1" Condition="'$(OptimizeUi)'!='true'" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.1" />
+    <PackageReference Include="Dock.Avalonia" Version="11.1.0.1" />
+    <PackageReference Include="Dock.Model.Mvvm" Version="11.1.0.1" />
     <PackageReference Include="Dotnet.Bundle" Version="*" />
     <PackageReference Include="ELFSharp" Version="2.17.3" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
@@ -262,6 +257,9 @@
     <Compile Update="Debugger\Windows\CommentEditWindow.axaml.cs">
       <DependentUpon>CommentEditWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\VideoConfigOverrideView.axaml.cs">
+      <DependentUpon>VideoConfigOverrideView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\FontOptionsView.axaml.cs">
       <DependentUpon>FontOptionsView.axaml</DependentUpon>
     </Compile>
@@ -378,6 +376,12 @@
     </Compile>
     <Compile Update="Views\PceAvenuePad6View.axaml.cs">
       <DependentUpon>PceAvenuePad6View.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\OtherConsolesConfigView.axaml.cs">
+      <DependentUpon>OtherConsolesConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\CvConfigView.axaml.cs">
+      <DependentUpon>CvConfigView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\SmsInputConfigView.axaml.cs">
       <DependentUpon>SmsInputConfigView.axaml</DependentUpon>

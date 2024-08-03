@@ -22,6 +22,7 @@ public class MesenWindow : Window
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
+		Focusable = true;
 		SetTextRenderingMode(this);
 	}
 

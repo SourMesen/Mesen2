@@ -2,10 +2,15 @@
 #include "pch.h"
 #include "Utilities/ISerializable.h"
 #include "GBA/Cart/GbaEeprom.h"
+#include "GBA/Cart/GbaGpio.h"
 
 class Emulator;
+class GbaConsole;
 class GbaMemoryManager;
 class GbaFlash;
+class GbaGpio;
+class GbaRtc;
+class GbaTiltSensor;
 
 class GbaCart final : public ISerializable
 {
@@ -13,8 +18,12 @@ private:
 	Emulator* _emu = nullptr;
 	GbaMemoryManager* _memoryManager = nullptr;;
 
+	shared_ptr<GbaTiltSensor> _tiltSensor;
 	unique_ptr<GbaEeprom> _eeprom;
 	unique_ptr<GbaFlash> _flash;
+	unique_ptr<GbaGpio> _gpio;
+	unique_ptr<GbaRtc> _rtc;
+
 	uint32_t _eepromAddr = ~1; //by default, eeprom is disabled
 	uint32_t _eepromMask = 0;
 
@@ -33,7 +42,7 @@ public:
 	GbaCart();
 	~GbaCart();
 
-	void Init(Emulator* emu, GbaMemoryManager* memoryManager, GbaSaveType saveType);
+	void Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryManager, GbaSaveType saveType, GbaCartridgeType cartType);
 
 	template<bool checkEeprom>
 	__forceinline uint8_t ReadRom(uint32_t addr)
@@ -42,6 +51,8 @@ public:
 			if((addr & _eepromMask) == _eepromAddr) {
 				return ReadEeprom(addr);
 			}
+		} else if(_gpio && addr >= 0x80000C4 && addr <= 0x80000C9) {
+			return _gpio->Read(addr);
 		}
 
 		addr &= 0x1FFFFFF;
@@ -62,11 +73,12 @@ public:
 	uint8_t ReadRam(uint32_t addr, uint32_t readAddr);
 	void WriteRam(GbaAccessModeVal mode, uint32_t addr, uint8_t value, uint32_t writeAddr, uint32_t fullValue);
 	
-	bool IsSaveRamDirty() { return _saveRamDirty; }
-
 	void DebugWriteRam(uint32_t addr, uint8_t value);
 	AddressInfo GetRamAbsoluteAddress(uint32_t addr);
 	int64_t GetRamRelativeAddress(AddressInfo& absAddress);
+
+	void LoadBattery();
+	void SaveBattery();
 
 	void Serialize(Serializer& s) override;
 };

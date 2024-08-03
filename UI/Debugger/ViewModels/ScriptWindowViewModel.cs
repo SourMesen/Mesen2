@@ -106,7 +106,12 @@ namespace Mesen.Debugger.ViewModels
 			HelpMenuActions = new() {
 				new ContextMenuAction() {
 					ActionType = ActionType.HelpApiReference,
-					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/apireference/")
+					OnClick = () => {
+						string tmpDoc = Path.Combine(ConfigManager.HomeFolder, "MesenLuaApiDoc.html");
+						if(FileHelper.WriteAllText(tmpDoc, CodeCompletionHelper.GenerateHtmlDocumentation())) {
+							ApplicationHelper.OpenBrowser(tmpDoc);
+						}
+					}
 				}
 			};
 

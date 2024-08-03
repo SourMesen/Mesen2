@@ -24,9 +24,9 @@ namespace Mesen.Utilities
 			get
 			{
 				if(Compressed) {
-					return $"{Path} ({InnerFile})";
+					return $"{System.IO.Path.GetFileName(InnerFile)} ({System.IO.Path.GetFileName(Path)})";
 				} else {
-					return Path;
+					return System.IO.Path.GetFileName(Path);
 				}
 			}
 		}

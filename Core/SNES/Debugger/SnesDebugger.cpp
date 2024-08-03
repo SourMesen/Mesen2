@@ -79,7 +79,7 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType) : IDebugger(debu
 	
 	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
-	_callstackManager.reset(new CallstackManager(debugger, console));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new SnesAssembler(_debugger->GetLabelManager()));
@@ -120,9 +120,13 @@ void SnesDebugger::ProcessConfigChange()
 	_needCoprocessors = _runSpc || _runCoprocessors;
 }
 
-uint64_t SnesDebugger::GetCpuCycleCount()
+uint64_t SnesDebugger::GetCpuCycleCount(bool forProfiler)
 {
-	return GetCpuState().CycleCount;
+	if(forProfiler && _cpuType == CpuType::Snes) {
+		return _memoryManager->GetMasterClock();
+	} else {
+		return GetCpuState().CycleCount;
+	}
 }
 
 void SnesDebugger::ResetPrevOpCode()

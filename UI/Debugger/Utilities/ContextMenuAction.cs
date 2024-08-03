@@ -668,6 +668,8 @@ namespace Mesen.Debugger.Utilities
 		PcEngine,
 		[IconFile("SmsIcon")]
 		Sms,
+		[IconFile("Drive")]
+		OtherConsoles,
 		[IconFile("MediaPause")]
 		Pause,
 		[IconFile("MediaStop")]
@@ -873,5 +875,10 @@ namespace Mesen.Debugger.Utilities
 		NavigateBack,
 		[IconFile("NextArrow")]
 		NavigateForward,
+
+		[IconFile("Close")]
+		ResetProfilerData,
+		[IconFile("Copy")]
+		CopyToClipboard,
 	}
 }

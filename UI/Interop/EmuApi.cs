@@ -176,6 +176,7 @@ namespace Mesen.Interop
 		Sms,
 		GameGear,
 		Sg,
+		ColecoVision,
 
 		Gba
 	}
@@ -264,7 +265,8 @@ namespace Mesen.Interop
 		FDS,
 		StudyBox,
 		PceSuperCd,
-		PceGamesExpress
+		PceGamesExpress,
+		ColecoVision
 	}
 
 	public struct MissingFirmwareMessage

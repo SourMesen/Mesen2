@@ -77,6 +77,7 @@ namespace Mesen.Config
 			CreateMimeType("x-mesen-nsfe", "nsfe", "Nintendo Sound File (extended)", mimeTypes, cfg.AssociateNesMusicFiles);
 
 			CreateMimeType("x-mesen-gb", "gb", "Game Boy ROM", mimeTypes, cfg.AssociateGbRomFiles);
+			CreateMimeType("x-mesen-gbx", "gbx", "Game Boy ROM", mimeTypes, cfg.AssociateGbRomFiles);
 			CreateMimeType("x-mesen-gbc", "gbc", "Game Boy Color ROM", mimeTypes, cfg.AssociateGbRomFiles);
 			CreateMimeType("x-mesen-gbs", "gbs", "Game Boy Sound File", mimeTypes, cfg.AssociateGbMusicFiles);
 			CreateMimeType("x-mesen-gba", "gba", "Game Boy Advance ROM", mimeTypes, cfg.AssociateGbaRomFiles);
@@ -88,6 +89,7 @@ namespace Mesen.Config
 			CreateMimeType("x-mesen-sms", "sms", "Master System ROM", mimeTypes, cfg.AssociateSmsRomFiles);
 			CreateMimeType("x-mesen-gg", "gg", "Game Gear ROM", mimeTypes, cfg.AssociateGameGearRomFiles);
 			CreateMimeType("x-mesen-sg", "sg", "SG-1000 ROM", mimeTypes, cfg.AssociateSgRomFiles);
+			CreateMimeType("x-mesen-col", "col", "ColecoVision ROM", mimeTypes, cfg.AssociateCvRomFiles);
 
 			//Icon used for shortcuts
 			ImageUtilities.BitmapFromAsset("Assets/MesenIcon.png").Save(Path.Combine(iconFolder, "MesenIcon.png"));
@@ -193,6 +195,7 @@ namespace Mesen.Config
 			FileAssociationHelper.UpdateFileAssociation("nsfe", cfg.AssociateNesMusicFiles);
 
 			FileAssociationHelper.UpdateFileAssociation("gb", cfg.AssociateGbRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("gbx", cfg.AssociateGbRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("gbc", cfg.AssociateGbRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("gbs", cfg.AssociateGbMusicFiles);
 			
@@ -205,6 +208,7 @@ namespace Mesen.Config
 			FileAssociationHelper.UpdateFileAssociation("sms", cfg.AssociateSmsRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("gg", cfg.AssociateGameGearRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("sg", cfg.AssociateSgRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("col", cfg.AssociateCvRomFiles);
 		}
 
 		static private void UpdateFileAssociation(string extension, bool associate)

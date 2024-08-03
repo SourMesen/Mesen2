@@ -51,7 +51,7 @@ void SmsPsg::RunNoise(SmsNoiseChannelState& noise)
 void SmsPsg::Run()
 {
 	uint64_t runTo = _console->GetMasterClock();
-	SmsConfig& cfg = _settings->GetSmsConfig();
+	uint32_t* volumes = _console->GetModel() == SmsModel::ColecoVision ? _settings->GetCvConfig().ChannelVolumes : _settings->GetSmsConfig().ChannelVolumes;
 
 	while(_masterClock + 16 < runTo) {
 		int16_t outputLeft = 0;
@@ -63,7 +63,7 @@ void SmsPsg::Run()
 				_state.Tone[i].Timer = _state.Tone[i].ReloadValue;
 			}
 
-			channelOutput = _state.Tone[i].Output * _volumeLut[_state.Tone[i].Volume] * cfg.ChannelVolumes[i] / 100;
+			channelOutput = _state.Tone[i].Output * _volumeLut[_state.Tone[i].Volume] * volumes[i] / 100;
 			if(_state.GameGearPanningReg & (0x01 << i)) {
 				outputRight += channelOutput;
 			}
@@ -73,7 +73,7 @@ void SmsPsg::Run()
 		}
 
 		RunNoise(_state.Noise);
-		channelOutput = _state.Noise.Output * _volumeLut[_state.Noise.Volume] * cfg.ChannelVolumes[3] / 100;
+		channelOutput = _state.Noise.Output * _volumeLut[_state.Noise.Volume] * volumes[3] / 100;
 		if(_state.GameGearPanningReg & 0x08) {
 			outputRight += channelOutput;
 		}

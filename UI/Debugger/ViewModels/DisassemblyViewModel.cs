@@ -120,6 +120,10 @@ namespace Mesen.Debugger.ViewModels
 
 		public void Scroll(int lineNumberOffset)
 		{
+			if(lineNumberOffset == 0) {
+				return;
+			}
+
 			SetTopAddress(DataProvider.GetRowAddress(TopAddress, lineNumberOffset));
 		}
 

@@ -62,7 +62,7 @@ PceDebugger::PceDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 
 	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new PceEventManager(debugger, console));
-	_callstackManager.reset(new CallstackManager(debugger, console));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Pce, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new PceAssembler(_debugger->GetLabelManager()));
@@ -79,7 +79,7 @@ void PceDebugger::Reset()
 	ResetPrevOpCode();
 }
 
-uint64_t PceDebugger::GetCpuCycleCount()
+uint64_t PceDebugger::GetCpuCycleCount(bool forProfiler)
 {
 	return _cpu->GetState().CycleCount;
 }

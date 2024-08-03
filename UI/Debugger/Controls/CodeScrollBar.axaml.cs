@@ -120,7 +120,7 @@ namespace Mesen.Debugger.Controls
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
 		{
 			base.OnPointerWheelChanged(e);
-			Value = Math.Max(0, Math.Min(Maximum, Value - (int)(e.Delta.Y * 3)));
+			Value = Math.Max(0, Math.Min(Maximum, Value - (int)(e.GetDeltaY() * 3)));
 		}
 
 		private void IncrementClick(object? sender, RoutedEventArgs e)

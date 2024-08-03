@@ -32,7 +32,7 @@ SpcDebugger::SpcDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 
 	_traceLogger.reset(new SpcTraceLogger(debugger, this, console->GetPpu(), console->GetMemoryManager()));
 
-	_callstackManager.reset(new CallstackManager(debugger, console));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Spc, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }
@@ -230,6 +230,11 @@ void SpcDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 uint32_t SpcDebugger::GetProgramCounter(bool getInstPc)
 {
 	return getInstPc ? _prevProgramCounter : _spc->GetState().PC;
+}
+
+uint64_t SpcDebugger::GetCpuCycleCount(bool forProfiler)
+{
+	return _spc->GetState().Cycle;
 }
 
 CallstackManager* SpcDebugger::GetCallstackManager()

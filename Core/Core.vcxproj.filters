@@ -2808,6 +2808,39 @@
     <ClInclude Include="GBA\Debugger\GbaCodeDataLogger.h">
       <Filter>GBA\Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="GBA\Debugger\MgbaLogHandler.h">
+      <Filter>GBA\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\GbxFooter.h">
+      <Filter>Gameboy</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\Carts\GbWisdomTree.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\Carts\Eeprom93Lc56.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\Carts\GbMbc7Accelerometer.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Cart\GbaTiltSensor.h">
+      <Filter>GBA\Cart</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Cart\GbaRtc.h">
+      <Filter>GBA\Cart</Filter>
+    </ClInclude>
+    <ClInclude Include="GBA\Cart\GbaGpio.h">
+      <Filter>GBA\Cart</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\Carts\GbMmm01.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\Carts\GbM161.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Input\ColecoVisionController.h">
+      <Filter>SMS\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -3076,6 +3109,12 @@
     </ClCompile>
     <ClCompile Include="GBA\APU\GbaWaveChannel.cpp">
       <Filter>GBA\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Cart\GbaRtc.cpp">
+      <Filter>GBA\Cart</Filter>
+    </ClCompile>
+    <ClCompile Include="GBA\Cart\GbaGpio.cpp">
+      <Filter>GBA\Cart</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

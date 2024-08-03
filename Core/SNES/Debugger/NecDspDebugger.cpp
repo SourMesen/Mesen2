@@ -29,7 +29,7 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger) : IDebugger(debugger->GetEmul
 	_memoryManager = console->GetMemoryManager();
 
 	_traceLogger.reset(new NecDspTraceLogger(debugger, this, console->GetPpu(), console->GetMemoryManager()));
-	_callstackManager.reset(new CallstackManager(debugger, console));
+	_callstackManager.reset(new CallstackManager(debugger, this));
 
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::NecDsp, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
@@ -167,7 +167,7 @@ uint32_t NecDspDebugger::GetProgramCounter(bool getInstPc)
 	return getInstPc ? _prevProgramCounter : (_dsp->GetState().PC * 3);
 }
 
-uint64_t NecDspDebugger::GetCpuCycleCount()
+uint64_t NecDspDebugger::GetCpuCycleCount(bool forProfiler)
 {
 	return _dsp->GetState().CycleCount;
 }

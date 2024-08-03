@@ -23,6 +23,7 @@ optional<InternalCheatCode> CheatManager::TryConvertCode(CheatCode code)
 		case CheatType::SnesProActionReplay: return ConvertFromSnesProActionReplay(code.Code);
 		case CheatType::SnesGameGenie: return ConvertFromSnesGameGenie(code.Code);
 		case CheatType::GbGameGenie: return ConvertFromGbGameGenie(code.Code);
+		case CheatType::GbGameShark: return ConvertFromGbGameShark(code.Code);
 		case CheatType::PceRaw: return ConvertFromPceRaw(code.Code);
 		case CheatType::PceAddress: return ConvertFromPceAddress(code.Code);
 		case CheatType::SmsGameGenie: return ConvertFromSmsGameGenie(code.Code);

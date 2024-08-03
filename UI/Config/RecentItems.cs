@@ -42,7 +42,7 @@ namespace Mesen.Config
 		{
 			get
 			{
-				string text = Path.GetFileName(RomFile.ReadablePath);
+				string text = RomFile.ReadablePath;
 				if(PatchFile.HasValue) {
 					text += " [" + Path.GetFileName(PatchFile.Value) + "]";
 				}

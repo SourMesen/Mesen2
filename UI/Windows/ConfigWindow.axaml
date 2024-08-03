@@ -50,6 +50,9 @@
 		<DataTemplate DataType="{x:Type vm:SmsConfigViewModel}">
 			<v:SmsConfigView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:OtherConsolesConfigViewModel}">
+			<v:OtherConsolesConfigView />
+		</DataTemplate>
 		<DataTemplate DataType="{x:Type vm:PreferencesConfigViewModel}">
 			<v:PreferencesConfigView />
 		</DataTemplate>
@@ -156,6 +159,15 @@
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/SmsIcon.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabSms}" />
+					</StackPanel>
+				</TabItem.Header>
+			</TabItem>
+
+			<TabItem Content="{Binding OtherConsoles}">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="/Assets/Drive.png" Margin="0 0 10 0" />
+						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabOtherConsoles}" />
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>

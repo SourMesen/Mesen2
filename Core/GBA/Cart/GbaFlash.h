@@ -103,7 +103,7 @@ public:
 
 					case 0xB0:
 						if(_allowBanking) {
-							_emu->DebugLog("[Flash] 0xB0 - Set memory bank");
+							//_emu->DebugLog("[Flash] 0xB0 - Set memory bank");
 							_mode = ChipMode::SetMemoryBank;
 						}
 						break;
