@@ -45,6 +45,8 @@ void GameServer::UpdateConnections()
 	vector<unique_ptr<GameServerConnection>> connectionsToRemove;
 	for(int i = (int)_openConnections.size() - 1; i >= 0; i--) {
 		if(_openConnections[i]->ConnectionError()) {
+			//Pause emu thread to ensure nothing else modifies/accesses the _openConnections list while removing dead connections
+			auto lock = _emu->AcquireLock();
 			_openConnections.erase(_openConnections.begin() + i);
 		} else {
 			_openConnections[i]->ProcessMessages();

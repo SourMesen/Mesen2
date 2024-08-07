@@ -1246,10 +1246,10 @@ namespace Mesen.ViewModels
 			}
 		}
 
-		public void UpdateNetplayMenu()
+		public bool UpdateNetplayMenu()
 		{
 			if(!NetplayApi.IsServerRunning() && !NetplayApi.IsConnected()) {
-				return;
+				return false;
 			}
 
 			List<object> controllerActions = new();
@@ -1276,7 +1276,9 @@ namespace Mesen.ViewModels
 				playerIndex++;
 			}
 
-			controllerActions.Add(new ContextMenuSeparator());
+			if(controllerActions.Count > 0) {
+				controllerActions.Add(new ContextMenuSeparator());
+			}
 
 			controllerActions.Add(new MainMenuAction() {
 				ActionType = ActionType.Custom,
@@ -1286,6 +1288,8 @@ namespace Mesen.ViewModels
 			});
 
 			_selectControllerAction.SubActions = controllerActions;
+
+			return true;
 		}
 	}
 }
