@@ -210,7 +210,7 @@ bool WouldBlock(int nError)
 
 int Socket::Send(char *buf, int len, int flags)
 {
-	int retryCount = 15;
+	int retryCount = 100;
 	int nError = 0;
 	int returnVal;
 	do {
@@ -235,7 +235,7 @@ int Socket::Send(char *buf, int len, int flags)
 						return 0;
 					}
 					
-					std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+					std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(20));
 				}
 			}
 		}
