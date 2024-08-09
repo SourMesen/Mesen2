@@ -21,7 +21,7 @@ namespace Mesen.Utilities
 		private bool _disposed = false;
 		private bool _firstInstance = false;
 
-		public bool FirstInstance => _firstInstance;
+		public bool FirstInstance => _firstInstance || !ConfigManager.Config.Preferences.SingleInstance;
 		public event EventHandler<ArgumentsReceivedEventArgs>? ArgumentsReceived;
 
 		public void Init(string[] args)
@@ -40,7 +40,6 @@ namespace Mesen.Utilities
 			}
 
 			if(_firstInstance || !ConfigManager.Config.Preferences.SingleInstance) {
-				_firstInstance = true;
 				Task.Run(() => ListenForArguments());
 			} else {
 				PassArgumentsToFirstInstance(args);
@@ -103,8 +102,11 @@ namespace Mesen.Utilities
 		protected virtual void Dispose(bool disposing)
 		{
 			if(!_disposed) {
-				if(_mutex != null && _firstInstance) {
-					_mutex.ReleaseMutex();
+				if(_mutex != null) {
+					if(_firstInstance) {
+						_mutex.ReleaseMutex();
+					}
+					_mutex.Dispose();
 					_mutex = null;
 				}
 				_lockFileStream = null;
