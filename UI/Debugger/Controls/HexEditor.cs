@@ -353,7 +353,7 @@ namespace Mesen.Debugger.Controls
 						int keyValue = Int32.Parse(c.ToString(), System.Globalization.NumberStyles.HexNumber);
 
 						if(NewByteValue < 0) {
-							NewByteValue = DataProvider.GetByte(SelectionStart).Value;
+							NewByteValue = DataProvider.GetRawByte(SelectionStart);
 						}
 
 						if(LastNibble) {
@@ -807,6 +807,7 @@ namespace Mesen.Debugger.Controls
 	{
 		void Prepare(int firstByteIndex, int lastByteIndex);
 		ByteInfo GetByte(int byteIndex);
+		byte GetRawByte(int byteIndex);
 		int Length { get; }
 
 		byte[] GetRawBytes(int start, int length);
