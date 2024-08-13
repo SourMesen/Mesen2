@@ -107,10 +107,12 @@ DEBUGFOLDER := bin/$(MESENPLATFORM)/Debug
 RELEASEFOLDER := bin/$(MESENPLATFORM)/Release
 ifeq ($(DEBUG), 0)
 	OUTFOLDER = $(RELEASEFOLDER)
-	BUILD_TYPE = Release
+	BUILD_TYPE := Release
+	OPTIMIZEUI := -p:OptimizeUi=true
 else
 	OUTFOLDER = $(DEBUGFOLDER)
-	BUILD_TYPE = Debug
+	BUILD_TYPE := Debug
+	OPTIMIZEUI :=
 endif
 
 
@@ -185,8 +187,8 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	rm -fr $(OUTFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(OUTFOLDER)/$(SHAREDLIB)
 	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
-	cd UI && dotnet publish -c $(BUILD_TYPE) -p:OptimizeUi="true" $(PUBLISHFLAGS)
-	cd UI && dotnet publish -c $(BUILD_TYPE) -p:OptimizeUi="true" $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
