@@ -187,12 +187,19 @@ endif
 
 all: ui
 
+# Why do we `dotnet publish` twice?
+# Well, Mesen2 wants to be entirely self-contained, *but* it depends on two native libraries
+# (`libSkiaSharp` and `libHarfBuzzSharp`). It wants to embark those libraries in its `Dependencies.zip`
+# which gets unpacked on startup.
+# So, Mesen2 needs `Dependencies.zip` to contain both libraries before being build itself.
+# BUT, msbuild only copies the libraries to `$(OUTFOLDER)` *after* building Mesen2!
+# So, we need to build once to get the libs (but the flags there don't matter, it's a dummy build after all)
+# and *then* build for real.
 ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(OUTFOLDER)/Dependencies
 	rm -fr $(OUTFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(OUTFOLDER)/$(SHAREDLIB)
-	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
-	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) -r $(MESENPLATFORM)
 	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
@@ -223,11 +230,12 @@ run:
 	$(OUTFOLDER)/$(MESENPLATFORM)/publish/Mesen
 
 clean:
-	rm -r -f $(COREOBJ)
-	rm -r -f $(UTILOBJ)
-	rm -r -f $(LINUXOBJ) $(LIBEVDEVOBJ)
-	rm -r -f $(SDLOBJ)
-	rm -r -f $(SEVENZIPOBJ)
-	rm -r -f $(LUAOBJ)
-	rm -r -f $(MACOSOBJ)
-	rm -r -f $(DLLOBJ)
+	rm -rf bin
+	rm -rf $(COREOBJ)
+	rm -rf $(UTILOBJ)
+	rm -rf $(LINUXOBJ) $(LIBEVDEVOBJ)
+	rm -rf $(SDLOBJ)
+	rm -rf $(SEVENZIPOBJ)
+	rm -rf $(LUAOBJ)
+	rm -rf $(MACOSOBJ)
+	rm -rf $(DLLOBJ)
