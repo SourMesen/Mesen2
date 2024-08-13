@@ -59,7 +59,7 @@ DEBUG ?= 0
 ifeq ($(DEBUG),0)
 	MESENFLAGS += -O3
 	ifneq ($(LTO),false)
-		MESENFLAGS += -flto -DHAVE_LTO
+		MESENFLAGS += -flto=auto -DHAVE_LTO
 	endif
 else
 	MESENFLAGS += -O0 -g
