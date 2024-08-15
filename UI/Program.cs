@@ -158,7 +158,9 @@ namespace Mesen
 					.UseReactiveUI()
 					.UsePlatformDetect()
 					.With(new Win32PlatformOptions { })
-					.With(new X11PlatformOptions { })
+					.With(new X11PlatformOptions {
+						EnableInputFocusProxy = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "gamescope",
+					 })
 					.With(new AvaloniaNativePlatformOptions { })
 					.LogToTrace();
 	}
