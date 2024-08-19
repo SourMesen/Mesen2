@@ -1852,13 +1852,6 @@ namespace Mesen.Interop
 		//R06 - RCR
 		public UInt16 RasterCompareRegister;
 
-		//R09 - MWR - Memory Width
-		public byte ColumnCount;
-		public byte RowCount;
-		public byte SpriteAccessMode;
-		public byte VramAccessMode;
-		[MarshalAs(UnmanagedType.I1)] public bool CgMode;
-
 		[MarshalAs(UnmanagedType.I1)] public bool BgScrollYUpdatePending;
 
 		public PceVdcHvLatches HvLatch;
@@ -1915,6 +1908,13 @@ namespace Mesen.Interop
 
 		//R08 - BYR
 		public UInt16 BgScrollY;
+
+		//R09 - MWR - Memory Width
+		public byte ColumnCount;
+		public byte RowCount;
+		public byte SpriteAccessMode;
+		public byte VramAccessMode;
+		[MarshalAs(UnmanagedType.I1)] public bool CgMode;
 
 		//R0A - HSR
 		public byte HorizDisplayStart;

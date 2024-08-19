@@ -55,6 +55,13 @@ struct PceVdcHvLatches
 	//R08 - BYR
 	uint16_t BgScrollY;
 
+	//R09 - MWR - Memory Width
+	uint8_t ColumnCount;
+	uint8_t RowCount;
+	uint8_t SpriteAccessMode;
+	uint8_t VramAccessMode;
+	bool CgMode;
+
 	//R0A - HSR
 	uint8_t HorizDisplayStart;
 	uint8_t HorizSyncWidth;
@@ -107,13 +114,6 @@ struct PceVdcState
 
 	//R06 - RCR
 	uint16_t RasterCompareRegister;
-
-	//R09 - MWR - Memory Width
-	uint8_t ColumnCount;
-	uint8_t RowCount;
-	uint8_t SpriteAccessMode;
-	uint8_t VramAccessMode;
-	bool CgMode;
 
 	bool BgScrollYUpdatePending;
 

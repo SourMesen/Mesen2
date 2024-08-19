@@ -1755,11 +1755,11 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$08", "BYR - BG Scroll Y", vdc.HvReg.BgScrollY, Format.X16),
 				
 				new RegEntry("$09", "MWR - Memory Width"),
-				new RegEntry("$09.0-1", "VRAM Access Mode", vdc.VramAccessMode),
-				new RegEntry("$09.2-3", "Sprite Access Mode", vdc.SpriteAccessMode),
-				new RegEntry("$09.4-5", "Column Count", vdc.ColumnCount),
-				new RegEntry("$09.6", "Row Count", vdc.RowCount),
-				new RegEntry("$09.7", "CG Mode", vdc.CgMode),
+				new RegEntry("$09.0-1", "VRAM Access Mode", vdc.HvReg.VramAccessMode),
+				new RegEntry("$09.2-3", "Sprite Access Mode", vdc.HvReg.SpriteAccessMode),
+				new RegEntry("$09.4-5", "Column Count", vdc.HvReg.ColumnCount),
+				new RegEntry("$09.6", "Row Count", vdc.HvReg.RowCount),
+				new RegEntry("$09.7", "CG Mode", vdc.HvReg.CgMode),
 
 				new RegEntry("$0A", "HSR - Horizontal Sync"),
 				new RegEntry("$0A.0-4", "HSW - Horizontal Sync Width", vdc.HvReg.HorizSyncWidth, Format.X8),

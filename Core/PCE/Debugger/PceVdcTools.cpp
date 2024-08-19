@@ -23,9 +23,9 @@ FrameInfo PceVdcTools::GetTilemapSize(GetTilemapOptions options, BaseState& base
 {
 	PceVideoState& state = (PceVideoState&)baseState;
 	if(options.Layer == 0) {
-		return { (uint32_t)state.Vdc.ColumnCount * 8, (uint32_t)state.Vdc.RowCount * 8 };
+		return { (uint32_t)state.Vdc.HvLatch.ColumnCount * 8, (uint32_t)state.Vdc.HvLatch.RowCount * 8 };
 	} else {
-		return { (uint32_t)state.Vdc2.ColumnCount * 8, (uint32_t)state.Vdc2.RowCount * 8 };
+		return { (uint32_t)state.Vdc2.HvLatch.ColumnCount * 8, (uint32_t)state.Vdc2.HvLatch.RowCount * 8 };
 	}
 }
 
@@ -43,7 +43,7 @@ DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	uint32_t row = y / 8;
 	uint32_t column = x / 8;
 
-	uint16_t entryAddr = (row * state.ColumnCount + column) * 2;
+	uint16_t entryAddr = (row * state.HvLatch.ColumnCount + column) * 2;
 	uint16_t batEntry = vram[entryAddr] | (vram[entryAddr + 1] << 8);
 
 	result.Height = 8;
@@ -65,9 +65,9 @@ DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& b
 {
 	PceVdcState& state = options.Layer == 0 ? ((PceVideoState&)baseState).Vdc : ((PceVideoState&)baseState).Vdc2;
 
-	if(state.VramAccessMode == 3) {
+	if(state.HvLatch.VramAccessMode == 3) {
 		//2BPP modes
-		if(state.CgMode) {
+		if(state.HvLatch.CgMode) {
 			return InternalGetTilemap<TileFormat::PceBackgroundBpp2Cg1>(options, state, vram, palette, outBuffer);
 		} else {
 			return InternalGetTilemap<TileFormat::PceBackgroundBpp2Cg0>(options, state, vram, palette, outBuffer);
@@ -85,12 +85,12 @@ DebugTilemapInfo PceVdcTools::InternalGetTilemap(GetTilemapOptions options, PceV
 	result.Format = format;
 	result.TileWidth = 8;
 	result.TileHeight = 8;
-	result.ColumnCount = state.ColumnCount;
-	result.RowCount = state.RowCount;
+	result.ColumnCount = state.HvLatch.ColumnCount;
+	result.RowCount = state.HvLatch.RowCount;
 	result.TilemapAddress = 0;
 	result.TilesetAddress = 0;
-	result.ScrollX = state.HvReg.BgScrollX;
-	result.ScrollY = state.HvReg.BgScrollY;
+	result.ScrollX = state.HvLatch.BgScrollX;
+	result.ScrollY = state.HvLatch.BgScrollY;
 	result.ScrollWidth = (state.HvLatch.HorizDisplayWidth + 1) * 8;
 	result.ScrollHeight = std::min<uint32_t>(242, state.HvLatch.VertDisplayWidth);
 
@@ -105,9 +105,9 @@ DebugTilemapInfo PceVdcTools::InternalGetTilemap(GetTilemapOptions options, PceV
 		}
 	}
 
-	for(uint8_t row = 0; row < state.RowCount; row++) {
-		for(uint8_t column = 0; column < state.ColumnCount; column++) {
-			uint16_t entryAddr = (row * state.ColumnCount + column) * 2;
+	for(uint8_t row = 0; row < state.HvLatch.RowCount; row++) {
+		for(uint8_t column = 0; column < state.HvLatch.ColumnCount; column++) {
+			uint16_t entryAddr = (row * state.HvLatch.ColumnCount + column) * 2;
 			uint16_t batEntry = vram[entryAddr] | (vram[entryAddr + 1] << 8);
 			uint8_t palIndex = batEntry >> 12;
 			uint16_t tileIndex = (batEntry & 0xFFF);
@@ -117,7 +117,7 @@ DebugTilemapInfo PceVdcTools::InternalGetTilemap(GetTilemapOptions options, PceV
 				for(int x = 0; x < 8; x++) {
 					uint8_t color = GetTilePixelColor<format>(vram, 0xFFFF, tileAddr, x);
 					uint16_t palAddr = color == 0 ? 0 : (palIndex * 16 + color);
-					uint32_t outPos = (row * 8 + y) * state.ColumnCount * 8 + column * 8 + x;
+					uint32_t outPos = (row * 8 + y) * state.HvLatch.ColumnCount * 8 + column * 8 + x;
 					outBuffer[outPos] = palette[palAddr & colorMask];
 				}
 			}
@@ -162,7 +162,7 @@ void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 
 void PceVdcTools::GetSpriteInfo(PceVdcState& state, DebugSpriteInfo& sprite, uint32_t* spritePreview, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
-	if(state.SpriteAccessMode == 1) {
+	if(state.HvLatch.SpriteAccessMode == 1) {
 		uint16_t loadSp23 = oamRam[spriteIndex * 8 + 4] & 0x01;
 		if(loadSp23) {
 			InternalGetSpriteInfo<TileFormat::PceSpriteBpp2Sp23>(sprite, spritePreview, spriteIndex, options, vram, oamRam, palette);
