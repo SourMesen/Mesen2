@@ -976,4 +976,24 @@
 			<Option>On</Option>
 		</DipSwitch>
 	</Game>
+	<Game Name="Nintendo World Championships 1990" PrgCrc32="0B0E128F">
+		<DipSwitch Localization="Timer Length">
+			<Option>5:00</Option>
+			<Option>5:19</Option>
+			<Option>5:37</Option>
+			<Option>5:56</Option>
+			<Option>6:15 (Tournament Setting)</Option>
+			<Option>6:34</Option>
+			<Option>6:52</Option>
+			<Option>7:11</Option>
+			<Option>7:30</Option>
+			<Option>7:49</Option>
+			<Option>8:07</Option>
+			<Option>8:26</Option>
+			<Option>8:45</Option>
+			<Option>9:04</Option>
+			<Option>9:22</Option>
+			<Option>9:41</Option>
+		</DipSwitch>
+	</Game>
 </DipSwitchDefinitions>
