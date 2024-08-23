@@ -2,15 +2,17 @@
 #include "GBA/GbaCpu.h"
 #include "GBA/GbaDmaController.h"
 #include "GBA/GbaMemoryManager.h"
+#include "GBA/GbaRomPrefetch.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/BitUtilities.h"
 #include "Utilities/Serializer.h"
 
-void GbaDmaController::Init(GbaCpu* cpu, GbaMemoryManager* memoryManager)
+void GbaDmaController::Init(GbaCpu* cpu, GbaMemoryManager* memoryManager, GbaRomPrefetch* prefetcher)
 {
 	_cpu = cpu;
 	_memoryManager = memoryManager;
+	_prefetcher = prefetcher;
 }
 
 GbaDmaControllerState& GbaDmaController::GetState()
@@ -128,6 +130,11 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 	while(length-- > 0) {
 		uint32_t value;
 		if(srcAddr >= 0x2000000) {
+			if(srcAddr & 0x8000000) {
+				//DMA accessed ROM, suspend the prefetcher
+				_prefetcher->SetSuspendState(true);
+			}
+
 			value = ch.ReadValue = _memoryManager->Read(mode, srcAddr);
 			if(isRomSrc) {
 				//If a DMA reads from ROM (cart) and writes to ROM (cart), the first ROM write will be sequential
@@ -148,6 +155,11 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 				//For half-word transfers, the value written depends on the destination address
 				value = ch.ReadValue >> ((ch.DestLatch & 0x02) << 3);
 			}
+		}
+
+		if(ch.DestLatch & 0x8000000) {
+			//DMA accessed ROM, suspend the prefetcher
+			_prefetcher->SetSuspendState(true);
 		}
 
 		_memoryManager->Write(mode, ch.DestLatch, value);
@@ -202,6 +214,7 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 	}
 
 	_dmaActiveChannel = -1;
+	_prefetcher->SetSuspendState(false);
 
 	ch.Active = false;
 	ch.Pending = false;

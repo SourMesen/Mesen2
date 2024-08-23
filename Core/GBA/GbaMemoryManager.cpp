@@ -192,10 +192,7 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 	if(_state.PrefetchEnabled) {
 		if(addr < 0x8000000 || addr >= 0x10000000) {
 			waitStates = GetWaitStates(mode, addr);
-			if(!(mode & GbaAccessMode::Dma)) {
-				//Prefetch does not run during DMA
-				_prefetch->Exec(waitStates);
-			}
+			_prefetch->Exec(waitStates);
 		} else if((mode & GbaAccessMode::Dma) || !(mode & GbaAccessMode::Prefetch)) {
 			//Accesses to ROM from DMA or reads not caused by the CPU loading opcodes will reset the cartridge prefetcher
 			//When the prefetch is reset on its last cycle, the ROM access takes an extra cycle to complete

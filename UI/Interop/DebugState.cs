@@ -1411,6 +1411,7 @@ namespace Mesen.Interop
 		public byte ClockCounter;
 		public UInt32 ReadAddr;
 		public UInt32 PrefetchAddr;
+		[MarshalAs(UnmanagedType.I1)] public bool Suspended;
 	}
 
 	public struct NesCpuState : BaseState

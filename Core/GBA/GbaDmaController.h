@@ -5,12 +5,14 @@
 
 class GbaMemoryManager;
 class GbaCpu;
+class GbaRomPrefetch;
 
 class GbaDmaController final : public ISerializable
 {
 private:
 	GbaCpu* _cpu = nullptr;
 	GbaMemoryManager* _memoryManager = nullptr;
+	GbaRomPrefetch* _prefetcher = nullptr;
 	GbaDmaControllerState _state = {};
 	int8_t _dmaActiveChannel = -1;
 	bool _dmaPending = false;
@@ -19,7 +21,7 @@ private:
 	void RunDma(GbaDmaChannel& ch, uint8_t chIndex);
 
 public:
-	void Init(GbaCpu* cpu, GbaMemoryManager* memoryManager);
+	void Init(GbaCpu* cpu, GbaMemoryManager* memoryManager, GbaRomPrefetch* prefetcher);
 
 	GbaDmaControllerState& GetState();
 

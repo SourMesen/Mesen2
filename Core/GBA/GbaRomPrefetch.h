@@ -57,9 +57,15 @@ public:
 		return delay;
 	}
 
+	__forceinline void SetSuspendState(bool suspended)
+	{
+		//Prefetch is suspended by DMA once DMA accesses ROM
+		_state.Suspended = suspended;
+	}
+
 	void Exec(uint8_t clocks)
 	{
-		if(IsFull()) {
+		if(_state.Suspended || IsFull()) {
 			return;
 		}
 
@@ -115,5 +121,6 @@ public:
 		SV(_state.ClockCounter);
 		SV(_state.ReadAddr);
 		SV(_state.PrefetchAddr);
+		SV(_state.Suspended);
 	}
 };

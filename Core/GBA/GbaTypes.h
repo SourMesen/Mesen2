@@ -261,6 +261,7 @@ struct GbaRomPrefetchState
 	uint8_t ClockCounter;
 	uint32_t ReadAddr;
 	uint32_t PrefetchAddr;
+	bool Suspended;
 };
 
 struct GbaTimerState
