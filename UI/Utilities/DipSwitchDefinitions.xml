@@ -976,7 +976,7 @@
 			<Option>On</Option>
 		</DipSwitch>
 	</Game>
-	<Game Name="Nintendo World Championships 1990" PrgCrc32="0B0E128F">
+	<Game Name="Nintendo World Championships 1990" PrgCrc32="0B0E128F" DefaultDip="4">
 		<DipSwitch Localization="Timer Length">
 			<Option>5:00</Option>
 			<Option>5:19</Option>
