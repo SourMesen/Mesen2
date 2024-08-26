@@ -82,6 +82,18 @@ namespace Mesen.Debugger.Views
 					}
 				},
 				new ContextMenuAction() {
+					ActionType = ActionType.Undo,
+					IsEnabled = () => DebugApi.HasUndoHistory(),
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Undo),
+					OnClick = () => {
+						if(DebugApi.HasUndoHistory()) {
+							DebugApi.PerformUndo();
+							Model.Debugger.UpdateDisassembly(false);
+						}
+					}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Copy),
 					IsVisible = () => !IsMarginClick,

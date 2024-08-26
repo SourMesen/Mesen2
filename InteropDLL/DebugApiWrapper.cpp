@@ -132,9 +132,11 @@ extern "C"
 	DllExport uint32_t __stdcall GetMemorySize(MemoryType type) { return WithDebugger(uint32_t, GetMemoryDumper()->GetMemorySize(type)); }
 	DllExport void __stdcall GetMemoryState(MemoryType type, uint8_t* buffer) { WithDebugger(void, GetMemoryDumper()->GetMemoryState(type, buffer)); }
 	DllExport uint8_t __stdcall GetMemoryValue(MemoryType type, uint32_t address) { return WithDebugger(uint8_t, GetMemoryDumper()->GetMemoryValue(type, address)); }
-	DllExport void __stdcall GetMemoryValues(MemoryType type, uint32_t start, uint32_t end, uint8_t* output) { return WithDebugger(void, GetMemoryDumper()->GetMemoryValues(type, start, end, output)); }
-	DllExport void __stdcall SetMemoryValue(MemoryType type, uint32_t address, uint8_t value) { return WithDebugger(void, GetMemoryDumper()->SetMemoryValue(type, address, value)); }
-	DllExport void __stdcall SetMemoryValues(MemoryType type, uint32_t address, uint8_t* data, int32_t length) { return WithDebugger(void, GetMemoryDumper()->SetMemoryValues(type, address, data, length)); }
+	DllExport void __stdcall GetMemoryValues(MemoryType type, uint32_t start, uint32_t end, uint8_t* output) { WithDebugger(void, GetMemoryDumper()->GetMemoryValues(type, start, end, output)); }
+	DllExport void __stdcall SetMemoryValue(MemoryType type, uint32_t address, uint8_t value) { WithDebugger(void, GetMemoryDumper()->SetMemoryValue(type, address, value)); }
+	DllExport void __stdcall SetMemoryValues(MemoryType type, uint32_t address, uint8_t* data, int32_t length) { WithDebugger(void, GetMemoryDumper()->SetMemoryValues(type, address, data, length)); }
+	DllExport bool __stdcall HasUndoHistory() { return WithDebugger(bool, GetMemoryDumper()->HasUndoHistory()); }
+	DllExport void __stdcall PerformUndo() { WithDebugger(void, GetMemoryDumper()->PerformUndo()); }
 
 	DllExport AddressInfo __stdcall GetAbsoluteAddress(AddressInfo relAddress) { return WithDebugger(AddressInfo, GetAbsoluteAddress(relAddress)); }
 	DllExport AddressInfo __stdcall GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) { return WithDebugger(AddressInfo, GetRelativeAddress(absAddress, cpuType)); }

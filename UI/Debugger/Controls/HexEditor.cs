@@ -411,12 +411,7 @@ namespace Mesen.Debugger.Controls
 					text = text.Replace("\n", "").Replace("\r", "");
 					if(Regex.IsMatch(text, "^[ a-f0-9]+$", RegexOptions.IgnoreCase)) {
 						byte[] pastedData = HexUtilities.HexToArray(text);
-						for(int i = 0; i < pastedData.Length; i++) {
-							if(_cursorPosition + i >= DataProvider.Length) {
-								break;
-							}
-							RequestByteUpdate(_cursorPosition + i, pastedData[i]);
-						}
+						ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = _cursorPosition, Length = pastedData.Length, Values = pastedData });
 
 						//Move cursor to the end of the pasted section
 						SetCursorPosition(_cursorPosition + pastedData.Length, false);
@@ -828,7 +823,8 @@ namespace Mesen.Debugger.Controls
 	{
 		public int ByteOffset;
 		public int Length;
-		public byte Value;
+		public byte? Value = null;
+		public byte[]? Values = null;
 	}
 
 	public struct ByteInfo

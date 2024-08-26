@@ -3004,6 +3004,7 @@ E
 			<Value ID="Cut">Cut</Value>
 			<Value ID="Paste">Paste</Value>
 			<Value ID="SelectAll">Select All</Value>
+			<Value ID="Undo">Undo</Value>
 			<Value ID="Refresh">Refresh</Value>
 			<Value ID="MarkAsCode">Mark Selection as Code</Value>
 			<Value ID="MarkAsData">Mark Selection as Data</Value>
@@ -3184,6 +3185,7 @@ E
 			<Value ID="Copy">Copy</Value>
 			<Value ID="Paste">Paste</Value>
 			<Value ID="SelectAll">Select All</Value>
+			<Value ID="Undo">Undo</Value>
 
 			<Value ID="Add">Add...</Value>
 			<Value ID="Edit">Edit</Value>

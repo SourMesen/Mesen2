@@ -79,6 +79,8 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.Copy, KeyBinding = new(KeyModifiers.Control, Key.C) });
 			Add(new() { Shortcut = DebuggerShortcut.Paste, KeyBinding = new(KeyModifiers.Control, Key.V) });
 			Add(new() { Shortcut = DebuggerShortcut.SelectAll, KeyBinding = new(KeyModifiers.Control, Key.A) });
+			
+			Add(new() { Shortcut = DebuggerShortcut.Undo, KeyBinding = new(KeyModifiers.Control, Key.Z) });
 
 			Add(new() { Shortcut = DebuggerShortcut.Refresh, KeyBinding = new(Key.F5) });
 
@@ -297,6 +299,7 @@ namespace Mesen.Config
 		FindPrev,
 		Copy,
 		Paste,
+		Undo,
 		SelectAll,
 		Refresh,
 		MarkAsCode,
