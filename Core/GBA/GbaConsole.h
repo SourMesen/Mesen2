@@ -117,7 +117,5 @@ public:
 
 	void RefreshRamCheats();
 
-	bool IsExecutingBios();
-
 	void InitializeRam(void* data, uint32_t length);
 };

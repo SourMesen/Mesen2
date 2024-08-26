@@ -445,11 +445,6 @@ void GbaConsole::RefreshRamCheats()
 	//TODOGBA
 }
 
-bool GbaConsole::IsExecutingBios()
-{
-	return _cpu->GetExecutingAddr() < GbaConsole::BootRomSize;
-}
-
 void GbaConsole::InitializeRam(void* data, uint32_t length)
 {
 	EmuSettings* settings = _emu->GetSettings();

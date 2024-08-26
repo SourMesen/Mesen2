@@ -53,6 +53,7 @@ GbaMemoryManager::GbaMemoryManager(Emulator* emu, GbaConsole* console, GbaPpu* p
 	_masterClock = 48;
 
 	if(_emu->GetSettings()->GetGbaConfig().SkipBootScreen) {
+		_biosLocked = true;
 		_state.BootRomOpenBus[1] = 0xF0;
 		_state.BootRomOpenBus[2] = 0x29;
 		_state.BootRomOpenBus[3] = 0xE1;
@@ -265,6 +266,10 @@ uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 
 	uint32_t value;
 
+	if(mode & GbaAccessMode::Prefetch) {
+		_biosLocked = addr >= GbaConsole::BootRomSize;
+	}
+
 	bool isSigned = mode & GbaAccessMode::Signed;
 	if(mode & GbaAccessMode::Byte) {
 		value = InternalRead(mode, addr, addr);
@@ -348,7 +353,7 @@ uint8_t GbaMemoryManager::InternalRead(GbaAccessModeVal mode, uint32_t addr, uin
 		case 0x00:
 			//bootrom
 			if(addr < GbaConsole::BootRomSize) {
-				if((mode & GbaAccessMode::Prefetch) || _console->IsExecutingBios()) {
+				if(!_biosLocked) {
 					return _state.BootRomOpenBus[addr & 0x03] = _bootRom[addr];
 				} else {
 					return _state.BootRomOpenBus[addr & 0x03];
@@ -546,7 +551,8 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 	switch(addr) {
 		case 0x132:
 		case 0x133:
-			return _controlManager->WriteInputPort(mode, addr, value);
+			_controlManager->WriteInputPort(mode, addr, value);
+			break;
 
 		case 0x200: _state.NewIE = (_state.NewIE & 0xFF00) | value; TriggerIrqUpdate(); break;
 		case 0x201: _state.NewIE = (_state.NewIE & 0xFF) | (value << 8); TriggerIrqUpdate(); break;
@@ -581,14 +587,14 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 		case 0x20B: break; //ime
 
 		case 0x300:
-			if(_console->IsExecutingBios() && !_state.PostBootFlag) {
+			if(!_biosLocked && !_state.PostBootFlag) {
 				//Only accessible from BIOS, and can't be cleared once set
 				_state.PostBootFlag = value & 0x01;
 			}
 			break;
 
 		case 0x301:
-			if(_console->IsExecutingBios()) {
+			if(!_biosLocked) {
 				_haltModeUsed = true;
 				_console->GetCpu()->SetStopFlag();
 				_state.StopMode = value & 0x80;
@@ -661,7 +667,7 @@ bool GbaMemoryManager::UseInlineHalt()
 
 uint8_t GbaMemoryManager::GetOpenBus(uint32_t addr)
 {
-	return _state.CartOpenBus[addr & 0x01];
+	return _state.InternalOpenBus[addr & 0x01];
 }
 
 uint32_t GbaMemoryManager::DebugCpuRead(GbaAccessModeVal mode, uint32_t addr)
@@ -860,6 +866,7 @@ void GbaMemoryManager::Serialize(Serializer& s)
 	SV(_pendingIrqSource);
 	SV(_pendingIrqSourceDelay);
 	SV(_haltModeUsed);
+	SV(_biosLocked);
 
 	SV(_state.IE);
 	SV(_state.IF);

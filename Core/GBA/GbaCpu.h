@@ -214,8 +214,6 @@ public:
 
 	void PowerOn();
 
-	uint32_t GetExecutingAddr();
-
 	void Serialize(Serializer& s) override;
 
 #ifdef DUMMYCPU

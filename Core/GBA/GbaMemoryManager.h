@@ -55,6 +55,7 @@ private:
 	GbaIrqSource _pendingIrqSource = {};
 	uint8_t _pendingIrqSourceDelay = 0;
 	bool _haltModeUsed = false;
+	bool _biosLocked = false;
 
 	uint8_t* _waitStatesLut = nullptr;
 
