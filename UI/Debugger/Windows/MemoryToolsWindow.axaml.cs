@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using Mesen.Localization;
 using Avalonia.Input;
 using Mesen.Debugger.Disassembly;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Mesen.Debugger.Windows
 {
