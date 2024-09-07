@@ -21,6 +21,9 @@ endif
 SDL2LIB := $(shell sdl2-config --libs)
 SDL2INC := $(shell sdl2-config --cflags)
 
+MACPORTSRPATH := -Wl,-rpath,/opt/local/lib
+MESENFLAGS += ${MACPORTSRPATH}
+
 LINKCHECKUNRESOLVED := -Wl,-z,defs
 
 LINKOPTIONS :=
