@@ -21,9 +21,6 @@ endif
 SDL2LIB := $(shell sdl2-config --libs)
 SDL2INC := $(shell sdl2-config --cflags)
 
-MACPORTSRPATH := -Wl,-rpath,/opt/local/lib
-MESENFLAGS += ${MACPORTSRPATH}
-
 LINKCHECKUNRESOLVED := -Wl,-z,defs
 
 LINKOPTIONS :=
@@ -103,7 +100,7 @@ ifneq ($(STATICLINK),false)
 endif
 
 ifeq ($(MESENOS),osx)
-	LINKOPTIONS += -framework Foundation -framework Cocoa
+	LINKOPTIONS += -framework Foundation -framework Cocoa -Wl,-rpath,/opt/local/lib
 endif
 
 CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Sdl) -I $(realpath ./Linux) -I $(realpath ./MacOS)
