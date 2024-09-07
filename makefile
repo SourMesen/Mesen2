@@ -100,7 +100,7 @@ ifneq ($(STATICLINK),false)
 endif
 
 ifeq ($(MESENOS),osx)
-	LINKOPTIONS += -framework Foundation -framework Cocoa
+	LINKOPTIONS += -framework Foundation -framework Cocoa -Wl,-rpath,/opt/local/lib
 endif
 
 CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Sdl) -I $(realpath ./Linux) -I $(realpath ./MacOS)
