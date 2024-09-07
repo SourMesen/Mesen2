@@ -58,7 +58,11 @@ namespace Mesen.Debugger.ViewModels
 			switch(behavior ?? Config.ScriptStartupBehavior) {
 				case ScriptStartupBehavior.ShowBlankWindow: break;
 				case ScriptStartupBehavior.ShowTutorial: LoadScriptFromResource("Mesen.Debugger.Utilities.LuaScripts.Example.lua"); break;
-				case ScriptStartupBehavior.LoadLastScript: LoadScript(Config.RecentScripts[0]); break;
+				case ScriptStartupBehavior.LoadLastScript:
+					if(Config.RecentScripts.Count > 0) {
+						LoadScript(Config.RecentScripts[0]);
+					}
+					break;
 			}
 		}
 
