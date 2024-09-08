@@ -429,6 +429,12 @@ public:
 		}
 	}
 
+	bool ContainsKey(const char* name)
+	{
+		string key = GetKey(name, -1);
+		return _values.find(key) != _values.end();
+	}
+
 	void PushNamePrefix(const char* name, int index = -1);
 	void PopNamePrefix();
 	void SaveTo(ostream &file, int compressionLevel = 1);

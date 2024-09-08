@@ -59,7 +59,12 @@ DEBUG ?= 0
 ifeq ($(DEBUG),0)
 	MESENFLAGS += -O3
 	ifneq ($(LTO),false)
-		MESENFLAGS += -flto -DHAVE_LTO
+		MESENFLAGS += -DHAVE_LTO
+		ifneq ($(USE_GCC),true)
+			MESENFLAGS += -flto=thin
+		else
+			MESENFLAGS += -flto=auto
+		endif
 	endif
 else
 	MESENFLAGS += -O0 -g
@@ -95,7 +100,7 @@ ifneq ($(STATICLINK),false)
 endif
 
 ifeq ($(MESENOS),osx)
-	LINKOPTIONS += -framework Foundation -framework Cocoa
+	LINKOPTIONS += -framework Foundation -framework Cocoa -Wl,-rpath,/opt/local/lib
 endif
 
 CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Sdl) -I $(realpath ./Linux) -I $(realpath ./MacOS)
@@ -107,10 +112,12 @@ DEBUGFOLDER := bin/$(MESENPLATFORM)/Debug
 RELEASEFOLDER := bin/$(MESENPLATFORM)/Release
 ifeq ($(DEBUG), 0)
 	OUTFOLDER = $(RELEASEFOLDER)
-	BUILD_TYPE = Release
+	BUILD_TYPE := Release
+	OPTIMIZEUI := -p:OptimizeUi=true
 else
 	OUTFOLDER = $(DEBUGFOLDER)
-	BUILD_TYPE = Debug
+	BUILD_TYPE := Debug
+	OPTIMIZEUI :=
 endif
 
 
@@ -175,7 +182,11 @@ ifeq ($(MESENOS),osx)
 	LIBEVDEVINC := 
 	LIBEVDEVSRC := 
 	FSLIB := 
-	PUBLISHFLAGS := -t:BundleApp -p:UseAppHost=true -p:RuntimeIdentifier=$(MESENPLATFORM) -p:SelfContained=true -p:PublishSingleFile=false -p:PublishReadyToRun=false
+	ifeq ($(USE_AOT),true)
+		PUBLISHFLAGS := -t:BundleApp -p:UseAppHost=true -p:RuntimeIdentifier=$(MESENPLATFORM) -p:PublishSingleFile=false -p:PublishAot=true -p:SelfContained=true
+	else
+		PUBLISHFLAGS := -t:BundleApp -p:UseAppHost=true -p:RuntimeIdentifier=$(MESENPLATFORM) -p:SelfContained=true -p:PublishSingleFile=false -p:PublishReadyToRun=false
+	endif
 endif
 
 all: ui
@@ -185,8 +196,8 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	rm -fr $(OUTFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(OUTFOLDER)/$(SHAREDLIB)
 	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
-	cd UI && dotnet publish -c $(BUILD_TYPE) -p:OptimizeUi="true" $(PUBLISHFLAGS)
-	cd UI && dotnet publish -c $(BUILD_TYPE) -p:OptimizeUi="true" $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 

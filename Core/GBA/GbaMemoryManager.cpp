@@ -53,6 +53,7 @@ GbaMemoryManager::GbaMemoryManager(Emulator* emu, GbaConsole* console, GbaPpu* p
 	_masterClock = 48;
 
 	if(_emu->GetSettings()->GetGbaConfig().SkipBootScreen) {
+		_biosLocked = true;
 		_state.BootRomOpenBus[1] = 0xF0;
 		_state.BootRomOpenBus[2] = 0x29;
 		_state.BootRomOpenBus[3] = 0xE1;
@@ -192,10 +193,7 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 	if(_state.PrefetchEnabled) {
 		if(addr < 0x8000000 || addr >= 0x10000000) {
 			waitStates = GetWaitStates(mode, addr);
-			if(!(mode & GbaAccessMode::Dma)) {
-				//Prefetch does not run during DMA
-				_prefetch->Exec(waitStates);
-			}
+			_prefetch->Exec(waitStates);
 		} else if((mode & GbaAccessMode::Dma) || !(mode & GbaAccessMode::Prefetch)) {
 			//Accesses to ROM from DMA or reads not caused by the CPU loading opcodes will reset the cartridge prefetcher
 			//When the prefetch is reset on its last cycle, the ROM access takes an extra cycle to complete
@@ -267,6 +265,10 @@ uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 	}
 
 	uint32_t value;
+
+	if(mode & GbaAccessMode::Prefetch) {
+		_biosLocked = addr >= GbaConsole::BootRomSize;
+	}
 
 	bool isSigned = mode & GbaAccessMode::Signed;
 	if(mode & GbaAccessMode::Byte) {
@@ -351,7 +353,7 @@ uint8_t GbaMemoryManager::InternalRead(GbaAccessModeVal mode, uint32_t addr, uin
 		case 0x00:
 			//bootrom
 			if(addr < GbaConsole::BootRomSize) {
-				if((mode & GbaAccessMode::Prefetch) || _console->IsExecutingBios()) {
+				if(!_biosLocked) {
 					return _state.BootRomOpenBus[addr & 0x03] = _bootRom[addr];
 				} else {
 					return _state.BootRomOpenBus[addr & 0x03];
@@ -362,12 +364,7 @@ uint8_t GbaMemoryManager::InternalRead(GbaAccessModeVal mode, uint32_t addr, uin
 		case 0x02: return _extWorkRam[addr & (GbaConsole::ExtWorkRamSize - 1)];
 		case 0x03: return _intWorkRam[addr & (GbaConsole::IntWorkRamSize - 1)];
 
-		case 0x04:
-			//registers
-			if(addr < 0x3FF) {
-				return ReadRegister(addr);
-			}
-			return _state.InternalOpenBus[addr & 0x03];
+		case 0x04: return ReadRegister(addr);
 
 		case 0x05: return _palette[addr & (GbaConsole::PaletteRamSize - 1)];
 
@@ -535,14 +532,14 @@ uint32_t GbaMemoryManager::ReadRegister(uint32_t addr)
 			case 0x303: return 0;
 
 			default:
-				if(addr >= 0xFFF700 && addr <= 0xFFF703) {
+				if(addr >= 0xFFF780 && addr <= 0xFFF783) {
 					if(_emu->GetSettings()->GetGbaConfig().EnableMgbaLogApi) {
 						return _mgbaLog->Read(addr);
 					}
 				}
 
 				LogDebug("Read unimplemented register: " + HexUtilities::ToHex32(addr));
-				return _state.CartOpenBus[addr & 0x01];
+				return _state.InternalOpenBus[addr & 0x01];
 		}
 	}
 }
@@ -554,7 +551,8 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 	switch(addr) {
 		case 0x132:
 		case 0x133:
-			return _controlManager->WriteInputPort(mode, addr, value);
+			_controlManager->WriteInputPort(mode, addr, value);
+			break;
 
 		case 0x200: _state.NewIE = (_state.NewIE & 0xFF00) | value; TriggerIrqUpdate(); break;
 		case 0x201: _state.NewIE = (_state.NewIE & 0xFF) | (value << 8); TriggerIrqUpdate(); break;
@@ -589,14 +587,14 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 		case 0x20B: break; //ime
 
 		case 0x300:
-			if(_console->IsExecutingBios() && !_state.PostBootFlag) {
+			if(!_biosLocked && !_state.PostBootFlag) {
 				//Only accessible from BIOS, and can't be cleared once set
 				_state.PostBootFlag = value & 0x01;
 			}
 			break;
 
 		case 0x301:
-			if(_console->IsExecutingBios()) {
+			if(!_biosLocked) {
 				_haltModeUsed = true;
 				_console->GetCpu()->SetStopFlag();
 				_state.StopMode = value & 0x80;
@@ -669,7 +667,7 @@ bool GbaMemoryManager::UseInlineHalt()
 
 uint8_t GbaMemoryManager::GetOpenBus(uint32_t addr)
 {
-	return _state.CartOpenBus[addr & 0x01];
+	return _state.InternalOpenBus[addr & 0x01];
 }
 
 uint32_t GbaMemoryManager::DebugCpuRead(GbaAccessModeVal mode, uint32_t addr)
@@ -868,6 +866,7 @@ void GbaMemoryManager::Serialize(Serializer& s)
 	SV(_pendingIrqSource);
 	SV(_pendingIrqSourceDelay);
 	SV(_haltModeUsed);
+	SV(_biosLocked);
 
 	SV(_state.IE);
 	SV(_state.IF);

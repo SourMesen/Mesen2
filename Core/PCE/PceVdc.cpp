@@ -24,8 +24,10 @@ PceVdc::PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, boo
 	console->InitializeRam(_spriteRam, 0x200);
 
 	//These values can't ever be 0, init them to a possible value
-	_state.ColumnCount = 32;
-	_state.RowCount = 32;
+	_state.HvLatch.ColumnCount = 32;
+	_state.HvReg.ColumnCount = 32;
+	_state.HvLatch.RowCount = 32;
+	_state.HvReg.RowCount = 32;
 	_state.VramAddrIncrement = 1;
 
 	_state.HvReg.HorizDisplayWidth = 0x1F;
@@ -215,6 +217,11 @@ void PceVdc::ProcessVerticalSyncStart()
 	_state.HvLatch.VertDisplayStart = _state.HvReg.VertDisplayStart;
 	_state.HvLatch.VertDisplayWidth = _state.HvReg.VertDisplayWidth;
 	_state.HvLatch.VertEndPosVcr = _state.HvReg.VertEndPosVcr;
+
+	_state.HvLatch.VramAccessMode = _state.HvReg.VramAccessMode;
+	_state.HvLatch.SpriteAccessMode = _state.HvReg.SpriteAccessMode;
+	_state.HvLatch.RowCount = _state.HvReg.RowCount;
+	_state.HvLatch.ColumnCount = _state.HvReg.ColumnCount;
 }
 
 void PceVdc::ProcessHorizontalSyncStart()
@@ -224,6 +231,7 @@ void PceVdc::ProcessHorizontalSyncStart()
 	_state.HvLatch.HorizDisplayStart = _state.HvReg.HorizDisplayStart;
 	_state.HvLatch.HorizDisplayWidth = _state.HvReg.HorizDisplayWidth;
 	_state.HvLatch.HorizDisplayEnd = _state.HvReg.HorizDisplayEnd;
+	_state.HvLatch.CgMode = _state.HvLatch.CgMode;
 
 	_nextEvent = PceVdcEvent::None;
 	_nextEventCounter = UINT16_MAX;
@@ -394,11 +402,11 @@ void PceVdc::LoadBackgroundTiles()
 
 	//LogDebug("BG: " + std::to_string(_loadBgLastCycle) + " -> " + std::to_string(end - 1));
 
-	uint16_t columnMask = _state.ColumnCount - 1;
+	uint16_t columnMask = _state.HvLatch.ColumnCount - 1;
 	uint16_t scrollOffset = _state.HvLatch.BgScrollX >> 3;
-	uint16_t row = (_state.HvLatch.BgScrollY) & ((_state.RowCount * 8) - 1);
+	uint16_t row = (_state.HvLatch.BgScrollY) & ((_state.HvLatch.RowCount * 8) - 1);
 
-	if(_state.VramAccessMode == 0) {
+	if(_state.HvLatch.VramAccessMode == 0) {
 		for(uint16_t i = _loadBgLastCycle; i < end; i++) {
 			if constexpr(skipRender) {
 				_allowVramAccess = (i & 0x01) == 0;
@@ -414,7 +422,7 @@ void PceVdc::LoadBackgroundTiles()
 				}
 			}
 		}
-	} else if(_state.VramAccessMode == 3) {
+	} else if(_state.HvLatch.VramAccessMode == 3) {
 		//Mode 3 is 4 cycles per read, CPU has no VRAM access, only 2BPP
 		LoadBackgroundTilesWidth4(end, scrollOffset, columnMask, row);
 	} else {
@@ -448,7 +456,7 @@ void PceVdc::LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint
 
 			case 7:
 				//Load CG0 or CG1 based on CG mode flag
-				_tiles[_tileCount].TileData[0] = ReadVram(_tiles[_tileCount].TileAddr + (row & 0x07) + (_state.CgMode ? 8 : 0));
+				_tiles[_tileCount].TileData[0] = ReadVram(_tiles[_tileCount].TileAddr + (row & 0x07) + (_state.HvLatch.CgMode ? 8 : 0));
 				_tiles[_tileCount].TileData[1] = 0;
 				_tileCount++;
 				break;
@@ -459,7 +467,7 @@ void PceVdc::LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint
 void PceVdc::LoadBatEntry(uint16_t scrollOffset, uint16_t columnMask, uint16_t row)
 {
 	uint16_t tileColumn = (scrollOffset + _tileCount) & columnMask;
-	uint16_t batEntry = ReadVram((row >> 3) * _state.ColumnCount + tileColumn);
+	uint16_t batEntry = ReadVram((row >> 3) * _state.HvLatch.ColumnCount + tileColumn);
 	_tiles[_tileCount].Palette = batEntry >> 12;
 	_tiles[_tileCount].TileAddr = ((batEntry & 0xFFF) * 16);
 	_allowVramAccess = false;
@@ -503,10 +511,10 @@ void PceVdc::LoadSpriteTiles()
 	uint16_t clockCount = _loadSpriteStart > _loadBgStart ? (PceConstants::ClockPerScanline - _loadSpriteStart) + _loadBgStart : (_loadBgStart - _loadSpriteStart);
 	bool hasSprite0 = false;
 	memset(_xPosHasSprite, 0, sizeof(_xPosHasSprite));
-	if(_state.SpriteAccessMode != 1) {
+	if(_state.HvLatch.SpriteAccessMode != 1) {
 		//Modes 0/2/3 load 4 words over 4, 8 or 16 VDC clocks
 		uint16_t clocksPerSprite;
-		switch(_state.SpriteAccessMode) {
+		switch(_state.HvLatch.SpriteAccessMode) {
 			default: case 0: clocksPerSprite = 4; break;
 			case 2: clocksPerSprite = 8; break;
 			case 3: clocksPerSprite = 16; break;
@@ -975,7 +983,7 @@ void PceVdc::ProcessVramAccesses()
 			uint16_t clockCount = _state.HClock > _loadBgEnd ? (_state.HClock - _loadBgEnd) : (PceConstants::ClockPerScanline - _loadBgEnd + _state.HClock);
 			uint16_t dotCount = clockCount / GetClockDivider();
 			uint16_t clocksPerSprite;
-			switch(_state.SpriteAccessMode) {
+			switch(_state.HvLatch.SpriteAccessMode) {
 				default: case 0: case 1: clocksPerSprite = 4; break;
 				case 2: clocksPerSprite = 8; break;
 				case 3: clocksPerSprite = 16; break;
@@ -1161,16 +1169,16 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 				case 0x09:
 					if(!msb) {
 						switch((value >> 4) & 0x03) {
-							case 0: _state.ColumnCount = 32; break;
-							case 1: _state.ColumnCount = 64; break;
-							case 2: case 3: _state.ColumnCount = 128; break;
+							case 0: _state.HvReg.ColumnCount = 32; break;
+							case 1: _state.HvReg.ColumnCount = 64; break;
+							case 2: case 3: _state.HvReg.ColumnCount = 128; break;
 						}
 
-						_state.RowCount = (value & 0x40) ? 64 : 32;
+						_state.HvReg.RowCount = (value & 0x40) ? 64 : 32;
 
-						_state.VramAccessMode = value & 0x03;
-						_state.SpriteAccessMode = (value >> 2) & 0x03;
-						_state.CgMode = (value & 0x80) != 0;
+						_state.HvReg.VramAccessMode = value & 0x03;
+						_state.HvReg.SpriteAccessMode = (value >> 2) & 0x03;
+						_state.HvReg.CgMode = (value & 0x80) != 0;
 					}
 					break;
 
@@ -1274,11 +1282,33 @@ void PceVdc::Serialize(Serializer& s)
 	SV(_state.BackgroundEnabled);
 	SV(_state.VramAddrIncrement);
 	SV(_state.RasterCompareRegister);
-	SV(_state.ColumnCount);
-	SV(_state.RowCount);
-	SV(_state.SpriteAccessMode);
-	SV(_state.VramAccessMode);
-	SV(_state.CgMode);
+
+	if(!s.IsSaving() && s.ContainsKey("ColumnCount")) {
+		//Backward-compatibility for older save states
+		s.Stream(_state.HvReg.ColumnCount, "ColumnCount");
+		s.Stream(_state.HvReg.RowCount, "RowCount");
+		s.Stream(_state.HvReg.SpriteAccessMode, "SpriteAccessMode");
+		s.Stream(_state.HvReg.VramAccessMode, "VramAccessMode");
+		s.Stream(_state.HvReg.CgMode, "CgMode");
+
+		_state.HvLatch.ColumnCount = _state.HvReg.ColumnCount;
+		_state.HvLatch.RowCount = _state.HvReg.RowCount;
+		_state.HvLatch.SpriteAccessMode = _state.HvReg.SpriteAccessMode;
+		_state.HvLatch.VramAccessMode = _state.HvReg.VramAccessMode;
+		_state.HvLatch.CgMode = _state.HvReg.CgMode;
+	} else {
+		SV(_state.HvLatch.ColumnCount);
+		SV(_state.HvLatch.RowCount);
+		SV(_state.HvLatch.SpriteAccessMode);
+		SV(_state.HvLatch.VramAccessMode);
+		SV(_state.HvLatch.CgMode);
+		SV(_state.HvReg.ColumnCount);
+		SV(_state.HvReg.RowCount);
+		SV(_state.HvReg.SpriteAccessMode);
+		SV(_state.HvReg.VramAccessMode);
+		SV(_state.HvReg.CgMode);
+	}
+
 	SV(_state.BgScrollYUpdatePending);
 	SV(_state.HvLatch.BgScrollX);
 	SV(_state.HvLatch.BgScrollY);

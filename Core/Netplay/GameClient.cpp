@@ -25,6 +25,8 @@ bool GameClient::Connected()
 
 void GameClient::Connect(ClientConnectionData &connectionData)
 {
+	Disconnect();
+
 	_stop = false;
 	unique_ptr<Socket> socket(new Socket());
 	if(socket->Connect(connectionData.Host.c_str(), connectionData.Port)) {

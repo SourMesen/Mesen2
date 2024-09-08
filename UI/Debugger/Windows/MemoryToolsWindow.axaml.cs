@@ -136,8 +136,16 @@ namespace Mesen.Debugger.Windows
 
 		private void editor_ByteUpdated(object? sender, ByteUpdatedEventArgs e)
 		{
-			for(int i = 0; i < e.Length; i++) {
-				DebugApi.SetMemoryValue(_model.Config.MemoryType, (uint)(e.ByteOffset+i), e.Value);
+			if(e.Values != null) {
+				DebugApi.SetMemoryValues(_model.Config.MemoryType, (uint)e.ByteOffset, e.Values, e.Values.Length);
+			} else if(e.Value != null) {
+				if(e.Length > 0) {
+					byte[] data = new byte[e.Length];
+					Array.Fill<byte>(data, e.Value.Value);
+					DebugApi.SetMemoryValues(_model.Config.MemoryType, (uint)e.ByteOffset, data, data.Length);
+				} else {
+					DebugApi.SetMemoryValue(_model.Config.MemoryType, (uint)e.ByteOffset, e.Value.Value);
+				}
 			}
 		}
 
@@ -157,6 +165,18 @@ namespace Mesen.Debugger.Windows
 				new ContextMenuSeparator() { IsVisible = () => _model.Config.MemoryType.SupportsFreezeAddress() },
 				GetFreezeAction(ActionType.FreezeMemory, DebuggerShortcut.MemoryViewer_Freeze),
 				GetFreezeAction(ActionType.UnfreezeMemory, DebuggerShortcut.MemoryViewer_Unfreeze),
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Undo,
+					IsEnabled = () => DebugApi.HasUndoHistory(),
+					Shortcut = () => cfg.Shortcuts.Get(DebuggerShortcut.Undo),
+					OnClick = () => {
+						if(DebugApi.HasUndoHistory()){
+							DebugApi.PerformUndo();
+							_editor.InvalidateVisual();
+						}
+					}
+				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,

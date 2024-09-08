@@ -131,6 +131,11 @@ public:
 		}
 	}
 
+	uint32_t GetSaveSize()
+	{
+		return (_maxAddress + 1) * 8;
+	}
+
 	void Serialize(Serializer& s)
 	{
 		SV(_addressSize);

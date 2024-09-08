@@ -135,6 +135,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.Copy,
 				DebuggerShortcut.Paste,
 				DebuggerShortcut.SelectAll,
+				DebuggerShortcut.Undo,
 				DebuggerShortcut.Refresh,
 				DebuggerShortcut.MarkAsCode,
 				DebuggerShortcut.MarkAsData,

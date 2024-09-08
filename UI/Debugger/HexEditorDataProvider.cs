@@ -201,6 +201,19 @@ namespace Mesen.Debugger
 			return _byteInfo;
 		}
 
+		public byte GetRawByte(int byteIndex)
+		{
+			long index = byteIndex - _firstByteIndex;
+			byte[] data = _data;
+			if(index < 0 || index >= _data.Length) {
+				//Byte is not available in the currently visible data (e.g user scrolled down/up after selecting the byte)
+				//Get the byte from the core instead
+				return DebugApi.GetMemoryValue(_memoryType, (uint)byteIndex);
+			}
+
+			return data[index];
+		}
+
 		public string ConvertValueToString(UInt64 val, out int keyLength)
 		{
 			if(_tblConverter != null) {
@@ -227,6 +240,5 @@ namespace Mesen.Debugger
 			}
 			return (byte)'.';
 		}
-
 	}
 }

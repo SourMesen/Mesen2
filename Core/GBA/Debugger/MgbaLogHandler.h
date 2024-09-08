@@ -38,8 +38,8 @@ public:
 	uint8_t Read(uint32_t addr)
 	{
 		switch(addr & 0x03) {
-			case 0: return _enabled ? 0x1D : 0x00;
-			case 1: return _enabled ? 0xEA : 0x00;
+			case 0: return _enabled ? 0xEA : 0x00;
+			case 1: return _enabled ? 0x1D : 0x00;
 			default: return 0;
 		}
 	}

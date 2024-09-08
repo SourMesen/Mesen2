@@ -133,11 +133,16 @@ jobs:
   macos:
     strategy:
       matrix:
-        compiler: [clang]
+        compiler: [clang, clang_aot]
         platform: [
           {os: macos-12, arch: x64},
           {os: macos-14, arch: arm64}
         ]
+        include:
+          - compiler: clang
+            make_flags: ""
+          - compiler: clang_aot
+            make_flags: "USE_AOT=true"
       fail-fast: false
     runs-on: ${{ matrix.platform.os }}
 
@@ -160,7 +165,7 @@ jobs:
       # forcing colours makes the log a little nicer to read.
       - name: Build Mesen
         run: |
-          make -j$(sysctl -n hw.logicalcpu)
+          ${{ matrix.make_flags }} make -j$(sysctl -n hw.logicalcpu)
 
       - name: Sign binary
         env:
@@ -194,5 +199,5 @@ jobs:
       - name: Upload Mesen
         uses: actions/upload-artifact@v4
         with:
-          name: Mesen (macOS - ${{ matrix.platform.os }})
+          name: Mesen (macOS - ${{ matrix.platform.os }} - ${{ matrix.compiler }})
           path: bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip

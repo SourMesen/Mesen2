@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.Utilities;
 using Mesen.ViewModels;
+using System.Collections;
 
 namespace Mesen.Views
 {
@@ -31,7 +32,13 @@ namespace Mesen.Views
 		private void mnuTools_Opened(object sender, RoutedEventArgs e)
 		{
 			if(DataContext is MainMenuViewModel model) {
-				model.UpdateNetplayMenu();
+				if(model.UpdateNetplayMenu() && e.Source is MenuItem item) {
+					//Force a refresh of the tools menu to ensure
+					//the "Select controller" submenu gets updated
+					IEnumerable? items = item.ItemsSource;
+					item.ItemsSource = null;
+					item.ItemsSource = items;
+				}
 			}
 		}
 	}

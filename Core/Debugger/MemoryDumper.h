@@ -4,6 +4,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugUtilities.h"
 #include "Shared/MemoryType.h"
+#include "Utilities/SimpleLock.h"
 
 class SnesMemoryManager;
 class NesConsole;
@@ -15,6 +16,18 @@ class SmsConsole;
 class GbaConsole;
 class Emulator;
 class Debugger;
+
+struct UndoEntry
+{
+	MemoryType MemType;
+	uint32_t StartAddress;
+	vector<uint8_t> OriginalData;
+};
+
+struct UndoBatch
+{
+	vector<UndoEntry> Entries;
+};
 
 class MemoryDumper
 {
@@ -31,7 +44,11 @@ private:
 	Debugger* _debugger = nullptr;
 	bool _isMemorySupported[DebugUtilities::GetMemoryTypeCount()] = {};
 
+	SimpleLock _undoLock;
+	deque<UndoBatch> _undoHistory;
+
 	uint8_t InternalGetMemoryValue(MemoryType memoryType, uint32_t address, bool disableSideEffects = true);
+	void InternalSetMemoryValues(MemoryType memoryType, uint32_t startAddress, uint8_t* data, uint32_t length, bool disableSideEffects, bool undoAllowed);
 
 public:
 	MemoryDumper(Debugger* debugger);
@@ -49,4 +66,7 @@ public:
 	void SetMemoryValue(MemoryType memoryType, uint32_t address, uint8_t value, bool disableSideEffects = true);
 	void SetMemoryValues(MemoryType memoryType, uint32_t address, uint8_t* data, uint32_t length);
 	void SetMemoryState(MemoryType type, uint8_t *buffer, uint32_t length);
+
+	bool HasUndoHistory();
+	void PerformUndo();
 };

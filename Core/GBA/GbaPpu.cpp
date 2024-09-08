@@ -219,7 +219,8 @@ void GbaPpu::RenderScanline(bool forceRender)
 	}
 
 	if(_state.ForcedBlank) {
-		memset(_currentBuffer + (_state.Scanline * GbaConstants::ScreenWidth), 0, GbaConstants::ScreenWidth * sizeof(uint16_t));
+		uint16_t* rowStart = _currentBuffer + (_state.Scanline * GbaConstants::ScreenWidth);
+		std::fill(rowStart, rowStart + GbaConstants::ScreenWidth, 0x7FFF);
 		return;
 	}
 	

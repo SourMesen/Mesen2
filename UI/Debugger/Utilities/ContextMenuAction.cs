@@ -308,6 +308,9 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("SelectAll")]
 		SelectAll,
 
+		[IconFile("Undo")]
+		Undo,
+
 		[IconFile("EditLabel")]
 		EditLabel,
 		

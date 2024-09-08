@@ -16,7 +16,7 @@ namespace Mesen.Debugger.Utilities
 	{
 		private static int _debugWindowCounter = 0;
 		private static ConcurrentDictionary<Window, bool> _openedWindows = new();
-		private static object _windowNotifLock = new();
+		private static ReaderWriterLockSlim _windowNotifLock = new();
 		private static bool _loadingGame = false;
 
 		public static T CreateDebugWindow<T>(Func<T> createWindow) where T : MesenWindow
@@ -83,8 +83,11 @@ namespace Mesen.Debugger.Utilities
 				//doesn't get restarted by a pending job from the window that was closed
 				//Lock to prevent this from running while ProcessNotification is sending
 				//notifications out to the debug windows
-				lock(_windowNotifLock) {
+				_windowNotifLock.EnterWriteLock();
+				try {
 					Dispatcher.UIThread.RunJobs();
+				} finally {
+					_windowNotifLock.ExitWriteLock();
 				}
 				DebugWorkspaceManager.Save(true);
 				DebugApi.ReleaseDebugger();
@@ -106,6 +109,19 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.ExecuteShortcut:
+				case ConsoleNotificationType.ReleaseShortcut:
+				case ConsoleNotificationType.RefreshSoftwareRenderer:
+				case ConsoleNotificationType.CheatsChanged:
+				case ConsoleNotificationType.ConfigChanged:
+				case ConsoleNotificationType.MissingFirmware:
+				case ConsoleNotificationType.RequestConfigChange:
+				case ConsoleNotificationType.ResolutionChanged:
+					//These notifications are never used by debugger windows, don't process them at all here.
+					//In particular, ExecuteShortcut/ReleaseShortcut/RefreshSoftwareRenderer can be
+					//sent by a thread other than the emulation thread, which could cause deadlocks before.
+					return;
+
 				case ConsoleNotificationType.BeforeGameLoad:
 					//Suspend all other events until game load is done (or cancelled)
 					_loadingGame = true;
@@ -117,7 +133,7 @@ namespace Mesen.Debugger.Utilities
 						Dispatcher.UIThread.InvokeAsync(() => Dispatcher.UIThread.RunJobs()).Wait();
 					}
 					break;
-				
+
 				case ConsoleNotificationType.GameLoaded:
 				case ConsoleNotificationType.GameLoadFailed:
 					//Load operation is done, allow notifications to be sent to windows
@@ -126,12 +142,29 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			if(!_loadingGame) {
-				lock(_windowNotifLock) {
-					foreach(Window window in _openedWindows.Keys) {
-						if(window is INotificationHandler handler) {
-							handler.ProcessNotification(e);
+#if DEBUG
+				//Allow multiple threads to send notifications to avoid deadlocks if this ever occurs,
+				//but throw an exception in debug builds to be able to fix the source of the problem.
+				if(_windowNotifLock.CurrentReadCount > 0) {
+					throw new Exception("Multiple threads tried to send debugger notifications at the same time");
+				}
+#endif
+
+				if(_windowNotifLock.TryEnterReadLock(100)) {
+					try {
+						foreach(Window window in _openedWindows.Keys) {
+							if(window is INotificationHandler handler) {
+								handler.ProcessNotification(e);
+							}
 						}
+					} finally {
+						_windowNotifLock.ExitReadLock();
 					}
+				} else {
+					//Unlikely scenario, but couldn't grab the lock, ignore this notification
+					//This should only happen if this code ends up running while the last
+					//remaining debug tool is closing and the debugger is trying to shut down.
+					return;
 				}
 			}
 

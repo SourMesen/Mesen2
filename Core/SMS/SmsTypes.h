@@ -193,7 +193,7 @@ struct SmsControlManagerState
 	uint8_t ControlPort;
 };
 
-struct SmsState : public BaseState
+struct SmsState
 {
 	SmsCpuState Cpu;
 	SmsVdpState Vdp;

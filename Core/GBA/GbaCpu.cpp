@@ -296,11 +296,6 @@ void GbaCpu::PowerOn()
 	ProcessPipeline();
 }
 
-uint32_t GbaCpu::GetExecutingAddr()
-{
-	return _state.Pipeline.Execute.Address;
-}
-
 void GbaCpu::SetProgramCounter(uint32_t addr, bool thumb)
 {
 	//Used by debugger - set new PC and reload pipeline (using debugger reads)

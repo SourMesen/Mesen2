@@ -22,7 +22,7 @@ void PcePsgChannel::SetOutputOffset(uint8_t offset)
 uint32_t PcePsgChannel::GetNoisePeriod()
 {
 	if(_state.NoiseFrequency == 0x1F) {
-		return (0x1F + 1) * 64;
+		return 32;
 	} else {
 		return ((~_state.NoiseFrequency) & 0x1F) * 64;
 	}

@@ -27,6 +27,7 @@
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/DebugUtilities.h"
 #include "Debugger/Disassembler.h"
+#include "Debugger/CdlManager.h"
 
 MemoryDumper::MemoryDumper(Debugger* debugger)
 {
@@ -215,70 +216,105 @@ void MemoryDumper::GetMemoryState(MemoryType type, uint8_t *buffer)
 	}
 }
 
+void MemoryDumper::InternalSetMemoryValues(MemoryType originalMemoryType, uint32_t startAddress, uint8_t* data, uint32_t length, bool disableSideEffects, bool undoAllowed)
+{
+	uint32_t memSize = GetMemorySize(originalMemoryType);
+	
+	UndoBatch undoBatch = {};
+	UndoEntry undoEntry = { MemoryType::None };
+
+	Disassembler* disassembler = _debugger->GetDisassembler();
+
+	for(uint32_t i = 0; i < length; i++) {
+		uint32_t address = startAddress + i;
+		if(address >= memSize) {
+			break;
+		}
+
+		uint8_t value = data[i];
+
+		MemoryType memoryType = originalMemoryType;
+		if(disableSideEffects && DebugUtilities::IsRelativeMemory(memoryType)) {
+			AddressInfo addr = { (int32_t)address, memoryType };
+			addr = _debugger->GetAbsoluteAddress(addr);
+			if(addr.Address < 0) {
+				continue;
+			}
+			address = addr.Address;
+			memoryType = addr.Type;
+		}
+
+		switch(memoryType) {
+			case MemoryType::SnesMemory: _memoryManager->GetMemoryMappings()->DebugWrite(address, value); break;
+			case MemoryType::SpcMemory: _spc->DebugWrite(address, value); break;
+			case MemoryType::Sa1Memory: _cartridge->GetSa1()->GetMemoryMappings()->DebugWrite(address, value); break;
+			case MemoryType::NecDspMemory: SetMemoryValue(MemoryType::DspProgramRom, address, value, disableSideEffects); return;
+			case MemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
+			case MemoryType::Cx4Memory: _cartridge->GetCx4()->GetMemoryMappings()->DebugWrite(address, value); break;
+			case MemoryType::GameboyMemory: _gameboy->GetMemoryManager()->DebugWrite(address, value); break;
+			case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value, disableSideEffects); break;
+			case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
+			case MemoryType::PceMemory: _pceConsole->GetMemoryManager()->DebugWrite(address, value); break;
+			case MemoryType::SmsMemory: _smsConsole->GetMemoryManager()->DebugWrite(address, value); break;
+			case MemoryType::GbaMemory: _gbaConsole->GetMemoryManager()->DebugWrite(address, value); break;
+			case MemoryType::SpcDspRegisters: _spc->DebugWriteDspReg(address, value); break;
+
+			default:
+				uint8_t* src = GetMemoryBuffer(memoryType);
+				if(src) {
+					if(undoAllowed) {
+						if(undoEntry.MemType != memoryType) {
+							if(undoEntry.OriginalData.size() > 0) {
+								undoBatch.Entries.push_back(undoEntry);
+							}
+							undoEntry = { memoryType, address };
+						}
+
+						uint8_t originalValue = src[address];
+						undoEntry.OriginalData.push_back(originalValue);
+					}
+
+					//TODOv2 find a cleaner way to implement this
+					//Prevent invalid memory values
+					switch(memoryType) {
+						case MemoryType::SnesCgRam: src[address] = (address & 0x01) ? (value & 0x7F) : value; break;
+						case MemoryType::NesSpriteRam: case MemoryType::NesSecondarySpriteRam: src[address] = (address & 0x03) == 0x02 ? (value & 0xE3) : value; break;
+						case MemoryType::NesPaletteRam: src[address] = value & 0x3F; break;
+						case MemoryType::PcePaletteRam: src[address] = (address & 0x01) ? (value & 0x01) : value; break;
+						case MemoryType::SmsPaletteRam: _smsConsole->GetVdp()->DebugWritePalette(address, value); break;
+
+						default:
+							src[address] = value;
+
+							AddressInfo addr = { (int32_t)address, memoryType };
+							disassembler->InvalidateCache(addr, DebugUtilities::ToCpuType(memoryType));
+							break;
+					}
+				}
+				break;
+		}
+	}
+
+	if(undoAllowed && undoEntry.MemType != MemoryType::None) {
+		undoBatch.Entries.push_back(undoEntry);
+
+		auto lock = _undoLock.AcquireSafe();
+		_undoHistory.push_back(undoBatch);
+		if(_undoHistory.size() > 200) {
+			_undoHistory.pop_front();
+		}
+	}
+}
+
 void MemoryDumper::SetMemoryValues(MemoryType memoryType, uint32_t address, uint8_t* data, uint32_t length)
 {
 	DebugBreakHelper helper(_debugger);
-	for(uint32_t i = 0; i < length; i++) {
-		SetMemoryValue(memoryType, address+i, data[i], true);
-	}
+	InternalSetMemoryValues(memoryType, address, data, length, true, true);
 }
 
 void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8_t value, bool disableSideEffects)
 {
-	uint32_t memSize = GetMemorySize(memoryType);
-	if(address >= memSize) {
-		return;
-	}
-
-	if(disableSideEffects && DebugUtilities::IsRelativeMemory(memoryType)) {
-		AddressInfo addr = { (int32_t)address, memoryType };
-		addr = _debugger->GetAbsoluteAddress(addr);
-		if(addr.Address >= 0) {
-			SetMemoryValue(addr.Type, addr.Address, value, true);
-		}
-		return;
-	}
-
-	auto invalidateCache = [=]() {
-		AddressInfo addr = { (int32_t)address, memoryType };
-		_debugger->GetDisassembler()->InvalidateCache(addr, DebugUtilities::ToCpuType(memoryType));
-	};
-
-	switch(memoryType) {
-		case MemoryType::SnesMemory: _memoryManager->GetMemoryMappings()->DebugWrite(address, value); break;
-		case MemoryType::SpcMemory: _spc->DebugWrite(address, value); break;
-		case MemoryType::Sa1Memory: _cartridge->GetSa1()->GetMemoryMappings()->DebugWrite(address, value); break;
-		case MemoryType::NecDspMemory: SetMemoryValue(MemoryType::DspProgramRom, address, value, disableSideEffects); return;
-		case MemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
-		case MemoryType::Cx4Memory: _cartridge->GetCx4()->GetMemoryMappings()->DebugWrite(address, value); break;
-		case MemoryType::GameboyMemory: _gameboy->GetMemoryManager()->DebugWrite(address, value); break;
-		case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value, disableSideEffects); break;
-		case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
-		case MemoryType::PceMemory: _pceConsole->GetMemoryManager()->DebugWrite(address, value); break;
-		case MemoryType::SmsMemory: _smsConsole->GetMemoryManager()->DebugWrite(address, value); break;
-		case MemoryType::GbaMemory: _gbaConsole->GetMemoryManager()->DebugWrite(address, value); break;
-		case MemoryType::SpcDspRegisters: _spc->DebugWriteDspReg(address, value); break;
-
-		default:
-			uint8_t* src = GetMemoryBuffer(memoryType);
-			if(src) {
-				//TODOv2 find a cleaner way to implement this
-				//Prevent invalid memory values
-				switch(memoryType) {
-					case MemoryType::SnesCgRam: src[address] = (address & 0x01) ? (value & 0x7F) : value; break;
-					case MemoryType::NesSpriteRam: case MemoryType::NesSecondarySpriteRam: src[address] = (address & 0x03) == 0x02 ? (value & 0xE3) : value; break;
-					case MemoryType::NesPaletteRam: src[address] = value & 0x3F; break;
-					case MemoryType::PcePaletteRam: src[address] = (address & 0x01) ? (value & 0x01) : value; break;
-					case MemoryType::SmsPaletteRam: _smsConsole->GetVdp()->DebugWritePalette(address, value); break;
-
-					default:
-						src[address] = value;
-						invalidateCache();
-						break;
-				}
-			}
-			break;
-	}
+	InternalSetMemoryValues(memoryType, address, &value, 1, disableSideEffects, true);
 }
 
 void MemoryDumper::GetMemoryValues(MemoryType memoryType, uint32_t start, uint32_t end, uint8_t* output)
@@ -353,4 +389,24 @@ void MemoryDumper::SetMemoryValue32(MemoryType memoryType, uint32_t address, uin
 	SetMemoryValue(memoryType, address + 1, (uint8_t)(value >> 8), disableSideEffects);
 	SetMemoryValue(memoryType, address + 2, (uint8_t)(value >> 16), disableSideEffects);
 	SetMemoryValue(memoryType, address + 3, (uint8_t)(value >> 24), disableSideEffects);
+}
+
+bool MemoryDumper::HasUndoHistory()
+{
+	auto lock = _undoLock.AcquireSafe();
+	return _undoHistory.size() > 0;
+}
+
+void MemoryDumper::PerformUndo()
+{
+	auto lock = _undoLock.AcquireSafe();
+	if(!_undoHistory.empty()) {
+		DebugBreakHelper helper(_debugger);
+		UndoBatch& batch = _undoHistory.back();
+		for(auto entry : batch.Entries) {
+			InternalSetMemoryValues(entry.MemType, entry.StartAddress, entry.OriginalData.data(), (uint32_t)entry.OriginalData.size(), true, false);
+		}
+		_undoHistory.pop_back();
+		_debugger->GetCdlManager()->RefreshCodeCache();
+	}
 }

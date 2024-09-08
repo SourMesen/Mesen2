@@ -10,6 +10,7 @@ using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Windows;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Collections.Concurrent;
 
 namespace Mesen.Debugger.Utilities
 {
@@ -35,7 +36,7 @@ namespace Mesen.Debugger.Utilities
 		}
 
 		private static List<LastRefreshInfo> _lastRefreshStamp = new();
-		private static Dictionary<Window, ToolInfo> _activeWindows = new();
+		private static ConcurrentDictionary<Window, ToolInfo> _activeWindows = new();
 		private static int _nextId = 0;
 
 		private static int RegisterWindow(Window wnd, RefreshTimingConfig cfg, CpuType cpuType)
@@ -48,7 +49,7 @@ namespace Mesen.Debugger.Utilities
 			wnd.Closing += OnWindowClosingHandler;
 			wnd.Closed += OnWindowClosedHandler;
 
-			_activeWindows.Add(wnd, new ToolInfo() { ViewerId = newId, Scanline = cfg.RefreshScanline, Cycle = cfg.RefreshCycle, CpuType = cpuType });
+			_activeWindows.TryAdd(wnd, new ToolInfo() { ViewerId = newId, Scanline = cfg.RefreshScanline, Cycle = cfg.RefreshCycle, CpuType = cpuType });
 
 			DebugApi.SetViewerUpdateTiming(newId, cfg.RefreshScanline, cfg.RefreshCycle, cpuType);
 
@@ -72,7 +73,7 @@ namespace Mesen.Debugger.Utilities
 			if(sender is Window wnd) {
 				//Do this in OnClosed to ensure the window doesn't get re-registered by a
 				//notification received between the Closing and Closed events
-				_activeWindows.Remove(wnd);
+				_activeWindows.TryRemove(wnd, out _);
 				wnd.Closed -= OnWindowClosedHandler;
 			}
 		}
@@ -88,7 +89,14 @@ namespace Mesen.Debugger.Utilities
 				}
 				return toolInfo.ViewerId;
 			} else {
-				return RegisterWindow(wnd, cfg, cpuType);
+				lock(_activeWindows) {
+					//Lock to prevent registering the same window twice in 2 separate threads
+					if(!_activeWindows.TryGetValue(wnd, out toolInfo)) {
+						return RegisterWindow(wnd, cfg, cpuType);
+					} else {
+						return toolInfo.ViewerId;
+					}
+				}
 			}
 		}
 

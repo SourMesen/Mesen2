@@ -160,7 +160,8 @@ void GbaCart::DebugWriteRam(uint32_t addr, uint8_t value)
 void GbaCart::LoadBattery()
 {
 	if(_saveRam) {
-		_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
+		uint32_t size = _eeprom ? _eeprom->GetSaveSize() : _saveRamSize;
+		_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, size);
 	}
 
 	if(_rtc) {
@@ -171,7 +172,8 @@ void GbaCart::LoadBattery()
 void GbaCart::SaveBattery()
 {
 	if(_saveRam && (_flash || _eeprom || _saveRamDirty)) {
-		_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
+		uint32_t size = _eeprom ? _eeprom->GetSaveSize() : _saveRamSize;
+		_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, size);
 	}
 
 	if(_rtc) {

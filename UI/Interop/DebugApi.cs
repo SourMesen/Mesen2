@@ -218,6 +218,9 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetMemoryValue(MemoryType type, UInt32 address, byte value);
 		[DllImport(DllPath)] public static extern void SetMemoryValues(MemoryType type, UInt32 address, [In] byte[] data, Int32 length);
 		[DllImport(DllPath)] public static extern void SetMemoryState(MemoryType type, [In] byte[] buffer, Int32 length);
+		
+		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool HasUndoHistory();
+		[DllImport(DllPath)] public static extern void PerformUndo();
 
 		[DllImport(DllPath)] public static extern void UpdateFrozenAddresses(CpuType cpuType, UInt32 start, UInt32 end, [MarshalAs(UnmanagedType.I1)] bool freeze);
 		[DllImport(DllPath)] private static extern void GetFrozenState(CpuType type, UInt32 start, UInt32 end, [In, Out] byte[] outState);
