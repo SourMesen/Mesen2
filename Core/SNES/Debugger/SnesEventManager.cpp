@@ -31,6 +31,7 @@ void SnesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operat
 {
 	DebugEventInfo evt = {};
 	evt.Type = type;
+	evt.Flags = (uint32_t)EventFlags::ReadWriteOp;
 	evt.Operation = operation;
 	evt.Scanline = (int16_t)_ppu->GetScanline();
 	evt.Cycle = _memoryManager->GetHClock();

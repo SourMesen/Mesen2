@@ -133,23 +133,21 @@ namespace Mesen.Debugger.Windows
 
 			entries.AddSeparator("AddressValueSeparator");
 
-			switch(evt.Type) {
-				case DebugEventType.Register:
-					bool isWrite = evt.Operation.Type == MemoryOperationType.Write || evt.Operation.Type == MemoryOperationType.DmaWrite;
-					bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead;
+			if(evt.Flags.HasFlag(EventFlags.ReadWriteOp)) {
+				bool isWrite = evt.Operation.Type == MemoryOperationType.Write || evt.Operation.Type == MemoryOperationType.DmaWrite;
+				bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead;
 
-					CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = _model.CpuType.ToMemoryType() });
-					string registerText = "$" + evt.Operation.Address.ToString("X4");
-					if(label != null) {
-						registerText = label.Label + " (" + registerText + ")";
-					}
-					if(evt.RegisterId >= 0) {
-						registerText += $" ({evt.GetRegisterName()} - ${evt.RegisterId:X2})";
-					}
+				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = _model.CpuType.ToMemoryType() });
+				string registerText = "$" + evt.Operation.Address.ToString("X4");
+				if(label != null) {
+					registerText = label.Label + " (" + registerText + ")";
+				}
+				if(evt.RegisterId >= 0) {
+					registerText += $" ({evt.GetRegisterName()} - ${evt.RegisterId:X2})";
+				}
 
-					entries.AddEntry("Register", registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : ""));
-					entries.AddEntry("Value", "$" + evt.Operation.Value.ToString("X2"));
-					break;
+				entries.AddEntry(evt.Type == DebugEventType.Register ? "Register" : "Address", registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : ""));
+				entries.AddEntry("Value", "$" + evt.Operation.Value.ToString("X2"));
 			}
 
 			string details = EventViewerViewModel.GetEventDetails(_model.CpuType, evt, false);

@@ -195,10 +195,10 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ToggleBreakpoint,
-					IsEnabled = () => SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register,
-					HintText = () => (SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register ? $"Address - ${SelectedEvent.Value.Operation.Address:X4}" : ""),
+					IsEnabled = () => SelectedEvent?.Flags.HasFlag(EventFlags.ReadWriteOp) == true,
+					HintText = () => SelectedEvent?.Flags.HasFlag(EventFlags.ReadWriteOp) == true ? $"Address - ${SelectedEvent.Value.Operation.Address:X4}" : "",
 					OnClick = () => {
-						if(SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register) {
+						if(SelectedEvent?.Flags.HasFlag(EventFlags.ReadWriteOp) == true) {
 							int addr = (int)SelectedEvent.Value.Operation.Address;
 							BreakpointManager.ToggleBreakpoint(new AddressInfo() { Address = addr, Type = CpuType.ToMemoryType() }, CpuType, false);
 						}
@@ -426,7 +426,6 @@ namespace Mesen.Debugger.ViewModels
 					bpInfo += "Type: " + bp.ToReadableType();
 					bpInfo += singleLine ? " - " : Environment.NewLine;
 					bpInfo += "Addresses: " + bp.GetAddressString(true);
-					bpInfo += singleLine ? " - " : Environment.NewLine;
 					if(bp.Condition.Length > 0) {
 						bpInfo += singleLine ? " - " : Environment.NewLine;
 						bpInfo += "Condition: " + bp.Condition;
@@ -542,7 +541,8 @@ namespace Mesen.Debugger.ViewModels
 			Scanline = evt.Scanline.ToString();
 			Cycle = evt.Cycle.ToString();
 			string address = "";
-			if(evt.Type == DebugEventType.Register) {
+			bool isReadWriteOp = evt.Flags.HasFlag(EventFlags.ReadWriteOp);
+			if(isReadWriteOp) {
 				address += "$" + evt.Operation.Address.ToString("X4");
 
 				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = _cpuType.ToMemoryType() });
@@ -561,9 +561,9 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			Address = address;
-			Value = evt.Type == DebugEventType.Register ? "$" + evt.Operation.Value.ToString("X2") : "";
+			Value = isReadWriteOp ? "$" + evt.Operation.Value.ToString("X2") : "";
 			Type = ResourceHelper.GetEnumText(evt.Type);
-			if(evt.Type == DebugEventType.Register) {
+			if(isReadWriteOp) {
 				Type += evt.Operation.Type.IsWrite() ? " (W)" : " (R)";
 			}
 			Details = EventViewerViewModel.GetEventDetails(_cpuType, evt, true);

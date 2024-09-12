@@ -7,11 +7,12 @@
 
 enum class EventFlags
 {
-	PreviousFrame = 1,
-	RegFirstWrite = 2,
-	RegSecondWrite = 4,
-	WithTargetMemory = 8,
-	SmsVdpPaletteWrite = 16
+	PreviousFrame = 1 << 0,
+	RegFirstWrite = 1 << 1,
+	RegSecondWrite = 1 << 2,
+	WithTargetMemory = 1 << 3,
+	SmsVdpPaletteWrite = 1 << 4,
+	ReadWriteOp = 1 << 5,
 };
 
 struct DebugEventInfo

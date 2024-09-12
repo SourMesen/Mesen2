@@ -38,6 +38,7 @@ void PceEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operati
 {
 	DebugEventInfo evt = {};
 	evt.Type = type;
+	evt.Flags = (uint32_t)EventFlags::ReadWriteOp;
 	evt.Operation = operation;
 	evt.Scanline = (int16_t)_vdc->GetScanline();
 	evt.Cycle = _vdc->GetHClock();

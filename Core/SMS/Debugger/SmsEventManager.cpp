@@ -29,6 +29,7 @@ void SmsEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 {
 	DebugEventInfo evt = {};
 	evt.Type = type;
+	evt.Flags = (uint32_t)EventFlags::ReadWriteOp;
 	evt.Operation = operation;
 	evt.Scanline = _vdp->GetScanline();
 	evt.Cycle = _vdp->GetCycle();
@@ -39,7 +40,7 @@ void SmsEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 		switch(evt.Operation.Address & 0xC1) {
 			case 0x80:
 				if(_vdp->GetState().CodeReg == 3) {
-					evt.Flags = (uint32_t)EventFlags::SmsVdpPaletteWrite | (uint32_t)EventFlags::WithTargetMemory;
+					evt.Flags |= (uint32_t)EventFlags::SmsVdpPaletteWrite | (uint32_t)EventFlags::WithTargetMemory;
 					evt.TargetMemory.MemType = MemoryType::SmsPaletteRam;
 					evt.TargetMemory.Type = operation.Type;
 					evt.TargetMemory.Value = operation.Value;
@@ -50,7 +51,7 @@ void SmsEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 						evt.TargetMemory.Address = _vdp->GetState().AddressReg & 0x1F;
 					}
 				} else {
-					evt.Flags = (uint32_t)EventFlags::WithTargetMemory;
+					evt.Flags |= (uint32_t)EventFlags::WithTargetMemory;
 					evt.TargetMemory.MemType = MemoryType::SmsVideoRam;
 					evt.TargetMemory.Value = operation.Value;
 					evt.TargetMemory.Type = operation.Type;
@@ -60,13 +61,13 @@ void SmsEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 
 			case 0x81:
 				if(_vdp->GetState().ControlPortMsbToggle) {
-					evt.Flags = (uint32_t)EventFlags::RegSecondWrite;
+					evt.Flags |= (uint32_t)EventFlags::RegSecondWrite;
 					if((evt.Operation.Value >> 6) == 2) {
 						//Value written to the register
 						evt.RegisterId = _vdp->GetState().AddressReg & 0xFF;
 					}
 				} else {
-					evt.Flags = (uint32_t)EventFlags::RegFirstWrite;
+					evt.Flags |= (uint32_t)EventFlags::RegFirstWrite;
 				}
 				break;
 		}

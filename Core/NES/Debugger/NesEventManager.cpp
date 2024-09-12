@@ -42,6 +42,7 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 	evt.BreakpointId = breakpointId;
 	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Nes, true);
 	evt.DmaChannel = -1;
+	evt.Flags = (uint32_t)EventFlags::ReadWriteOp;
 
 	uint32_t addr = operation.Address;
 	bool isWrite = operation.Type == MemoryOperationType::Write || operation.Type == MemoryOperationType::DmaWrite || operation.Type == MemoryOperationType::DummyWrite;
@@ -55,16 +56,16 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 				evt.TargetMemory.MemType = MemoryType::NesSpriteRam;
 				evt.TargetMemory.Address = state.SpriteRamAddr;
 				evt.TargetMemory.Value = operation.Value;
-				evt.Flags = (uint32_t)EventFlags::WithTargetMemory;
+				evt.Flags |= (uint32_t)EventFlags::WithTargetMemory;
 				break;
 
 			case 5:
 			case 6:
 				//2005/2006 PPU register writes, mark as 2nd write when needed
 				if(state.WriteToggle) {
-					evt.Flags = (uint32_t)EventFlags::RegSecondWrite;
+					evt.Flags |= (uint32_t)EventFlags::RegSecondWrite;
 				} else {
-					evt.Flags = (uint32_t)EventFlags::RegFirstWrite;
+					evt.Flags |= (uint32_t)EventFlags::RegFirstWrite;
 				}
 				break;
 
@@ -74,7 +75,7 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 				evt.TargetMemory.MemType = MemoryType::NesPpuMemory;
 				evt.TargetMemory.Address = state.BusAddress;
 				evt.TargetMemory.Value = operation.Value;
-				evt.Flags = (uint32_t)EventFlags::WithTargetMemory;
+				evt.Flags |= (uint32_t)EventFlags::WithTargetMemory;
 				break;
 		}
 	}

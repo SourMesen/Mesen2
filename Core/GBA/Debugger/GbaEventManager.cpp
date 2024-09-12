@@ -35,6 +35,7 @@ void GbaEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 	uint16_t cycle = _ppu->GetCycle();
 	uint16_t scanline = _ppu->GetScanline();
 	evt.Type = type;
+	evt.Flags = (uint32_t)EventFlags::ReadWriteOp;
 	evt.Operation = operation;
 	evt.Scanline = scanline;
 	evt.Cycle = cycle;

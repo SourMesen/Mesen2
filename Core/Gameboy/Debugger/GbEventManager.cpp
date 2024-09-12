@@ -28,6 +28,7 @@ void GbEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operatio
 {
 	DebugEventInfo evt = {};
 	evt.Type = type;
+	evt.Flags = (uint32_t)EventFlags::ReadWriteOp;
 	evt.Operation = operation;
 	evt.Scanline = _ppu->GetState().Scanline;
 	evt.Cycle = _ppu->GetState().Cycle;
