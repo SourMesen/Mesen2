@@ -53,6 +53,8 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(BreakpointBarProperty, value); }
 		}
 
+		private double _scrollAccumulator = 0.0;
+
 		static CodeScrollBar()
 		{
 			ValueProperty.Changed.AddClassHandler<CodeScrollBar>((x, e) => {
@@ -120,7 +122,9 @@ namespace Mesen.Debugger.Controls
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
 		{
 			base.OnPointerWheelChanged(e);
-			Value = Math.Max(0, Math.Min(Maximum, Value - (int)(e.GetDeltaY() * 3)));
+			_scrollAccumulator += e.GetDeltaY() * 3;
+			Value = Math.Max(0, Math.Min(Maximum, Value - (int) _scrollAccumulator));
+			_scrollAccumulator -= (int) _scrollAccumulator;
 		}
 
 		private void IncrementClick(object? sender, RoutedEventArgs e)

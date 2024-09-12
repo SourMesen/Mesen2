@@ -153,6 +153,7 @@ namespace Mesen.Debugger.Controls
 		private float[] _endPositionByByte = Array.Empty<float>();
 		private FontAntialiasing _fontAntialiasing;
 		private Point _pointerPressedPos;
+		private double _scrollAccumulator = 0.0;
 
 		static HexEditor()
 		{
@@ -546,7 +547,9 @@ namespace Mesen.Debugger.Controls
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
 		{
 			base.OnPointerWheelChanged(e);
-			this.TopRow = Math.Min((DataProvider.Length / BytesPerRow) - 1, Math.Max(0, this.TopRow - (int)(e.GetDeltaY() * 3)));
+			_scrollAccumulator += e.GetDeltaY() * 3;
+			this.TopRow = Math.Min((DataProvider.Length / BytesPerRow) - 1, Math.Max(0, this.TopRow - (int) _scrollAccumulator));
+			_scrollAccumulator -= (int) _scrollAccumulator;
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)

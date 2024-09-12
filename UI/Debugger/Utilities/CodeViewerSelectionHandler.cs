@@ -19,6 +19,7 @@ namespace Mesen.Debugger.Utilities
 		private bool _marginClicked = false;
 		private bool _allowMarginClick = false;
 		private Func<int, int, int> _getRowAddress;
+		private double _scrollAccumulator = 0.0;
 
 		public CodeSegmentInfo? MouseOverSegment { get; private set; }
 		public bool IsMarginClick => _marginClicked;
@@ -114,7 +115,9 @@ namespace Mesen.Debugger.Utilities
 
 		public void Viewer_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
 		{
-			_model.Scroll((int)(-e.GetDeltaY() * 3));
+			_scrollAccumulator += -e.GetDeltaY() * 3;
+			_model.Scroll((int) _scrollAccumulator);
+			_scrollAccumulator -= (int) _scrollAccumulator;
 		}
 
 		private void Viewer_KeyDown(object? sender, KeyEventArgs e)
