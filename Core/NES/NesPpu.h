@@ -105,7 +105,7 @@ public:
 
 	void Reset(bool softReset) override;
 
-	uint16_t* GetScreenBuffer(bool previousBuffer) override;
+	uint16_t* GetScreenBuffer(bool previousBuffer, bool processGrayscaleEmphasisBits = false) override;
 	void DebugCopyOutputBuffer(uint16_t* target);
 	void DebugUpdateFrameBuffer(bool toGrayscale);
 	

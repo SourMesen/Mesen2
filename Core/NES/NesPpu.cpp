@@ -1092,8 +1092,11 @@ template<class T> void NesPpu<T>::WriteSpriteRam(uint8_t addr, uint8_t value)
 	}
 }
 
-template<class T> uint16_t* NesPpu<T>::GetScreenBuffer(bool previousBuffer)
+template<class T> uint16_t* NesPpu<T>::GetScreenBuffer(bool previousBuffer, bool processGrayscaleEmphasisBits)
 {
+	if(!previousBuffer && processGrayscaleEmphasisBits) {
+		UpdateGrayscaleAndIntensifyBits();
+	}
 	return previousBuffer ? ((_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0]) : _currentOutputBuffer;
 }
 
@@ -1521,21 +1524,21 @@ template<class T> void NesPpu<T>::Serialize(Serializer& s)
 }
 
 template NesPpu<DefaultNesPpu>::NesPpu(NesConsole* console);
-template uint16_t* NesPpu<DefaultNesPpu>::GetScreenBuffer(bool previousBuffer);
+template uint16_t* NesPpu<DefaultNesPpu>::GetScreenBuffer(bool previousBuffer, bool processGrayscaleEmphasisBits);
 template void NesPpu<DefaultNesPpu>::Exec();
 template uint32_t NesPpu<DefaultNesPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
 
 template NesPpu<NsfPpu>::NesPpu(NesConsole* console);
-template uint16_t* NesPpu<NsfPpu>::GetScreenBuffer(bool previousBuffer);
+template uint16_t* NesPpu<NsfPpu>::GetScreenBuffer(bool previousBuffer, bool processGrayscaleEmphasisBits);
 template void NesPpu<NsfPpu>::Exec();
 template uint32_t NesPpu<NsfPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
 
 template NesPpu<HdNesPpu>::NesPpu(NesConsole* console);
-template uint16_t* NesPpu<HdNesPpu>::GetScreenBuffer(bool previousBuffer);
+template uint16_t* NesPpu<HdNesPpu>::GetScreenBuffer(bool previousBuffer, bool processGrayscaleEmphasisBits);
 template void NesPpu<HdNesPpu>::Exec();
 template uint32_t NesPpu<HdNesPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
 
 template NesPpu<HdBuilderPpu>::NesPpu(NesConsole* console);
-template uint16_t* NesPpu<HdBuilderPpu>::GetScreenBuffer(bool previousBuffer);
+template uint16_t* NesPpu<HdBuilderPpu>::GetScreenBuffer(bool previousBuffer, bool processGrayscaleEmphasisBits);
 template void NesPpu<HdBuilderPpu>::Exec();
 template uint32_t NesPpu<HdBuilderPpu>::GetPixelBrightness(uint8_t x, uint8_t y);

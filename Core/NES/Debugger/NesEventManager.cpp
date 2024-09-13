@@ -214,10 +214,10 @@ uint32_t NesEventManager::TakeEventSnapshot(bool forAutoRefresh)
 	uint16_t scanline = ppu->GetCurrentScanline() + 1;
 
 	if(scanline >= 240 || (scanline == 0 && cycle == 0)) {
-		memcpy(_ppuBuffer, ppu->GetScreenBuffer(false), NesConstants::ScreenPixelCount * sizeof(uint16_t));
+		memcpy(_ppuBuffer, ppu->GetScreenBuffer(false, true), NesConstants::ScreenPixelCount * sizeof(uint16_t));
 	} else {
 		uint32_t offset = (NesConstants::ScreenWidth * scanline);
-		memcpy(_ppuBuffer, ppu->GetScreenBuffer(false), offset * sizeof(uint16_t));
+		memcpy(_ppuBuffer, ppu->GetScreenBuffer(false, true), offset * sizeof(uint16_t));
 		memcpy(_ppuBuffer + offset, ppu->GetScreenBuffer(true) + offset, (NesConstants::ScreenPixelCount - offset) * sizeof(uint16_t));
 	}
 
@@ -271,6 +271,24 @@ void NesEventManager::DrawPixel(uint32_t *buffer, int32_t x, uint32_t y, uint32_
 	buffer[y * NesConstants::CyclesPerLine * 4 + NesConstants::CyclesPerLine * 2 + x * 2 + 1] = color;
 }
 
+void NesEventManager::ProcessNtscBorderColorEvents(vector<DebugEventInfo>& events, vector<uint16_t>& bgColor, uint32_t& currentPos, uint16_t& currentColor)
+{
+	for(DebugEventInfo& evt : events) {
+		if(evt.Type == DebugEventType::BgColorChange) {
+			uint32_t pos = ((evt.Scanline + 1) * NesConstants::CyclesPerLine) + evt.Cycle;
+			if(evt.Scanline >= 242) {
+				break;
+			}
+
+			if(pos >= currentPos) {
+				std::fill(bgColor.begin() + currentPos, bgColor.begin() + pos, currentColor);
+				currentPos = pos;
+				currentColor = evt.Operation.Address;
+			}
+		}
+	}
+}
+
 void NesEventManager::DrawNtscBorders(uint32_t *buffer)
 {
 	//Generate array of bg color for all pixels on the screen
@@ -279,17 +297,15 @@ void NesEventManager::DrawNtscBorders(uint32_t *buffer)
 	vector<uint16_t> bgColor;
 	bgColor.resize(NesConstants::CyclesPerLine * 243);
 
-	//TODO use bg color changes from previous frame when needed
-	for(DebugEventInfo &evt : _snapshotCurrentFrame) {
-		if(evt.Type == DebugEventType::BgColorChange) {
-			uint32_t pos = ((evt.Scanline + 1) * NesConstants::CyclesPerLine) + evt.Cycle;
-			if(pos >= currentPos && evt.Scanline < 242) {
-				std::fill(bgColor.begin() + currentPos, bgColor.begin() + pos, currentColor);
-				currentColor = evt.Operation.Address;
-				currentPos = pos;
-			}
-		}
+	ProcessNtscBorderColorEvents(_snapshotCurrentFrame, bgColor, currentPos, currentColor);
+	
+	if(!_forAutoRefresh && _snapshotScanline < 242) {
+		uint32_t snapshotPos = (_snapshotScanline * NesConstants::CyclesPerLine) + _snapshotCycle;
+		std::fill(bgColor.begin() + currentPos, bgColor.begin() + snapshotPos, currentColor);
+		currentPos = snapshotPos;
+		ProcessNtscBorderColorEvents(_snapshotPrevFrame, bgColor, currentPos, currentColor);
 	}
+
 	std::fill(bgColor.begin() + currentPos, bgColor.end(), currentColor);
 
 	for(uint32_t y = 1; y < 241; y++) {

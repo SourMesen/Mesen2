@@ -130,7 +130,7 @@ public:
 	int32_t GetScanlineCount() { return _vblankEnd + 2; }
 	uint32_t GetFrameCycle() { return ((_scanline + 1) * 341) + _cycle; }
 
-	virtual uint16_t* GetScreenBuffer(bool previousBuffer) = 0;
+	virtual uint16_t* GetScreenBuffer(bool previousBuffer, bool processGrayscaleEmphasisBits = false) = 0;
 	virtual void UpdateTimings(ConsoleRegion region, bool overclockAllowed = true) = 0;
 
 	void GetState(NesPpuState& state);

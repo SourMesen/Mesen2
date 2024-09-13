@@ -63,6 +63,8 @@ private:
 	void DrawNtscBorders(uint32_t *buffer);
 	void DrawPixel(uint32_t *buffer, int32_t x, uint32_t y, uint32_t color);
 
+	void ProcessNtscBorderColorEvents(vector<DebugEventInfo>& events, vector<uint16_t>& bgColor, uint32_t& currentPos, uint16_t& currentColor);
+
 protected:
 	void ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y) override;
 	void DrawScreen(uint32_t* buffer) override;
