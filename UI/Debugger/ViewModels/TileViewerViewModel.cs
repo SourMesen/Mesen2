@@ -50,7 +50,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int GridSizeY { get; set; } = 8;
 
 		[Reactive] public Rect SelectionRect { get; set; }
-		
+
 		[Reactive] public List<PictureViewerLine>? PageDelimiters { get; set; }
 
 		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
@@ -64,7 +64,7 @@ namespace Mesen.Debugger.ViewModels
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
-		public int ColumnCount => Math.Clamp(Config.ColumnCount, 4, 256); 
+		public int ColumnCount => Math.Clamp(Config.ColumnCount, 4, 256);
 		public int RowCount => Math.Clamp(Config.RowCount, 4, 256);
 
 		private BaseState? _ppuState;
@@ -171,6 +171,12 @@ namespace Mesen.Debugger.ViewModels
 							CustomText = $"4x4 ({GridSizeX*4}px x {GridSizeY*4}px)",
 							IsEnabled = () => GetSelectedTileAddress() >= 0,
 							OnClick = () => EditTileGrid(4, 4, wnd)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"8x8 ({GridSizeX*8}px x {GridSizeY*8}px)",
+							IsEnabled = () => GetSelectedTileAddress() >= 0,
+							OnClick = () => EditTileGrid(8, 8, wnd)
 						}
 					}
 				},
@@ -261,7 +267,7 @@ namespace Mesen.Debugger.ViewModels
 				x => x.Config.Source, x => x.Config.StartAddress, x => x.Config.ColumnCount,
 				x => x.Config.RowCount, x => x.Config.Format
 			).Skip(1).Subscribe(x => ClearPresetSelection()));
-			
+
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 		}
 
@@ -426,7 +432,7 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshData()
 		{
 			_ppuState = DebugApi.GetPpuState(CpuType);
-			
+
 			RefreshPalette();
 
 			lock(_updateLock) {
@@ -456,7 +462,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Dispatcher.UIThread.Post(() => {
 				InitBitmap();
-				
+
 				lock(_updateLock) {
 					Array.Resize(ref _sourceData, _coreSourceData.Length);
 					Array.Copy(_coreSourceData, _sourceData, _coreSourceData.Length);
@@ -757,7 +763,7 @@ namespace Mesen.Debugger.ViewModels
 							CreatePreset(0, "ROM", () => ApplyPrgPreset()),
 						};
 					}
-				
+
 				case CpuType.Sms:
 					return new() {
 						CreatePreset(0, "VDP", () => ApplyPpuPreset()),

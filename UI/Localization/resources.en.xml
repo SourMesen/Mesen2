@@ -51,17 +51,17 @@
 			<Control ID="lblLightDetectionRadius">Light detection radius for light guns:</Control>
 			<Control ID="lblSmall">Small</Control>
 			<Control ID="lblLarge">Large</Control>
-			
+
 			<Control ID="grpHardware">Hardware buttons</Control>
 
 			<Control ID="lblFourScoreConfig">Four Score Configuration</Control>
 			<Control ID="lblFourPlayerAdapterConfig">4-Player Adapter Configuration</Control>
 			<Control ID="lblTwoPlayerAdapterConfig">2-Player Adapter Configuration</Control>
-			
+
 			<Control ID="btnSetup">Setup</Control>
 			<Control ID="lblPlayer1">Port 1:</Control>
 			<Control ID="lblPlayer2">Port 2:</Control>
-			
+
 			<Control ID="lblPort1A">Port 1:</Control>
 			<Control ID="lblPort1B">Port 2:</Control>
 			<Control ID="lblPort1C">Port 3:</Control>
@@ -145,16 +145,16 @@
 			<Control ID="tpgPicture">Picture</Control>
 			<Control ID="btnSelectPreset">Select Preset...</Control>
 			<Control ID="btnReset">Reset</Control>
-			
+
 			<Control ID="lblPictureSettings">General settings</Control>
 			<Control ID="trkBrightness">Brightness</Control>
 			<Control ID="trkContrast">Contrast</Control>
 			<Control ID="trkHue">Hue</Control>
 			<Control ID="trkSaturation">Saturation</Control>
-			
+
 			<Control ID="lblFilterSettings">Filter settings</Control>
 			<Control ID="lblVideoFilter">Filter:</Control>
-			
+
 			<Control ID="lblNtscBlarggSettings">NTSC settings (blargg)</Control>
 			<Control ID="trkArtifacts">Artifacts</Control>
 			<Control ID="trkBleed">Bleed</Control>
@@ -214,7 +214,7 @@
 		<Form ID="SnesConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblRegion">Region:</Control>
-			
+
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="lblAudioInterpolation">Audio interpolation type:</Control>
 			<Control ID="grpVolume">Volume</Control>
@@ -345,11 +345,11 @@
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblModel">Model</Control>
 			<Control ID="chkUseSgb2">In Super Game Boy mode, use SGB2 timings and behavior</Control>
-			
+
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
-			
+
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblGameboyPalette">Game Boy (DMG) Palette</Control>
 			<Control ID="lblGbBackground">Background:</Control>
@@ -377,7 +377,7 @@
 			<Control ID="lblSquare2">Square 2</Control>
 			<Control ID="lblWave">Wave</Control>
 			<Control ID="lblNoise">Noise</Control>
-			
+
 			<Control ID="tpgInput">Input</Control>
 			<Control ID="grpControllers">Controllers</Control>
 			<Control ID="lblPlayer1">Player 1</Control>
@@ -438,7 +438,7 @@
 			<Control ID="lblChannel6">Channel 6</Control>
 			<Control ID="lblCdAudio">CD Audio</Control>
 			<Control ID="lblAdpcm">ADPCM</Control>
-			
+
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
 			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
@@ -448,7 +448,7 @@
 			<Control ID="chkUseHuC6280aAudio">Use HuC6280A audio (reduces popping)</Control>
 			
 			<Control ID="tpgInput">Input</Control>
-			
+
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit</Control>
@@ -462,13 +462,13 @@
 			<Control ID="lblOverscan">Overscan</Control>
 			<Control ID="lblPalette">Palette</Control>
 		</Form>
-		
+
 		<Form ID="ColorPickerWindow">
 			<Control ID="wndTitle">Color picker</Control>
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="PaletteConfig">
 			<Control ID="btnSelectPalette">Load preset palette...</Control>
 			<Control ID="btnExportPalette">Export palette</Control>
@@ -568,7 +568,7 @@
 			<Control ID="lblController1">Port 1:</Control>
 			<Control ID="lblController2">Port 2:</Control>
 		</Form>
-		
+
 		<Form ID="ShortcutKeysTabView">
 			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>
 			<Control ID="colAction">Action</Control>
@@ -602,12 +602,12 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="PreferencesConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblTheme">Theme:</Control>
 			<Control ID="lblRequiresRestart">(requires restart)</Control>
-			
+
 			<Control ID="lblDisplayLanguage">Display Language:</Control>
 			<Control ID="chkSingleInstance">Only allow one instance of Mesen at a time</Control>
 			<Control ID="chkAutomaticallyCheckForUpdates">Automatically check for updates</Control>
@@ -753,7 +753,7 @@
 			<Control ID="lblHint">To enter multiple codes, enter 1 code per line.</Control>
 			<Control ID="lblInvalidCodes">Some codes do not match the selected format.</Control>
 			<Control ID="lblFormat">Format:</Control>
-			
+
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
@@ -790,7 +790,7 @@
 
 			<Control ID="lblRecordSystemHud">Record system HUD (game timer, on-screen messages, etc.)</Control>
 			<Control ID="lblRecordInputHud">Record input HUD</Control>
-			
+
 			<Control ID="btnBrowse">Browse...</Control>
 			<Control ID="btnOK">Record</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -835,7 +835,7 @@
 		</Form>
 		<Form ID="HdPackBuilderWindow">
 			<Control ID="wndTitle">HD Pack Builder</Control>
-			
+
 			<Control ID="grpOptions">Recording Settings</Control>
 			<Control ID="lblBankSize">CHR Bank Size:</Control>
 			<Control ID="lblScale">Scale/Filter:</Control>
@@ -854,7 +854,7 @@
 			<Control ID="btnStartRecording">Start Recording</Control>
 			<Control ID="btnStopRecording">Stop Recording</Control>
 			<Control ID="btnOpenFolder">Open Save Folder</Control>
-			
+
 			<Control ID="lblSaveTo">Save to:</Control>
 		</Form>
 		<Form ID="InputBarcodeWindow">
@@ -869,9 +869,9 @@
 
 			<Control ID="tabOverscan">Overscan</Control>
 			<Control ID="chkOverrideOverscan">Use game-specific overscan settings</Control>
-			
+
 			<Control ID="tabDipSwitches">DIP Switches</Control>
-			
+
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
@@ -882,14 +882,14 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="CheatDatabaseWindow">
 			<Control ID="wndTitle">Import cheats from cheat database...</Control>
 			<Control ID="lblSearch">Search:</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="BaseInputConfigForm">
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -900,12 +900,12 @@
 			<Control ID="lblHint">Each button can be mapped to up to 4 different keyboard keys or gamepad buttons.</Control>
 			<Control ID="btnSetDefaultBindings">Set Default Bindings</Control>
 			<Control ID="btnClear">Clear Key Bindings</Control>
-			
+
 			<Control ID="tpgSet1">Key Set #1</Control>
 			<Control ID="tpgSet2">Key Set #2</Control>
 			<Control ID="tpgSet3">Key Set #3</Control>
 			<Control ID="tpgSet4">Key Set #4</Control>
-			
+
 			<Control ID="lblTurboSpeed">Turbo Speed:</Control>
 			<Control ID="lblTurboFast">Fast</Control>
 			<Control ID="lblTurboSlow">Slow</Control>
@@ -914,7 +914,7 @@
 			<Control ID="mnuKeyboard">Keyboard</Control>
 			<Control ID="mnuWasdLayout">WASD Layout</Control>
 			<Control ID="mnuArrowLayout">Arrow Keys Layout</Control>
-			
+
 			<Control ID="mnuXboxController">Xbox Controller</Control>
 			<Control ID="mnuXboxLayout1">Controller #1</Control>
 			<Control ID="mnuXboxLayout1AltA">Controller #1 - A+B layout</Control>
@@ -934,7 +934,7 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="CheckBoxWarning">
 			<Control ID="Hint">(not recommended)</Control>
 		</Form>
@@ -948,7 +948,7 @@
 			<Control ID="lblPcEngine">PC Engine</Control>
 			<Control ID="lblSms">SMS</Control>
 		</Form>
-		
+
 		<Form ID="AudioPlayerView">
 			<Control ID="btnPrevTrack">Previous track</Control>
 			<Control ID="btnNextTrack">Next track</Control>
@@ -956,7 +956,7 @@
 			<Control ID="btnToggleShuffle">Shuffle on/off</Control>
 			<Control ID="btnToggleRepeat">Repeat on/off</Control>
 		</Form>
-		
+
 		<Form ID="TilemapViewerWindow">
 			<Control ID="wndTitle">Tilemap Viewer</Control>
 
@@ -973,13 +973,13 @@
 			<Control ID="chkNesShowAttributeGrid">Show attribute grid (16x16)</Control>
 			<Control ID="chkNesShowAttributeByteGrid">Show attribute grid (32x32)</Control>
 			<Control ID="chkNesShowTilemapGrid">Show nametable delimiters</Control>
-			
+
 			<Control ID="lblHighlightOptions">Highlight settings</Control>
 			<Control ID="lblTileHighlightMode">Tiles:</Control>
 			<Control ID="lblAttributeHighlightMode">Attributes:</Control>
 			<Control ID="chkShowScrollOverlay">Show scroll overlay</Control>
 		</Form>
-		
+
 		<Form ID="TileEditorWindow">
 			<Control ID="wndTitle">Tile Editor</Control>
 			<Control ID="mnuFile">_File</Control>
@@ -989,14 +989,14 @@
 			<Control ID="lblBackground">Background:</Control>
 			<Control ID="chkShowGrid">Show grid</Control>
 			<Control ID="lblPreview">Preview</Control>
-			
+
 			<Control ID="lblHint1">Select color by clicking above.</Control>
 			<Control ID="lblHint2">Left-click: Draw selected color</Control>
 			<Control ID="lblHint3">Hold shift: Details on pixel under cursor</Control>
 			<Control ID="lblHint4">Shift-click/Right-click: Pick color under cursor</Control>
 			<Control ID="lblHint5">Ctrl-click: Make pixel transparent</Control>
 		</Form>
-		
+
 		<Form ID="TileViewerWindow">
 			<Control ID="wndTitle">Tile Viewer</Control>
 			<Control ID="mnuFile">_File</Control>
@@ -1064,7 +1064,7 @@
 
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuOptions">_Settings</Control>
-			
+
 			<Control ID="lblStartAddress">Start address: $</Control>
 			<Control ID="lblBytesUsed">Bytes used: </Control>
 
@@ -1077,23 +1077,23 @@
 			<Control ID="btnOk">Apply</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="ScriptWindow">
 			<Control ID="wndTitle">Script Window</Control>
 
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuScript">_Script</Control>
 			<Control ID="mnuHelp">_Help</Control>
-			
+
 			<Control ID="btnRun">Run</Control>
 			<Control ID="btnStop">Stop</Control>
 		</Form>
-		
+
 		<Form ID="LogWindow">
 			<Control ID="wndTitle">Log Window</Control>
 			<Control ID="btnClose">Close</Control>
 		</Form>
-		
+
 		<Form ID="DebugLogWindow">
 			<Control ID="wndTitle">Debug Log</Control>
 			<Control ID="btnClose">Close</Control>
@@ -1136,19 +1136,19 @@
 			<Control ID="lblSaveRam">Save RAM:</Control>
 			<Control ID="lblChrRam">CHR RAM:</Control>
 			<Control ID="lblChrSaveRam">CHR Save RAM:</Control>
-			
+
 			<Control ID="chkBattery">Battery</Control>
 			<Control ID="chkTrainer">Trainer</Control>
 
 			<Control ID="btnSaveAs">Save as...</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="TraceLoggerWindow">
 			<Control ID="wndTitle">Trace Logger</Control>
 			<Control ID="lblCondition">Condition: </Control>
 			<Control ID="chkEnabled">Enabled</Control>
-			
+
 			<Control ID="grpLogOptions">{0} - Log settings</Control>
 
 			<Control ID="chkCustomFormat">Use custom format:</Control>
@@ -1166,7 +1166,7 @@
 
 			<Control ID="chkUseLabels">Use labels</Control>
 			<Control ID="chkIndentCode">Indent based on stack pointer</Control>
-			
+
 			<Control ID="lblConditionError">Condition contains invalid syntax or symbols.</Control>
 
 			<Control ID="mnuFile">_File</Control>
@@ -1192,7 +1192,7 @@
 			<Control ID="chkShowListView">Show list view</Control>
 			<Control ID="btnSelectAll">Select all</Control>
 			<Control ID="btnDeselectAll">Deselect all</Control>
-			
+
 			<Control ID="colPc">PC</Control>
 			<Control ID="colScanline">Scanline</Control>
 			<Control ID="colCycle">Cycle</Control>
@@ -1217,13 +1217,13 @@
 			<Control ID="colAddress">Address</Control>
 			<Control ID="colCondition">Condition</Control>
 		</Form>
-		
+
 		<Form ID="CallStackView">
 			<Control ID="colFunction">Function</Control>
 			<Control ID="colPcAddress">PC Address</Control>
 			<Control ID="colRomAddress">ROM Address</Control>
 		</Form>
-		
+
 		<Form ID="FindResultListView">
 			<Control ID="colAddress">Address</Control>
 			<Control ID="colResult">Result</Control>
@@ -1246,7 +1246,7 @@
 			<Control ID="colName">Name</Control>
 			<Control ID="colValue">Value</Control>
 		</Form>
-		
+
 		<Form ID="QuickSearchView">
 			<Control ID="lblSearch">Search</Control>
 		</Form>
@@ -1265,7 +1265,7 @@
 			<Control ID="chkUseLowerCaseDisassembly">Use lower case</Control>
 			<Control ID="chkShowJumpLabels">Show jump/sub labels</Control>
 			<Control ID="chkSnesUseAltSpcOpNames">Use 6502-like mnemonics</Control>
-			
+
 			<Control ID="lblBreakOptions">Break on...</Control>
 			<Control ID="chkBreakOnBrk">BRK</Control>
 			<Control ID="chkBreakOnCop">COP</Control>
@@ -1313,11 +1313,11 @@
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuView">_View</Control>
 			<Control ID="mnuSearch">_Search</Control>
-			
+
 			<Control ID="lblMemoryType">Memory Type:</Control>
 			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 		</Form>
-		
+
 		<Form ID="MemoryToolsDisplayOptionsView">
 			<Control ID="lblAccessHighlight">Access highlighting</Control>
 			<Control ID="lblFadeSpeed">Fade speed: </Control>
@@ -1362,9 +1362,9 @@
 			<Control ID="lblNoMatchFound">No match found!</Control>
 			<Control ID="btnFindPrev">Previous</Control>
 			<Control ID="btnFindNext">Next</Control>
-			
+
 			<Control ID="lblSearchHelp">When searching hexadecimal values, a question mark (?)&#10;can be used to define a byte that can take any value.&#10;&#10;e.g: "FF ? 55" will search for any set of three&#10;bytes that starts with FF and ends with 55.</Control>
-			
+
 			<Control ID="btnClose">Close</Control>
 		</Form>
 		<Form ID="FontOptionsView">
@@ -1380,7 +1380,7 @@
 			<Control ID="lblResetToDefault">Reset to default</Control>
 			<Control ID="chkRefreshOnBreakPause">Refresh on break</Control>
 		</Form>
-		
+
 		<Form ID="GoToAllWindow">
 			<Control ID="wndTitle">Go to All</Control>
 			<Control ID="lblSearch">Search:</Control>
@@ -1388,12 +1388,12 @@
 			<Control ID="btnSelect">Select</Control>
 			<Control ID="btnClose">Close</Control>
 		</Form>
-		
+
 		<Form ID="DebuggerConfigWindow">
 			<Control ID="wndTitle">Debugger Settings</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
-			
+
 			<Control ID="tabDebugger">Debugger</Control>
 			<Control ID="lblGeneralSettings">General settings</Control>
 			<Control ID="chkAutoResetCdl">Reset CDL when ROM changes</Control>
@@ -1414,13 +1414,13 @@
 			<Control ID="chkAutoStartScriptOnLoad">Auto-start script when loaded (or reloaded)</Control>
 			<Control ID="chkAutoReloadScriptWhenFileChanges">Auto-reload script from disk when file changes</Control>
 			<Control ID="chkAutoRestartScriptAfterPowerCycle">Auto-restart script after power cycling or reloading a game</Control>
-			
+
 			<Control ID="lblRestrictions">Restrictions</Control>
 			<Control ID="lblMaxExecutionTime">Maximum execution time:</Control>
 			<Control ID="lblSeconds">seconds</Control>
 			<Control ID="chkAllowIoOsAccess">Allow access to I/O and OS functions</Control>
 			<Control ID="chkAllowNetworkAccess">Allow network access</Control>
-			
+
 			<Control ID="tabFonts">Fonts &amp; Colors</Control>
 			<Control ID="lblFontSettings">Font settings</Control>
 
@@ -1429,7 +1429,7 @@
 			<Control ID="lblAssemblerFont">Assembler:</Control>
 			<Control ID="lblScriptWindowFont">Script window:</Control>
 			<Control ID="lblOtherMonoFont">Other (monospace):</Control>
-			
+
 			<Control ID="lblSyntaxHighlighting">Syntax highlighting</Control>
 			<Control ID="lblCodeOpcodeColor">Opcode</Control>
 			<Control ID="lblCodeLabelDefinitionColor">Label</Control>
@@ -1439,7 +1439,7 @@
 			<Control ID="lblCodeEffectiveAddressColor">Effective Address</Control>
 			<Control ID="lblCodeActiveStatementColor">Active Statement</Control>
 			<Control ID="lblCodeActiveMidInstructionColor">Active Statement (mid-instruction)</Control>
-			
+
 			<Control ID="lblCodeVerifiedDataColor">Verified Data</Control>
 			<Control ID="lblCodeUnidentifiedDataColor">Unidentified Block</Control>
 			<Control ID="lblCodeUnexecutedCodeColor">Unexecuted Code</Control>
@@ -1466,7 +1466,7 @@
 			<Control ID="chkImportWorkRamLabels">Work RAM labels</Control>
 			<Control ID="chkImportOtherLabels">Other labels</Control>
 			<Control ID="chkImportComments">Import comments (restricted to the label types selected above)</Control>
-			
+
 			<Control ID="tabShortcuts">Shortcuts</Control>
 			<Control ID="tabShared">Shared</Control>
 			<Control ID="tabMemoryTools">Memory Viewer</Control>
@@ -1476,7 +1476,7 @@
 		<Form ID="WatchWindow">
 			<Control ID="wndTitle">Watch Window</Control>
 		</Form>
-		
+
 		<Form ID="ProfilerWindow">
 			<Control ID="wndTitle">Profiler</Control>
 
@@ -1497,7 +1497,7 @@
 			<Control ID="colMinCycles">Min. Cycles</Control>
 			<Control ID="colMaxCycles">Max. Cycles</Control>
 		</Form>
-		
+
 		<Form ID="MemorySearchWindow">
 			<Control ID="wndTitle">Memory Search</Control>
 			<Control ID="btnApplyFilter">Apply filter</Control>
@@ -1525,7 +1525,7 @@
 			<Control ID="colLastExec">Last Exec</Control>
 			<Control ID="colMatch">Match</Control>
 		</Form>
-		
+
 		<Form ID="GoToWindow">
 			<Control ID="wndTitle">Go to Address...</Control>
 			<Control ID="lblAddress">Address:</Control>
@@ -1573,7 +1573,7 @@
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="CommentEditWindow">
 			<Control ID="wndTitle">Edit comment...</Control>
 			<Control ID="btnOk">OK</Control>
@@ -1586,7 +1586,7 @@
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuView">_View</Control>
 		</Form>
-		
+
 		<Form ID="RegisterTabView">
 			<Control ID="colAddress">Address</Control>
 			<Control ID="colName">Name</Control>
@@ -1602,10 +1602,10 @@
 
 			<Control ID="lblBreakpointType">Memory type:</Control>
 			<Control ID="lblBreakOn">Break on:</Control>
-			
+
 			<Control ID="lblAddress">Address:</Control>
 			<Control ID="lblAddressTo">to $</Control>
-			
+
 			<Control ID="lblCondition">Condition:</Control>
 
 			<Control ID="chkIgnoreDummyOperations">Ignore dummy reads/writes</Control>
@@ -1751,7 +1751,7 @@ E
 		<Message ID="btnNo">No</Message>
 
 		<Message ID="ScriptSaveConfirmation">You have unsaved changes for this script - would you like to save them?</Message>
-		
+
 		<Message ID="AssemblerConfirmation">{0}&#xA;&#xA;OK?</Message>
 		<Message ID="LabelNameInUse">A label with this name already exists.</Message>
 		<Message ID="InvalidLabel">Label does not follow naming rules.</Message>
@@ -1922,7 +1922,7 @@ E
 			<Value ID="DatachBarcodeReader">Datach Barcode Reader</Value>
 
 			<Value ID="GameboyController">Gameboy Controller</Value>
-			
+
 			<Value ID="PceController">2-button Controller</Value>
 			<Value ID="PceAvenuePad6">6-button Controller</Value>
 			<Value ID="PceTurboTap">Turbo Tap</Value>
@@ -2187,7 +2187,7 @@ E
 			<Value ID="Dot">Dot (.)</Value>
 			<Value ID="SemiColon">Semicolon (;)</Value>
 			<Value ID="Apostrophe">Apostrophe (')</Value>
-			
+
 			<Value ID="Slash">Slash (/)</Value>
 			<Value ID="Backslash">Backslash (\)</Value>
 			<Value ID="Equal">Equal (=)</Value>
@@ -2437,7 +2437,6 @@ E
 			<Value ID="Flash64">Flash (64 KB)</Value>
 			<Value ID="Flash128">Flash (128 KB)</Value>
 		</Enum>
-
 		<Enum ID="MemorySizes">
 			<Value ID="None">None</Value>
 			<Value ID="_128Bytes">128 bytes</Value>
@@ -2610,7 +2609,7 @@ E
 			<Value ID="Sms">SMS</Value>
 			<Value ID="Gba">GBA</Value>
 		</Enum>
-		
+
 		<Enum ID="MemoryType">
 			<Value ID="SnesMemory">CPU Memory</Value>
 			<Value ID="SpcMemory">SPC Memory</Value>
@@ -2636,7 +2635,7 @@ E
 			<Value ID="Cx4DataRam">CX4 Data RAM</Value>
 			<Value ID="BsxPsRam">BS-X - PSRAM</Value>
 			<Value ID="BsxMemoryPack">BS-X - Memory Pack</Value>
-			
+
 			<Value ID="GameboyMemory">GB - CPU Memory</Value>
 			<Value ID="GbPrgRom">GB - PRG ROM</Value>
 			<Value ID="GbWorkRam">GB - Work RAM</Value>
@@ -2658,7 +2657,7 @@ E
 			<Value ID="NesChrRom">CHR ROM</Value>
 			<Value ID="NesChrRam">CHR RAM</Value>
 			<Value ID="NesPaletteRam">Palette RAM</Value>
-			
+
 			<Value ID="PceMemory">CPU Memory</Value>
 			<Value ID="PcePrgRom">HuCard ROM</Value>
 			<Value ID="PceWorkRam">Work RAM</Value>
@@ -2672,7 +2671,7 @@ E
 			<Value ID="PcePaletteRam">Palette RAM</Value>
 			<Value ID="PceSpriteRam">Sprite RAM</Value>
 			<Value ID="PceSpriteRamVdc2">Sprite RAM (VDC2)</Value>
-			
+
 			<Value ID="SmsMemory">CPU Memory</Value>
 			<Value ID="SmsPrgRom">ROM</Value>
 			<Value ID="SmsWorkRam">System RAM</Value>
@@ -2681,7 +2680,6 @@ E
 			<Value ID="SmsVideoRam">Video RAM</Value>
 			<Value ID="SmsPaletteRam">Palette RAM</Value>
 			<Value ID="SmsPort">I/O Port</Value>
-
 			<Value ID="GbaMemory">CPU Memory</Value>
 			<Value ID="GbaPrgRom">ROM</Value>
 			<Value ID="GbaIntWorkRam">Internal Work RAM</Value>
@@ -2691,7 +2689,6 @@ E
 			<Value ID="GbaVideoRam">Video RAM</Value>
 			<Value ID="GbaSpriteRam">Sprite RAM</Value>
 			<Value ID="GbaPaletteRam">Palette RAM</Value>
-
 			<Value ID="None">None</Value>
 		</Enum>
 		<Enum ID="GameboyModel">
@@ -2794,7 +2791,7 @@ E
 
 			<Value ID="Irq">IRQ</Value>
 			<Value ID="Nmi">NMI</Value>
-			
+
 			<Value ID="NesBreakOnDecayedOamRead">Decayed OAM read</Value>
 			<Value ID="NesBreakOnPpu2000ScrollGlitch">$2000/5/6 scroll glitch</Value>
 			<Value ID="NesBreakOnPpu2006ScrollGlitch">$2006 scroll glitch</Value>
@@ -2802,7 +2799,7 @@ E
 			<Value ID="NesBusConflict">Bus conflict</Value>
 			<Value ID="NesBreakOnCpuCrash">CPU crashed</Value>
 			<Value ID="NesBreakOnExtOutputMode">PPU EXT output mode</Value>
-			
+
 			<Value ID="PceBreakOnInvalidVramAddress">Invalid VRAM address (>= $8000)</Value>
 
 			<Value ID="SmsNopLoad">LD B, B (NOP)</Value>
@@ -3223,7 +3220,7 @@ E
 			<Value ID="RowFormatSigned32Bits">Signed decimal (32-bit)</Value>
 			<Value ID="RowFormatUnsigned">Unsigned decimal</Value>
 			<Value ID="ClearFormat">Clear</Value>
-			
+
 			<Value ID="Import">Import...</Value>
 			<Value ID="Export">Export...</Value>
 
@@ -3234,7 +3231,7 @@ E
 			<Value ID="ShowCallStack">Show call stack</Value>
 			<Value ID="ShowConsoleStatus">Show console status</Value>
 			<Value ID="ShowControllers">Show controllers</Value>
-			
+
 			<Value ID="ShowSettingsPanel">Show settings panel</Value>
 			<Value ID="ShowMemoryMappings">Show memory mappings</Value>
 
@@ -3280,11 +3277,13 @@ E
 			<Value ID="RecentScripts">Recent Scripts</Value>
 
 			<Value ID="GoToLocation">Go to Location</Value>
-			
+
 			<Value ID="ExportToPng">Export to PNG</Value>
 			<Value ID="ViewInTileViewer">View in Tile Viewer</Value>
 			<Value ID="ViewInMemoryViewer">View in Memory Viewer</Value>
-			
+			<Value ID="ViewTilemapInMemoryViewer">View in Memory Viewer (Tilemap)</Value>
+			<Value ID="ViewAttributeInMemoryViewer">View in Memory Viewer (Attribute)</Value>
+
 			<Value ID="LoadTblFile">Load TBL file...</Value>
 			<Value ID="ResetTblMappings">Reset TBL mappings</Value>
 
@@ -3378,7 +3377,7 @@ E
 			<Value ID="PowerOff">Power Off</Value>
 			<Value ID="SelectDisk">Select Disk</Value>
 			<Value ID="EjectDisk">Eject Disk</Value>
-			
+
 			<Value ID="InsertCoin1">Insert Coin (1)</Value>
 			<Value ID="InsertCoin2">Insert Coin (2)</Value>
 			<Value ID="InsertCoin3">Insert Coin (3 - DualSystem)</Value>
@@ -3404,13 +3403,13 @@ E
 			<Value ID="ToggleBreakpoint">Toggle Breakpoint</Value>
 			<Value ID="EditSelectedCode">Edit Selected Code</Value>
 			<Value ID="ViewInDebugger">View in Debugger</Value>
-			
+
 			<Value ID="EnableBreakpoint">Enable Breakpoint</Value>
 			<Value ID="DisableBreakpoint">Disable Breakpoint</Value>
 			<Value ID="SetBreakpoint">Set Breakpoint</Value>
 			<Value ID="RemoveBreakpoint">Remove Breakpoint</Value>
 			<Value ID="CodeWindowEditBreakpoint">Edit Breakpoint</Value>
-			
+
 			<Value ID="CodeDataLogger">Code/Data Logger</Value>
 			<Value ID="ResetCdl">Reset CDL data</Value>
 			<Value ID="LoadCdl">Load CDL data from...</Value>
@@ -3466,7 +3465,7 @@ E
 			<Value ID="ResumeGameplay">Resume Gameplay</Value>
 
 			<Value ID="GameConfig">Game Settings</Value>
-			
+
 			<Value ID="FreezeMemory">Freeze</Value>
 			<Value ID="UnfreezeMemory">Unfreeze</Value>
 
@@ -3481,7 +3480,7 @@ E
 
 			<Value ID="FlipHorizontal">Flip horizontal</Value>
 			<Value ID="FlipVertical">Flip vertical</Value>
-			
+
 			<Value ID="TranslateLeft">Translate left</Value>
 			<Value ID="TranslateRight">Translate right</Value>
 			<Value ID="TranslateUp">Translate up</Value>
