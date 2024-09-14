@@ -1014,6 +1014,7 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 						} else {
 							//Nothing to copy, skip to next sprite
 							_spriteAddrH = (_spriteAddrH + 1) & 0x3F;
+							_spriteAddrL = 0;
 							if(_spriteAddrH == 0) {
 								_oamCopyDone = true;
 							}
