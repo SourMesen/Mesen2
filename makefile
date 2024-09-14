@@ -100,11 +100,11 @@ ifneq ($(STATICLINK),false)
 endif
 
 ifeq ($(MESENOS),osx)
-	LINKOPTIONS += -framework Foundation -framework Cocoa -Wl,-rpath,/opt/local/lib
+	LINKOPTIONS += -framework Foundation -framework Cocoa -framework GameController -Wl,-rpath,/opt/local/lib
 endif
 
 CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Sdl) -I $(realpath ./Linux) -I $(realpath ./MacOS)
-OBJCXXFLAGS = $(CXXFLAGS) -framework Foundation -framework Cocoa
+OBJCXXFLAGS = $(CXXFLAGS) -framework Foundation -framework Cocoa -framework GameController
 CFLAGS = -fPIC -Wall $(MESENFLAGS)
 
 OBJFOLDER := obj.$(MESENPLATFORM)
