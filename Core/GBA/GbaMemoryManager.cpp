@@ -239,20 +239,21 @@ void GbaMemoryManager::ProcessVramStalling(uint32_t addr)
 }
 
 template<uint8_t width>
-void GbaMemoryManager::UpdateOpenBus(GbaAccessModeVal mode, uint32_t addr, uint32_t value)
+void GbaMemoryManager::UpdateOpenBus(uint32_t addr, uint32_t value)
 {
-	//Unverified, but passes the openbuster test
-	if((mode & GbaAccessMode::Prefetch) || (addr & 0xFF000000) == 0x03000000) {
-		if(addr > 0x08000000 && addr < 0x10000000) {
-			for(int i = 0; i < width; i++) {
-				_state.InternalOpenBus[i] = value;
-				value >>= 8;
-			}
-		} else {
-			for(int i = 0; i < width; i++) {
-				_state.InternalOpenBus[(addr & (4 - width)) + i] = value;
-				value >>= 8;
-			}
+	if((addr & 0xFF000000) == 0x03000000) {
+		//IWRAM appears to have its own open bus value, which overwrites
+		//the main bus' open bus value whenever IWRAM is read
+		//This is unverified, but passes the openbuster test
+		for(int i = 0; i < width; i++) {
+			_state.IwramOpenBus[(addr & (4 - width)) + i] = value;
+			value >>= 8;
+		}
+		memcpy(_state.InternalOpenBus, _state.IwramOpenBus, sizeof(_state.IwramOpenBus));
+	} else {
+		for(int i = 0; i < width; i++) {
+			_state.InternalOpenBus[i] = value;
+			value >>= 8;
 		}
 	}
 }
@@ -273,14 +274,14 @@ uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 	bool isSigned = mode & GbaAccessMode::Signed;
 	if(mode & GbaAccessMode::Byte) {
 		value = InternalRead(mode, addr, addr);
-		UpdateOpenBus<1>(mode, addr, value);
+		UpdateOpenBus<1>(addr, value);
 		value = isSigned ? (uint32_t)(int8_t)value : (uint8_t)value;
 		_emu->ProcessMemoryRead<CpuType::Gba, 1>(addr, value, mode & GbaAccessMode::Prefetch ? MemoryOperationType::ExecOpCode : MemoryOperationType::Read);
 	} else if(mode & GbaAccessMode::HalfWord) {
 		uint8_t b0 = InternalRead(mode, addr & ~0x01, addr);
 		uint8_t b1 = InternalRead(mode, addr | 1, addr);
 		value = b0 | (b1 << 8);
-		UpdateOpenBus<2>(mode, addr, value);
+		UpdateOpenBus<2>(addr, value);
 		value = isSigned ? (uint32_t)(int16_t)value : (uint16_t)value;
 		if(!(mode & GbaAccessMode::NoRotate)) {
 			value = RotateValue(mode, addr, value, isSigned);
@@ -292,7 +293,7 @@ uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 		uint8_t b2 = InternalRead(mode, (addr & ~0x03) | 2, addr);
 		uint8_t b3 = InternalRead(mode, addr | 3, addr);
 		value = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
-		UpdateOpenBus<4>(mode, addr, value);
+		UpdateOpenBus<4>(addr, value);
 		if(!(mode & GbaAccessMode::NoRotate)) {
 			value = RotateValue(mode, addr, value, isSigned);
 		}
@@ -387,14 +388,14 @@ uint8_t GbaMemoryManager::InternalRead(GbaAccessModeVal mode, uint32_t addr, uin
 		case 0x0A:
 		case 0x0B:
 		case 0x0C:
-			return _state.CartOpenBus[addr & 0x01] = _cart->ReadRom<false>((bank << 24) | addr);
+			return _cart->ReadRom<false>((bank << 24) | addr);
 
 		case 0x0D:
-			return _state.CartOpenBus[addr & 0x01] = _cart->ReadRom<true>((bank << 24) | addr);
+			return _cart->ReadRom<true>((bank << 24) | addr);
 
 		case 0x0E:
 		case 0x0F:
-			return _state.CartOpenBus[addr & 0x01] = _cart->ReadRam((bank << 24) | addr, readAddr);
+			return _cart->ReadRam((bank << 24) | addr, readAddr);
 	}
 
 	return _state.InternalOpenBus[addr & 0x03];
@@ -413,7 +414,10 @@ void GbaMemoryManager::InternalWrite(GbaAccessModeVal mode, uint32_t addr, uint8
 			break;
 
 		case 0x02: _extWorkRam[addr & (GbaConsole::ExtWorkRamSize - 1)] = value; break;
-		case 0x03: _intWorkRam[addr & (GbaConsole::IntWorkRamSize - 1)] = value; break;
+		case 0x03:
+			_intWorkRam[addr & (GbaConsole::IntWorkRamSize - 1)] = value;
+			_state.IwramOpenBus[addr & 0x03] = value;
+			break;
 
 		case 0x04:
 			//registers
@@ -478,13 +482,11 @@ void GbaMemoryManager::InternalWrite(GbaAccessModeVal mode, uint32_t addr, uint8
 		case 0x0D:
 			//ROM
 			_cart->WriteRom((bank << 24) | addr, value);
-			_state.CartOpenBus[addr & 0x01] = value;
 			break;
 
 		case 0x0E:
 		case 0x0F:
 			_cart->WriteRam(mode, addr, value, writeAddr, fullValue);
-			_state.CartOpenBus[addr & 0x01] = value;
 			break;
 	}
 }
@@ -890,7 +892,7 @@ void GbaMemoryManager::Serialize(Serializer& s)
 
 	SVArray(_state.BootRomOpenBus, 4);
 	SVArray(_state.InternalOpenBus, 4);
-	SVArray(_state.CartOpenBus, 2);
+	SVArray(_state.IwramOpenBus, 4);
 
 	if(!s.IsSaving()) {
 		GenerateWaitStateLut();

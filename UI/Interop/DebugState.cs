@@ -1403,8 +1403,8 @@ namespace Mesen.Interop
 		public byte[] BootRomOpenBus;
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
 		public byte[] InternalOpenBus;
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-		public byte[] CartOpenBus;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public byte[] IwramOpenBus;
 	}
 
 	public struct GbaRomPrefetchState

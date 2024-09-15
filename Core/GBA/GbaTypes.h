@@ -254,7 +254,7 @@ struct GbaMemoryManagerState
 
 	uint8_t BootRomOpenBus[4];
 	uint8_t InternalOpenBus[4];
-	uint8_t CartOpenBus[2];
+	uint8_t IwramOpenBus[4];
 };
 
 struct GbaRomPrefetchState
