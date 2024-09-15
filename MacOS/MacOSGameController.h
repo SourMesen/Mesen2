@@ -1,5 +1,10 @@
 #pragma once
 
+#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
+#import <GameController/GameController.h>
+#import <CoreHaptics/CoreHaptics.h>
+
 #include <optional>
 
 class Emulator;
@@ -11,6 +16,8 @@ private:
 
 	GCController* _controller;
 	GCExtendedGamepad* _input;
+	CHHapticEngine* _haptics;
+	id<CHHapticPatternPlayer> _player;
 
 	bool _buttonState[24] = {};
 	int16_t _axisState[4] = {};

@@ -24,10 +24,10 @@ MacOSKeyManager::MacOSKeyManager(Emulator* emu)
 	_keyDefinitions = KeyDefinition::GetSharedKeyDefinitions();
 
 	vector<string> buttonNames = {
-		"A", "B", "X", "Y", "L1", "R1", "Start", "Select", // face buttons, shoulders, others
-		"Up", "Down", "Left", "Right", "L2", "R2", "L3", "R3", // d-pad, triggers, stick press
-		"X+", "X-", "Y+", "Y-", "X2+", "X2-", "Y2+", "Y2-", // left stick, right stick
-		"X", "Y", "X2", "Y2" // stick axis
+		"A", "B", "X", "Y", "L1", "R1", "Start", "Select",
+		"Up", "Down", "Left", "Right", "L2", "R2", "L3", "R3",
+		"X+", "X-", "Y+", "Y-", "X2+", "X2-", "Y2+", "Y2-",
+		"X", "Y", "X2", "Y2"
 	};
 
 	for(int i = 0; i < 20; i++) {
@@ -217,5 +217,7 @@ void MacOSKeyManager::SetDisabled(bool disabled)
 
 void MacOSKeyManager::SetForceFeedback(uint16_t magnitude)
 {
-	return;
+	for(auto& controller : _controllers) {
+		controller->SetForceFeedback(magnitude);
+	}
 }
