@@ -1271,6 +1271,7 @@ namespace Mesen.Interop
 		public UInt16 TilemapAddr;
 		public UInt16 TilesetAddr;
 		public UInt16 ScrollX;
+		public UInt16 ScrollXLatch;
 		public UInt16 ScrollY;
 		public byte ScreenSize;
 		[MarshalAs(UnmanagedType.I1)] public bool DoubleWidth;

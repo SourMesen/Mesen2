@@ -118,6 +118,10 @@ void GbaPpu::ProcessEndOfScanline()
 		if(_state.BgLayers[i].EnableTimer && --_state.BgLayers[i].EnableTimer == 0) {
 			_state.BgLayers[i].Enabled = true;
 		}
+
+		//Unverified: Latch X scroll value at the start of each scanline
+		//This fixes display issues in the Fire Emblem Sacred Stones menu
+		_state.BgLayers[i].ScrollXLatch = _state.BgLayers[i].ScrollX;
 	}
 
 	if(_state.Scanline >= 2 && _state.Scanline < 162 && _triggerSpecialDma) {
@@ -577,11 +581,11 @@ void GbaPpu::RenderTilemap()
 	yPos &= 0xFF;
 
 	if(_lastRenderCycle == -1) {
-		_layerData[i].RenderX = -(layer.ScrollX & 0x07);
+		_layerData[i].RenderX = -(layer.ScrollXLatch & 0x07);
 	}
 
 	//MessageManager::Log(std::to_string(_state.Scanline) + " render " + std::to_string(_lastRenderCycle+1) + " to " + std::to_string(_state.Cycle));
-	int gap = (31 + i - (layer.ScrollX & 0x07) * 4);
+	int gap = (31 + i - (layer.ScrollXLatch & 0x07) * 4);
 	int cycle = std::max(0, _lastRenderCycle + 1 - gap);
 	int end = std::min<int>(_state.Cycle, 1005) - gap;
 
@@ -590,7 +594,7 @@ void GbaPpu::RenderTilemap()
 		switch(cycle & 0x1F) {
 			case 0: {
 				//Fetch tilemap data
-				uint16_t xPos = layer.ScrollX + _layerData[i].RenderX;
+				uint16_t xPos = layer.ScrollXLatch + _layerData[i].RenderX;
 				uint16_t addr = baseAddr;
 				if(layer.DoubleWidth && (xPos & 0x100)) {
 					addr += 0x400;
@@ -1451,6 +1455,7 @@ void GbaPpu::Serialize(Serializer& s)
 		SVI(_state.BgLayers[i].TilemapAddr);
 		SVI(_state.BgLayers[i].TilesetAddr);
 		SVI(_state.BgLayers[i].ScrollX);
+		SVI(_state.BgLayers[i].ScrollXLatch);
 		SVI(_state.BgLayers[i].ScrollY);
 		SVI(_state.BgLayers[i].ScreenSize);
 		SVI(_state.BgLayers[i].DoubleWidth);
