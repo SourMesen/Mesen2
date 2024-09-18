@@ -89,7 +89,7 @@
 	  <None Remove="Styles\StartupStyles.xaml" />
 	  <None Remove="Utilities\DipSwitchDefinitions.xml" />
 	</ItemGroup>
-  <PropertyGroup>
+	<PropertyGroup>
 		<RestoreSources>
 			https://nuget-feed-nightly.avaloniaui.net/v3/index.json;https://api.nuget.org/v3/index.json
 		</RestoreSources>
