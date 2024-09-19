@@ -17,6 +17,7 @@ using Splat.ModeDetection;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using Avalonia.Media;
+using Mesen.Utilities;
 
 namespace Mesen.Controls
 {
@@ -34,9 +35,6 @@ namespace Mesen.Controls
 			_frame = this.GetControl<SimpleImageViewer>("Frame");
 			_emuHud = this.GetControl<SimpleImageViewer>("EmuHud");
 			_scriptHud = this.GetControl<SimpleImageViewer>("ScriptHud");
-
-			RenderOptions.SetBitmapInterpolationMode(_emuHud, BitmapInterpolationMode.None);
-			RenderOptions.SetBitmapInterpolationMode(_scriptHud, BitmapInterpolationMode.None);
 		}
 
 		private void InitializeComponent()
@@ -52,18 +50,18 @@ namespace Mesen.Controls
 			}
 		}
 
-		private unsafe void UpdateSurface(SoftwareRendererSurface frame, WriteableBitmap? surface, Action<WriteableBitmap> updateSurfaceRef)
+		private unsafe void UpdateSurface(SoftwareRendererSurface frame, DynamicBitmap? surface, Action<DynamicBitmap> updateSurfaceRef)
 		{
 			PixelSize frameSize = new PixelSize((int)frame.Width, (int)frame.Height);
 			if(surface?.PixelSize != frameSize) {
-				surface = new WriteableBitmap(frameSize, new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+				surface = new DynamicBitmap(frameSize, new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 				updateSurfaceRef(surface);
 			}
 
 			int size = (int)frame.Width * (int)frame.Height * sizeof(UInt32);
 			using(var bitmapLock = surface.Lock()) {
 				var srcSpan = new Span<byte>((byte*)frame.FrameBuffer, size);
-				var dstSpan = new Span<byte>((byte*)bitmapLock.Address, size);
+				var dstSpan = new Span<byte>((byte*)bitmapLock.FrameBuffer.Address, size);
 				srcSpan.CopyTo(dstSpan);
 			}
 		}
@@ -79,7 +77,7 @@ namespace Mesen.Controls
 			}
 
 			Dispatcher.UIThread.Post(() => {
-				RenderOptions.SetBitmapInterpolationMode(_frame, ConfigManager.Config.Video.UseBilinearInterpolation ? BitmapInterpolationMode.LowQuality : BitmapInterpolationMode.None);
+				_frame.UseBilinearInterpolation = ConfigManager.Config.Video.UseBilinearInterpolation;
 				_frame.InvalidateVisual();
 				_emuHud.InvalidateVisual();
 				_scriptHud.InvalidateVisual();
@@ -89,9 +87,9 @@ namespace Mesen.Controls
 
 	public class SoftwareRendererViewModel : ViewModelBase
 	{
-		[Reactive] public WriteableBitmap? FrameSurface { get; set; }
-		[Reactive] public WriteableBitmap? EmuHudSurface { get; set; }
-		[Reactive] public WriteableBitmap? ScriptHudSurface { get; set; }
+		[Reactive] public DynamicBitmap? FrameSurface { get; set; }
+		[Reactive] public DynamicBitmap? EmuHudSurface { get; set; }
+		[Reactive] public DynamicBitmap? ScriptHudSurface { get; set; }
 		[Reactive] public double Width { get; set; }
 		[Reactive] public double Height { get; set; }
 	}
