@@ -35,9 +35,16 @@
 			<Setter Property="Background" Value="#FFFFFF" />
 		</Style>
 	</UserControl.Styles>
-	<Border BorderBrush="Gray" BorderThickness="1" Width="88" Height="32">
+	<Border BorderBrush="Gray" BorderThickness="1" Width="88" Height="{Binding ViewHeight}">
 		<Panel Background="#B0B0B0">
-			<Canvas>
+			<Canvas Height="32" VerticalAlignment="Top" IsVisible="{Binding IsWs}">
+				<Button CommandParameter="U" Canvas.Top="4" Canvas.Left="10" Classes.selected="{Binding ButtonU}" />
+				<Button CommandParameter="L" Canvas.Top="12" Canvas.Left="2" Classes.selected="{Binding ButtonL}" />
+				<Rectangle Fill="Black" Canvas.Top="12" Canvas.Left="10" Width="8" Height="8" />
+				<Button CommandParameter="D" Canvas.Top="20" Canvas.Left="10" Classes.selected="{Binding ButtonD}"  />
+				<Button CommandParameter="R" Canvas.Top="12" Canvas.Left="18" Classes.selected="{Binding ButtonR}" />
+			</Canvas>
+			<Canvas Height="30" VerticalAlignment="Bottom">
 				<TextBlock
 					Text="{Binding ControllerIndex}"
 					Canvas.Top="4"
@@ -67,8 +74,8 @@
 				<Button CommandParameter="A" Canvas.Top="8" Canvas.Left="16" Classes.selected="{Binding ButtonA}" CornerRadius="6" Width="9" Height="9" />
 			</Canvas>
 			<Canvas IsVisible="{Binding HasShoulderButtons}" Width="86" Height="4" Margin="0 -1 0 0" VerticalAlignment="Top">
-				<Button CommandParameter="L" Canvas.Top="-1" Canvas.Left="6" Height="4" Width="16" Classes.selected="{Binding ButtonL}" />
-				<Button CommandParameter="R" Canvas.Top="-1" Canvas.Left="64" Height="4" Width="16" Classes.selected="{Binding ButtonR}" />
+				<Button CommandParameter="L" Canvas.Top="0" Canvas.Left="6" Height="5" Width="16" Classes.selected="{Binding ButtonL}" />
+				<Button CommandParameter="R" Canvas.Top="0" Canvas.Left="64" Height="5" Width="16" Classes.selected="{Binding ButtonR}" />
 			</Canvas>
 		</Panel>
 	</Border>

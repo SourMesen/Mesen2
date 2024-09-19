@@ -178,7 +178,9 @@ namespace Mesen.Interop
 		Sg,
 		ColecoVision,
 
-		Gba
+		Gba,
+
+		Ws
 	}
 
 	public enum ConsoleType
@@ -189,6 +191,7 @@ namespace Mesen.Interop
 		PcEngine = 3,
 		Sms = 4,
 		Gba = 5,
+		Ws = 6,
 	}
 
 	public struct InteropDipSwitchInfo
@@ -266,7 +269,10 @@ namespace Mesen.Interop
 		StudyBox,
 		PceSuperCd,
 		PceGamesExpress,
-		ColecoVision
+		ColecoVision,
+		WonderSwan,
+		WonderSwanColor,
+		SwanCrystal,
 	}
 
 	public struct MissingFirmwareMessage

@@ -26,5 +26,6 @@ namespace Mesen.Config
 		[Reactive] public GbaEventViewerConfig GbaConfig { get; set; } = new GbaEventViewerConfig();
 		[Reactive] public PceEventViewerConfig PceConfig { get; set; } = new PceEventViewerConfig();
 		[Reactive] public SmsEventViewerConfig SmsConfig { get; set; } = new SmsEventViewerConfig();
+		[Reactive] public WsEventViewerConfig WsConfig { get; set; } = new WsEventViewerConfig();
 	}
 }

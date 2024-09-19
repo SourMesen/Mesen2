@@ -184,6 +184,8 @@ void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename
 	uint8_t scale = 1;
 
 	uint32_t screenRotation = _emu->GetSettings()->GetVideoConfig().ScreenRotation;
+	_emu->GetScreenRotationOverride(screenRotation);
+
 	unique_ptr<RotateFilter> rotateFilter(new RotateFilter(screenRotation));
 	if(screenRotation != 0) {
 		pngBuffer = rotateFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height);

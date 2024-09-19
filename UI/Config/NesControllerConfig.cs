@@ -41,15 +41,6 @@ namespace Mesen.Config
 		public UInt16[]? OekakidsButtons { get; set; } = null;
 		public UInt16[]? BandaiHypershotButtons { get; set; } = null;
 
-		public UInt16 Microphone { get; set; } = 0;
-
-		public override InteropKeyMapping ToInterop(ControllerType type, int mappingIndex)
-		{
-			InteropKeyMapping mappings = base.ToInterop(type, mappingIndex);
-			mappings.Microphone = Microphone;
-			return mappings;
-		}
-
 		protected override UInt16[]? GetCustomButtons(ControllerType type)
 		{
 			return type switch {
@@ -82,7 +73,7 @@ namespace Mesen.Config
 		{
 			UInt16[]? buttonMappings = GetCustomButtons(type);
 			if(buttonMappings == null) {
-				if(GetDefaultCustomKeys(type) != null) {
+				if(GetDefaultCustomKeys(type, null) != null) {
 					if(mappingIndex == 0) {
 						SetDefaultKeys(type, null);
 					} else {
@@ -203,7 +194,7 @@ namespace Mesen.Config
 			}
 		}
 
-		protected override UInt16[]? GetDefaultCustomKeys(ControllerType type)
+		public override UInt16[]? GetDefaultCustomKeys(ControllerType type, KeyPresetType? preset)
 		{
 			switch(type) {
 				case ControllerType.FamilyBasicKeyboard:
@@ -415,39 +406,39 @@ namespace Mesen.Config
 		public override void SetDefaultKeys(ControllerType type, KeyPresetType? preset)
 		{
 			switch(type) {
-				case ControllerType.FamilyBasicKeyboard: FamilyBasicKeyboardButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.PartyTap: PartyTapButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.Pachinko: PachinkoButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.ExcitingBoxing: ExcitingBoxingButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.JissenMahjong: JissenMahjongButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.SuborKeyboard: SuborKeyboardButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.VbController: VirtualBoyButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.KonamiHyperShot: KonamiHyperShotButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.FamilyBasicKeyboard: FamilyBasicKeyboardButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.PartyTap: PartyTapButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.Pachinko: PachinkoButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.ExcitingBoxing: ExcitingBoxingButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.JissenMahjong: JissenMahjongButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.SuborKeyboard: SuborKeyboardButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.VbController: VirtualBoyButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.KonamiHyperShot: KonamiHyperShotButtons = GetDefaultCustomKeys(type, preset); break;
 				
-				case ControllerType.NesZapper: ZapperButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.FamicomZapper: ZapperButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.NesZapper: ZapperButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.FamicomZapper: ZapperButtons = GetDefaultCustomKeys(type, preset); break;
 
-				case ControllerType.BandaiMicrophone: BandaiMicrophoneButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.BandaiMicrophone: BandaiMicrophoneButtons = GetDefaultCustomKeys(type, preset); break;
 
 				case ControllerType.BandaiHyperShot:
-					BandaiHypershotButtons = GetDefaultCustomKeys(type);
+					BandaiHypershotButtons = GetDefaultCustomKeys(type, preset);
 					//Set default controller keys, too
 					base.SetDefaultKeys(type, preset);
 					break;
 				
-				case ControllerType.NesArkanoidController: ArkanoidButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.FamicomArkanoidController: ArkanoidButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.NesArkanoidController: ArkanoidButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.FamicomArkanoidController: ArkanoidButtons = GetDefaultCustomKeys(type, preset); break;
 				
-				case ControllerType.SuborMouse: MouseButtons = GetDefaultCustomKeys(type); break;
-				case ControllerType.SnesMouse: MouseButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.SuborMouse: MouseButtons = GetDefaultCustomKeys(type, preset); break;
+				case ControllerType.SnesMouse: MouseButtons = GetDefaultCustomKeys(type, preset); break;
 				
-				case ControllerType.OekaKidsTablet: OekakidsButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.OekaKidsTablet: OekakidsButtons = GetDefaultCustomKeys(type, preset); break;
 
 				case ControllerType.PowerPadSideA:
 				case ControllerType.PowerPadSideB:
 				case ControllerType.FamilyTrainerMatSideA:
 				case ControllerType.FamilyTrainerMatSideB:
-					PowerPadButtons = GetDefaultCustomKeys(type);
+					PowerPadButtons = GetDefaultCustomKeys(type, preset);
 					break;
 
 				default:

@@ -30,6 +30,8 @@ enum class RomFormat
 	ColecoVision,
 
 	Gba,
+
+	Ws,
 };
 
 struct DipSwitchInfo

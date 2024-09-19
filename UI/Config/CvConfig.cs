@@ -54,42 +54,7 @@ public class CvConfig : BaseConfig<CvConfig>
 
 	internal void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 	{
-		List<CvKeyMapping> mappings = new List<CvKeyMapping>();
-		if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-			CvKeyMapping mapping = new();
-			mapping.ColecoVisionControllerButtons = mapping.GetDefaultCustomKeys(ControllerType.ColecoVisionController, KeyPresetType.XboxP1);
-			mappings.Add(mapping);
-		}
-		if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-			CvKeyMapping mapping = new();
-			mapping.ColecoVisionControllerButtons = mapping.GetDefaultCustomKeys(ControllerType.ColecoVisionController, KeyPresetType.Ps4P1);
-			mappings.Add(mapping);
-		}
-		if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-			CvKeyMapping mapping = new();
-			mapping.ColecoVisionControllerButtons = mapping.GetDefaultCustomKeys(ControllerType.ColecoVisionController, KeyPresetType.WasdKeys);
-			mappings.Add(mapping);
-		}
-		if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-			CvKeyMapping mapping = new();
-			mapping.ColecoVisionControllerButtons = mapping.GetDefaultCustomKeys(ControllerType.ColecoVisionController, KeyPresetType.ArrowKeys);
-			mappings.Add(mapping);
-		}
-
-		Port1.Type = ControllerType.ColecoVisionController;
-		Port1.TurboSpeed = 2;
-		if(mappings.Count > 0) {
-			Port1.Mapping1 = mappings[0];
-			if(mappings.Count > 1) {
-				Port1.Mapping2 = mappings[1];
-				if(mappings.Count > 2) {
-					Port1.Mapping3 = mappings[2];
-					if(mappings.Count > 3) {
-						Port1.Mapping4 = mappings[3];
-					}
-				}
-			}
-		}
+		Port1.InitDefaults<CvKeyMapping>(defaultMappings, ControllerType.ColecoVisionController);
 	}
 }
 

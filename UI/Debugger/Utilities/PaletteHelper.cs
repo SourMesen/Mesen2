@@ -46,6 +46,12 @@ namespace Mesen.Debugger.Utilities
 				entries.AddEntry("R", "$" + (rawPalette[index] & 0x0F).ToString());
 				entries.AddEntry("G", "$" + ((rawPalette[index] >> 4) & 0x0F).ToString());
 				entries.AddEntry("B", "$" + ((rawPalette[index] >> 8) & 0x0F).ToString());
+			} else if(format == RawPaletteFormat.Bgr444) {
+				//WonderSwan
+				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X3"));
+				entries.AddEntry("R", "$" + ((rawPalette[index] >> 8) & 0x0F).ToString());
+				entries.AddEntry("G", "$" + ((rawPalette[index] >> 4) & 0x0F).ToString());
+				entries.AddEntry("B", "$" + (rawPalette[index] & 0x0F).ToString());
 			} else {
 				//NES/GB
 				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X2"));

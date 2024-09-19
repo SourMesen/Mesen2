@@ -754,12 +754,40 @@
     <ClInclude Include="Shared\Video\VideoRenderer.h" />
     <ClInclude Include="Shared\Audio\WaveRecorder.h" />
     <ClInclude Include="Shared\Interfaces\IMouseManager.h" />
+    <ClInclude Include="WS\APU\WsApuCh1.h" />
+    <ClInclude Include="WS\APU\WsApuCh2.h" />
+    <ClInclude Include="WS\APU\WsApuCh3.h" />
+    <ClInclude Include="WS\APU\WsApuCh4.h" />
+    <ClInclude Include="WS\APU\WsHyperVoice.h" />
+    <ClInclude Include="WS\Carts\WsCart.h" />
+    <ClInclude Include="WS\Debugger\DummyWsCpu.h" />
+    <ClInclude Include="WS\Debugger\WsAssembler.h" />
+    <ClInclude Include="WS\Debugger\WsDebugger.h" />
+    <ClInclude Include="WS\Debugger\WsDisUtils.h" />
+    <ClInclude Include="WS\Debugger\WsEventManager.h" />
+    <ClInclude Include="WS\Debugger\WsPpuTools.h" />
+    <ClInclude Include="WS\Debugger\WsTraceLogger.h" />
+    <ClInclude Include="WS\APU\WsApu.h" />
+    <ClInclude Include="WS\WsConsole.h" />
+    <ClInclude Include="WS\WsController.h" />
+    <ClInclude Include="WS\WsControlManager.h" />
+    <ClInclude Include="WS\WsCpu.h" />
+    <ClInclude Include="WS\WsCpuPrefetch.h" />
+    <ClInclude Include="WS\WsDefaultVideoFilter.h" />
+    <ClInclude Include="WS\WsDmaController.h" />
+    <ClInclude Include="WS\WsEeprom.h" />
+    <ClInclude Include="WS\WsMemoryManager.h" />
+    <ClInclude Include="WS\WsPpu.h" />
+    <ClInclude Include="WS\WsSerial.h" />
+    <ClInclude Include="WS\WsTimer.h" />
+    <ClInclude Include="WS\WsTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debugger\Base6502Assembler.cpp" />
     <ClCompile Include="Debugger\BaseEventManager.cpp" />
     <ClCompile Include="Debugger\CdlManager.cpp" />
     <ClCompile Include="Debugger\DisassemblySearch.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Ws.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Cx4.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gameboy.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gba.cpp" />
@@ -1032,6 +1060,25 @@
     <ClCompile Include="Shared\Video\VideoDecoder.cpp" />
     <ClCompile Include="Shared\Video\VideoRenderer.cpp" />
     <ClCompile Include="Shared\Audio\WaveRecorder.cpp" />
+    <ClCompile Include="WS\APU\WsApu.cpp" />
+    <ClCompile Include="WS\Carts\WsCart.cpp" />
+    <ClCompile Include="WS\Debugger\DummyWsCpu.cpp" />
+    <ClCompile Include="WS\Debugger\WsDebugger.cpp" />
+    <ClCompile Include="WS\Debugger\WsDisUtils.cpp" />
+    <ClCompile Include="WS\Debugger\WsEventManager.cpp" />
+    <ClCompile Include="WS\Debugger\WsPpuTools.cpp" />
+    <ClCompile Include="WS\Debugger\WsTraceLogger.cpp" />
+    <ClCompile Include="WS\WsConsole.cpp" />
+    <ClCompile Include="WS\WsControlManager.cpp" />
+    <ClCompile Include="WS\WsCpu.cpp" />
+    <ClCompile Include="WS\WsCpuPrefetch.cpp" />
+    <ClCompile Include="WS\WsDefaultVideoFilter.cpp" />
+    <ClCompile Include="WS\WsDmaController.cpp" />
+    <ClCompile Include="WS\WsEeprom.cpp" />
+    <ClCompile Include="WS\WsMemoryManager.cpp" />
+    <ClCompile Include="WS\WsPpu.cpp" />
+    <ClCompile Include="WS\WsSerial.cpp" />
+    <ClCompile Include="WS\WsTimer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Core.ruleset" />

@@ -14,6 +14,7 @@ enum class MemoryType
 	PceMemory,
 	SmsMemory,
 	GbaMemory,
+	WsMemory,
 
 	SnesPrgRom,
 	SnesWorkRam,
@@ -82,6 +83,14 @@ enum class MemoryType
 	GbaVideoRam,
 	GbaSpriteRam,
 	GbaPaletteRam,
+	
+	WsPrgRom,
+	WsWorkRam,
+	WsCartRam,
+	WsCartEeprom,
+	WsBootRom,
+	WsInternalEeprom,
+	WsPort,
 
 	None
 };

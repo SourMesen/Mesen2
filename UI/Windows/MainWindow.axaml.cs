@@ -51,6 +51,8 @@ namespace Mesen.Windows
 		private Size _rendererSize;
 		private bool _usesSoftwareRenderer;
 
+		private FrameInfo _prevScreenSize;
+
 		private Size _originalSize;
 		private PixelPoint _originalPos;
 		private WindowState _prevWindowState;
@@ -389,9 +391,18 @@ namespace Mesen.Windows
 			double dpiScale = LayoutHelper.GetLayoutScale(this);
 			FrameInfo baseScreenSize = EmuApi.GetBaseScreenSize();
 			if(WindowState == WindowState.Normal) {
-				double xScale = ClientSize.Width * dpiScale / baseScreenSize.Width;
-				double yScale = ClientSize.Height * dpiScale / baseScreenSize.Height;
-				SetScale(Math.Min(Math.Round(xScale), Math.Round(yScale)));
+				double menuHeight = ConfigManager.Config.Preferences.AutoHideMenu ? 0 : _mainMenu.Bounds.Height;
+				double height = ClientSize.Height - menuHeight - _audioPlayer.Bounds.Height;
+				if(baseScreenSize.Width == _prevScreenSize.Height && baseScreenSize.Height == _prevScreenSize.Width) {
+					//Rotation, swap sizes without changing scale
+					double xScale = ClientSize.Width * dpiScale / _prevScreenSize.Width;
+					double yScale = height * dpiScale / _prevScreenSize.Height;
+					SetScale(Math.Min(Math.Round(xScale), Math.Round(yScale)));
+				} else {
+					double xScale = ClientSize.Width * dpiScale / baseScreenSize.Width;
+					double yScale = height * dpiScale / baseScreenSize.Height;
+					SetScale(Math.Min(Math.Round(xScale), Math.Round(yScale)));
+				}
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
 				if(_rendererSize == default) {
 					ResizeRenderer();
@@ -401,6 +412,7 @@ namespace Mesen.Windows
 					SetScale(Math.Min(Math.Round(xScale, 2), Math.Round(yScale, 2)));
 				}
 			}
+			_prevScreenSize = baseScreenSize;
 		}
 
 		public void SetScale(double scale)

@@ -47,6 +47,7 @@ namespace Mesen.Config
 		[Reactive] public bool AssociateGameGearRomFiles { get; set; } = false;
 		[Reactive] public bool AssociateSgRomFiles { get; set; } = false;
 		[Reactive] public bool AssociateCvRomFiles { get; set; } = false;
+		[Reactive] public bool AssociateWsRomFiles { get; set; } = false;
 
 		[Reactive] public bool EnableAutoSaveState { get; set; } = true;
 		[Reactive] public UInt32 AutoSaveStateDelay { get; set; } = 5;

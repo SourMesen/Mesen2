@@ -238,6 +238,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Pce => Config.PceConfig,
 				CpuType.Sms => Config.SmsConfig,
 				CpuType.Gba => Config.GbaConfig,
+				CpuType.Ws => Config.WsConfig,
 				_ => throw new Exception("Invalid cpu type")
 			};
 		}
@@ -293,6 +294,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Pce => new PixelPoint(evt.Cycle, evt.Scanline * 2),
 				CpuType.Sms => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
 				CpuType.Gba => new PixelPoint(evt.Cycle, evt.Scanline * 4),
+				CpuType.Ws => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
 				_ => throw new Exception("Invalid cpu type")
 			};
 		}
@@ -349,6 +351,12 @@ namespace Mesen.Debugger.ViewModels
 					yPos = result.Y / 4;
 					break;
 
+				case CpuType.Ws:
+					result.X = p.X / 2 * 2;
+					xPos = result.X / 2;
+					yPos = result.Y / 2;
+					break;
+
 				default:
 					throw new Exception("Invalid cpu type");
 			}
@@ -372,6 +380,8 @@ namespace Mesen.Debugger.ViewModels
 				DebugApi.SetEventViewerConfig(CpuType, pceCfg.ToInterop());
 			} else if(ConsoleConfig is SmsEventViewerConfig smsCfg) {
 				DebugApi.SetEventViewerConfig(CpuType, smsCfg.ToInterop());
+			} else if(ConsoleConfig is WsEventViewerConfig wsCfg) {
+				DebugApi.SetEventViewerConfig(CpuType, wsCfg.ToInterop());
 			}
 		}
 

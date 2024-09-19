@@ -12,7 +12,7 @@ struct GbaGpioState
 	bool ReadWrite;
 };
 
-class GbaGpio : public ISerializable
+class GbaGpio final : public ISerializable
 {
 private:
 	GbaGpioState _state = {};

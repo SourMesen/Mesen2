@@ -1,0 +1,529 @@
+{
+	"instructions": [
+		{
+			"op": "aaa",
+			"name": "AAA - ASCII Adjust after Addition",
+			"description": ""
+		},
+		{
+			"op": "aad",
+			"name": "AAD - ASCII Adjust before Division",
+			"description": ""
+		},
+		{
+			"op": "aam",
+			"name": "AAM - ASCII Adjust after Multiplication",
+			"description": ""
+		},
+		{
+			"op": "aas",
+			"name": "AAS - ASCII Adjust after Subtraction",
+			"description": ""
+		},
+		{
+			"op": "adc",
+			"name": "ADC - Add with Carry",
+			"description": ""
+		},
+		{
+			"op": "ADD",
+			"name": "ADD - Add",
+			"description": ""
+		},
+		{
+			"op": "and",
+			"name": "AND - Bitwise AND",
+			"description": ""
+		},
+		{
+			"op": "bound",
+			"name": "BOUND - Check array bounds",
+			"description": ""
+		},
+		{
+			"op": "call",
+			"name": "CALL - Call procedure",
+			"description": ""
+		},
+		{
+			"op": "cbw",
+			"name": "CBW - Covert Byte to Word",
+			"description": ""
+		},
+		{
+			"op": "clc",
+			"name": "CLC - Clear Carry Flag",
+			"description": ""
+		},
+		{
+			"op": "cld",
+			"name": "CLD - Clear Direction Flag",
+			"description": ""
+		},
+		{
+			"op": "cli",
+			"name": "CLI - Clear Interrupt flag",
+			"description": ""
+		},
+		{
+			"op": "cmc",
+			"name": "CMC - Complement Carry flag",
+			"description": ""
+		},
+		{
+			"op": "cmp",
+			"name": "CMP - Compare",
+			"description": ""
+		},
+		{
+			"op": "cmpsb",
+			"name": "CMPSB - Compare String Byte",
+			"description": ""
+		},
+		{
+			"op": "cmpsw",
+			"name": "CMPSW - Compare String Word",
+			"description": ""
+		},
+		{
+			"op": "cwd",
+			"name": "CWD - Convert Word to Double Word",
+			"description": ""
+		},
+		{
+			"op": "daa",
+			"name": "DAA - Decimal Adjust after Addition",
+			"description": ""
+		},
+		{
+			"op": "das",
+			"name": "DAS - Decimal Adjust after Subtraction",
+			"description": ""
+		},
+		{
+			"op": "dec",
+			"name": "DEC - Decrement",
+			"description": ""
+		},
+		{
+			"op": "div",
+			"name": "DIV - Divide",
+			"description": ""
+		},
+		{
+			"op": "enter",
+			"name": "ENTER - Enter stack frame",
+			"description": ""
+		},
+		{
+			"op": "hlt",
+			"name": "HLT - Halt",
+			"description": ""
+		},
+		{
+			"op": "idiv",
+			"name": "IDIV - Signed Divide",
+			"description": ""
+		},
+		{
+			"op": "imul",
+			"name": "IMUL - Signed Multiply",
+			"description": ""
+		},
+		{
+			"op": "in",
+			"name": "IN - Input",
+			"description": ""
+		},
+		{
+			"op": "inc",
+			"name": "INC - Increment",
+			"description": ""
+		},
+		{
+			"op": "insb",
+			"name": "INS - Input String Byte",
+			"description": ""
+		},
+		{
+			"op": "insw",
+			"name": "INSW - Input String Word",
+			"description": ""
+		},
+		{
+			"op": "int",
+			"name": "INT - Interrupt",
+			"description": ""
+		},
+		{
+			"op": "into",
+			"name": "INTO - Interrupt (4) if Overflow",
+			"description": ""
+		},
+		{
+			"op": "iret",
+			"name": "IRET - Interrupt Return",
+			"description": ""
+		},
+		{
+			"op": "ja",
+			"name": "JA - Jump if Above",
+			"description": ""
+		},
+		{
+			"op": "jae",
+			"name": "JAE - Jump if Above or Equal",
+			"description": ""
+		},
+		{
+			"op": "jb",
+			"name": "JB - Jump if Below",
+			"description": ""
+		},
+		{
+			"op": "jbe",
+			"name": "JBE - Jump if Below or Equal",
+			"description": ""
+		},
+		{
+			"op": "jcxz",
+			"name": "JCXZ - Jump if CX = 0",
+			"description": ""
+		},
+		{
+			"op": "je",
+			"name": "JE - Jump if Equal",
+			"description": ""
+		},
+		{
+			"op": "jg",
+			"name": "JG - Jump if Greater",
+			"description": ""
+		},
+		{
+			"op": "jge",
+			"name": "JGE - Jump if Greater or Equal",
+			"description": ""
+		},
+		{
+			"op": "jl",
+			"name": "JL - Jump if Lower",
+			"description": ""
+		},
+		{
+			"op": "jle",
+			"name": "JLE - Jump if Lower or Equal",
+			"description": ""
+		},
+		{
+			"op": "jmp",
+			"name": "JMP - Jump",
+			"description": ""
+		},
+		{
+			"op": "jnb",
+			"name": "JNB - Jump if Not Below",
+			"description": ""
+		},
+		{
+			"op": "jno",
+			"name": "JNO - Jump if Not Overflow",
+			"description": ""
+		},
+		{
+			"op": "jns",
+			"name": "JNS - Jump if Not Signed",
+			"description": ""
+		},
+		{
+			"op": "jnz",
+			"name": "JNZ - Jump if Not Zero",
+			"description": ""
+		},
+		{
+			"op": "jo",
+			"name": "JO - Jump if Overflow",
+			"description": ""
+		},
+		{
+			"op": "jpe",
+			"name": "JPE - Jump if Parity Even",
+			"description": ""
+		},
+		{
+			"op": "jpo",
+			"name": "JPO - Jump if Parity Odd",
+			"description": ""
+		},
+		{
+			"op": "js",
+			"name": "JS - Jump if Signed",
+			"description": ""
+		},
+		{
+			"op": "jz",
+			"name": "JZ - Jump if Zero",
+			"description": ""
+		},
+		{
+			"op": "lahf",
+			"name": "LAHF - Load AH with Flags",
+			"description": ""
+		},
+		{
+			"op": "lds",
+			"name": "LDS - Load double word into register and DS",
+			"description": ""
+		},
+		{
+			"op": "lea",
+			"name": "LEA - Load Effective Address",
+			"description": ""
+		},
+		{
+			"op": "leave",
+			"name": "LEAVE - Leave stack frame",
+			"description": ""
+		},
+		{
+			"op": "les",
+			"name": "LES - Load double word into register and ES",
+			"description": ""
+		},
+		{
+			"op": "lodsb",
+			"name": "LODSB - Load String Byte",
+			"description": ""
+		},
+		{
+			"op": "lodsw",
+			"name": "LODSW - Load String Word",
+			"description": ""
+		},
+		{
+			"op": "loop",
+			"name": "LOOP - Loop",
+			"description": ""
+		},
+		{
+			"op": "loopnz",
+			"name": "LOOPNZ - Loop if Not Zero",
+			"description": ""
+		},
+		{
+			"op": "loopz",
+			"name": "LOOPZ - Loop if Zero",
+			"description": ""
+		},
+		{
+			"op": "mov",
+			"name": "MOV - Move",
+			"description": ""
+		},
+		{
+			"op": "movsb",
+			"name": "MOVSB - Move String Byte",
+			"description": ""
+		},
+		{
+			"op": "movsw",
+			"name": "MOVSW - Move String Word",
+			"description": ""
+		},
+		{
+			"op": "mul",
+			"name": "MUL - Multiply",
+			"description": ""
+		},
+		{
+			"op": "neg",
+			"name": "NEG - Negate",
+			"description": ""
+		},
+		{
+			"op": "nop",
+			"name": "NOP - No Operation",
+			"description": ""
+		},
+		{
+			"op": "not",
+			"name": "NOT - Not",
+			"description": ""
+		},
+		{
+			"op": "or",
+			"name": "OR - Bitwise OR",
+			"description": ""
+		},
+		{
+			"op": "out",
+			"name": "OUT - Output",
+			"description": ""
+		},
+		{
+			"op": "outsb",
+			"name": "OUTSB - Output String Byte",
+			"description": ""
+		},
+		{
+			"op": "outsw",
+			"name": "OUTSW - Output String Word",
+			"description": ""
+		},
+		{
+			"op": "pop",
+			"name": "POP - Pop",
+			"description": ""
+		},
+		{
+			"op": "popa",
+			"name": "POPA - Pop All",
+			"description": ""
+		},
+		{
+			"op": "popf",
+			"name": "POPF - Pop Flags",
+			"description": ""
+		},
+		{
+			"op": "push",
+			"name": "PUSH - Push",
+			"description": ""
+		},
+		{
+			"op": "pusha",
+			"name": "PUSHA - Push All",
+			"description": ""
+		},
+		{
+			"op": "pushf",
+			"name": "PUSHF - Push Flags",
+			"description": ""
+		},
+		{
+			"op": "rcl",
+			"name": "RCL - Rotate Left with Carry",
+			"description": ""
+		},
+		{
+			"op": "rcr",
+			"name": "RCR - Rotate Right with Carry",
+			"description": ""
+		},
+		{
+			"op": "repnz",
+			"name": "REPNZ - Repeat when Not Zero",
+			"description": ""
+		},
+		{
+			"op": "repz",
+			"name": "REPZ - Repeat when Zero",
+			"description": ""
+		},
+		{
+			"op": "ret",
+			"name": "RET - Return",
+			"description": ""
+		},
+		{
+			"op": "retf",
+			"name": "RETF - Return Far",
+			"description": ""
+		},
+		{
+			"op": "rol",
+			"name": "ROL - Rotate Left",
+			"description": ""
+		},
+		{
+			"op": "ror",
+			"name": "ROR - Rotate Right",
+			"description": ""
+		},
+		{
+			"op": "sahf",
+			"name": "SAHF - Store AH in Flags",
+			"description": ""
+		},
+		{
+			"op": "sar",
+			"name": "SAR - Shift Arithmetic Right",
+			"description": ""
+		},
+		{
+			"op": "sbb",
+			"name": "SBB - Subtract with Borrow",
+			"description": ""
+		},
+		{
+			"op": "scasb",
+			"name": "SCASB - String Compare AL with ES Byte",
+			"description": ""
+		},
+		{
+			"op": "scasw",
+			"name": "SCASW - String Compare AX with ES Word",
+			"description": ""
+		},
+		{
+			"op": "shl",
+			"name": "SHL - Shift Left",
+			"description": ""
+		},
+		{
+			"op": "shr",
+			"name": "SHR - Shift Right",
+			"description": ""
+		},
+		{
+			"op": "stc",
+			"name": "STC - Set Carry flag",
+			"description": ""
+		},
+		{
+			"op": "std",
+			"name": "STD - Set Direction flag",
+			"description": ""
+		},
+		{
+			"op": "sti",
+			"name": "STI - Set Interrupt flag",
+			"description": ""
+		},
+		{
+			"op": "stosb",
+			"name": "STOSB - Store String Byte",
+			"description": ""
+		},
+		{
+			"op": "stosw",
+			"name": "STOSW - Store String Word",
+			"description": ""
+		},
+		{
+			"op": "sub",
+			"name": "SUB - Subtract",
+			"description": ""
+		},
+		{
+			"op": "test",
+			"name": "TEST - Test",
+			"description": ""
+		},
+		{
+			"op": "xchg",
+			"name": "XCHG - Exchange",
+			"description": ""
+		},
+		{
+			"op": "xlatb",
+			"name": "XLATB - Translate Byte",
+			"description": ""
+		},
+		{
+			"op": "xor",
+			"name": "XOR - Exclusive OR",
+			"description": ""
+		}
+	]
+}

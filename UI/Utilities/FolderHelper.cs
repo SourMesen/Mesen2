@@ -17,6 +17,7 @@ namespace Mesen.Utilities
 			".pce", ".sgx", ".cue",
 			".sms", ".gg", ".sg", ".col",
 			".gba",
+			".ws", ".wsc"
 		};
 
 		public static bool IsRomFile(string path)

@@ -1,0 +1,77 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d"
+  Design.Width="200"
+  Design.Height="600"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="cfg:WsEventViewerConfig"
+	x:Class="Mesen.Debugger.Views.WsEventViewerConfigView"
+>
+	<Design.DataContext>
+		<cfg:WsEventViewerConfig />
+	</Design.DataContext>
+
+	<StackPanel>
+		<Grid ColumnDefinitions="10, 1*, 10, 1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+			<c:OptionSection Header="PPU writes" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" />
+			<c:OptionSection Header="PPU reads" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"  Margin="10 0 0 0" />
+			<StackPanel Grid.Column="1" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="Scroll" Config="{Binding PpuScrollWrite}" />
+				<dc:EventViewerCategoryControl Text="Window" Config="{Binding PpuWindowWrite}" />
+				<dc:EventViewerCategoryControl Text="Palette" Config="{Binding PpuPaletteWrite}" />
+				<dc:EventViewerCategoryControl Text="VRAM" Config="{Binding PpuVramWrite}" />
+				<dc:EventViewerCategoryControl Text="Others" Config="{Binding PpuOtherWrite}" />
+			</StackPanel>
+			<StackPanel Grid.Column="3" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="Scroll" Config="{Binding PpuScrollRead}" />
+				<dc:EventViewerCategoryControl Text="Window" Config="{Binding PpuWindowRead}" />
+				<dc:EventViewerCategoryControl Text="Palette" Config="{Binding PpuPaletteRead}" />
+				<dc:EventViewerCategoryControl Text="VRAM" Config="{Binding PpuVramRead}" />
+				<dc:EventViewerCategoryControl Text="Others" Config="{Binding PpuOtherRead}" />
+				<dc:EventViewerCategoryControl Text="V. Counter" Config="{Binding PpuVCounterRead}" />
+			</StackPanel>
+		</Grid>
+		
+		<Grid ColumnDefinitions="10, 1*, 10, 1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="0 15 0 0">
+			<c:OptionSection Header="Port writes" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" />
+			<c:OptionSection Header="Port reads" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"  Margin="10 0 0 0" />
+			<StackPanel Grid.Column="1" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="Audio" Config="{Binding AudioWrite}" />
+				<dc:EventViewerCategoryControl Text="Cart" Config="{Binding CartWrite}" />
+				<dc:EventViewerCategoryControl Text="DMA" Config="{Binding DmaWrite}" />
+				<dc:EventViewerCategoryControl Text="IEEPROM" Config="{Binding EepromWrite}" />
+				<dc:EventViewerCategoryControl Text="Input" Config="{Binding InputWrite}" />
+				<dc:EventViewerCategoryControl Text="IRQ" Config="{Binding IrqWrite}" />
+				<dc:EventViewerCategoryControl Text="Serial" Config="{Binding SerialWrite}" />
+				<dc:EventViewerCategoryControl Text="Timer" Config="{Binding TimerWrite}" />
+				<dc:EventViewerCategoryControl Text="Others" Config="{Binding OtherWrite}" />
+			</StackPanel>
+			<StackPanel Grid.Column="3" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="Audio" Config="{Binding AudioRead}" />
+				<dc:EventViewerCategoryControl Text="Cart" Config="{Binding CartRead}" />
+				<dc:EventViewerCategoryControl Text="DMA" Config="{Binding DmaRead}" />
+				<dc:EventViewerCategoryControl Text="IEEPROM" Config="{Binding EepromRead}" />
+				<dc:EventViewerCategoryControl Text="Input" Config="{Binding InputRead}" />
+				<dc:EventViewerCategoryControl Text="IRQ" Config="{Binding IrqRead}" />
+				<dc:EventViewerCategoryControl Text="Serial" Config="{Binding SerialRead}" />
+				<dc:EventViewerCategoryControl Text="Timer" Config="{Binding TimerRead}" />
+				<dc:EventViewerCategoryControl Text="Others" Config="{Binding OtherRead}" />
+			</StackPanel>
+		</Grid>
+
+		<c:OptionSection Header="Other events" />
+		<StackPanel>
+			<dc:EventViewerCategoryControl Text="IRQ" Config="{Binding Irq}" />
+			<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{Binding MarkedBreakpoints}" />
+		</StackPanel>
+
+		<CheckBox Margin="0 10 0 0" IsChecked="{Binding ShowPreviousFrameEvents}" Content="Show previous frame events" />
+	</StackPanel>
+</UserControl>

@@ -665,6 +665,8 @@ namespace Mesen.Debugger.Utilities
 		PcEngine,
 		[IconFile("SmsIcon")]
 		Sms,
+		[IconFile("WsIcon")]
+		Ws,
 		[IconFile("Drive")]
 		OtherConsoles,
 		[IconFile("MediaPause")]

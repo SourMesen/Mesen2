@@ -12,7 +12,7 @@
 	x:DataType="vm:ConfigViewModel"
 	x:Class="Mesen.Windows.ConfigWindow"
 	Width="620" Height="500"
-  Topmost="{Binding AlwaysOnTop}"
+	Topmost="{Binding AlwaysOnTop}"
 	Title="{l:Translate wndTitle}"
 >
 	<Design.DataContext>
@@ -49,6 +49,9 @@
 		</DataTemplate>
 		<DataTemplate DataType="{x:Type vm:SmsConfigViewModel}">
 			<v:SmsConfigView />
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:WsConfigViewModel}">
+			<v:WsConfigView />
 		</DataTemplate>
 		<DataTemplate DataType="{x:Type vm:OtherConsolesConfigViewModel}">
 			<v:OtherConsolesConfigView />
@@ -163,6 +166,15 @@
 				</TabItem.Header>
 			</TabItem>
 
+			<TabItem Content="{Binding Ws}">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="/Assets/WsIcon.png" Margin="0 0 10 0" />
+						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabWs}" />
+					</StackPanel>
+				</TabItem.Header>
+			</TabItem>
+			
 			<TabItem Content="{Binding OtherConsoles}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">

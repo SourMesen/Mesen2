@@ -242,42 +242,7 @@ namespace Mesen.Config
 
 		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 		{
-			List<NesKeyMapping> mappings = new List<NesKeyMapping>();
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-				NesKeyMapping mapping = new();
-				KeyPresets.ApplyXboxLayout(mapping, 0, ControllerType.NesController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-				NesKeyMapping mapping = new();
-				KeyPresets.ApplyPs4Layout(mapping, 0, ControllerType.NesController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-				NesKeyMapping mapping = new();
-				KeyPresets.ApplyWasdLayout(mapping, ControllerType.NesController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-				NesKeyMapping mapping = new();
-				KeyPresets.ApplyArrowLayout(mapping, ControllerType.NesController);
-				mappings.Add(mapping);
-			}
-
-			Port1.Type = ControllerType.NesController;
-			Port1.TurboSpeed = 2;
-			if(mappings.Count > 0) {
-				Port1.Mapping1 = mappings[0];
-				if(mappings.Count > 1) {
-					Port1.Mapping2 = mappings[1];
-					if(mappings.Count > 2) {
-						Port1.Mapping3 = mappings[2];
-						if(mappings.Count > 3) {
-							Port1.Mapping4 = mappings[3];
-						}
-					}
-				}
-			}
+			Port1.InitDefaults<NesKeyMapping>(defaultMappings, ControllerType.NesController);
 		}
 
 		public void UpdateInputFromCoreConfig()

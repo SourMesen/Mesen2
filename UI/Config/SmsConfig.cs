@@ -77,42 +77,7 @@ public class SmsConfig : BaseConfig<SmsConfig>
 
 	internal void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 	{
-		List<SmsKeyMapping> mappings = new List<SmsKeyMapping>();
-		if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-			SmsKeyMapping mapping = new();
-			KeyPresets.ApplyXboxLayout(mapping, 0, ControllerType.SmsController);
-			mappings.Add(mapping);
-		}
-		if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-			SmsKeyMapping mapping = new();
-			KeyPresets.ApplyPs4Layout(mapping, 0, ControllerType.SmsController);
-			mappings.Add(mapping);
-		}
-		if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-			SmsKeyMapping mapping = new();
-			KeyPresets.ApplyWasdLayout(mapping, ControllerType.SmsController);
-			mappings.Add(mapping);
-		}
-		if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-			SmsKeyMapping mapping = new();
-			KeyPresets.ApplyArrowLayout(mapping, ControllerType.SmsController);
-			mappings.Add(mapping);
-		}
-
-		Port1.Type = ControllerType.SmsController;
-		Port1.TurboSpeed = 2;
-		if(mappings.Count > 0) {
-			Port1.Mapping1 = mappings[0];
-			if(mappings.Count > 1) {
-				Port1.Mapping2 = mappings[1];
-				if(mappings.Count > 2) {
-					Port1.Mapping3 = mappings[2];
-					if(mappings.Count > 3) {
-						Port1.Mapping4 = mappings[3];
-					}
-				}
-			}
-		}
+		Port1.InitDefaults<SmsKeyMapping>(defaultMappings, ControllerType.SmsController);
 	}
 }
 

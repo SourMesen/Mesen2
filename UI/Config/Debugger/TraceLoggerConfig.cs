@@ -32,6 +32,7 @@ namespace Mesen.Config
 		[Reactive] public TraceLoggerCpuConfig PceConfig { get; set; } = new();
 		[Reactive] public TraceLoggerCpuConfig SmsConfig { get; set; } = new();
 		[Reactive] public TraceLoggerCpuConfig GbaConfig { get; set; } = new();
+		[Reactive] public TraceLoggerCpuConfig WsConfig { get; set; } = new();
 
 		public TraceLoggerConfig()
 		{
@@ -51,6 +52,7 @@ namespace Mesen.Config
 				CpuType.Pce => PceConfig,
 				CpuType.Sms => SmsConfig,
 				CpuType.Gba => GbaConfig,
+				CpuType.Ws => WsConfig,
 				_ => throw new NotImplementedException("Unsupport cpu type")
 			};
 		}

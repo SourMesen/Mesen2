@@ -48,6 +48,19 @@ void ScaleFilter::ApplyLcdGridFilter(uint32_t* inputArgbBuffer)
 	uint8_t bottomLeft = (uint8_t)(cfg.LcdGridBottomLeftBrightness * 255);
 	uint8_t bottomRight = (uint8_t)(cfg.LcdGridBottomRightBrightness * 255);
 
+	//Rotate lcd effect as needed
+	uint32_t screenRotation = _emu->GetSettings()->GetVideoConfig().ScreenRotation;
+	_emu->GetScreenRotationOverride(screenRotation);
+
+	uint8_t offset = screenRotation / 90;
+	for(int i = 0; i < offset; i++) {
+		uint8_t orgTopLeft = topLeft;
+		topLeft = topRight;
+		topRight = bottomRight;
+		bottomRight = bottomLeft;
+		bottomLeft = orgTopLeft;
+	}
+
 	for(uint32_t y = 0; y < _height; y++) {
 		for(uint32_t x = 0; x < _width; x++) {
 			uint32_t srcColor = inputArgbBuffer[y * _width + x];

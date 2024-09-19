@@ -14,6 +14,7 @@ class Gameboy;
 class PceConsole;
 class SmsConsole;
 class GbaConsole;
+class WsConsole;
 class Emulator;
 class Debugger;
 
@@ -40,6 +41,7 @@ private:
 	PceConsole* _pceConsole = nullptr;
 	SmsConsole* _smsConsole = nullptr;
 	GbaConsole* _gbaConsole = nullptr;
+	WsConsole* _wsConsole = nullptr;
 	BaseCartridge* _cartridge = nullptr;
 	Debugger* _debugger = nullptr;
 	bool _isMemorySupported[DebugUtilities::GetMemoryTypeCount()] = {};

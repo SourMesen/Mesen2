@@ -2,6 +2,13 @@
 
 class Serializer;
 
+enum class DeserializeResult
+{
+	Success,
+	InvalidFile,
+	SpecificError,
+};
+
 class ISerializable
 {
 public:

@@ -13,7 +13,8 @@ enum class CpuType : uint8_t
 	Nes,
 	Pce,
 	Sms,
-	Gba
+	Gba,
+	Ws
 };
 
 class CpuTypeUtilities
@@ -21,6 +22,6 @@ class CpuTypeUtilities
 public:
 	static constexpr int GetCpuTypeCount()
 	{
-		return (int)CpuType::Sms + 1;
+		return (int)CpuType::Ws + 1;
 	}
 };

@@ -181,6 +181,7 @@ namespace Mesen.Debugger.ViewModels
 	public class LabelViewModel : INotifyPropertyChanged
 	{
 		private string _format;
+		private bool _isUnmappedType;
 
 		public CodeLabel Label { get; set; }
 		public CpuType CpuType { get; }
@@ -189,9 +190,9 @@ namespace Mesen.Debugger.ViewModels
 		public string LabelText { get; private set; }
 		public string LabelComment { get; private set; }
 		public int RelAddress { get; private set; }
-		public string RelAddressDisplay => RelAddress >= 0 ? ("$" + RelAddress.ToString(_format)) : "<unavailable>";
-		public object RowBrush => RelAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
-		public FontStyle RowStyle => RelAddress >= 0 ? FontStyle.Normal : FontStyle.Italic;
+		public string RelAddressDisplay => RelAddress >= 0 ? ("$" + RelAddress.ToString(_format)) : (_isUnmappedType ? "" : "<unavailable>");
+		public object RowBrush => RelAddress >= 0 || _isUnmappedType ? AvaloniaProperty.UnsetValue : Brushes.Gray;
+		public FontStyle RowStyle => RelAddress >= 0 || _isUnmappedType ? FontStyle.Normal : FontStyle.Italic;
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -214,6 +215,7 @@ namespace Mesen.Debugger.ViewModels
 			CpuType = cpuType;
 			RelAddress = Label.GetRelativeAddress(CpuType).Address;
 			_format = "X" + cpuType.GetAddressSize();
+			_isUnmappedType = Label.MemoryType.IsUnmapped();
 
 			if(Label.MemoryType.IsRelativeMemory()) {
 				AbsAddressDisplay = "";

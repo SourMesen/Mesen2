@@ -1,30 +1,25 @@
 ﻿using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Controls.Selection;
-using Avalonia.Media;
-using Mesen.Config;
-using Mesen.Debugger.Labels;
-using Mesen.Debugger.Utilities;
-using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class ControllerInputViewModel : ViewModelBase
 	{
+		[Reactive] public int ViewHeight { get; set; }
+
 		[Reactive] public bool ButtonA { get; set; }
 		[Reactive] public bool ButtonB { get; set; }
 		[Reactive] public bool ButtonX { get; set; }
 		[Reactive] public bool ButtonY { get; set; }
 		[Reactive] public bool ButtonL { get; set; }
 		[Reactive] public bool ButtonR { get; set; }
+		[Reactive] public bool ButtonU { get; set; }
+		[Reactive] public bool ButtonD { get; set; }
 		[Reactive] public bool ButtonUp { get; set; }
 		[Reactive] public bool ButtonDown { get; set; }
 		[Reactive] public bool ButtonLeft { get; set; }
@@ -34,20 +29,23 @@ namespace Mesen.Debugger.ViewModels
 
 		public int ControllerIndex { get; }
 		public bool IsSnes { get; }
+		public bool IsWs { get; }
 		public bool HasShoulderButtons { get; }
 		public bool HasSelectButton { get; }
 		public bool HasStartButton { get; }
 
 		[Obsolete("For designer only")]
-		public ControllerInputViewModel() : this(ConsoleType.Snes, 0) { }
+		public ControllerInputViewModel() : this(ConsoleType.Ws, 0) { }
 
 		public ControllerInputViewModel(ConsoleType consoleType, int index)
 		{
 			ControllerIndex = index + 1;
 			IsSnes = consoleType == ConsoleType.Snes;
+			IsWs = consoleType == ConsoleType.Ws;
 			HasShoulderButtons = consoleType == ConsoleType.Snes || consoleType == ConsoleType.Gba;
 			HasSelectButton = consoleType != ConsoleType.Sms;
 			HasStartButton = consoleType != ConsoleType.Sms || index == 0;
+			ViewHeight = consoleType != ConsoleType.Ws ? (HasShoulderButtons ? 34 : 30) : 64;
 
 			if(Design.IsDesignMode) {
 				return;
@@ -70,6 +68,8 @@ namespace Mesen.Debugger.ViewModels
 				Y = ButtonY,
 				L = ButtonL,
 				R = ButtonR,
+				U = ButtonU,
+				D = ButtonD,
 				Up = ButtonUp,
 				Down = ButtonDown,
 				Left = ButtonLeft,
@@ -89,6 +89,8 @@ namespace Mesen.Debugger.ViewModels
 					case "Y": ButtonY = !ButtonY; break;
 					case "L": ButtonL = !ButtonL; break;
 					case "R": ButtonR = !ButtonR; break;
+					case "U": ButtonU = !ButtonU; break;
+					case "D": ButtonD = !ButtonD; break;
 					case "Up": ButtonUp = !ButtonUp; break;
 					case "Down": ButtonDown = !ButtonDown; break;
 					case "Left": ButtonLeft = !ButtonLeft; break;

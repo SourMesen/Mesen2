@@ -54,7 +54,7 @@ protected:
 			}
 
 			if(_microphoneEnabled && (_emu->GetFrameCount() % 3) == 0) {
-				SetPressedState(Buttons::Microphone, keyMapping.Microphone);
+				SetPressedState(Buttons::Microphone, keyMapping.GenericKey1);
 			}
 
 			if(!_emu->GetSettings()->GetNesConfig().AllowInvalidInput) {

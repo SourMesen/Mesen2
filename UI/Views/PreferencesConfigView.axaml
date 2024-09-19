@@ -72,6 +72,7 @@
 							<CheckBox Grid.Row="3" Grid.Column="2" Content="{l:Translate chkPceRomFiles}" IsChecked="{Binding Config.AssociatePceRomFiles}" />
 							<CheckBox Grid.Row="4" Grid.Column="2" Content="{l:Translate chkPceMusicFiles}" IsChecked="{Binding Config.AssociatePceMusicFiles}" />
 							<CheckBox Grid.Row="5" Grid.Column="2" Content="{l:Translate chkSgRomFiles}" IsChecked="{Binding Config.AssociateSgRomFiles}" />
+							<CheckBox Grid.Row="6" Grid.Column="2" Content="{l:Translate chkWsRomFiles}" IsChecked="{Binding Config.AssociateWsRomFiles}" />
 						</Grid>
 					</c:OptionSection>
 

@@ -343,7 +343,7 @@
 
 		<Form ID="GameboyConfigView">
 			<Control ID="tpgGeneral">General</Control>
-			<Control ID="lblModel">Model</Control>
+			<Control ID="lblModel">Model:</Control>
 			<Control ID="chkUseSgb2">In Super Game Boy mode, use SGB2 timings and behavior</Control>
 			
 			<Control ID="tpgEmulation">Emulation</Control>
@@ -569,6 +569,42 @@
 			<Control ID="lblController2">Port 2:</Control>
 		</Form>
 		
+		<Form ID="WsConfigView">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="lblModel">Model:</Control>
+
+			<Control ID="tpgEmulation">Emulation</Control>
+			<Control ID="chkUseBootRom">Use boot ROM</Control>
+						
+			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblLcdSettings">LCD Settings</Control>
+			<Control ID="chkAutoRotate">Automatically rotate screen</Control>
+			<Control ID="chkBlendFrames">Enable LCD frame blending</Control>
+			<Control ID="chkLcdShowIcons">Show LCD icons</Control>
+			<Control ID="chkLcdAdjustColors">Enable LCD color emulation</Control>
+			<Control ID="chkHideBgLayer1">Hide background layer 1</Control>
+			<Control ID="chkHideBgLayer2">Hide background layer 2</Control>
+
+			<Control ID="chkDisableSprites">Disable sprites</Control>
+
+			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
+
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="lblAudioMode">Output mode: </Control>
+			<Control ID="grpVolume">Volume</Control>
+			<Control ID="lblChannel1">Channel 1</Control>
+			<Control ID="lblChannel2">Channel 2</Control>
+			<Control ID="lblChannel3">Channel 3</Control>
+			<Control ID="lblChannel4">Channel 4</Control>
+			<Control ID="lblChannel5">Hyper Voice</Control>
+
+			<Control ID="tpgInput">Input</Control>
+			<Control ID="grpControllers">Controllers</Control>
+			<Control ID="lblPlayer1Horizontal">Controller (Horizontal)</Control>
+			<Control ID="lblPlayer1Vertical">Controller (Vertical)</Control>
+			<Control ID="btnSetup">Setup</Control>
+		</Form>
+		
 		<Form ID="ShortcutKeysTabView">
 			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>
 			<Control ID="colAction">Action</Control>
@@ -593,6 +629,7 @@
 			<Control ID="tabGba">GBA</Control>
 			<Control ID="tabPcEngine">PC Engine</Control>
 			<Control ID="tabSms">SMS</Control>
+			<Control ID="tabWs">WonderSwan</Control>
 			<Control ID="tabOtherConsoles">Other systems</Control>
 			<Control ID="tabPreferences">Preferences</Control>
 
@@ -648,6 +685,7 @@
 			<Control ID="chkGameGearRomFiles">Game Gear roms: .gg</Control>
 			<Control ID="chkSgRomFiles">SG-1000 roms: .sg</Control>
 			<Control ID="chkCvRomFiles">ColecoVision roms: .col</Control>
+			<Control ID="chkWsRomFiles">WonderSwan roms: .ws, .wsc</Control>
 
 			<Control ID="grpDataStorageLocation">Data Storage Folder</Control>
 			<Control ID="btnChangeStorageFolder">Change folder...</Control>
@@ -947,6 +985,7 @@
 			<Control ID="lblGba">GBA</Control>
 			<Control ID="lblPcEngine">PC Engine</Control>
 			<Control ID="lblSms">SMS</Control>
+			<Control ID="lblWs">WonderSwan</Control>
 		</Form>
 		
 		<Form ID="AudioPlayerView">
@@ -1295,6 +1334,8 @@
 			<Control ID="chkGbaBreakOnInvalidOpCode">Break on invalid instructions</Control>
 			<Control ID="chkGbaBreakOnNopLoad">Break on MOV R11, R11 (nop)</Control>
 			<Control ID="chkBreakOnUnalignedMemAccess">Break on unaligned access</Control>
+
+			<Control ID="chkBreakOnUndefinedOpCode">Undefined opcodes</Control>
 
 			<Control ID="lblMiscSettings">Misc. settings</Control>
 			<Control ID="chkBringToFrontOnBreak">Bring to front on break</Control>
@@ -2595,6 +2636,9 @@ E
 			<Value ID="PceSuperCd">Super CD-ROM²</Value>
 			<Value ID="PceGamesExpress">Games Express Card</Value>
 			<Value ID="ColecoVision">ColecoVision</Value>
+			<Value ID="WonderSwan">WonderSwan</Value>
+			<Value ID="WonderSwanColor">WonderSwan Color</Value>
+			<Value ID="SwanCrystal">SwanCrystal</Value>
 		</Enum>
 
 		<Enum ID="CpuType">
@@ -2609,6 +2653,7 @@ E
 			<Value ID="Pce">PC Engine</Value>
 			<Value ID="Sms">SMS</Value>
 			<Value ID="Gba">GBA</Value>
+			<Value ID="Ws">WS</Value>
 		</Enum>
 		
 		<Enum ID="MemoryType">
@@ -2692,6 +2737,15 @@ E
 			<Value ID="GbaSpriteRam">Sprite RAM</Value>
 			<Value ID="GbaPaletteRam">Palette RAM</Value>
 
+			<Value ID="WsMemory">CPU Memory</Value>
+			<Value ID="WsPrgRom">ROM</Value>
+			<Value ID="WsWorkRam">Work RAM</Value>
+			<Value ID="WsCartRam">Save RAM</Value>
+			<Value ID="WsCartEeprom">EEPROM (Cart)</Value>
+			<Value ID="WsBootRom">Boot ROM</Value>
+			<Value ID="WsInternalEeprom">IEEPROM (Internal)</Value>
+			<Value ID="WsPort">I/O Port</Value>
+
 			<Value ID="None">None</Value>
 		</Enum>
 		<Enum ID="GameboyModel">
@@ -2701,6 +2755,16 @@ E
 			<Value ID="Gameboy">Game Boy</Value>
 			<Value ID="GameboyColor">Game Boy Color</Value>
 			<Value ID="SuperGameboy">Super Game Boy</Value>
+		</Enum>
+		<Enum ID="WsModel">
+			<Value ID="Auto">Auto</Value>
+			<Value ID="Monochrome">WonderSwan</Value>
+			<Value ID="Color">WonderSwan Color</Value>
+			<Value ID="SwanCrystal">SwanCrystal</Value>
+		</Enum>
+		<Enum ID="WsAudioMode">
+			<Value ID="Headphones">Headphones (recommended)</Value>
+			<Value ID="Speaker">Speaker</Value>
 		</Enum>
 		<Enum ID="HudDisplaySize">
 			<Value ID="Fixed">Fixed size</Value>
@@ -2724,6 +2788,7 @@ E
 			<Value ID="SmsSgBpp1">1 bpp</Value>
 			<Value ID="GbaBpp4">4 bpp</Value>
 			<Value ID="GbaBpp8">8 bpp</Value>
+			<Value ID="WsBpp4Packed">4 bpp (packed)</Value>
 		</Enum>
 		<Enum ID="TileLayout">
 			<Value ID="Normal">Normal</Value>
@@ -2810,6 +2875,8 @@ E
 			<Value ID="GbaNopLoad">MOV R11, R11 (NOP)</Value>
 			<Value ID="GbaInvalidOpCode">Invalid instruction</Value>
 			<Value ID="GbaUnalignedMemoryAccess">Unaligned memory access</Value>
+
+			<Value ID="BreakOnUndefinedOpCode">Undefined OP</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>
@@ -3371,6 +3438,7 @@ E
 			<Value ID="Gba">GBA</Value>
 			<Value ID="PcEngine">PC Engine</Value>
 			<Value ID="Sms">SMS</Value>
+			<Value ID="Ws">WonderSwan</Value>
 			<Value ID="OtherConsoles">Other systems</Value>
 
 			<Value ID="Resume">Resume</Value>

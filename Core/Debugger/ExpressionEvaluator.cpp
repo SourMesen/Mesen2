@@ -70,6 +70,7 @@ unordered_map<string, int64_t>* ExpressionEvaluator::GetAvailableTokens()
 		case CpuType::Pce: return &GetPceTokens();
 		case CpuType::Sms: return &GetSmsTokens();
 		case CpuType::Gba: return &GetGbaTokens();
+		case CpuType::Ws: return &GetWsTokens();
 	}
 
 	return nullptr;
@@ -156,10 +157,21 @@ string ExpressionEvaluator::GetNextToken(string expression, size_t &pos, Express
 	string output;
 	success = true;
 
+	if(expression.empty()) {
+		success = false;
+		return "";
+	}
+
 	char c = std::tolower(expression[pos]);
-	if(c == '$') {
+	char nextChar = (pos + 1 < expression.size()) ? std::tolower(expression[pos + 1]) : '\0';
+	if(c == '$' || (c == '0' && nextChar == 'x')) {
 		//Hex numbers
 		pos++;
+		if(c == '0') {
+			//Skip over 'x' in '0x' prefix
+			pos++;
+		}
+
 		for(size_t len = expression.size(); pos < len; pos++) {
 			c = std::tolower(expression[pos]);
 			if((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) {
@@ -413,6 +425,7 @@ int64_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 								case CpuType::Pce: token = GetPceTokenValue(token, resultType); break;
 								case CpuType::Sms: token = GetSmsTokenValue(token, resultType); break;
 								case CpuType::Gba: token = GetGbaTokenValue(token, resultType); break;
+								case CpuType::Ws: token = GetWsTokenValue(token, resultType); break;
 							}
 						}
 						break;

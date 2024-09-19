@@ -33,6 +33,7 @@ namespace Mesen.Config
 		[Reactive] public SmsConfig Sms { get; set; } = new();
 		[Reactive] public CvConfig Cv { get; set; } = new();
 		[Reactive] public GbaConfig Gba { get; set; } = new();
+		[Reactive] public WsConfig Ws { get; set; } = new();
 		[Reactive] public PreferencesConfig Preferences { get; set; } = new();
 		[Reactive] public AudioPlayerConfig AudioPlayer { get; set; } = new();
 		[Reactive] public DebugConfig Debug { get; set; } = new();
@@ -88,6 +89,7 @@ namespace Mesen.Config
 			Snes.ApplyConfig();
 			Sms.ApplyConfig();
 			Cv.ApplyConfig();
+			Ws.ApplyConfig();
 			Preferences.ApplyConfig();
 			AudioPlayer.ApplyConfig();
 			Debug.ApplyConfig();
@@ -121,6 +123,10 @@ namespace Mesen.Config
 				Cv.InitializeDefaults(DefaultKeyMappings);
 			}
 
+			if(ConfigUpgrade < (int)ConfigUpgradeHint.WsInput) {
+				Ws.InitializeDefaults(DefaultKeyMappings);
+			}
+
 			ConfigUpgrade = (int)ConfigUpgradeHint.NextValue - 1;
 		}
 
@@ -134,6 +140,7 @@ namespace Mesen.Config
 				PcEngine.InitializeDefaults(DefaultKeyMappings);
 				Sms.InitializeDefaults(DefaultKeyMappings);
 				Cv.InitializeDefaults(DefaultKeyMappings);
+				Ws.InitializeDefaults(DefaultKeyMappings);
 				ConfigUpgrade = (int)ConfigUpgradeHint.NextValue - 1;
 			}
 			Preferences.InitializeDefaultShortcuts();
@@ -305,6 +312,7 @@ namespace Mesen.Config
 		SmsInput,
 		GbaInput,
 		CvInput,
+		WsInput,
 		NextValue,
 	}
 }

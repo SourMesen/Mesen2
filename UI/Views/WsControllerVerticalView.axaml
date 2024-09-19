@@ -1,0 +1,67 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:Name="root"
+	x:DataType="vm:KeyMappingViewModel"
+	x:Class="Mesen.Views.WsControllerVerticalView"
+>
+	<Design.DataContext>
+		<vm:KeyMappingViewModel />
+	</Design.DataContext>
+
+	<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="2" Width="500" Height="375" HorizontalAlignment="Left" VerticalAlignment="Top">
+		<Canvas>
+			<Panel Canvas.Bottom="5" Canvas.Left="5" >
+				<Ellipse Width="200" Height="200" Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="2" />
+				<Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" Width="200" Height="200">
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.R}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.U}" Grid.Row="1" Grid.Column="0" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.D}" Grid.Row="1" Grid.Column="1" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.L}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+				</Grid>
+			</Panel>
+
+			<Panel Canvas.Bottom="5" Canvas.Right="5">
+				<Ellipse Width="200" Height="200" Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="2" />
+				<Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" Width="200" Height="200">
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Right}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Up}" Grid.Row="1" Grid.Column="0" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Down}" Grid.Row="1" Grid.Column="1" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Left}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+				</Grid>
+			</Panel>
+
+			<Panel Canvas.Top="0" Canvas.Right="5">
+				<StackPanel VerticalAlignment="Top" Margin="0 0 70 0">
+					<TextBlock Text="A" FontSize="18" HorizontalAlignment="Center" Margin="0 0 0 0" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.A}" Width="60" Height="40" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.TurboA}" Width="60" Height="20" />
+					<TextBlock Text="Turbo A" FontSize="14" HorizontalAlignment="Center" />
+				</StackPanel>
+				<StackPanel VerticalAlignment="Top" Margin="0 30 0 0" HorizontalAlignment="Right">
+					<TextBlock Text="B" FontSize="18" HorizontalAlignment="Center" Margin="0 0 0 0" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.B}" Width="60" Height="40" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.TurboB}" Width="60" Height="20" />
+					<TextBlock Text="Turbo B" FontSize="14" HorizontalAlignment="Center" />
+				</StackPanel>
+			</Panel>
+
+			<Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto,Auto,15,Auto,Auto" Canvas.Top="100" Width="496">
+				<c:KeyBindingButton KeyBinding="{Binding Mapping.Start}" Grid.Column="1" Width="80" Grid.Row="0" />
+				<TextBlock Grid.Column="1" Grid.Row="1" Text="Start" FontSize="14" HorizontalAlignment="Center" />
+
+				<c:KeyBindingButton KeyBinding="{Binding Mapping.GenericKey1}" Grid.Column="1" Grid.Row="3" Width="80" />
+				<TextBlock Grid.Column="1" Grid.Row="4" Text="Sound" FontSize="14" HorizontalAlignment="Center" />
+			</Grid>
+		</Canvas>
+	</Border>
+</UserControl>

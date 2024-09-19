@@ -127,6 +127,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Pce => new PceStatusViewModel(),
 				CpuType.Sms => new SmsStatusViewModel(),
 				CpuType.Gba => new GbaStatusViewModel(),
+				CpuType.Ws => new WsStatusViewModel(),
 				_ => null
 			};
 
@@ -661,8 +662,21 @@ namespace Mesen.Debugger.ViewModels
 				if(def.Type == VectorType.Indirect) {
 					byte[] vector = DebugApi.GetMemoryValues(CpuType.ToMemoryType(), def.Address, def.Address + 1);
 					return vector[0] | (vector[1] << 8);
-				} else {
+				} else if(def.Type == VectorType.Direct) {
 					return (int)def.Address;
+				} else {
+					byte[] vector = Array.Empty<byte>();
+					if(def.Type == VectorType.x86) {
+						vector = DebugApi.GetMemoryValues(CpuType.ToMemoryType(), def.Address, def.Address + 3);
+					} else if(def.Type == VectorType.x86WithOffset) {
+						byte irqVectorOffset = DebugApi.GetDebuggerFeatures(CpuType).IrqVectorOffset;
+						uint baseAddr = (irqVectorOffset + def.Address) * 4;
+						vector = DebugApi.GetMemoryValues(CpuType.ToMemoryType(), baseAddr, baseAddr + 3);
+					}
+
+					UInt16 ip = (UInt16)(vector[0] | (vector[1] << 8));
+					UInt16 cs = (UInt16)(vector[2] | (vector[3] << 8));
+					return (cs << 4) + ip;
 				}
 			}
 

@@ -66,6 +66,10 @@ namespace Mesen.Debugger
 					return "[" + label.Label + "]";
 				} else {
 					segmentType = CodeSegmentType.EffectiveAddress;
+					if(EffectiveAddressType.IsUnmapped()) {
+						//Default to a single byte for I/O ports (SMS/WS)
+						format = ConfigManager.Config.Debug.Debugger.UseLowerCaseDisassembly ? "x2" : "X2";
+					}
 					return "[$" + EffectiveAddress.ToString(format) + "]";
 				}
 			} else {

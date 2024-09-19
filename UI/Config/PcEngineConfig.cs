@@ -104,42 +104,7 @@ namespace Mesen.Config
 
 		internal void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 		{
-			List<KeyMapping> mappings = new List<KeyMapping>();
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-				KeyMapping mapping = new();
-				KeyPresets.ApplyXboxLayout(mapping, 0, ControllerType.PceController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-				KeyMapping mapping = new();
-				KeyPresets.ApplyPs4Layout(mapping, 0, ControllerType.PceController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-				KeyMapping mapping = new();
-				KeyPresets.ApplyWasdLayout(mapping, ControllerType.PceController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-				KeyMapping mapping = new();
-				KeyPresets.ApplyArrowLayout(mapping, ControllerType.PceController);
-				mappings.Add(mapping);
-			}
-
-			Port1.Type = ControllerType.PceController;
-			Port1.TurboSpeed = 2;
-			if(mappings.Count > 0) {
-				Port1.Mapping1 = mappings[0];
-				if(mappings.Count > 1) {
-					Port1.Mapping2 = mappings[1];
-					if(mappings.Count > 2) {
-						Port1.Mapping3 = mappings[2];
-						if(mappings.Count > 3) {
-							Port1.Mapping4 = mappings[3];
-						}
-					}
-				}
-			}
+			Port1.InitDefaults(defaultMappings, ControllerType.PceController);
 		}
 	}
 

@@ -47,6 +47,8 @@ namespace Mesen.Debugger.ViewModels
 					CpuMappings = UpdateMappings(CpuMappings, GetPceCpuMappings(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).MemoryManager));
 				} else if(_cpuType == CpuType.Sms) {
 					CpuMappings = UpdateMappings(CpuMappings, GetSmsCpuMappings(DebugApi.GetConsoleState<SmsState>(ConsoleType.Sms).MemoryManager));
+				} else if(_cpuType == CpuType.Ws) {
+					CpuMappings = UpdateMappings(CpuMappings, GetWsCpuMappings(DebugApi.GetConsoleState<WsState>(ConsoleType.Ws).MemoryManager));
 				}
 			} catch { }
 		}
@@ -417,7 +419,6 @@ namespace Mesen.Debugger.ViewModels
 			return mappings;
 		}
 
-
 		private List<MemoryMappingBlock> GetSmsCpuMappings(SmsMemoryManagerState state)
 		{
 			List<MemoryMappingBlock> mappings = new();
@@ -474,6 +475,77 @@ namespace Mesen.Debugger.ViewModels
 					} else {
 						mappings.Add(new MemoryMappingBlock() {
 							Length = 0x400,
+							Name = "N/A",
+							Note = "OB",
+							Color = Color.FromRgb(222, 222, 222)
+						});
+						isUnmapped = true;
+					}
+				}
+				prevAddr = absAddr;
+			}
+
+			return mappings;
+		}
+
+		private List<MemoryMappingBlock> GetWsCpuMappings(WsMemoryManagerState state)
+		{
+			List<MemoryMappingBlock> mappings = new();
+
+			const int minSize = 0x1000;
+
+			Dictionary<MemoryType, Color> mainColors = new() {
+				{ MemoryType.None, Color.FromRgb(222, 222, 222) },
+				{ MemoryType.WsWorkRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
+				{ MemoryType.WsCartRam, Color.FromRgb(0xFA, 0xDC, 0xCD) },
+				{ MemoryType.WsPrgRom, Color.FromRgb(0xC4, 0xE7, 0xD4) },
+				{ MemoryType.WsBootRom, Color.FromRgb(222, 222, 222)  }
+			};
+
+			Dictionary<MemoryType, Color> altColors = new() {
+				{ MemoryType.None, Color.FromRgb(222, 222, 222) },
+				{ MemoryType.WsWorkRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
+				{ MemoryType.WsCartRam, Color.FromRgb(0xEA, 0xCC, 0xBD) },
+				{ MemoryType.WsPrgRom, Color.FromRgb(0xA4, 0xD7, 0xB4) },
+				{ MemoryType.WsBootRom, Color.FromRgb(222, 222, 222)  }
+			};
+
+			Dictionary<MemoryType, string> accessNotes = new() {
+				{ MemoryType.None, "RW" },
+				{ MemoryType.WsWorkRam, "RW" },
+				{ MemoryType.WsCartRam, "RW" },
+				{ MemoryType.WsPrgRom, "R" },
+				{ MemoryType.WsBootRom, "R" },
+			};
+
+			AddressInfo prevAddr = new();
+			bool isUnmapped = false;
+			for(int i = 0; i < 16*16; i++) {
+				AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = i * minSize, Type = MemoryType.WsMemory });
+				if(!mainColors.ContainsKey(absAddr.Type)) {
+					//Prevent crash when power cycling caused by core returning { 0, MemoryType.SnesMemory } (default value)
+					absAddr.Address = -1;
+				}
+
+				if(prevAddr.Type == absAddr.Type && prevAddr.Address + minSize == absAddr.Address && mappings[^1].Length < 0x10000) {
+					mappings[^1].Length += minSize;
+					mappings[^1].Page = (absAddr.Address + minSize - mappings[^1].Length) / 0x10000;
+				} else if(absAddr.Address >= 0) {
+					MemoryType memType = absAddr.Type;
+					mappings.Add(new MemoryMappingBlock() {
+						Length = minSize,
+						Name = memType.GetShortName(),
+						Page = absAddr.Address / 0x10000,
+						Note = accessNotes[memType],
+						Color = (i % 2 == 0) ? mainColors[memType] : altColors[memType]
+					});
+					isUnmapped = false;
+				} else {
+					if(isUnmapped) {
+						mappings[^1].Length += minSize;
+					} else {
+						mappings.Add(new MemoryMappingBlock() {
+							Length = minSize,
 							Name = "N/A",
 							Note = "OB",
 							Color = Color.FromRgb(222, 222, 222)

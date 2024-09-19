@@ -32,7 +32,7 @@
 
 			<Panel Canvas.Top="50" Canvas.Left="254" IsVisible="{Binding ShowMicrophoneButton, ElementName=root}">
 				<StackPanel VerticalAlignment="Center">
-					<c:KeyBindingButton KeyBinding="{Binding ((cfg:NesKeyMapping)Mapping).Microphone}" Width="60" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.GenericKey1}" Width="60" Height="40" HorizontalAlignment="Center" />
 					<TextBlock Text="Microphone" FontSize="14" HorizontalAlignment="Center" Margin="0 0 0 0" />
 				</StackPanel>
 			</Panel>

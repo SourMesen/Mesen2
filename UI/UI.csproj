@@ -60,6 +60,7 @@
 	  <None Remove="Debugger\Documentation\SmsDocumentation.json" />
 	  <None Remove="Debugger\Documentation\SnesDocumentation.json" />
 	  <None Remove="Debugger\Documentation\SpcDocumentation.json" />
+	  <None Remove="Debugger\Documentation\WsDocumentation.json" />
 	  <None Remove="Debugger\HighlightAssembly.xshd" />
 	  <None Remove="Debugger\HighlightLua.xshd" />
 	  <None Remove="Debugger\Utilities\LuaDocumentation.json" />
@@ -163,6 +164,9 @@
     <Compile Update="Debugger\StatusViews\GbaStatusView.axaml.cs">
       <DependentUpon>GbaStatusView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\StatusViews\WsStatusView.axaml.cs">
+      <DependentUpon>WsStatusView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\StatusViews\SmsStatusView.axaml.cs">
       <DependentUpon>SmsStatusView.axaml</DependentUpon>
     </Compile>
@@ -235,6 +239,9 @@
     <Compile Update="Debugger\Views\GbaEventViewerConfigView.axaml.cs">
       <DependentUpon>GbaEventViewerConfigView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Views\WsEventViewerConfigView.axaml.cs">
+      <DependentUpon>WsEventViewerConfigView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\SmsEventViewerConfigView.axaml.cs">
       <DependentUpon>SmsEventViewerConfigView.axaml</DependentUpon>
     </Compile>
@@ -261,6 +268,15 @@
     </Compile>
     <Compile Update="Debugger\Windows\CommentEditWindow.axaml.cs">
       <DependentUpon>CommentEditWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\WsControllerVerticalView.axaml.cs">
+      <DependentUpon>WsControllerVerticalView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\WsControllerView.axaml.cs">
+      <DependentUpon>WsControllerView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\WsConfigView.axaml.cs">
+      <DependentUpon>WsConfigView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\VideoConfigOverrideView.axaml.cs">
       <DependentUpon>VideoConfigOverrideView.axaml</DependentUpon>
@@ -591,6 +607,7 @@
     <AvaloniaResource Include="Assets\NesIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Debugger\Documentation\WsDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\SmsDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\GbaDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\SpcDocumentation.json" />

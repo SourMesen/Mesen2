@@ -188,6 +188,7 @@ public class CommandLineHelper
 		result["GBA"] = GetSwichesForObject("gba.", typeof(GbaConfig));
 		result["PC Engine"] = GetSwichesForObject("pcEngine.", typeof(PcEngineConfig));
 		result["SMS"] = GetSwichesForObject("sms.", typeof(SmsConfig));
+		result["WS"] = GetSwichesForObject("ws.", typeof(WsConfig));
 
 		return result;
 	}

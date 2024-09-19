@@ -85,6 +85,7 @@ private:
 	uint32_t _version = 0;
 	bool _saving = false;
 	SerializeFormat _format = SerializeFormat::Binary;
+	bool _hasError = false;
 
 private:
 	bool LoadFromTextFormat(istream& file);
@@ -220,6 +221,9 @@ public:
 	
 	SerializeFormat GetFormat() { return _format; }
 	unordered_map<string, SerializeMapValue>& GetMapValues() { return _mapValues; }
+
+	void SetErrorFlag() { _hasError = true; }
+	bool HasError() { return _hasError; }
 
 	bool IsValid() { return _values.size() > 0; }
 	void AddKeyPrefix(string prefix);

@@ -201,6 +201,7 @@ enum class TileFormat
 	SmsSgBpp1,
 	GbaBpp4,
 	GbaBpp8,
+	WsBpp4Packed
 };
 
 enum class TileLayout
@@ -332,7 +333,9 @@ enum class BreakSource
 
 	GbaInvalidOpCode,
 	GbaNopLoad,
-	GbaUnalignedMemoryAccess
+	GbaUnalignedMemoryAccess,
+
+	BreakOnUndefinedOpCode
 };
 
 struct BreakEvent
@@ -476,6 +479,8 @@ struct DebugControllerState
 	bool Y;
 	bool L;
 	bool R;
+	bool U;
+	bool D;
 	bool Up;
 	bool Down;
 	bool Left;
@@ -485,6 +490,6 @@ struct DebugControllerState
 
 	bool HasPressedButton()
 	{
-		return A || B || X || Y || L || R || Up || Down || Left || Right || Select || Start;
+		return A || B || X || Y || L || R || U || D || Up || Down || Left || Right || Select || Start;
 	}
 };

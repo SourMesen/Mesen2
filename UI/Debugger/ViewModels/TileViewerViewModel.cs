@@ -285,6 +285,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Pce => new Enum[] { TileFormat.Bpp4, TileFormat.PceSpriteBpp4, TileFormat.PceSpriteBpp2Sp01, TileFormat.PceSpriteBpp2Sp23, TileFormat.PceBackgroundBpp2Cg0, TileFormat.PceBackgroundBpp2Cg1 },
 				CpuType.Sms => new Enum[] { TileFormat.SmsBpp4, TileFormat.SmsSgBpp1 },
 				CpuType.Gba => new Enum[] { TileFormat.GbaBpp4, TileFormat.GbaBpp8 },
+				CpuType.Ws => new Enum[] { TileFormat.Bpp2, TileFormat.SmsBpp4, TileFormat.WsBpp4Packed },
 				_ => throw new Exception("Unsupported CPU type")
 			};
 
@@ -302,6 +303,7 @@ namespace Mesen.Debugger.ViewModels
 				ResetToDefaultView();
 			}
 			ShowFilterDropdown = Config.Source.SupportsCdl();
+			MaximumAddress = Math.Max(0, DebugApi.GetMemorySize(Config.Source) - 1);
 
 			Dispatcher.UIThread.Post(() => {
 				Config.SelectedPreset = selectedPreset;
@@ -775,6 +777,14 @@ namespace Mesen.Debugger.ViewModels
 						CreatePreset(2, "Sprites", () => ApplySpritePreset(0)),
 					};
 
+				case CpuType.Ws:
+					return new() {
+						CreatePreset(0, "PPU", () => ApplyPpuPreset()),
+						CreatePreset(0, "ROM", () => ApplyPrgPreset()),
+						CreatePreset(1, "Bank 0", () => ApplyBgPreset(0)),
+						CreatePreset(1, "Bank 1", () => ApplyBgPreset(1)),
+					};
+
 				default:
 					throw new Exception("Unsupported CPU type");
 			}
@@ -782,13 +792,25 @@ namespace Mesen.Debugger.ViewModels
 
 		private PresetValues? ApplyPrgPreset()
 		{
+			BaseState? state = _ppuState;
+			if(state == null) {
+				return null;
+			}
+
 			PresetValues preset = new();
 			preset.Source = CpuType.GetPrgRomMemoryType();
 			preset.StartAddress = 0;
 			preset.ColumnCount = 16;
 			preset.RowCount = 32;
 			preset.Layout = TileLayout.Normal;
-			preset.Format = (TileFormat)AvailableFormats[0];
+
+			if(CpuType == CpuType.Ws) {
+				WsPpuState ppu = (WsPpuState)state;
+				preset.Format = ppu.Mode.ToTileFormat();
+			} else {
+				preset.Format = (TileFormat)AvailableFormats[0];
+			}
+
 			return preset;
 		}
 
@@ -865,6 +887,17 @@ namespace Mesen.Debugger.ViewModels
 					preset.RowCount = 128;
 					preset.Layout = TileLayout.Normal;
 					preset.Format = TileFormat.GbaBpp4;
+					break;
+				}
+
+				case CpuType.Ws: {
+					WsPpuState ppu = (WsPpuState)state;
+					preset.Source = MemoryType.WsWorkRam;
+					preset.StartAddress = 0;
+					preset.ColumnCount = 16;
+					preset.RowCount = 128;
+					preset.Layout = TileLayout.Normal;
+					preset.Format = ppu.Mode.ToTileFormat();
 					break;
 				}
 			}
@@ -962,6 +995,20 @@ namespace Mesen.Debugger.ViewModels
 					if(preset.Format == TileFormat.GbaBpp8 || preset.Format == TileFormat.GbaBpp4 && preset.SelectedPalette > 16) {
 						preset.SelectedPalette = 0;
 					}
+					break;
+				}
+
+				case CpuType.Ws: {
+					WsPpuState ppu = (WsPpuState)state;
+					int bank0Addr = ppu.Mode >= WsVideoMode.Color4bpp ? 0x4000 : 0x2000;
+					int bank1Addr = ppu.Mode >= WsVideoMode.Color4bpp ? 0x8000 : (ppu.Mode == WsVideoMode.Monochrome ? 0x2000 : 0x4000);
+					
+					preset.Source = MemoryType.WsWorkRam;
+					preset.StartAddress = layer == 0 ? bank0Addr : bank1Addr;
+					preset.ColumnCount = 16;
+					preset.RowCount = 128;
+					preset.Layout = TileLayout.Normal;
+					preset.Format = ppu.Mode.ToTileFormat();
 					break;
 				}
 			}

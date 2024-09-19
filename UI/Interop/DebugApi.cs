@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
+using Mesen.Config;
 using Mesen.Debugger;
 using Mesen.Utilities;
 
@@ -103,23 +104,6 @@ namespace Mesen.Interop
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
 
-		public static BaseState GetCpuState(CpuType cpuType)
-		{
-			return cpuType switch {
-				CpuType.Snes => GetCpuState<SnesCpuState>(cpuType),
-				CpuType.Spc => GetCpuState<SpcState>(cpuType),
-				CpuType.NecDsp => GetCpuState<NecDspState>(cpuType),
-				CpuType.Sa1 => GetCpuState<SnesCpuState>(cpuType),
-				CpuType.Gsu => GetCpuState<GsuState>(cpuType),
-				CpuType.Cx4 => GetCpuState<Cx4State>(cpuType),
-				CpuType.Gameboy => GetCpuState<GbCpuState>(cpuType),
-				CpuType.Nes => GetCpuState<NesCpuState>(cpuType),
-				CpuType.Sms => GetCpuState<SmsCpuState>(cpuType),
-				CpuType.Gba => GetCpuState<GbaPpuState>(cpuType),
-				_ => throw new Exception("Unsupport cpu type")
-			};
-		}
-
 		[DllImport(DllPath)] private static extern void GetPpuState(IntPtr state, CpuType cpuType);
 		public unsafe static T GetPpuState<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T>(CpuType cpuType) where T : struct, BaseState
 		{
@@ -137,7 +121,8 @@ namespace Mesen.Interop
 				CpuType.Pce => GetPpuState<PceVideoState>(cpuType),
 				CpuType.Sms => GetPpuState<SmsVdpState>(cpuType),
 				CpuType.Gba => GetPpuState<GbaPpuState>(cpuType),
-				_ => throw new Exception("Unsupport cpu type")
+				CpuType.Ws => GetPpuState<WsPpuState>(cpuType),
+				_ => throw new Exception("Unsupported cpu type")
 			};
 		}
 
@@ -158,7 +143,8 @@ namespace Mesen.Interop
 				CpuType.Pce => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
 				CpuType.Sms => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
 				CpuType.Gba => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
-				_ => throw new Exception("Unsupport cpu type")
+				CpuType.Ws => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
+				_ => throw new Exception("Unsupported cpu type")
 			};
 		}
 
@@ -407,6 +393,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropGbaEventViewerConfig config);
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropPceEventViewerConfig config);
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropSmsEventViewerConfig config);
+		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropWsEventViewerConfig config);
 
 		[DllImport(DllPath, EntryPoint = "GetEventViewerEvent")] private static extern DebugEventInfo GetEventViewerEventWrapper(CpuType cpuType, UInt16 scanline, UInt16 cycle);
 		public static DebugEventInfo? GetEventViewerEvent(CpuType cpuType, UInt16 scanline, UInt16 cycle)
@@ -551,6 +538,7 @@ namespace Mesen.Interop
 				CpuType.Pce => state is PceCpuState,
 				CpuType.Sms => state is SmsCpuState,
 				CpuType.Gba => state is GbaCpuState,
+				CpuType.Ws => state is WsCpuState,
 				_ => false
 			};
 		}
@@ -564,6 +552,7 @@ namespace Mesen.Interop
 				ConsoleType.PcEngine => state is PceVideoState,
 				ConsoleType.Sms => state is SmsVdpState,
 				ConsoleType.Gba => state is GbaPpuState,
+				ConsoleType.Ws => state is WsPpuState,
 				_ => false
 			};
 		}
@@ -591,6 +580,7 @@ namespace Mesen.Interop
 		PceMemory,
 		SmsMemory,
 		GbaMemory,
+		WsMemory,
 
 		SnesPrgRom,
 		SnesWorkRam,
@@ -659,6 +649,14 @@ namespace Mesen.Interop
 		GbaVideoRam,
 		GbaSpriteRam,
 		GbaPaletteRam,
+
+		WsPrgRom,
+		WsWorkRam,
+		WsCartRam,
+		WsCartEeprom,
+		WsBootRom,
+		WsInternalEeprom,
+		WsPort,
 
 		None,
 	}
@@ -987,6 +985,45 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
+	public class InteropWsEventViewerConfig
+	{
+		public InteropEventViewerCategoryCfg PpuPaletteRead;
+		public InteropEventViewerCategoryCfg PpuPaletteWrite;
+		public InteropEventViewerCategoryCfg PpuVramRead;
+		public InteropEventViewerCategoryCfg PpuVramWrite;
+		public InteropEventViewerCategoryCfg PpuVCounterRead;
+		public InteropEventViewerCategoryCfg PpuScrollRead;
+		public InteropEventViewerCategoryCfg PpuScrollWrite;
+		public InteropEventViewerCategoryCfg PpuWindowRead;
+		public InteropEventViewerCategoryCfg PpuWindowWrite;
+		public InteropEventViewerCategoryCfg PpuOtherRead;
+		public InteropEventViewerCategoryCfg PpuOtherWrite;
+		public InteropEventViewerCategoryCfg AudioRead;
+		public InteropEventViewerCategoryCfg AudioWrite;
+		public InteropEventViewerCategoryCfg SerialRead;
+		public InteropEventViewerCategoryCfg SerialWrite;
+		public InteropEventViewerCategoryCfg DmaRead;
+		public InteropEventViewerCategoryCfg DmaWrite;
+		public InteropEventViewerCategoryCfg InputRead;
+		public InteropEventViewerCategoryCfg InputWrite;
+		public InteropEventViewerCategoryCfg IrqRead;
+		public InteropEventViewerCategoryCfg IrqWrite;
+		public InteropEventViewerCategoryCfg TimerRead;
+		public InteropEventViewerCategoryCfg TimerWrite;
+		public InteropEventViewerCategoryCfg EepromRead;
+		public InteropEventViewerCategoryCfg EepromWrite;
+		public InteropEventViewerCategoryCfg CartRead;
+		public InteropEventViewerCategoryCfg CartWrite;
+		public InteropEventViewerCategoryCfg OtherRead;
+		public InteropEventViewerCategoryCfg OtherWrite;
+
+		public InteropEventViewerCategoryCfg Irq;
+		public InteropEventViewerCategoryCfg MarkedBreakpoints;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
+	}
+
 	public enum TilemapDisplayMode
 	{
 		Default,
@@ -1231,11 +1268,13 @@ namespace Mesen.Interop
 		Rgb333,
 		Rgb222,
 		Rgb444,
+		Bgr444,
 	}
 
 	public unsafe struct DebugPaletteInfo
 	{
 		public MemoryType PaletteMemType;
+		public UInt32 PaletteMemOffset;
 		[MarshalAs(UnmanagedType.I1)] public bool HasMemType;
 
 		public UInt32 ColorCount;
@@ -1291,6 +1330,7 @@ namespace Mesen.Interop
 		SmsSgBpp1,
 		GbaBpp4,
 		GbaBpp8,
+		WsBpp4Packed
 	}
 
 	public static class TileFormatExtensions
@@ -1330,6 +1370,8 @@ namespace Mesen.Interop
 				
 				TileFormat.GbaBpp4 => 4,
 				TileFormat.GbaBpp8 => 8,
+				
+				TileFormat.WsBpp4Packed => 4,
 
 				_ => throw new Exception("TileFormat not supported"),
 			};
@@ -1361,6 +1403,8 @@ namespace Mesen.Interop
 	{
 		Indirect,
 		Direct,
+		x86,
+		x86WithOffset
 	}
 
 	public struct CpuVectorDefinition
@@ -1382,8 +1426,9 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool CallStack;
 		[MarshalAs(UnmanagedType.I1)] public bool CpuCycleStep;
 
-		public byte CpuVectorCount;		
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
+		public byte IrqVectorOffset;
+		public byte CpuVectorCount;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
 		public CpuVectorDefinition[] CpuVectors;
 	}
 
@@ -1434,7 +1479,8 @@ namespace Mesen.Interop
 		Nes,
 		Pce,
 		Sms,
-		Gba
+		Gba,
+		Ws
 	}
 
 	public enum StepType
@@ -1491,7 +1537,9 @@ namespace Mesen.Interop
 
 		GbaInvalidOpCode,
 		GbaNopLoad,
-		GbaUnalignedMemoryAccess
+		GbaUnalignedMemoryAccess,
+		
+		BreakOnUndefinedOpCode
 	}
 
 	public struct BreakEvent
@@ -1611,6 +1659,8 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool Y;
 		[MarshalAs(UnmanagedType.I1)] public bool L;
 		[MarshalAs(UnmanagedType.I1)] public bool R;
+		[MarshalAs(UnmanagedType.I1)] public bool U;
+		[MarshalAs(UnmanagedType.I1)] public bool D;
 		[MarshalAs(UnmanagedType.I1)] public bool Up;
 		[MarshalAs(UnmanagedType.I1)] public bool Down;
 		[MarshalAs(UnmanagedType.I1)] public bool Left;

@@ -314,6 +314,14 @@ namespace Mesen.Utilities
 						}
 					}
 					break;
+
+				case ConsoleType.Ws:
+					switch(layer) {
+						case VideoLayer.Bg1: return (() => ConfigManager.Config.Ws.HideBgLayer1, (val) => ConfigManager.Config.Ws.HideBgLayer1 = val);
+						case VideoLayer.Bg2: return (() => ConfigManager.Config.Ws.HideBgLayer2, (val) => ConfigManager.Config.Ws.HideBgLayer2 = val);
+						case VideoLayer.Sprite1: return (() => ConfigManager.Config.Ws.DisableSprites, (val) => ConfigManager.Config.Ws.DisableSprites = val);
+					}
+					break;
 			}
 
 			return (null, null);
@@ -329,13 +337,7 @@ namespace Mesen.Utilities
 			if(get != null && set != null) {
 				set(!get());
 				DisplayMessageHelper.DisplayMessage("Debug", ResourceHelper.GetMessage(get() ? "VideoLayerDisabled" : "VideoLayerEnabled", ResourceHelper.GetEnumText(layer)));
-				ConfigManager.Config.Snes.ApplyConfig();
-				ConfigManager.Config.Nes.ApplyConfig();
-				ConfigManager.Config.Gameboy.ApplyConfig();
-				ConfigManager.Config.Gba.ApplyConfig();
-				ConfigManager.Config.PcEngine.ApplyConfig();
-				ConfigManager.Config.Sms.ApplyConfig();
-				ConfigManager.Config.Cv.ApplyConfig();
+				UpdateAllCoreConfig();
 			}
 		}
 
@@ -361,14 +363,23 @@ namespace Mesen.Utilities
 			ConfigManager.Config.PcEngine.DisableSpritesVdc2 = false;
 			ConfigManager.Config.Sms.DisableBackground = false;
 			ConfigManager.Config.Sms.DisableSprites = false;
+			ConfigManager.Config.Ws.HideBgLayer1 = false;
+			ConfigManager.Config.Ws.HideBgLayer2 = false;
+			ConfigManager.Config.Ws.DisableSprites = false;
+			UpdateAllCoreConfig();
+			DisplayMessageHelper.DisplayMessage("Debug", ResourceHelper.GetMessage("AllLayersEnabled"));
+		}
+
+		private void UpdateAllCoreConfig()
+		{
 			ConfigManager.Config.Snes.ApplyConfig();
 			ConfigManager.Config.Nes.ApplyConfig();
 			ConfigManager.Config.Gameboy.ApplyConfig();
+			ConfigManager.Config.Gba.ApplyConfig();
 			ConfigManager.Config.PcEngine.ApplyConfig();
 			ConfigManager.Config.Sms.ApplyConfig();
 			ConfigManager.Config.Cv.ApplyConfig();
-
-			DisplayMessageHelper.DisplayMessage("Debug", ResourceHelper.GetMessage("AllLayersEnabled"));
+			ConfigManager.Config.Ws.ApplyConfig();
 		}
 
 		private void SetEmulationSpeed(uint emulationSpeed)

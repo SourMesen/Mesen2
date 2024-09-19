@@ -177,6 +177,31 @@ enum EvalValues : int64_t
 
 	CPSR,
 
+	RegAX,
+	RegBX,
+	RegCX,
+	RegDX,
+
+	RegAL,
+	RegBL,
+	RegCL,
+	RegDL,
+
+	RegAH,
+	RegBH,
+	RegCH,
+	RegDH,
+
+	RegCS,
+	RegDS,
+	RegES,
+	RegSS,
+
+	RegSI,
+	RegDI,
+	RegBP,
+	RegIP,
+
 	FirstLabelIndex,
 };
 
@@ -257,6 +282,9 @@ private:
 
 	unordered_map<string, int64_t>& GetGbaTokens();
 	int64_t GetGbaTokenValue(int64_t token, EvalResultType& resultType);
+
+	unordered_map<string, int64_t>& GetWsTokens();
+	int64_t GetWsTokenValue(int64_t token, EvalResultType& resultType);
 
 	bool ReturnBool(int64_t value, EvalResultType& resultType);
 

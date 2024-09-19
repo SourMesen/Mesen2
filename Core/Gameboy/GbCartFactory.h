@@ -21,8 +21,8 @@ private:
 		string mapperId = footer.GetMapperId();
 
 		MessageManager::Log("[GBX] Mapper: " + mapperId);
-		MessageManager::Log(string("[GBX] ROM Size: ") + std::to_string(footer.GetRomSize() / 1024) + " kB");
-		MessageManager::Log(string("[GBX] RAM Size: ") + std::to_string(footer.GetRamSize() / 1024) + " kB");
+		MessageManager::Log(string("[GBX] ROM Size: ") + std::to_string(footer.GetRomSize() / 1024) + " KB");
+		MessageManager::Log(string("[GBX] RAM Size: ") + std::to_string(footer.GetRamSize() / 1024) + " KB");
 		MessageManager::Log("[GBX] Battery: " + string(footer.HasBattery() ? "Yes" : "No"));
 		MessageManager::Log("[GBX] RTC: " + string(footer.HasRtc() ? "Yes" : "No"));
 		MessageManager::Log("[GBX] Rumble: " + string(footer.HasRumble() ? "Yes" : "No"));

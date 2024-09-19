@@ -71,42 +71,7 @@ namespace Mesen.Config
 
 		internal void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 		{
-			List<KeyMapping> mappings = new List<KeyMapping>();
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-				KeyMapping mapping = new();
-				KeyPresets.ApplyXboxLayout(mapping, 0, ControllerType.GbaController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-				KeyMapping mapping = new();
-				KeyPresets.ApplyPs4Layout(mapping, 0, ControllerType.GbaController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-				KeyMapping mapping = new();
-				KeyPresets.ApplyWasdLayout(mapping, ControllerType.GbaController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-				KeyMapping mapping = new();
-				KeyPresets.ApplyArrowLayout(mapping, ControllerType.GbaController);
-				mappings.Add(mapping);
-			}
-
-			Controller.Type = ControllerType.GbaController;
-			Controller.TurboSpeed = 2;
-			if(mappings.Count > 0) {
-				Controller.Mapping1 = mappings[0];
-				if(mappings.Count > 1) {
-					Controller.Mapping2 = mappings[1];
-					if(mappings.Count > 2) {
-						Controller.Mapping3 = mappings[2];
-						if(mappings.Count > 3) {
-							Controller.Mapping4 = mappings[3];
-						}
-					}
-				}
-			}
+			Controller.InitDefaults(defaultMappings, ControllerType.GbaController);
 		}
 	}
 

@@ -21,6 +21,7 @@ namespace Mesen.ViewModels
 		[Reactive] public GbaConfigViewModel? Gba { get; set; }
 		[Reactive] public PceConfigViewModel? PcEngine { get; set; }
 		[Reactive] public SmsConfigViewModel? Sms { get; set; }
+		[Reactive] public WsConfigViewModel? Ws { get; set; }
 		[Reactive] public OtherConsolesConfigViewModel? OtherConsoles { get; set; }
 
 		[Reactive] public ConfigWindowTab SelectedIndex { get; set; }
@@ -59,6 +60,7 @@ namespace Mesen.ViewModels
 				case ConfigWindowTab.Gba: Gba ??= AddDisposable(new GbaConfigViewModel()); break;
 				case ConfigWindowTab.PcEngine: PcEngine ??= AddDisposable(new PceConfigViewModel()); break;
 				case ConfigWindowTab.Sms: Sms ??= AddDisposable(new SmsConfigViewModel()); break;
+				case ConfigWindowTab.Ws: Ws ??= AddDisposable(new WsConfigViewModel()); break;
 				case ConfigWindowTab.OtherConsoles: OtherConsoles ??= AddDisposable(new OtherConsolesConfigViewModel()); break;
 
 				case ConfigWindowTab.Preferences: Preferences ??= AddDisposable(new PreferencesConfigViewModel()); break;
@@ -106,6 +108,7 @@ namespace Mesen.ViewModels
 				Gba?.OriginalConfig.IsIdentical(ConfigManager.Config.Gba) == false ||
 				PcEngine?.OriginalConfig.IsIdentical(ConfigManager.Config.PcEngine) == false ||
 				Sms?.OriginalConfig.IsIdentical(ConfigManager.Config.Sms) == false ||
+				Ws?.OriginalConfig.IsIdentical(ConfigManager.Config.Ws) == false ||
 				OtherConsoles?.CvOriginalConfig.IsIdentical(ConfigManager.Config.Cv) == false
 			);
 		}
@@ -124,8 +127,9 @@ namespace Mesen.ViewModels
 		Gba = 8,
 		PcEngine = 9,
 		Sms = 10,
-		OtherConsoles = 11,
+		Ws = 11,
+		OtherConsoles = 12,
 		//separator
-		Preferences = 13
+		Preferences = 14
 	}
 }

@@ -38,6 +38,7 @@
 #include "PCE/PceConsole.h"
 #include "SMS/SmsConsole.h"
 #include "GBA/GbaConsole.h"
+#include "WS/WsConsole.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/BaseEventManager.h"
 #include "Debugger/DebugTypes.h"
@@ -554,6 +555,7 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 	TryLoadRom<PceConsole>(romFile, result, console, useFileSignature);
 	TryLoadRom<SmsConsole>(romFile, result, console, useFileSignature);
 	TryLoadRom<GbaConsole>(romFile, result, console, useFileSignature);
+	TryLoadRom<WsConsole>(romFile, result, console, useFileSignature);
 }
 
 template<typename T>
@@ -906,11 +908,11 @@ void Emulator::Serialize(ostream& out, bool includeSettings, int compressionLeve
 	s.SaveTo(out, compressionLevel);
 }
 
-bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> srcConsoleType, bool sendNotification)
+DeserializeResult Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> srcConsoleType, bool sendNotification)
 {
 	Serializer s(fileFormatVersion, false);
 	if(!s.LoadFrom(in)) {
-		return false;
+		return DeserializeResult::InvalidFile;
 	}
 
 	if(includeSettings) {
@@ -922,7 +924,7 @@ bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool include
 		SaveStateCompatInfo compatInfo = _console->ValidateSaveStateCompatibility(srcConsoleType.value());
 		if(!compatInfo.IsCompatible) {
 			MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
-			return false;
+			return DeserializeResult::SpecificError;
 		}
 
 		s.RemoveKeys(compatInfo.FieldsToRemove);
@@ -935,22 +937,33 @@ bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool include
 
 		if(!s.IsValid()) {
 			MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
-			return false;
+			return DeserializeResult::SpecificError;
 		}
 	}
 
 	s.Stream(_console, "");
-	
+	if(s.HasError()) {
+		return DeserializeResult::SpecificError;
+	}
+
 	if(sendNotification) {
 		_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
 	}
-	return true;
+	return DeserializeResult::Success;
 }
 
 BaseVideoFilter* Emulator::GetVideoFilter(bool getDefaultFilter)
 {
 	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetVideoFilter(getDefaultFilter) : new SnesDefaultVideoFilter(this);
+}
+
+void Emulator::GetScreenRotationOverride(uint32_t& rotation)
+{
+	shared_ptr<IConsole> console = GetConsole();
+	if(console) {
+		console->GetScreenRotationOverride(rotation);
+	}
 }
 
 void Emulator::InputBarcode(uint64_t barcode, uint32_t digitCount)

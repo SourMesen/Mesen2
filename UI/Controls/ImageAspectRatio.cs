@@ -20,10 +20,15 @@ namespace Mesen.Controls
 		protected override Size ArrangeOverride(Size finalSize)
 		{
 			finalSize = base.ArrangeOverride(finalSize);
-			if(finalSize.Width >= finalSize.Height * 256 / 240) {
-				return new Size(finalSize.Height * 256 / 240, finalSize.Height);
+			if(Source == null) {
+				return finalSize;
+			}
+
+			double ratio = Source.Size.Width / Source.Size.Height;
+			if(finalSize.Width >= finalSize.Height * ratio) {
+				return new Size(finalSize.Height * ratio, finalSize.Height);
 			} else {
-				return new Size(finalSize.Width, finalSize.Width * 240 / 256);
+				return new Size(finalSize.Width, finalSize.Width / ratio);
 			}
 		}
 	}

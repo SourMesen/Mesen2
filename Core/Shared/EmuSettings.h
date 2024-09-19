@@ -30,6 +30,7 @@ private:
 	SmsConfig _sms;
 	CvConfig _cv;
 	GbaConfig _gba;
+	WsConfig _ws;
 
 	atomic<uint32_t> _flags;
 	atomic<uint64_t> _debuggerFlags;
@@ -91,6 +92,9 @@ public:
 
 	void SetCvConfig(CvConfig& config);
 	CvConfig& GetCvConfig();
+
+	void SetWsConfig(WsConfig& config);
+	WsConfig& GetWsConfig();
 
 	void SetGameConfig(GameConfig& config);
 	GameConfig& GetGameConfig();

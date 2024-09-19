@@ -28,7 +28,10 @@ enum class FirmwareType
 	StudyBox,
 	PceSuperCd,
 	PceGamesExpress,
-	ColecoVision
+	ColecoVision,
+	WonderSwan,
+	WonderSwanColor,
+	SwanCrystal,
 };
 
 struct MissingFirmwareMessage
@@ -112,6 +115,18 @@ struct MissingFirmwareMessage
 			case FirmwareType::ColecoVision:
 				FileHashes[0] = "990BF1956F10207D8781B619EB74F89B00D921C8D45C95C334C16C8CCECA09AD";
 				FileHashes[1] = "FB4A898EB93B19B36773D87A6C70EB28F981B2686BEBDD2D431B05DCDF9CFFD4";
+				break;
+
+			case FirmwareType::WonderSwan:
+				FileHashes[0] = "BF4480DBEA1C47C8B54CE7BE9382BC1006148F431FBE4277E136351FA74F635E";
+				break;
+
+			case FirmwareType::WonderSwanColor:
+				FileHashes[0] = "F5A5C044D84CE1681F94E9EF74287CB989784497BE5BD5108DF17908DFA55DB2";
+				break;
+			
+			case FirmwareType::SwanCrystal:
+				FileHashes[0] = "82E96ADDF5AB1CE09A84B6EEDAA904E4CA432756851F7E0CC0649006C183834D";
 				break;
 
 			default:
@@ -408,6 +423,33 @@ public:
 		}
 
 		MessageManager::DisplayMessage("Error", "Could not find firmware file for the ColecoVision");
+		return false;
+	}
+
+	static bool LoadWsBootRom(Emulator* emu, vector<uint8_t>& bootRom, WsModel model)
+	{
+		string filename;
+		FirmwareType firmwareType;
+		switch(model) {
+			default:
+			case WsModel::Monochrome: filename = "bootrom.ws"; firmwareType = FirmwareType::WonderSwan; break;
+			case WsModel::Color: filename = "bootrom.wsc"; firmwareType = FirmwareType::WonderSwanColor; break;
+			case WsModel::SwanCrystal: filename = "bootrom_sc.wsc"; firmwareType = FirmwareType::SwanCrystal; break;
+		}
+		uint32_t size = model == WsModel::Monochrome ? 0x1000 : 0x2000;
+		string path = FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), filename);
+		if(AttemptLoadFirmware(bootRom, filename, size)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), firmwareType, size);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(bootRom, filename, size)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find boot rom for the WonderSwan, skipping boot screen.");
 		return false;
 	}
 };

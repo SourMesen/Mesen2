@@ -81,6 +81,8 @@ void VideoDecoder::UpdateVideoFilter()
 	}
 
 	uint32_t screenRotation = _emu->GetSettings()->GetVideoConfig().ScreenRotation;
+	_emu->GetScreenRotationOverride(screenRotation);
+
 	if(screenRotation != 0) {
 		if(!_rotateFilter || _rotateFilter->GetAngle() != screenRotation) {
 			_rotateFilter.reset(new RotateFilter(screenRotation));

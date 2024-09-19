@@ -2841,6 +2841,87 @@
     <ClInclude Include="SMS\Input\ColecoVisionController.h">
       <Filter>SMS\Input</Filter>
     </ClInclude>
+    <ClInclude Include="WS\WsTypes.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsCpu.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsConsole.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsMemoryManager.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsControlManager.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsDefaultVideoFilter.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\Debugger\WsDebugger.h">
+      <Filter>WS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\Debugger\WsAssembler.h">
+      <Filter>WS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\Debugger\WsDisUtils.h">
+      <Filter>WS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\Debugger\WsEventManager.h">
+      <Filter>WS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\Debugger\WsPpuTools.h">
+      <Filter>WS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\Debugger\WsTraceLogger.h">
+      <Filter>WS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsPpu.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsController.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\Carts\WsCart.h">
+      <Filter>WS\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsTimer.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsDmaController.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsEeprom.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsCpuPrefetch.h">
+      <Filter>WS</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\APU\WsApuCh1.h">
+      <Filter>WS\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\APU\WsApuCh2.h">
+      <Filter>WS\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\APU\WsApuCh3.h">
+      <Filter>WS\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\APU\WsApuCh4.h">
+      <Filter>WS\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\APU\WsApu.h">
+      <Filter>WS\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\APU\WsHyperVoice.h">
+      <Filter>WS\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\Debugger\DummyWsCpu.h">
+      <Filter>WS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="WS\WsSerial.h">
+      <Filter>WS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -3116,6 +3197,66 @@
     <ClCompile Include="GBA\Cart\GbaGpio.cpp">
       <Filter>GBA\Cart</Filter>
     </ClCompile>
+    <ClCompile Include="WS\WsConsole.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\Debugger\WsDebugger.cpp">
+      <Filter>WS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\Debugger\WsDisUtils.cpp">
+      <Filter>WS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\Debugger\WsEventManager.cpp">
+      <Filter>WS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\Debugger\WsPpuTools.cpp">
+      <Filter>WS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\Debugger\WsTraceLogger.cpp">
+      <Filter>WS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsCpu.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\ExpressionEvaluator.Ws.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsControlManager.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsPpu.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsMemoryManager.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\Carts\WsCart.cpp">
+      <Filter>WS\Carts</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsTimer.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsDmaController.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsCpuPrefetch.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\APU\WsApu.cpp">
+      <Filter>WS\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\Debugger\DummyWsCpu.cpp">
+      <Filter>WS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsSerial.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsDefaultVideoFilter.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="WS\WsEeprom.cpp">
+      <Filter>WS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">
@@ -3225,6 +3366,18 @@
     </Filter>
     <Filter Include="GBA\Cart">
       <UniqueIdentifier>{4cc96bee-c354-4a9b-9947-85959ccc072f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WS">
+      <UniqueIdentifier>{8d532045-df57-4c7d-be0b-19680c2c2d10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WS\Debugger">
+      <UniqueIdentifier>{14eeda13-2b16-4034-9006-7a7a347f548d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WS\Carts">
+      <UniqueIdentifier>{ffbcd5be-271d-4c27-81f4-7684bfb2b8d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WS\APU">
+      <UniqueIdentifier>{e8ed2b40-f0e0-4dc5-89b7-9acc460359c8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

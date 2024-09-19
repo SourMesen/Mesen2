@@ -21,6 +21,7 @@ public:
 			case CpuType::Pce: return MemoryType::PceMemory;
 			case CpuType::Sms: return MemoryType::SmsMemory;
 			case CpuType::Gba: return MemoryType::GbaMemory;
+			case CpuType::Ws: return MemoryType::WsMemory;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -40,6 +41,7 @@ public:
 			case CpuType::Pce: return 4;
 			case CpuType::Sms: return 4;
 			case CpuType::Gba: return 8;
+			case CpuType::Ws: return 5;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -144,6 +146,16 @@ public:
 			case MemoryType::GbaPaletteRam:
 				return CpuType::Gba;
 
+			case MemoryType::WsMemory:
+			case MemoryType::WsPrgRom:
+			case MemoryType::WsWorkRam:
+			case MemoryType::WsCartRam:
+			case MemoryType::WsCartEeprom:
+			case MemoryType::WsBootRom:
+			case MemoryType::WsInternalEeprom:
+			case MemoryType::WsPort:
+				return CpuType::Ws;
+
 			default:
 				throw std::runtime_error("Invalid CPU type");
 		}
@@ -156,7 +168,7 @@ public:
 
 	static constexpr MemoryType GetLastCpuMemoryType()
 	{
-		return MemoryType::GbaMemory;
+		return MemoryType::WsMemory;
 	}
 
 	static constexpr bool IsPpuMemory(MemoryType memType)
@@ -214,6 +226,7 @@ public:
 			case MemoryType::SmsBootRom:
 			case MemoryType::GbaPrgRom:
 			case MemoryType::GbaBootRom:
+			case MemoryType::WsPrgRom:
 				return true;
 
 			default:
@@ -235,6 +248,7 @@ public:
 			case MemoryType::SnesRegister:
 			case MemoryType::SmsCartRam:
 			case MemoryType::GbaSaveRam:
+			case MemoryType::WsCartRam:
 				return false;
 
 			default:
@@ -244,7 +258,7 @@ public:
 
 	static constexpr CpuType GetLastCpuType()
 	{
-		return CpuType::Gba;
+		return CpuType::Ws;
 	}
 
 	static string AddressToHex(CpuType cpuType, int32_t address)
@@ -252,8 +266,12 @@ public:
 		int size = GetProgramCounterSize(cpuType);
 		if(size == 4) {
 			return HexUtilities::ToHex((uint16_t)address);
+		} else if(size == 5) {
+			return HexUtilities::ToHex20(address);
 		} else if(size == 6) {
 			return HexUtilities::ToHex24(address);
+		} else if(size == 8) {
+			return HexUtilities::ToHex32(address);
 		} else {
 			return HexUtilities::ToHex(address);
 		}

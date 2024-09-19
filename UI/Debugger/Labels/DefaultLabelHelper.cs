@@ -28,6 +28,8 @@ namespace Mesen.Debugger.Labels
 				SetSmsDefaultLabels();
 			} else if(cpuTypes.Contains(CpuType.Gba)) {
 				SetGbaDefaultLabels();
+			} else if(cpuTypes.Contains(CpuType.Ws)) {
+				SetWsDefaultLabels();
 			}
 		}
 
@@ -514,6 +516,137 @@ namespace Mesen.Debugger.Labels
 			addLabel(0x208, 2, "IME", "IRQ Master Enable");
 			addLabel(0x300, 1, "POSTFLG", "Post Boot Flag");
 			addLabel(0x301, 1, "HALTCNT", "Halt Control");
+		}
+
+		private static void SetWsDefaultLabels()
+		{
+			Action<uint, uint, string> addLabel = (addr, length, label) => {
+				LabelManager.SetLabel(new CodeLabel() {
+					Address = addr,
+					Length = length,
+					MemoryType = MemoryType.WsPort,
+					Label = label
+				}, false);
+			};
+
+			addLabel(0x00, 1, "IO_DISPLAY_CTRL");
+			addLabel(0x01, 1, "IO_DISPLAY_BACK");
+			addLabel(0x02, 1, "IO_LCD_LINE");
+			addLabel(0x03, 1, "IO_LCD_INTERRUPT");
+			addLabel(0x04, 1, "IO_SPR_BASE");
+			addLabel(0x05, 1, "IO_SPR_FIRST");
+			addLabel(0x06, 1, "IO_SPR_COUNT");
+			addLabel(0x07, 1, "IO_SCR_BASE");
+			addLabel(0x08, 1, "IO_SCR2_WIN_X1");
+			addLabel(0x09, 1, "IO_SCR2_WIN_Y1");
+			addLabel(0x0A, 1, "IO_SCR2_WIN_X2");
+			addLabel(0x0B, 1, "IO_SCR2_WIN_Y2");
+			addLabel(0x0C, 1, "IO_SPR_WIN_X1");
+			addLabel(0x0D, 1, "IO_SPR_WIN_Y1");
+			addLabel(0x0E, 1, "IO_SPR_WIN_X2");
+			addLabel(0x0F, 1, "IO_SPR_WIN_Y2");
+			addLabel(0x10, 1, "IO_SCR1_SCRL_X");
+			addLabel(0x11, 1, "IO_SCR1_SCRL_Y");
+			addLabel(0x12, 1, "IO_SCR2_SCRL_X");
+			addLabel(0x13, 1, "IO_SCR2_SCRL_Y");
+			addLabel(0x14, 1, "IO_LCD_CTRL");
+			addLabel(0x15, 1, "IO_LCD_SEG");
+			addLabel(0x16, 1, "IO_LCD_VTOTAL");
+			addLabel(0x17, 1, "IO_LCD_VSYNC");
+			addLabel(0x1A, 1, "IO_LCD_STATUS");
+			addLabel(0x1C, 1, "IO_LCD_SHADE_01");
+			addLabel(0x1D, 1, "IO_LCD_SHADE_23");
+			addLabel(0x1E, 1, "IO_LCD_SHADE_45");
+			addLabel(0x1F, 1, "IO_LCD_SHADE_67");
+			addLabel(0x20, 2, "IO_PAL_0");
+			addLabel(0x22, 2, "IO_PAL_1");
+			addLabel(0x24, 2, "IO_PAL_2");
+			addLabel(0x26, 2, "IO_PAL_3");
+			addLabel(0x28, 2, "IO_PAL_4");
+			addLabel(0x2A, 2, "IO_PAL_5");
+			addLabel(0x2C, 2, "IO_PAL_6");
+			addLabel(0x2E, 2, "IO_PAL_7");
+			addLabel(0x30, 2, "IO_PAL_8");
+			addLabel(0x32, 2, "IO_PAL_9");
+			addLabel(0x34, 2, "IO_PAL_10");
+			addLabel(0x36, 2, "IO_PAL_11");
+			addLabel(0x38, 2, "IO_PAL_12");
+			addLabel(0x3A, 2, "IO_PAL_13");
+			addLabel(0x3C, 2, "IO_PAL_14");
+			addLabel(0x3E, 2, "IO_PAL_15");
+			addLabel(0x40, 2, "IO_DMA_SOURCE_L");
+			addLabel(0x42, 1, "IO_DMA_SOURCE_H");
+			addLabel(0x44, 2, "IO_DMA_DEST");
+			addLabel(0x46, 2, "IO_DMA_LENGTH");
+			addLabel(0x48, 1, "IO_DMA_CTRL");
+			addLabel(0x4A, 2, "IO_SDMA_SOURCE_L");
+			addLabel(0x4C, 1, "IO_SDMA_SOURCE_H");
+			addLabel(0x4E, 2, "IO_SDMA_LENGTH_L");
+			addLabel(0x50, 1, "IO_SDMA_LENGTH_H");
+			addLabel(0x52, 1, "IO_SDMA_CTRL");
+			addLabel(0x60, 1, "IO_SYSTEM_CTRL2");
+			addLabel(0x62, 1, "IO_SYSTEM_CTRL3");
+			addLabel(0x64, 2, "IO_HYPERV_OUT_L");
+			addLabel(0x66, 2, "IO_HYPERV_OUT_R");
+			addLabel(0x68, 1, "IO_HYPERV_IN_L");
+			addLabel(0x69, 1, "IO_HYPERV_IN_R");
+			addLabel(0x6A, 2, "IO_HYPERV_CTRL");
+			addLabel(0x80, 2, "IO_SND_FREQ_CH1");
+			addLabel(0x82, 2, "IO_SND_FREQ_CH2");
+			addLabel(0x84, 2, "IO_SND_FREQ_CH3");
+			addLabel(0x86, 2, "IO_SND_FREQ_CH4");
+			addLabel(0x88, 1, "IO_SND_VOL_CH1");
+			addLabel(0x89, 1, "IO_SND_VOL_CH2");
+			addLabel(0x8A, 1, "IO_SND_VOL_CH3");
+			addLabel(0x8B, 1, "IO_SND_VOL_CH4");
+			addLabel(0x8C, 1, "IO_SND_SWEEP");
+			addLabel(0x8D, 1, "IO_SND_SWEEP_TIME");
+			addLabel(0x8E, 1, "IO_SND_NOISE_CTRL");
+			addLabel(0x8F, 1, "IO_SND_WAVE_BASE");
+			addLabel(0x90, 1, "IO_SND_CH_CTRL");
+			addLabel(0x91, 1, "IO_SND_OUT_CTRL");
+			addLabel(0x92, 2, "IO_SND_RANDOM");
+			addLabel(0x94, 1, "IO_SND_VOL_CH2_VOICE");
+			addLabel(0x95, 1, "IO_SND_TEST");
+			addLabel(0x96, 2, "IO_SND_CH_OUT_R");
+			addLabel(0x98, 2, "IO_SND_CH_OUT_L");
+			addLabel(0x9A, 2, "IO_SND_CH_OUT_LR");
+			addLabel(0x9E, 1, "IO_SND_HW_VOL");
+			addLabel(0xA0, 1, "IO_SYSTEM_CTRL1");
+			addLabel(0xA2, 1, "IO_TIMER_CTRL");
+			addLabel(0xA4, 2, "IO_HBLANK_TIMER");
+			addLabel(0xA6, 2, "IO_VBLANK_TIMER");
+			addLabel(0xA8, 2, "IO_HBLANK_COUNTER");
+			addLabel(0xAA, 2, "IO_VBLANK_COUNTER");
+			addLabel(0xB0, 1, "IO_HWINT_VECTOR");
+			addLabel(0xB2, 1, "IO_HWINT_ENABLE");
+			addLabel(0xB4, 1, "IO_HWINT_STATUS");
+			addLabel(0xB6, 1, "IO_HWINT_ACK");
+			addLabel(0xB1, 1, "IO_SERIAL_DATA");
+			addLabel(0xB3, 1, "IO_SERIAL_STATUS");
+			addLabel(0xB5, 1, "IO_KEY_SCAN");
+			addLabel(0xB7, 1, "IO_INT_NMI_CTRL");
+			addLabel(0xBA, 2, "IO_IEEP_DATA");
+			addLabel(0xBC, 2, "IO_IEEP_CMD");
+			addLabel(0xBE, 1, "IO_IEEP_CTRL");
+			addLabel(0xC1, 1, "IO_BANK_RAM");
+			addLabel(0xC2, 1, "IO_BANK_ROM0");
+			addLabel(0xC3, 1, "IO_BANK_ROM1");
+			/*addLabel(0xC0, 1, "IO_BANK_ROM_LINEAR");
+			addLabel(0xC4, 1, "IO_CART_EEP_DATA");
+			addLabel(0xC6, 1, "IO_CART_EEP_CMD");
+			addLabel(0xC8, 1, "IO_CART_EEP_CTRL");
+			addLabel(0xCA, 1, "IO_CART_RTC_CTRL");
+			addLabel(0xCB, 1, "IO_CART_RTC_DATA");
+			addLabel(0xCC, 1, "IO_CART_GPO_CTRL");
+			addLabel(0xCD, 1, "IO_CART_GPO_DATA");
+			addLabel(0xCE, 1, "IO_CART_FLASH");
+			addLabel(0xD0, 1, "IO_BANK_2003_RAM");
+			addLabel(0xD2, 1, "IO_BANK_2003_ROM0");
+			addLabel(0xD4, 1, "IO_BANK_2003_ROM1");
+			addLabel(0xD6, 1, "IO_CART_KARNAK_TIMER");
+			addLabel(0xD8, 1, "IO_CART_KARNAK_ADPCM_INPUT");
+			addLabel(0xD9, 1, "IO_CART_KARNAK_ADPCM_OUTPUT");*/
 		}
 	}
 }

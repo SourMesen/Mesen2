@@ -22,6 +22,8 @@
 #include "SMS/SmsMemoryManager.h"
 #include "GBA/GbaConsole.h"
 #include "GBA/GbaMemoryManager.h"
+#include "WS/WsConsole.h"
+#include "WS/WsMemoryManager.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugBreakHelper.h"
@@ -51,6 +53,8 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 		_smsConsole = sms;
 	} else if(GbaConsole* gba = dynamic_cast<GbaConsole*>(console)) {
 		_gbaConsole = gba;
+	} else if(WsConsole* ws = dynamic_cast<WsConsole*>(console)) {
+		_wsConsole = ws;
 	}
 
 	for(int i = 0; i < DebugUtilities::GetMemoryTypeCount(); i++) {
@@ -97,8 +101,10 @@ uint32_t MemoryDumper::GetMemorySize(MemoryType type)
 		case MemoryType::PceMemory: return 0x10000;
 		case MemoryType::SmsMemory: return 0x10000;
 		case MemoryType::GbaMemory: return 0x10000000;
+		case MemoryType::WsMemory: return 0x100000;
 		case MemoryType::SnesRegister: return 0x10000;
 		case MemoryType::SmsPort: return 0x100;
+		case MemoryType::WsPort: return 0x10000;
 		default: return _emu->GetMemory(type).Size;
 	}
 }
@@ -207,6 +213,17 @@ void MemoryDumper::GetMemoryState(MemoryType type, uint8_t *buffer)
 			}
 			break;
 		}
+
+		case MemoryType::WsMemory: {
+			if(_wsConsole) {
+				WsMemoryManager* memManager = _wsConsole->GetMemoryManager();
+				for(int i = 0; i <= 0xFFFFF; i++) {
+					buffer[i] = memManager->DebugRead(i);
+				}
+			}
+			break;
+		}
+
 		default: 
 			uint8_t* src = GetMemoryBuffer(type);
 			if(src) {
@@ -257,6 +274,7 @@ void MemoryDumper::InternalSetMemoryValues(MemoryType originalMemoryType, uint32
 			case MemoryType::PceMemory: _pceConsole->GetMemoryManager()->DebugWrite(address, value); break;
 			case MemoryType::SmsMemory: _smsConsole->GetMemoryManager()->DebugWrite(address, value); break;
 			case MemoryType::GbaMemory: _gbaConsole->GetMemoryManager()->DebugWrite(address, value); break;
+			case MemoryType::WsMemory: _wsConsole->GetMemoryManager()->DebugWrite(address, value); break;
 			case MemoryType::SpcDspRegisters: _spc->DebugWriteDspReg(address, value); break;
 
 			default:
@@ -349,7 +367,10 @@ uint8_t MemoryDumper::InternalGetMemoryValue(MemoryType memoryType, uint32_t add
 		case MemoryType::NesPpuMemory: return _nesConsole->DebugReadVram(address);
 		case MemoryType::PceMemory: return _pceConsole->GetMemoryManager()->DebugRead(address);
 		case MemoryType::SmsMemory: return _smsConsole->GetMemoryManager()->DebugRead(address);
+		case MemoryType::SmsPort: return _smsConsole->GetMemoryManager()->DebugReadPort(address);
 		case MemoryType::GbaMemory: return _gbaConsole->GetMemoryManager()->DebugRead(address);
+		case MemoryType::WsMemory: return _wsConsole->GetMemoryManager()->DebugRead(address);
+		case MemoryType::WsPort: return _wsConsole->GetMemoryManager()->DebugReadPort<uint8_t>(address);
 
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);

@@ -5,6 +5,8 @@ enum class VectorType
 {
 	Indirect,
 	Direct,
+	x86,
+	x86WithOffset
 };
 
 struct CpuVectorDefinition
@@ -25,6 +27,7 @@ struct DebuggerFeatures
 	bool CallStack;
 	bool CpuCycleStep;
 	
+	uint8_t IrqVectorOffset;
 	uint8_t CpuVectorCount;
-	CpuVectorDefinition CpuVectors[10];
+	CpuVectorDefinition CpuVectors[16];
 };

@@ -370,6 +370,13 @@ namespace Mesen.Debugger.ViewModels
 					break;
 				}
 
+				case CpuType.Ws:
+					Tabs = new() {
+						new() { Title = "BG0", Layer = 0 },
+						new() { Title = "BG1", Layer = 1 }
+					};
+					break;
+
 				default:
 					throw new Exception("unsupported cpu type");
 			}

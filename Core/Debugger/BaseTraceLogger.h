@@ -107,6 +107,19 @@ enum class RowDataType
 
 	CPSR,
 	Mode,
+
+	AX,
+	BX,
+	CX,
+	DX,
+	CS,
+	IP,
+	SS,
+	BP,
+	DS,
+	ES,
+	SI,
+	DI
 };
 
 struct TraceLogPpuState
@@ -256,7 +269,7 @@ protected:
 	template<typename T>
 	void WriteIntValue(string& output, T value, RowPart& rowPart)
 	{
-		string str = rowPart.DisplayInHex ? HexUtilities::ToHex(value) : std::to_string(value);
+		string str = rowPart.DisplayInHex ? DebugUtilities::AddressToHex(_cpuType, value) : std::to_string(value);
 		if(rowPart.MinWidth > (int)str.size()) {
 			if(rowPart.DisplayInHex) {
 				str = std::string(rowPart.MinWidth - str.size(), '0') + str;

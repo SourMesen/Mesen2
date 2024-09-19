@@ -39,7 +39,7 @@ namespace Mesen.Config
 		{
 			UInt16[]? buttonMappings = GetCustomButtons(type);
 			if(buttonMappings == null) {
-				if(GetDefaultCustomKeys(type) != null) {
+				if(GetDefaultCustomKeys(type, null) != null) {
 					if(mappingIndex == 0) {
 						SetDefaultKeys(type, null);
 					} else {
@@ -72,7 +72,7 @@ namespace Mesen.Config
 			}
 		}
 
-		protected override UInt16[]? GetDefaultCustomKeys(ControllerType type)
+		public override UInt16[]? GetDefaultCustomKeys(ControllerType type, KeyPresetType? preset)
 		{
 			switch(type) {
 				case ControllerType.SmsLightPhaser:
@@ -89,7 +89,7 @@ namespace Mesen.Config
 		public override void SetDefaultKeys(ControllerType type, KeyPresetType? preset)
 		{
 			switch(type) {
-				case ControllerType.SmsLightPhaser: LightPhaserButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.SmsLightPhaser: LightPhaserButtons = GetDefaultCustomKeys(type, preset); break;
 
 				default:
 					base.SetDefaultKeys(type, preset);

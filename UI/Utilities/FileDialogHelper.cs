@@ -56,6 +56,7 @@ namespace Mesen.Utilities
 							"*.pce", "*.sgx", "*.cue", "*.hes",
 							"*.sms", "*.gg", "*.sg", "*.col",
 							"*.gba",
+							"*.ws", "*.wsc",
 							"*.zip", "*.7z"
 						} });
 						filter.Add(new FilePickerFileType("SNES ROM files") { Patterns = new List<string>() { "*.sfc", "*.fig", "*.smc", "*.bs", "*.spc" } });
@@ -66,6 +67,7 @@ namespace Mesen.Utilities
 						filter.Add(new FilePickerFileType("SMS / GG ROM files") { Patterns = new List<string>() { "*.sms", "*.gg" } });
 						filter.Add(new FilePickerFileType("SG-1000 ROM files") { Patterns = new List<string>() { "*.sg" } });
 						filter.Add(new FilePickerFileType("ColecoVision ROM files") { Patterns = new List<string>() { "*.col" } });
+						filter.Add(new FilePickerFileType("WonderSwan ROM files") { Patterns = new List<string>() { "*.ws", "*.wsc" } });
 					} else if(ext == FileDialogHelper.FirmwareExt) {
 						filter.Add(new FilePickerFileType("All firmware files") { Patterns = new List<string>() { "*.sfc", "*.pce", "*.nes", "*.bin", "*.rom", "*.col" } });
 					} else if(ext == FileDialogHelper.LabelFileExt) {

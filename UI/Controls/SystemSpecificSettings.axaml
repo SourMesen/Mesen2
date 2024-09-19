@@ -6,18 +6,21 @@
 	xmlns:l="using:Mesen.Localization"
 	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d"
+	Design.Width="500"
+	Design.Height="100"
 	x:Name="root"
 	x:Class="Mesen.Controls.SystemSpecificSettings"
 	HorizontalAlignment="Left"
 >
 	<c:OptionSection Header="{l:Translate lblSystemSpecificSettings}" Margin="0">
-		<WrapPanel Orientation="Horizontal" MaxWidth="400">
-			<c:ButtonWithIcon Icon="Assets/NesIcon.png" Text="{l:Translate lblNes}" MinWidth="90" Click="OnClickNes" />
-			<c:ButtonWithIcon Icon="Assets/SnesIcon.png" Text="{l:Translate lblSnes}" MinWidth="90" Click="OnClickSnes" />
-			<c:ButtonWithIcon Icon="Assets/GameboyIcon.png" Text="{l:Translate lblGameboy}" MinWidth="90" Click="OnClickGameboy" />
-			<c:ButtonWithIcon Icon="Assets/GbaIcon.png" Text="{l:Translate lblGba}" MinWidth="90" Click="OnClickGba" />
-			<c:ButtonWithIcon Icon="Assets/PceIcon.png" Text="{l:Translate lblPcEngine}" MinWidth="90" Click="OnClickPcEngine" />
-			<c:ButtonWithIcon Icon="Assets/SmsIcon.png" Text="{l:Translate lblSms}" MinWidth="90" Click="OnClickSms" />
+		<WrapPanel Orientation="Horizontal" MaxWidth="470">
+			<c:ButtonWithIcon Icon="Assets/NesIcon.png" Text="{l:Translate lblNes}" MinWidth="110" Click="OnClickNes" />
+			<c:ButtonWithIcon Icon="Assets/SnesIcon.png" Text="{l:Translate lblSnes}" MinWidth="110" Click="OnClickSnes" />
+			<c:ButtonWithIcon Icon="Assets/GameboyIcon.png" Text="{l:Translate lblGameboy}" MinWidth="110" Click="OnClickGameboy" />
+			<c:ButtonWithIcon Icon="Assets/GbaIcon.png" Text="{l:Translate lblGba}" MinWidth="110" Click="OnClickGba" />
+			<c:ButtonWithIcon Icon="Assets/PceIcon.png" Text="{l:Translate lblPcEngine}" MinWidth="110" Click="OnClickPcEngine" />
+			<c:ButtonWithIcon Icon="Assets/SmsIcon.png" Text="{l:Translate lblSms}" MinWidth="110" Click="OnClickSms" />
+			<c:ButtonWithIcon Icon="Assets/WsIcon.png" Text="{l:Translate lblWs}" MinWidth="110" Click="OnClickWs" />
 		</WrapPanel>
 	</c:OptionSection>
 </UserControl>

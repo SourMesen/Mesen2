@@ -29,6 +29,8 @@ namespace Mesen.Views
 					ControllerType.PceController => new PceControllerView(),
 					ControllerType.PceAvenuePad6 => new PceAvenuePad6View(),
 					ControllerType.SmsController => new SmsControllerView(),
+					ControllerType.WsController => new WsControllerView(),
+					ControllerType.WsControllerVertical => new WsControllerVerticalView(),
 					_ => new DefaultControllerView()
 				};
 			}

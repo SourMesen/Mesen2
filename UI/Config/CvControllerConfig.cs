@@ -40,7 +40,7 @@ namespace Mesen.Config
 		{
 			UInt16[]? buttonMappings = GetCustomButtons(type);
 			if(buttonMappings == null) {
-				if(GetDefaultCustomKeys(type) != null) {
+				if(GetDefaultCustomKeys(type, null) != null) {
 					if(mappingIndex == 0) {
 						SetDefaultKeys(type, null);
 					} else {
@@ -73,7 +73,7 @@ namespace Mesen.Config
 			}
 		}
 
-		public UInt16[]? GetDefaultCustomKeys(ControllerType type, KeyPresetType? preset)
+		public override UInt16[]? GetDefaultCustomKeys(ControllerType type, KeyPresetType? preset)
 		{
 			switch(type) {
 				case ControllerType.ColecoVisionController:
@@ -127,11 +127,6 @@ namespace Mesen.Config
 				default:
 					return null;
 			}
-		}
-
-		protected override UInt16[]? GetDefaultCustomKeys(ControllerType type)
-		{
-			return GetDefaultCustomKeys(type, null);
 		}
 
 		public override void SetDefaultKeys(ControllerType type, KeyPresetType? preset)

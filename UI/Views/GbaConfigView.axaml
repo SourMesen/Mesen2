@@ -18,14 +18,6 @@
 	<Design.DataContext>
 		<vm:GbaConfigViewModel />
 	</Design.DataContext>
-
-	<UserControl.Styles>
-		<Style Selector="dc|PaletteSelector">
-			<Setter Property="SelectionMode" Value="None" />
-			<Setter Property="ColumnCount" Value="4" />
-			<Setter Property="BlockSize" Value="20" />
-		</Style>
-	</UserControl.Styles>
 	
 	<TabControl TabStripPlacement="Top" SelectedIndex="{Binding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">

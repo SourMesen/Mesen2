@@ -183,7 +183,7 @@ public:
 	void SuspendDebugger(bool release);
 
 	void Serialize(ostream& out, bool includeSettings, int compressionLevel = 1);
-	bool Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> consoleType = std::nullopt, bool sendNotification = true);
+	DeserializeResult Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> consoleType = std::nullopt, bool sendNotification = true);
 
 	SoundMixer* GetSoundMixer() { return _soundMixer.get(); }
 	VideoRenderer* GetVideoRenderer() { return _videoRenderer.get(); }
@@ -204,6 +204,7 @@ public:
 	shared_ptr<SystemActionManager> GetSystemActionManager() { return _systemActionManager; }
 
 	BaseVideoFilter* GetVideoFilter(bool getDefaultFilter = false);
+	void GetScreenRotationOverride(uint32_t& rotation);
 
 	void InputBarcode(uint64_t barcode, uint32_t digitCount);
 	void ProcessTapeRecorderAction(TapeRecorderAction action, string filename);
@@ -268,10 +269,10 @@ public:
 		return true;
 	}
 
-	template<CpuType cpuType, MemoryType memType, MemoryOperationType opType> __forceinline void ProcessMemoryAccess(uint32_t addr, uint8_t value)
+	template<CpuType cpuType, MemoryType memType, MemoryOperationType opType, typename T> __forceinline void ProcessMemoryAccess(uint32_t addr, T value)
 	{
 		if(_debugger) {
-			_debugger->ProcessMemoryAccess<cpuType, memType, opType>(addr, value);
+			_debugger->ProcessMemoryAccess<cpuType, memType, opType, T>(addr, value);
 		}
 	}
 

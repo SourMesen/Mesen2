@@ -1,0 +1,113 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:v="using:Mesen.Views"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:WsConfigViewModel"
+	x:Class="Mesen.Views.WsConfigView"
+>
+	<Design.DataContext>
+		<vm:WsConfigViewModel />
+	</Design.DataContext>
+	
+	<TabControl TabStripPlacement="Top" SelectedIndex="{Binding SelectedTab}">
+		<TabItem Header="{l:Translate tpgGeneral}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<StackPanel Orientation="Horizontal" Margin="3 0 5 0">
+						<TextBlock Text="{l:Translate lblModel}" />
+						<c:EnumComboBox SelectedItem="{Binding Config.Model}" Width="150" />
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgAudio}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left">
+						<StackPanel Orientation="Horizontal" Height="150">
+							<StackPanel.Styles>
+								<Style Selector="c|MesenSlider">
+									<Setter Property="Minimum" Value="0" />
+									<Setter Property="Maximum" Value="100" />
+									<Setter Property="Orientation" Value="Vertical" />
+									<Setter Property="Margin" Value="5 0" />
+								</Style>
+							</StackPanel.Styles>
+
+							<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{Binding Config.Channel1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{Binding Config.Channel2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{Binding Config.Channel3Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{Binding Config.Channel4Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel5}" Value="{Binding Config.Channel5Vol}" />
+						</StackPanel>
+					</c:GroupBox>
+					
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblAudioMode}" />
+						<c:EnumComboBox SelectedItem="{Binding Config.AudioMode}" Width="200" />
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgEmulation}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<CheckBox IsChecked="{Binding Config.UseBootRom}" Content="{l:Translate chkUseBootRom}"/>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgInput}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,5,Auto">
+						<TextBlock Text="{l:Translate lblPlayer1Horizontal}" />
+						<Button
+							Grid.Column="1"
+							Margin="10 0 0 0"
+							Command="{Binding SetupPlayerHorizontal}"
+							CommandParameter="{Binding $self}"
+							Content="{l:Translate btnSetup}"
+						/>
+
+						<TextBlock Text="{l:Translate lblPlayer1Vertical}" Grid.Row="2" />
+						<Button
+							Margin="10 0 0 0"
+							Grid.Row="2"
+							Grid.Column="1"
+							Command="{Binding SetupPlayerVertical}"
+							CommandParameter="{Binding $self}"
+							Content="{l:Translate btnSetup}"
+						/>
+					</Grid>
+				</c:OptionSection>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgVideo}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<v:VideoConfigOverrideView DataContext="{Binding Config.ConfigOverrides}" />
+					
+					<c:OptionSection Header="{l:Translate lblLcdSettings}">
+						<CheckBox IsChecked="{Binding Config.AutoRotate}" Content="{l:Translate chkAutoRotate}" />
+						<CheckBox IsChecked="{Binding Config.LcdAdjustColors}" Content="{l:Translate chkLcdAdjustColors}" />
+						<CheckBox IsChecked="{Binding Config.BlendFrames}" Content="{l:Translate chkBlendFrames}" />
+						<CheckBox IsChecked="{Binding Config.LcdShowIcons}" Content="{l:Translate chkLcdShowIcons}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+	</TabControl>
+</UserControl>

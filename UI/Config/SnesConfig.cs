@@ -124,42 +124,7 @@ namespace Mesen.Config
 
 		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 		{
-			List<SnesKeyMapping> mappings = new List<SnesKeyMapping>();
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-				SnesKeyMapping mapping = new();
-				KeyPresets.ApplyXboxLayout(mapping, 0, ControllerType.SnesController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-				SnesKeyMapping mapping = new();
-				KeyPresets.ApplyPs4Layout(mapping, 0, ControllerType.SnesController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-				SnesKeyMapping mapping = new();
-				KeyPresets.ApplyWasdLayout(mapping, ControllerType.SnesController);
-				mappings.Add(mapping);
-			}
-			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-				SnesKeyMapping mapping = new();
-				KeyPresets.ApplyArrowLayout(mapping, ControllerType.SnesController);
-				mappings.Add(mapping);
-			}
-
-			Port1.Type = ControllerType.SnesController;
-			Port1.TurboSpeed = 2;
-			if(mappings.Count > 0) {
-				Port1.Mapping1 = mappings[0];
-				if(mappings.Count > 1) {
-					Port1.Mapping2 = mappings[1];
-					if(mappings.Count > 2) {
-						Port1.Mapping3 = mappings[2];
-						if(mappings.Count > 3) {
-							Port1.Mapping4 = mappings[3];
-						}
-					}
-				}
-			}
+			Port1.InitDefaults<SnesKeyMapping>(defaultMappings, ControllerType.SnesController);
 		}
 	}
 

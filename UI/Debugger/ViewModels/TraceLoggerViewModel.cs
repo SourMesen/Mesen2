@@ -512,7 +512,11 @@ namespace Mesen.Debugger.ViewModels
 		public static string GetAutoFormat(TraceLoggerCpuConfig cfg, CpuType cpuType)
 		{
 			string format = "";
-			int alignValue = cpuType == CpuType.Gba ? 42 : 24;
+			int alignValue = cpuType switch {
+				CpuType.Gba => 42,
+				CpuType.Ws => 36,
+				_ => 24
+			};
 
 			void addTag(bool condition, string formatText, int align = 0)
 			{
@@ -600,6 +604,15 @@ namespace Mesen.Debugger.ViewModels
 					});
 					addTag(cfg.ShowStatusFlags, "Mode: [Mode,3] ");
 					break;
+
+				case CpuType.Ws:
+					addTag(cfg.ShowRegisters, "AX:[AX,4h] BX:[BX,4h] CX:[CX,4h] DX:[DX,4h] DS:[DS,4h] ES:[ES,4h] SS:[SS,4h] SP:[SP,4h] BP:[BP,4h] SI:[SI,4h] DI:[DI,4h] ");
+					addTag(cfg.ShowStatusFlags, cfg.StatusFormat switch {
+						StatusFlagFormat.Hexadecimal => "F:[F,4h] ",
+						StatusFlagFormat.CompactText => "F:[F] ",
+						StatusFlagFormat.Text or _ => "F:[F,10] "
+					});
+					break;
 			}
 
 			addTag(cfg.ShowFramePosition, "V:[Scanline,3] H:[Cycle,3] ");
@@ -652,6 +665,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Pce => new string[] { "A", "X", "Y", "P", "SP" },
 				CpuType.Sms => new string[] { "A", "B", "C", "D", "E", "F", "H", "L", "IX", "IY", "A'", "B'", "C'", "D'", "E'", "F'", "H'", "L'", "I", "R", "PS", "SP" },
 				CpuType.Gba  => new string[] { "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "CPSR" },
+				CpuType.Ws => new string[] { "AX", "BX", "CX", "DX", "CS", "IP", "SS", "SP", "BP", "DS", "ES", "SI", "DI", "F" },
 				_ => throw new Exception("unsupported cpu type")
 			};
 

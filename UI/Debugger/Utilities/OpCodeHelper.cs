@@ -26,6 +26,7 @@ public static class OpCodeHelper
 		InitGbDocumentation();
 		InitSmsDocumentation();
 		InitGbaDocumentation();
+		InitWsDocumentation();
 	}
 
 	public static DynamicTooltip? GetTooltip(CodeSegmentInfo seg)
@@ -136,6 +137,12 @@ public static class OpCodeHelper
 	{
 		//TODOSMS add missing descriptions, etc.
 		InitDocumentation(CpuType.Sms, ReadDocumentationFile("SmsDocumentation.json"));
+	}
+
+	private static void InitWsDocumentation()
+	{
+		//TODOWS add missing descriptions, etc.
+		InitDocumentation(CpuType.Ws, ReadDocumentationFile("WsDocumentation.json"));
 	}
 
 	private static void InitGbaDocumentation()

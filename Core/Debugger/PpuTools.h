@@ -184,12 +184,14 @@ enum class RawPaletteFormat
 	Rgb555,
 	Rgb333,
 	Rgb222,
-	Rgb444
+	Rgb444,
+	Bgr444
 };
 
 struct DebugPaletteInfo
 {
 	MemoryType PaletteMemType;
+	uint32_t PaletteMemOffset;
 	bool HasMemType;
 
 	uint32_t ColorCount;
@@ -281,6 +283,7 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 		case TileFormat::Bpp4:
 		case TileFormat::SmsBpp4:
 		case TileFormat::GbaBpp4:
+		case TileFormat::WsBpp4Packed:
 		case TileFormat::PceSpriteBpp4:
 		case TileFormat::PceSpriteBpp2Sp01:
 		case TileFormat::PceSpriteBpp2Sp23:
@@ -418,6 +421,20 @@ template<TileFormat format> uint8_t PpuTools::GetTilePixelColor(const uint8_t* r
 			uint32_t addr = rowStart + pixelOffset;
 			if(addr <= ramMask) {
 				return ram[addr];
+			} else {
+				return 0;
+			}
+		}
+
+		case TileFormat::WsBpp4Packed: {
+			uint8_t pixelOffset = (7 - shift);
+			uint32_t addr = (rowStart + (pixelOffset >> 1));
+			if(addr <= ramMask) {
+				if(pixelOffset & 0x01) {
+					return ram[addr] & 0x0F;
+				} else {
+					return ram[addr] >> 4;
+				}
 			} else {
 				return 0;
 			}

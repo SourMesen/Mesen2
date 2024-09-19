@@ -119,6 +119,10 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_gba.Controller.Type);
 			break;
 
+		case ConsoleType::Ws:
+			//TODOWS
+			break;
+
 		default:
 			throw std::runtime_error("unsupported console type");
 	}
@@ -259,6 +263,16 @@ void EmuSettings::SetCvConfig(CvConfig& config)
 CvConfig& EmuSettings::GetCvConfig()
 {
 	return _cv;
+}
+
+void EmuSettings::SetWsConfig(WsConfig& config)
+{
+	_ws = config;
+}
+
+WsConfig& EmuSettings::GetWsConfig()
+{
+	return _ws;
 }
 
 void EmuSettings::SetGameConfig(GameConfig& config)
@@ -422,6 +436,7 @@ OverscanDimensions EmuSettings::GetOverscan()
 
 		case ConsoleType::Gameboy:
 		case ConsoleType::Gba:
+		case ConsoleType::Ws:
 			break;
 	}
 
@@ -450,8 +465,8 @@ double EmuSettings::GetAspectRatio(ConsoleRegion region, FrameInfo baseFrameSize
 		
 		//For auto, ntsc and pal, these are PAR ratios, so multiply them with the base screen's aspect ratio to get the expected screen aspect ratio
 		case VideoAspectRatio::Auto:
-			if(_emu->GetConsoleType() == ConsoleType::Gameboy || _emu->GetConsoleType() == ConsoleType::Gba) {
-				//GB shouldn't use NTSC/PAL aspect ratio when in auto mode
+			if(_emu->GetConsoleType() == ConsoleType::Gameboy || _emu->GetConsoleType() == ConsoleType::Gba || _emu->GetConsoleType() == ConsoleType::Ws) {
+				//GB/GBA/WS shouldn't use NTSC/PAL aspect ratio when in auto mode
 				return screenAspectRatio;
 			}
 			return screenAspectRatio * ((region == ConsoleRegion::Pal || region == ConsoleRegion::Dendy) ? (11.0 / 8.0) : (8.0 / 7.0));

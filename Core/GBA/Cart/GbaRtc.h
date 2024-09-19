@@ -21,7 +21,7 @@ struct GbaRtcState
 	bool TestMode; //unimplemented
 };
 
-class GbaRtc : public ISerializable
+class GbaRtc final : public ISerializable
 {
 private:
 	enum class Command : uint8_t

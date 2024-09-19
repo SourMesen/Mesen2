@@ -13,8 +13,8 @@ GbDefaultVideoFilter::GbDefaultVideoFilter(Emulator* emu, bool applyNtscFilter) 
 {
 	InitLookupTable();
 	_applyNtscFilter = applyNtscFilter;
-	_prevFrame = new uint16_t[160 * 144];
-	memset(_prevFrame, 0, 160 * 144 * sizeof(uint16_t));
+	_prevFrame = new uint16_t[GbConstants::PixelCount];
+	memset(_prevFrame, 0, GbConstants::PixelCount * sizeof(uint16_t));
 }
 
 GbDefaultVideoFilter::~GbDefaultVideoFilter()
@@ -88,7 +88,7 @@ void GbDefaultVideoFilter::OnBeforeApplyFilter()
 	bool blendFrames = gbConfig.BlendFrames && !_emu->GetRewindManager()->IsRewinding() && !_emu->IsPaused();
 	if(_blendFrames != blendFrames) {
 		_blendFrames = blendFrames;
-		memset(_prevFrame, 0, 160 * 144 * sizeof(uint16_t));
+		memset(_prevFrame, 0, GbConstants::PixelCount * sizeof(uint16_t));
 	}
 	_videoConfig = config;
 }

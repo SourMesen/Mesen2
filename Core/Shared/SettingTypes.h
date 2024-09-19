@@ -233,6 +233,10 @@ enum class ControllerType
 
 	//GBA
 	GbaController,
+
+	//WS
+	WsController,
+	WsControllerVertical
 };
 
 struct KeyMapping
@@ -249,6 +253,8 @@ struct KeyMapping
 	uint16_t Right = 0;
 	uint16_t Start = 0;
 	uint16_t Select = 0;
+	uint16_t U = 0;
+	uint16_t D = 0;
 
 	uint16_t TurboA = 0;
 	uint16_t TurboB = 0;
@@ -259,13 +265,13 @@ struct KeyMapping
 	uint16_t TurboSelect = 0;
 	uint16_t TurboStart = 0;
 	
-	uint16_t Microphone = 0;
+	uint16_t GenericKey1 = 0;
 
 	uint16_t CustomKeys[100] = {};
 
 	bool HasKeySet()
 	{
-		if(A || B || X || Y || L || R || Up || Down || Left || Right || Start || Select || TurboA || TurboB || TurboX || TurboY || TurboL || TurboR || TurboStart || TurboSelect || Microphone) {
+		if(A || B || X || Y || L || R || U || D || Up || Down || Left || Right || Start || Select || TurboA || TurboB || TurboX || TurboY || TurboL || TurboR || TurboStart || TurboSelect || GenericKey1) {
 			return true;
 		}
 		for(uint32_t i = 0; i < 100; i++) {
@@ -353,7 +359,8 @@ enum class ConsoleType
 	Nes = 2,
 	PcEngine = 3,
 	Sms = 4,
-	Gba = 5
+	Gba = 5,
+	Ws = 6
 };
 
 enum class GameboyModel
@@ -704,6 +711,45 @@ struct CvConfig
 	uint32_t ChannelVolumes[4] = {};
 };
 
+enum class WsModel : uint8_t
+{
+	Auto,
+	Monochrome,
+	Color,
+	SwanCrystal
+};
+
+enum class WsAudioMode : uint8_t
+{
+	Headphones,
+	Speakers
+};
+
+struct WsConfig
+{
+	ControllerConfig ControllerHorizontal;
+	ControllerConfig ControllerVertical;
+
+	WsModel Model = WsModel::Auto;
+	bool UseBootRom = false;
+
+	bool AutoRotate = false;
+
+	bool BlendFrames = false;
+	bool LcdAdjustColors = false;
+	bool LcdShowIcons = false;
+
+	bool HideBgLayers[2] = {};
+	bool DisableSprites = false;
+
+	WsAudioMode AudioMode = WsAudioMode::Headphones;
+	uint32_t Channel1Vol = 100;
+	uint32_t Channel2Vol = 100;
+	uint32_t Channel3Vol = 100;
+	uint32_t Channel4Vol = 100;
+	uint32_t Channel5Vol = 100;
+};
+
 struct AudioPlayerConfig
 {
 	uint32_t Volume = 100;
@@ -764,6 +810,8 @@ struct DebugConfig
 	bool GbaBreakOnNopLoad = false;
 	bool GbaBreakOnInvalidOpCode = false;
 	bool GbaBreakOnUnalignedMemAccess = false;
+	
+	bool WsBreakOnInvalidOpCode = false;
 
 	bool ScriptAllowIoOsAccess = false;
 	bool ScriptAllowNetworkAccess = false;
@@ -790,7 +838,7 @@ struct PreferencesConfig
 	bool ShowTurboRewindIcons = false;
 	bool DisableGameSelectionScreen = false;
 
-	HudDisplaySize HudSize;
+	HudDisplaySize HudSize = HudDisplaySize::Fixed;
 
 	uint32_t AutoSaveStateDelay = 5;
 	uint32_t RewindBufferSize = 300;
@@ -1008,4 +1056,5 @@ enum class DebuggerFlags
 	PceDebuggerEnabled = (1 << 8),
 	SmsDebuggerEnabled = (1 << 9),
 	GbaDebuggerEnabled = (1 << 10),
+	WsDebuggerEnabled = (1 << 11),
 };

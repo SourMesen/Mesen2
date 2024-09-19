@@ -9,6 +9,11 @@ public:
 		return (color << 3) + (color >> 2);
 	}
 
+	static uint8_t Convert4BitTo8Bit(uint8_t color)
+	{
+		return (color << 4) | color;
+	}
+
 	static uint32_t Rgb555ToArgb(uint16_t rgb555)
 	{
 		uint8_t b = Convert5BitTo8Bit((rgb555 >> 10) & 0x1F);
@@ -44,6 +49,14 @@ public:
 	static uint32_t Rgb444ToArgb(uint16_t rgb444)
 	{
 		return Rgb555ToArgb(Rgb444To555(rgb444));
+	}
+
+	static uint32_t Bgr444ToArgb(uint16_t bgr444)
+	{
+		uint8_t b = (bgr444 & 0x00F);
+		uint8_t g = (bgr444 & 0x0F0) >> 4;
+		uint8_t r = (bgr444 & 0xF00) >> 8;
+		return 0xFF000000 | (r << 20) | (r << 16) | (g << 12) | (g << 8) | (b << 4) | (b << 0);
 	}
 
 	static uint16_t Rgb888To555(uint32_t rgb888)

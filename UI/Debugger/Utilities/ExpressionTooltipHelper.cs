@@ -20,7 +20,7 @@ namespace Mesen.Debugger.Utilities
 
 			addBoldRow("Notes");
 			addRow("  -Use C++ syntax - most expressions/operators are accepted.");
-			addRow("  -Use the $ prefix to denote hexadecimal values.");
+			addRow("  -Use the $ or 0x prefixes to denote hexadecimal values.");
 			addRow("  -Labels can be used in expressions");
 			addRow(" ");
 			addBoldRow("Available values (" + ResourceHelper.GetEnumText(cpuType) + ")");

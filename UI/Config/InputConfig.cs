@@ -67,6 +67,8 @@ namespace Mesen.Config
 		[Reactive] public UInt16 Right { get; set; }
 		[Reactive] public UInt16 Start { get; set; }
 		[Reactive] public UInt16 Select { get; set; }
+		[Reactive] public UInt16 U { get; set; }
+		[Reactive] public UInt16 D { get; set; }
 
 		[Reactive] public UInt16 TurboA { get; set; }
 		[Reactive] public UInt16 TurboB { get; set; }
@@ -77,6 +79,8 @@ namespace Mesen.Config
 		[Reactive] public UInt16 TurboSelect { get; set; }
 		[Reactive] public UInt16 TurboStart { get; set; }
 
+		[Reactive] public UInt16 GenericKey1 { get; set; }
+
 		public virtual InteropKeyMapping ToInterop(ControllerType type, int mappingIndex)
 		{
 			InteropKeyMapping mappings = new InteropKeyMapping() {
@@ -86,6 +90,8 @@ namespace Mesen.Config
 				Y = this.Y,
 				L = this.L,
 				R = this.R,
+				U = this.U,
+				D = this.D,
 				Up = this.Up,
 				Down = this.Down,
 				Left = this.Left,
@@ -99,12 +105,13 @@ namespace Mesen.Config
 				TurboL = this.TurboL,
 				TurboR = this.TurboR,
 				TurboSelect = this.TurboSelect,
-				TurboStart = this.TurboStart
+				TurboStart = this.TurboStart,
+				GenericKey1 = this.GenericKey1
 			};
 
 			UInt16[]? customKeys = GetCustomButtons(type);
 			if(customKeys == null && mappingIndex == 0) {
-				customKeys = GetDefaultCustomKeys(type);
+				customKeys = GetDefaultCustomKeys(type, null);
 			}
 
 			if(customKeys != null) {
@@ -122,7 +129,7 @@ namespace Mesen.Config
 			return null;
 		}
 
-		protected virtual UInt16[]? GetDefaultCustomKeys(ControllerType type)
+		public virtual UInt16[]? GetDefaultCustomKeys(ControllerType type, KeyPresetType? preset)
 		{
 			return null;
 		}
@@ -158,6 +165,8 @@ namespace Mesen.Config
 			Y = 0;
 			L = 0;
 			R = 0;
+			U = 0;
+			D = 0;
 			Up = 0;
 			Down = 0;
 			Left = 0;
@@ -172,6 +181,7 @@ namespace Mesen.Config
 			TurboR = 0;
 			TurboSelect = 0;
 			TurboStart = 0;
+			GenericKey1 = 0;
 		}
 	}
 
@@ -202,6 +212,52 @@ namespace Mesen.Config
 		public KeyMapping Mapping4 { get => _mapping4; set => _mapping4 = value; }
 		[Reactive] public UInt32 TurboSpeed { get; set; } = 0;
 		[Reactive] public ControllerType Type { get; set; } = ControllerType.None;
+
+		public void InitDefaults(DefaultKeyMappingType defaultMappings, ControllerType type)
+		{
+			InitDefaults<KeyMapping>(defaultMappings, type);
+		}
+
+		public void InitDefaults<T>(DefaultKeyMappingType defaultMappings, ControllerType type) where T : KeyMapping, new()
+		{
+			List<T> mappings = new List<T>();
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
+				T mapping = new T();
+				mapping.SetDefaultKeys(type, KeyPresetType.XboxP1);
+				mappings.Add(mapping);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
+				T mapping = new T();
+				mapping.SetDefaultKeys(type, KeyPresetType.Ps4P1);
+				mappings.Add(mapping);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
+				T mapping = new T();
+				mapping.SetDefaultKeys(type, KeyPresetType.WasdKeys);
+				mappings.Add(mapping);
+			}
+			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
+				T mapping = new T();
+				mapping.SetDefaultKeys(type, KeyPresetType.ArrowKeys);
+				mappings.Add(mapping);
+			}
+
+			Type = type;
+			TurboSpeed = 2;
+
+			if(mappings.Count > 0) {
+				Mapping1 = mappings[0];
+				if(mappings.Count > 1) {
+					Mapping2 = mappings[1];
+					if(mappings.Count > 2) {
+						Mapping3 = mappings[2];
+						if(mappings.Count > 3) {
+							Mapping4 = mappings[3];
+						}
+					}
+				}
+			}
+		}
 
 		public InteropControllerConfig ToInterop()
 		{
@@ -253,6 +309,8 @@ namespace Mesen.Config
 		public UInt16 Right;
 		public UInt16 Start;
 		public UInt16 Select;
+		public UInt16 U;
+		public UInt16 D;
 
 		public UInt16 TurboA;
 		public UInt16 TurboB;
@@ -263,7 +321,7 @@ namespace Mesen.Config
 		public UInt16 TurboSelect;
 		public UInt16 TurboStart;
 		
-		public UInt16 Microphone;
+		public UInt16 GenericKey1;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
 		public UInt16[] CustomKeys;
@@ -346,7 +404,11 @@ namespace Mesen.Config
 		ColecoVisionController,
 
 		//GBA
-		GbaController
+		GbaController,
+
+		//WonderSwan
+		WsController,
+		WsControllerVertical,
 	}
 
 	public static class ControllerTypeExtensions
@@ -366,6 +428,8 @@ namespace Mesen.Config
 				case ControllerType.BandaiHyperShot:
 				case ControllerType.SmsController:
 				case ControllerType.ColecoVisionController:
+				case ControllerType.WsController:
+				case ControllerType.WsControllerVertical:
 					return true;
 			}
 
@@ -430,6 +494,8 @@ namespace Mesen.Config
 				case ControllerType.SmsController:
 				case ControllerType.SmsLightPhaser:
 				case ControllerType.ColecoVisionController:
+				case ControllerType.WsController:
+				case ControllerType.WsControllerVertical:
 					return true;
 			}
 
@@ -447,6 +513,7 @@ namespace Mesen.Config
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
 				case ControllerType.SmsController:
+				case ControllerType.WsController:
 					return true;
 			}
 

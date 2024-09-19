@@ -187,6 +187,12 @@
 					Content="{l:Translate chkBreakOnUnalignedMemAccess}"
 				/>
 			</StackPanel>
+			<StackPanel IsVisible="{Binding IsWs}">
+				<CheckBox
+					IsChecked="{Binding Config.Ws.BreakOnUndefinedOpCode}"
+					Content="{l:Translate chkBreakOnUndefinedOpCode}"
+				/>
+			</StackPanel>
 			<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
 			<CheckBox
 				IsChecked="{Binding Config.BreakOnUninitRead}"
