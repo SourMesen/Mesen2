@@ -22,9 +22,10 @@ PceCdRom::PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc) : _disc(d
 	_emu->GetSoundMixer()->RegisterAudioProvider(&_audioPlayer);
 	_emu->GetSoundMixer()->RegisterAudioProvider(&_adpcm);
 
-	//Initialize save ram
-	_saveRamSize = 0x2000;
+	//Initialize save ram (2 KB)
+	_saveRamSize = 0x800;
 	_saveRam = new uint8_t[_saveRamSize];
+	_orgSaveRam = new uint8_t[_saveRamSize];
 	_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
 
 	//Init the ram to be identical to the state the CD-ROM BIOS leaves it in when clearing all data
@@ -40,6 +41,7 @@ PceCdRom::PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc) : _disc(d
 	_saveRam[7] = 0x80;
 
 	_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
+	memcpy(_orgSaveRam, _saveRam, _saveRamSize);
 
 	//Initialize cdrom work ram
 	_cdromRamSize = 0x10000;
@@ -54,12 +56,13 @@ PceCdRom::~PceCdRom()
 	_emu->GetSoundMixer()->UnregisterAudioProvider(&_adpcm);
 
 	delete[] _saveRam;
+	delete[] _orgSaveRam;
 	delete[] _cdromRam;
 }
 
 void PceCdRom::SaveBattery()
 {
-	if(_saveRamSize > 0) {
+	if(memcmp(_orgSaveRam, _saveRam, _saveRamSize) != 0) {
 		_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
 	}
 }

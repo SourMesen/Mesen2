@@ -31,6 +31,7 @@ private:
 	uint32_t _cdromRamSize = 0;
 	uint8_t* _saveRam = nullptr;
 	uint32_t _saveRamSize = 0;
+	uint8_t* _orgSaveRam = nullptr;
 
 	void UpdateIrqState();
 
