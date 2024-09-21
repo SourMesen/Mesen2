@@ -21,7 +21,7 @@ namespace Mesen.Debugger.Utilities
 					ActionType = ActionType.Continue,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Continue),
 					IsEnabled = () => EmuApi.IsPaused(),
-					OnClick = () => DebugApi.ResumeExecution()
+					OnClick = () => DebugSharedActions.ResumeExecution()
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.Break,
@@ -36,7 +36,7 @@ namespace Mesen.Debugger.Utilities
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ToggleBreakContinue),
 					OnClick = () => {
 						if(EmuApi.IsPaused()) {
-							DebugApi.ResumeExecution();
+							DebugSharedActions.ResumeExecution();
 						} else {
 							Step(getCpuType(), StepType.Step);
 						}
@@ -148,6 +148,14 @@ namespace Mesen.Debugger.Utilities
 				default:
 					DebugApi.Step(cpuType, instructionCount, type);
 					break;
+			}
+		}
+
+		private static void ResumeExecution()
+		{
+			DebugApi.ResumeExecution();
+			if(ConfigManager.Config.Debug.Debugger.FocusGameOnResume) {
+				ApplicationHelper.GetMainWindow()?.BringToFront();
 			}
 		}
 	}

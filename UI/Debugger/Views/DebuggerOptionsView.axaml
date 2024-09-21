@@ -235,6 +235,11 @@
 			/>
 			
 			<CheckBox
+				IsChecked="{Binding Config.FocusGameOnResume}"
+				Content="{l:Translate chkFocusGameOnResume}"
+			/>
+			
+			<CheckBox
 				IsChecked="{Binding Config.RefreshWhileRunning}"
 				Content="{l:Translate chkRefreshWhileRunning}"
 			/>
