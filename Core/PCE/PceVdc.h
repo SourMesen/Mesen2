@@ -83,6 +83,9 @@ private:
 	bool _needVertBlankIrq = false;
 	bool _verticalBlankDone = false;
 
+	uint16_t _latchClockY = UINT16_MAX;
+	uint16_t _latchClockX = UINT16_MAX;
+
 	uint8_t _spriteCount = 0;
 	uint16_t _spriteRow = 0;
 	uint16_t _evalStartCycle = 0;

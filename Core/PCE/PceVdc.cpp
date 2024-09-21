@@ -139,19 +139,21 @@ void PceVdc::ProcessEvent()
 	switch(_nextEvent) {
 		case PceVdcEvent::LatchScrollY:
 			_needRcrIncrement = true;
+			_latchClockY = _state.HClock;
 			IncScrollY();
-			_nextEvent = PceVdcEvent::LatchScrollX;
-			_nextEventCounter = DotsToClocks(1);
-			break;
-
-		case PceVdcEvent::LatchScrollX:
-			_state.HvLatch.BgScrollX = _state.HvReg.BgScrollX;
-			_nextEvent = PceVdcEvent::HdsIrqTrigger;
-			_nextEventCounter = DotsToClocks(7);
 			if(!_state.BurstModeEnabled) {
 				_state.BackgroundEnabled = _state.NextBackgroundEnabled;
 				_state.SpritesEnabled = _state.NextSpritesEnabled;
 			}
+			_nextEvent = PceVdcEvent::LatchScrollX;
+			_nextEventCounter = DotsToClocks(2);
+			break;
+
+		case PceVdcEvent::LatchScrollX:
+			_state.HvLatch.BgScrollX = _state.HvReg.BgScrollX;
+			_latchClockX = _state.HClock;
+			_nextEvent = PceVdcEvent::HdsIrqTrigger;
+			_nextEventCounter = DotsToClocks(6);
 			break;
 
 		case PceVdcEvent::HdsIrqTrigger:
@@ -706,6 +708,9 @@ void PceVdc::ProcessEndOfScanline()
 	_state.HClock = 0;
 	_state.Scanline++;
 
+	_latchClockX = UINT16_MAX;
+	_latchClockY = UINT16_MAX;
+
 	if(_state.Scanline == 256) {
 		_state.FrameCount++;
 		_vpc->SendFrame(this);
@@ -1156,14 +1161,29 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 
 						_state.NextSpritesEnabled = (value & 0x40) != 0;
 						_state.NextBackgroundEnabled = (value & 0x80) != 0;
+						if(_latchClockY == _state.HClock && !_state.BurstModeEnabled) {
+							//Write occurred at the same time as the CR latch, update latch too
+							_state.SpritesEnabled = _state.NextSpritesEnabled;
+							_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+						}
 					}
 					break;
 
 				case 0x06: UpdateReg<0x3FF>(_state.RasterCompareRegister, value, msb); break;
-				case 0x07: UpdateReg<0x3FF>(_state.HvReg.BgScrollX, value, msb); break;
+				case 0x07:
+					UpdateReg<0x3FF>(_state.HvReg.BgScrollX, value, msb);
+					if(_latchClockX == _state.HClock) {
+						//Write occurred at the same time as the BXR latch, update latch too
+						_state.HvLatch.BgScrollX = _state.HvReg.BgScrollX;
+					}
+					break;
 				case 0x08:
 					UpdateReg<0x1FF>(_state.HvReg.BgScrollY, value, msb);
 					_state.BgScrollYUpdatePending = true;
+					if(_latchClockY == _state.HClock) {
+						//Write occurred at the same time as the BYR latch, update latch too
+						IncScrollY();
+					}
 					break;
 
 				case 0x09:
@@ -1398,6 +1418,9 @@ void PceVdc::Serialize(Serializer& s)
 		SV(_totalSpriteCount);
 		SV(_rowHasSprite0);
 		SV(_loadSpriteStart);
+
+		SV(_latchClockX);
+		SV(_latchClockY);
 
 		SVArray(_xPosHasSprite, sizeof(_xPosHasSprite));
 
