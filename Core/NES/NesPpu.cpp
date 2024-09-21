@@ -238,7 +238,10 @@ template<class T> void NesPpu<T>::SetOpenBus(uint8_t mask, uint8_t value)
 					openBus &= 0xFF7F;
 				}
 				_openBusDecayStamp[i] = _frameCount;
-			} else if(_frameCount - _openBusDecayStamp[i] > 30) {
+			} else if(_frameCount - _openBusDecayStamp[i] > 3) {
+				//Decay bits to 0 after 3 frames
+				//This is a very conservative estimate, individual bits tend to decay
+				//much faster than this.
 				openBus &= 0xFF7F;
 			}
 			value >>= 1;
