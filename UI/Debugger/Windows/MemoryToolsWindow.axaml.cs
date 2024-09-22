@@ -544,9 +544,20 @@ namespace Mesen.Debugger.Windows
 
 					CodeLabel? label = LabelManager.GetLabel((uint)addr.Value.Address, addr.Value.Type);
 					if(label == null) {
+						int length = 1;
+						if(_editor.SelectionLength > 1) {
+							int end = addr.Value.Address + _editor.SelectionLength;
+							int memSize = DebugApi.GetMemorySize(addr.Value.Type);
+							if(end >= memSize) {
+								end = memSize;
+							}
+							length = end - addr.Value.Address;
+						}
+
 						label = new CodeLabel() {
 							Address = (uint)addr.Value.Address,
-							MemoryType = addr.Value.Type
+							MemoryType = addr.Value.Type,
+							Length = (uint)length
 						};
 					}
 
