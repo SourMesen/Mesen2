@@ -79,6 +79,15 @@ namespace Mesen.Debugger.Windows
 			_editor.Focus();
 		}
 
+		protected override void OnGotFocus(GotFocusEventArgs e)
+		{
+			base.OnGotFocus(e);
+			if(FocusManager?.GetFocusedElement() == this) {
+				//Focus on editor whenever the window itself is focused
+				_editor.Focus();
+			}
+		}
+
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
