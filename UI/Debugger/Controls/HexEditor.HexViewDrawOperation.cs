@@ -22,6 +22,7 @@ namespace Mesen.Debugger.Controls
 			private Size _letterSize;
 			private int _bytesPerRow;
 			private bool _showStringView;
+			private bool _inStringView;
 			private double _rowHeight;
 			private string _hexFormat;
 			private string _fontFamily;
@@ -30,6 +31,7 @@ namespace Mesen.Debugger.Controls
 			private IHexEditorDataProvider _dataProvider;
 			private Dictionary<Color, SKPaint> _skFillPaints = new Dictionary<Color, SKPaint>();
 			private Dictionary<Color, SKPaint> _skBorderPaints = new Dictionary<Color, SKPaint>();
+			private Color _selectedColorOther = ColorHelper.GetColor(Colors.LightBlue);
 			private Color _selectedColor = ColorHelper.GetColor(Colors.LightSkyBlue);
 			private bool _highDensityMode;
 
@@ -50,6 +52,7 @@ namespace Mesen.Debugger.Controls
 				_fgColors = fgColors;
 				_letterSize = _he.LetterSize;
 				_showStringView = _he.ShowStringView;
+				_inStringView = _he._inStringView;
 				_stringViewPosition = _he.RowWidth + _he.StringViewMargin;
 				_highDensityMode = _he.HighDensityMode;
 
@@ -242,7 +245,8 @@ namespace Mesen.Debugger.Controls
 				int row = 0;
 				double drawOffsetY = _highDensityMode ? -_rowHeight * 0.1 : -_rowHeight * 0.2;
 
-				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(_selectedColor.R, _selectedColor.G, _selectedColor.B, 255) };
+				Color selectedColor = _inStringView ? _selectedColor : _selectedColorOther;
+				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(selectedColor.R, selectedColor.G, selectedColor.B, 255) };
 
 				SKRect GetRect(int i) => new SKRect(
 					(float)_he._startPositionByByte[i],
@@ -301,7 +305,8 @@ namespace Mesen.Debugger.Controls
 				int pos = 0;
 				int row = 0;
 
-				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(_selectedColor.R, _selectedColor.G, _selectedColor.B, 255) };
+				Color selectedColor = _inStringView ? _selectedColorOther : _selectedColor;
+				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(selectedColor.R, selectedColor.G, selectedColor.B, 255) };
 
 				SKRect GetRect(int start, int end) => new SKRect(
 					(float)(start * 3 * _letterSize.Width),

@@ -741,23 +741,48 @@ namespace Mesen.Debugger.Controls
 			context.Custom(new HexViewDrawOperation(this, dataToDraw, fgColors, _fontAntialiasing));
 
 			if(selectedRow >= TopRow && selectedRow < TopRow + visibleRows) {
-				//Draw selected character/byte cursor
-				double xPos = -1;
-				if(ShowStringView && _inStringView) {
-					int index = (selectedRow - TopRow) * bytesPerRow + selectedColumn;
+				//Draw selected character/byte cursor + rectangle around correspond byte in other view
+				PixelPoint cursorPos = new PixelPoint(
+					(int)(letterWidth * selectedColumn * 3 + (!_inStringView && LastNibble ? letterWidth : 0)),
+					(int)((selectedRow - TopRow) * RowHeight)
+				);
+
+				Rect otherViewRect = new Rect();
+
+				if(ShowStringView) {
 					float[] startPos = _startPositionByByte;
+					float[] endPos = _endPositionByByte;
+					int index = (selectedRow - TopRow) * bytesPerRow + selectedColumn;
 					if(index >= 0 && index < startPos.Length) {
-						xPos = RowWidth + StringViewMargin + startPos[index];
+						if(_inStringView) {
+							otherViewRect = new Rect(
+								cursorPos.X,
+								cursorPos.Y,
+								(int)(letterWidth * 2) + 2,
+								(int)RowHeight
+							);
+
+							cursorPos = cursorPos.WithX((int)(RowWidth + StringViewMargin + startPos[index]));
+						} else {
+							otherViewRect = new Rect(
+								RowWidth + StringViewMargin + startPos[index],
+								cursorPos.Y,
+								(int)endPos[index] - startPos[index],
+								(int)RowHeight
+							);
+						}
 					}
-				} else {
-					xPos = letterWidth * selectedColumn * 3 + (LastNibble ? letterWidth : 0);
 				}
 
-				if(xPos >= 0) {
-					xPos = (int)xPos;
-					double yPos = (int)((selectedRow - TopRow) * RowHeight);
+				if(cursorPos.X >= 0) {
 					Pen cursorPen = ColorHelper.GetPen(Colors.Black);
-					context.DrawRectangle(cursorPen, new Rect(xPos, yPos, 1, (int)RowHeight));
+					context.DrawRectangle(cursorPen, new Rect(cursorPos.X, cursorPos.Y, 1, (int)RowHeight));
+				}
+
+				if(otherViewRect.Width > 0 && SelectionLength == 0) {
+					Pen cursorPen = ColorHelper.GetPen(Colors.Black);
+					cursorPen.DashStyle = DashStyle.Dash;
+					context.DrawRectangle(cursorPen, otherViewRect.Inflate(new Thickness(0, -1, 0, 0)));
 				}
 			}
 		}
