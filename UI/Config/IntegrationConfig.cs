@@ -41,6 +41,7 @@ namespace Mesen.Config
 				case MemoryType.PceMemory:
 				case MemoryType.SmsMemory:
 				case MemoryType.GbaMemory:
+				case MemoryType.WsMemory:
 				case MemoryType.SnesVideoRam:
 				case MemoryType.SnesSpriteRam:
 				case MemoryType.SnesCgRam:
@@ -61,6 +62,8 @@ namespace Mesen.Config
 				case MemoryType.GbaVideoRam:
 				case MemoryType.GbaSpriteRam:
 				case MemoryType.GbaPaletteRam:
+				case MemoryType.WsBootRom:
+				case MemoryType.WsPort:
 					return ImportOtherLabels;
 
 				case MemoryType.SnesPrgRom:
@@ -74,6 +77,7 @@ namespace Mesen.Config
 				case MemoryType.GbBootRom:
 				case MemoryType.GbaPrgRom:
 				case MemoryType.GbaBootRom:
+				case MemoryType.WsPrgRom:
 					return ImportPrgRomLabels;
 				
 				case MemoryType.SnesWorkRam:
@@ -95,6 +99,7 @@ namespace Mesen.Config
 				case MemoryType.BsxPsRam:
 				case MemoryType.GbaIntWorkRam:
 				case MemoryType.GbaExtWorkRam:
+				case MemoryType.WsWorkRam:
 					return ImportWorkRamLabels;
 
 				case MemoryType.SnesSaveRam:
@@ -104,6 +109,7 @@ namespace Mesen.Config
 				case MemoryType.SmsCartRam:
 				case MemoryType.BsxMemoryPack:
 				case MemoryType.GbaSaveRam:
+				case MemoryType.WsCartRam:
 					return ImportSaveRamLabels;
 
 				default:
