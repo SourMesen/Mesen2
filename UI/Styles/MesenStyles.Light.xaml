@@ -92,6 +92,10 @@
 					<Color x:Key="MesenMenuMarginStartColor">#fcfcfc</Color>
 					<Color x:Key="MesenMenuMarginEndColor">#f1f1f1</Color>
 
+					<!-- DataBox colors -->
+					<SolidColorBrush x:Key="DataGridColumnHeaderBackgroundBrush" Color="{StaticResource DataGridColumnHeaderBackgroundColor}" />
+					<SolidColorBrush x:Key="DataGridColumnHeaderForegroundBrush" Color="{StaticResource SystemBaseMediumColor}" />
+
 					<!-- Fluent color overrides -->
 					<Color x:Key="MenuFlyoutPresenterBackground">#FDFDFD</Color>
 					<Color x:Key="MenuFlyoutPresenterBorderBrush">#808080</Color>
