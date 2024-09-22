@@ -145,17 +145,11 @@ namespace Mesen.Debugger.ViewModels
 			DockFactory.StatusTool.Model = ConsoleStatus;
 
 			DockLayout = DockFactory.CreateLayout();
-			DockFactory.InitLayout(DockLayout);
-
-			if(FunctionList == null) {
-				DockFactory.CloseDockable(DockFactory.FunctionListTool);
-			}
+			InitDock();
 
 			if(Design.IsDesignMode) {
 				return;
 			}
-
-			UpdateSourceViewState();
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 
@@ -168,6 +162,21 @@ namespace Mesen.Debugger.ViewModels
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
 			BreakpointManager.AddCpuType(CpuType);
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), true);
+		}
+
+		private void InitDock()
+		{
+			DockFactory.InitLayout(DockLayout);
+
+			if(FunctionList == null) {
+				DockFactory.CloseDockable(DockFactory.FunctionListTool);
+			}
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			UpdateSourceViewState();
 		}
 
 		public void ScrollToAddress(int address)
@@ -214,27 +223,22 @@ namespace Mesen.Debugger.ViewModels
 		{
 			ISymbolProvider? provider = DebugWorkspaceManager.SymbolProvider;
 			if(provider != null) {
-				bool wasActive = IsToolActive(DockFactory.SourceViewTool);
-
-				//Close the source view tab if it's already visible, to ensure it gets refreshed properly
-				DockFactory.CloseDockable(DockFactory.SourceViewTool);
-
 				SourceView = new SourceViewViewModel(this, provider, CpuType);
 				DockFactory.SourceViewTool.Model = SourceView;
-				if(DockFactory.DisassemblyTool.Owner is IDock dock) {
-					if(!IsToolVisible(DockFactory.SourceViewTool)) {
+				if(!IsToolVisible(DockFactory.SourceViewTool)) {
+					if(DockFactory.SourceViewTool.Owner is IDock dock && IsDockVisible(dock)) {
 						DockFactory.AddDockable(dock, DockFactory.SourceViewTool);
-					}
-					if(wasActive) {
-						//Re-select the source view tab if it was selected before the update
-						dock.ActiveDockable = DockFactory.SourceViewTool;
+					} else if(DockFactory.DisassemblyTool.Owner is IDock disassemblyDock) {
+						DockFactory.AddDockable(disassemblyDock, DockFactory.SourceViewTool);
 					}
 				}
 			} else {
 				SourceView = null;
 				DockFactory.SourceViewTool.Model = null;
 				if(IsToolVisible(DockFactory.SourceViewTool)) {
+					DockFactory.SourceViewTool.CanClose = true;
 					DockFactory.CloseDockable(DockFactory.SourceViewTool);
+					DockFactory.SourceViewTool.CanClose = false;
 				}
 			}
 		}
@@ -436,9 +440,14 @@ namespace Mesen.Debugger.ViewModels
 			return (tool.Owner as IDock)?.ActiveDockable == tool;
 		}
 
+		private bool IsDockVisible(IDock? dock)
+		{
+			return dock is RootDock || (dock != null && (dock.Owner as IDock)?.VisibleDockables?.Contains(dock) == true && (dock.Owner == null || !(dock.Owner is IDock) || IsDockVisible(dock.Owner as IDock)));
+		}
+
 		private bool IsToolVisible(Tool tool)
 		{
-			return (tool.Owner as IDock)?.VisibleDockables?.Contains(tool) == true;
+			return (tool.Owner as IDock)?.VisibleDockables?.Contains(tool) == true && IsDockVisible(tool.Owner as IDock);
 		}
 
 		private void ToggleTool(Tool tool)
@@ -520,7 +529,7 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.ResetLayout,
 					OnClick = () => {
 						DockLayout = DockFactory.GetDefaultLayout();
-						DockFactory.InitLayout(DockLayout);
+						InitDock();
 					}
 				},
 				new ContextMenuSeparator(),

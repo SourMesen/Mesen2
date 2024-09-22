@@ -19,7 +19,17 @@ namespace Mesen.Debugger.ViewModels.DebuggerDock
 
 	public class ToolContainerViewModel<T> : BaseToolContainerViewModel
 	{
-		[Reactive] public T? Model { get; set; }
+		private T? _model;
+
+		public T? Model 
+		{ 
+			get => _model;
+			set
+			{
+				_model = value;
+				OnPropertyChanged(nameof(Model));
+			}
+		}
 
 		public override object? HelpContent
 		{

@@ -61,6 +61,9 @@ namespace Mesen.Debugger.Views
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			if(DataContext is SourceViewViewModel model && _model != model) {
+				if(_model != null) {
+					model.VisibleRowCount = _model.VisibleRowCount;
+				}
 				_model = model;
 				_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, (rowIndex, rowAddress) => rowIndex + _model.ScrollPosition, true);
 			}

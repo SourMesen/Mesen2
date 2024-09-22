@@ -79,7 +79,7 @@ namespace Mesen.Debugger
 						VisibleDockables = CreateList<IDockable>(
 							new ToolDock {
 								Proportion = 0.60,
-								VisibleDockables = CreateList<IDockable>(DisassemblyTool)
+								VisibleDockables = CreateList<IDockable>(DisassemblyTool, SourceViewTool)
 							},
 							new ProportionalDockSplitter(),
 							new ProportionalDock {
