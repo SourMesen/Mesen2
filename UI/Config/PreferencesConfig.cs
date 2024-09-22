@@ -205,6 +205,17 @@ namespace Mesen.Config
 			ApplyFontOptions();
 		}
 
+		public static void UpdateTheme()
+		{
+			if(Application.Current != null) {
+				ThemeVariant newTheme = ConfigManager.Config.Preferences.Theme == MesenTheme.Dark ? ThemeVariant.Dark : ThemeVariant.Light;
+				if(Application.Current.RequestedThemeVariant != newTheme) {
+					ConfigManager.ActiveTheme = ConfigManager.Config.Preferences.Theme;
+					Application.Current.RequestedThemeVariant = newTheme;
+				}
+			}
+		}
+
 		public void ApplyConfig()
 		{
 			UpdateFonts();

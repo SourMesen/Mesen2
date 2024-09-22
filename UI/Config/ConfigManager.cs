@@ -72,7 +72,7 @@ namespace Mesen.Config
 			}
 		}
 
-		public static MesenTheme ActiveTheme { get; private set; }
+		public static MesenTheme ActiveTheme { get; set; }
 
 		private static bool ApplySetting(object instance, PropertyInfo property, string value)
 		{

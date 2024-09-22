@@ -183,6 +183,7 @@ namespace Mesen.Debugger.Controls
 		{
 			Focusable = true;
 			InitFontAndLetterSize();
+			ColorHelper.InvalidateControlOnThemeChange(this);
 
 			_fontAntialiasing = ConfigManager.Config.Preferences.FontAntialiasing;
 		}

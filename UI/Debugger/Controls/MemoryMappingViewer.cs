@@ -54,6 +54,7 @@ namespace Mesen.Debugger.Controls
 
 		public MemoryMappingViewer()
 		{
+			ColorHelper.InvalidateControlOnThemeChange(this);
 		}
 
 		protected override Size MeasureOverride(Size availableSize)

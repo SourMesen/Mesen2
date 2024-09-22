@@ -119,6 +119,8 @@ namespace Mesen.Debugger.Controls
 		{
 			Focusable = true;
 			ClipToBounds = true;
+
+			ColorHelper.InvalidateControlOnThemeChange(this);
 		}
 
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

@@ -10,6 +10,7 @@ using Mesen.Config;
 using Mesen.Utilities;
 using System.IO;
 using Avalonia.Input;
+using Avalonia.Styling;
 
 namespace Mesen.Windows
 {
@@ -102,6 +103,8 @@ namespace Mesen.Windows
 
 			ConfigManager.Config.ApplyConfig();
 			_model.Dispose();
+
+			PreferencesConfig.UpdateTheme();
 
 			//Ensure config isn't modified by the UI while closing
 			DataContext = null;

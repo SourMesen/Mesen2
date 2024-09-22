@@ -60,6 +60,13 @@ namespace Mesen.Debugger.Windows
 			_model = model;
 			DataContext = model;
 			_textEditor = this.GetControl<MesenTextEditor>("Editor");
+
+			ColorHelper.InvalidateControlOnThemeChange(_textEditor, () => {
+				UpdateSyntaxDef();
+				_highlighting = HighlightingLoader.Load(_syntaxDef, HighlightingManager.Instance);
+				_textEditor.SyntaxHighlighting = _highlighting;
+			});
+
 			_textEditor.TextArea.KeyDown += TextArea_KeyDown;
 			_textEditor.TextArea.KeyUp += TextArea_KeyUp;
 			_textEditor.TextArea.TextEntered += TextArea_TextEntered;

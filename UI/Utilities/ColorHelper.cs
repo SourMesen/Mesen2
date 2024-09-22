@@ -1,4 +1,5 @@
-﻿using Avalonia.Media;
+﻿using Avalonia.Controls;
+using Avalonia.Media;
 using Mesen.Config;
 using System;
 using System.Collections.Generic;
@@ -185,6 +186,14 @@ namespace Mesen.Utilities
 				return Colors.Black;
 			}
 			return Colors.White;
+		}
+
+		public static void InvalidateControlOnThemeChange(Control ctrl, Action? callback = null)
+		{
+			ctrl.ActualThemeVariantChanged += (s, e) => {
+				callback?.Invoke();
+				ctrl.InvalidateVisual();
+			};
 		}
 	}
 
