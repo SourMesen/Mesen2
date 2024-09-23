@@ -345,6 +345,11 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Breakpoint")]
 		AddBreakpoint,
+		[IconFile("ForbidBreakpoint")]
+		AddForbidBreakpoint,
+		[IconFile("ForbidBreakpoint")]
+		ToggleForbidBreakpoint,
+
 		[IconFile("Breakpoint")]
 		EditTilemapBreakpoint,
 		[IconFile("Breakpoint")]

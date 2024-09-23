@@ -83,6 +83,7 @@ namespace Mesen.Config
 		[Reactive] public UInt32 CodeExecBreakpointColor { get; set; } = Color.FromRgb(140, 40, 40).ToUInt32();
 		[Reactive] public UInt32 CodeWriteBreakpointColor { get; set; } = Color.FromRgb(40, 120, 80).ToUInt32();
 		[Reactive] public UInt32 CodeReadBreakpointColor { get; set; } = Color.FromRgb(40, 40, 200).ToUInt32();
+		[Reactive] public UInt32 ForbidBreakpointColor { get; set; } = Color.FromRgb(115, 115, 115).ToUInt32();
 		
 		[Reactive] public UInt32 CodeActiveStatementColor { get; set; } = Colors.Yellow.ToUInt32();
 		[Reactive] public UInt32 CodeActiveMidInstructionColor { get; set; } = Color.FromRgb(255, 220, 40).ToUInt32();

@@ -16,6 +16,7 @@ namespace Mesen.Debugger
 		[Reactive] public bool BreakOnRead { get; set; }
 		[Reactive] public bool BreakOnWrite { get; set; }
 		[Reactive] public bool BreakOnExec { get; set; }
+		[Reactive] public bool Forbid { get; set; }
 
 		[Reactive] public bool Enabled { get; set; } = true;
 		[Reactive] public bool MarkEvent { get; set; }
@@ -51,6 +52,9 @@ namespace Mesen.Debugger
 				}
 				if(BreakOnExec && SupportsExec) {
 					type |= BreakpointTypeFlags.Execute;
+				}
+				if(Forbid) {
+					type = BreakpointTypeFlags.Forbid;
 				}
 				return type;
 			}
@@ -138,10 +142,14 @@ namespace Mesen.Debugger
 		{
 			string type = MemoryType.GetShortName();
 			type += ":";
-			type += BreakOnRead ? "R" : "‒";
-			type += BreakOnWrite ? "W" : "‒";
-			if(SupportsExec) {
-				type += BreakOnExec ? "X" : "‒";
+			if(Forbid) {
+				type += "🛇";
+			} else {
+				type += BreakOnRead ? "R" : "‒";
+				type += BreakOnWrite ? "W" : "‒";
+				if(SupportsExec) {
+					type += BreakOnExec ? "X" : "‒";
+				}
 			}
 			return type;
 		}
@@ -149,6 +157,9 @@ namespace Mesen.Debugger
 		public Color GetColor()
 		{
 			DebuggerConfig config = ConfigManager.Config.Debug.Debugger;
+			if(Forbid) {
+				return Color.FromUInt32(config.ForbidBreakpointColor);
+			} 
 			return Color.FromUInt32(BreakOnExec ? config.CodeExecBreakpointColor: (BreakOnWrite ? config.CodeWriteBreakpointColor : config.CodeReadBreakpointColor));
 		}
 
@@ -169,6 +180,7 @@ namespace Mesen.Debugger
 			BreakOnExec = copy.BreakOnExec;
 			BreakOnRead = copy.BreakOnRead;
 			BreakOnWrite = copy.BreakOnWrite;
+			Forbid = copy.Forbid;
 			CpuType = copy.CpuType;
 		}
 	}
@@ -177,8 +189,9 @@ namespace Mesen.Debugger
 	public enum BreakpointTypeFlags
 	{
 		None = 0,
-		Execute = 1,
-		Read = 2,
-		Write = 4,
+		Read = 1,
+		Write = 2,
+		Execute = 4,
+		Forbid = 8,
 	}
 }

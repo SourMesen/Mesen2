@@ -8,27 +8,28 @@ namespace DataBoxControl;
 
 public class DataBoxCheckBoxColumn : DataBoxBoundColumn
 {
-    public DataBoxCheckBoxColumn()
-    {
-        CellTemplate = new FuncDataTemplate(
-            _ => true,
-            (_, _) =>
-            {
-                var checkBox = new CheckBox()
-                {
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    IsHitTestVisible = false,
-                    Focusable = false
-                };
+	public DataBoxCheckBoxColumn()
+	{
+		CellTemplate = new FuncDataTemplate(
+			 _ => true,
+			 (_, _) => {
+				 var checkBox = new CheckBox() {
+					 HorizontalAlignment = HorizontalAlignment.Center,
+					 VerticalAlignment = VerticalAlignment.Center,
+					 IsHitTestVisible = false,
+					 Focusable = false
+				 };
 
-                if (Binding is { })
-                {
-                    checkBox.Bind(ToggleButton.IsCheckedProperty, Binding);
-                }
+				 if(Binding is { }) {
+					 checkBox.Bind(ToggleButton.IsCheckedProperty, Binding);
+				 }
 
-                return checkBox;
-            },
-            supportsRecycling: true);
-    }
+				 if(IsVisible is { }) {
+					 checkBox.Bind(ToggleButton.IsVisibleProperty, IsVisible);
+				 }
+
+				 return checkBox;
+			 },
+			 supportsRecycling: true);
+	}
 }

@@ -334,6 +334,17 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				},
+				new ContextMenuSeparator() { IsVisible = () => IsMarginClick },
+				new ContextMenuAction() {
+					ActionType = ActionType.ToggleForbidBreakpoint,
+					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => IsMarginClick,
+					OnClick = () => {
+						if(ActionLocation.AbsAddress != null) {
+							BreakpointManager.ToggleForbidBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
+						}
+					}
+				}
 			};
 		}
 

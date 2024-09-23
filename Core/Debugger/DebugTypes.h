@@ -35,9 +35,10 @@ struct MemoryOperationInfo
 enum class BreakpointTypeFlags
 {
 	None = 0,
-	Execute = 1,
-	Read = 2,
-	Write = 4,
+	Read = 1,
+	Write = 2,
+	Execute = 4,
+	Forbid = 8,
 };
 
 enum class BreakpointType
@@ -45,6 +46,7 @@ enum class BreakpointType
 	Execute = 0,
 	Read = 1,
 	Write = 2,
+	Forbid = 3,
 };
 
 namespace CdlFlags

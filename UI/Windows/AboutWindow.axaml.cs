@@ -78,7 +78,7 @@ namespace Mesen.Windows
 
 			InitializeComponent();
 
-			this.GetControl<TextBlock>("lblCopyright").Text = $"© 2014-{DateTime.Now.Year} Sour";
+			this.GetControl<TextBlock>("lblCopyright").Text = $"Copyright 2014-{DateTime.Now.Year} Sour";
 		}
 
 		private void InitializeComponent()

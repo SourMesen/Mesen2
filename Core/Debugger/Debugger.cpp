@@ -456,6 +456,8 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 		//break in-between 2 instructions of the main CPU, ensuring the state can be saved/loaded safely
 		//If SleepUntilResume was called outside of ProcessInstruction, keep running
 		return;
+	} else if(IsBreakpointForbidden(source, sourceCpu, operation)) {
+		return;
 	}
 
 	_executionStopped = true;
@@ -496,6 +498,19 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 	}
 
 	_executionStopped = false;
+}
+
+bool Debugger::IsBreakpointForbidden(BreakSource source, CpuType sourceCpu, MemoryOperationInfo* operation)
+{
+	if(source != BreakSource::Unspecified && source != BreakSource::CpuStep && source != BreakSource::PpuStep && source != BreakSource::Pause && _breakRequestCount == 0) {
+		BreakpointManager* bp = _debuggers[(int)sourceCpu].Debugger->GetBreakpointManager();
+		uint32_t pc = GetProgramCounter(sourceCpu, true);
+		AddressInfo relAddr = { (int32_t)pc, DebugUtilities::GetCpuMemoryType(sourceCpu) };
+		AddressInfo absAddr = GetAbsoluteAddress(relAddr);
+		return bp->IsForbidden(operation, relAddr, absAddr);
+	}
+
+	return false;
 }
 
 template<uint8_t accessWidth>

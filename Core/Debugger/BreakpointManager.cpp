@@ -27,10 +27,27 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 		_hasBreakpointType[i] = false;
 	}
 
+	_forbidBreakpoints.clear();
+	_forbidRpn.clear();
+
 	_bpExpEval.reset(new ExpressionEvaluator(_debugger, _cpuDebugger, _cpuType));
 
 	for(uint32_t j = 0; j < count; j++) {
 		Breakpoint &bp = breakpoints[j];
+		if(bp.HasBreakpointType(BreakpointType::Forbid)) {
+			if(_cpuType == bp.GetCpuType() && bp.IsEnabled()) {
+				if(bp.HasCondition()) {
+					bool success = true;
+					ExpressionData data = _bpExpEval->GetRpnList(bp.GetCondition(), success);
+					_forbidRpn.push_back(success ? data : ExpressionData());
+				} else {
+					_forbidRpn.push_back(ExpressionData());
+				}
+				_forbidBreakpoints.push_back(bp);
+			}
+			continue;
+		}
+
 		for(int i = 0; i < BreakpointManager::BreakpointTypeCount; i++) {
 			MemoryOperationType opType = (MemoryOperationType)i;
 			if((bp.IsMarked() || bp.IsEnabled()) && bp.HasBreakpointType(GetBreakpointType(opType))) {
@@ -56,6 +73,27 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 			}
 		}
 	}
+}
+
+bool BreakpointManager::IsForbidden(MemoryOperationInfo* memoryOpPtr, AddressInfo& relAddr, AddressInfo& absAddr)
+{
+	MemoryOperationInfo memoryOp = memoryOpPtr != nullptr ? *memoryOpPtr : MemoryOperationInfo {};
+
+	MemoryOperationInfo op;
+	op.Address = relAddr.Address;
+	op.MemType = relAddr.Type;
+	for(size_t i = 0, len = _forbidBreakpoints.size(); i < len; i++) {
+		if(_forbidBreakpoints[i].Matches(op, absAddr)) {
+			EvalResultType resultType;
+			if(_forbidBreakpoints[i].HasCondition() && !_bpExpEval->Evaluate(_forbidRpn[i], resultType, memoryOp, absAddr)) {
+				continue;
+			}
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)

@@ -32,6 +32,7 @@ bool Breakpoint::HasBreakpointType(BreakpointType type)
 		case BreakpointType::Execute: return ((uint8_t)_type & (uint8_t)BreakpointTypeFlags::Execute) != 0;
 		case BreakpointType::Read: return ((uint8_t)_type & (uint8_t)BreakpointTypeFlags::Read) != 0;
 		case BreakpointType::Write: return ((uint8_t)_type & (uint8_t)BreakpointTypeFlags::Write) != 0;
+		case BreakpointType::Forbid: return ((uint8_t)_type & (uint8_t)BreakpointTypeFlags::Forbid) != 0;
 	}
 }
 

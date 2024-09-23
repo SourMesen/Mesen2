@@ -34,7 +34,6 @@ namespace Mesen.Debugger.Disassembly
 			} else {
 				props.TextBgColor = Color.FromUInt32(ConfigManager.Config.Debug.Debugger.CodeActiveMidInstructionColor);
 			}
-			props.FgColor = ColorHelper.GetContrastTextColor(props.TextBgColor.Value);
 			props.Symbol |= LineSymbol.Arrow;
 
 			if(!features.ChangeProgramCounter && features.CpuCycleStep) {
@@ -117,6 +116,8 @@ namespace Mesen.Debugger.Disassembly
 			if(absAddress.Address < 0) {
 				absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = cpuAddress, Type = relMemoryType });
 			}
+			BreakpointTypeFlags type = BreakpointTypeFlags.None;
+			bool hasEnabledBreakpoint = false;
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
 				if(breakpoint.IsAddressRange && !breakpoint.BreakOnExec) {
 					//Ignore ranged read/write breakpoints
@@ -124,7 +125,15 @@ namespace Mesen.Debugger.Disassembly
 				}
 
 				if(breakpoint.Matches((uint)cpuAddress, relMemoryType, cpuType) || (absAddress.Address >= 0 && breakpoint.Matches((uint)absAddress.Address, absAddress.Type, cpuType))) {
+					bool canSkip = hasEnabledBreakpoint || !breakpoint.Enabled;
+					bool isLowerPriority = (hasEnabledBreakpoint && !breakpoint.Enabled) || type >= breakpoint.Type;
+					if(canSkip && isLowerPriority) {
+						continue;
+					}
+
 					SetBreakpointLineProperties(props, breakpoint, showSymbolOnly);
+					type = breakpoint.Type;
+					hasEnabledBreakpoint |= breakpoint.Enabled;
 				}
 			}
 		}
@@ -137,9 +146,9 @@ namespace Mesen.Debugger.Disassembly
 			LineSymbol symbol;
 			if(breakpoint.Enabled) {
 				bgColor = bpColor;
-				symbol = LineSymbol.Circle;
+				symbol = breakpoint.Forbid ? LineSymbol.Forbid : LineSymbol.Circle;
 			} else {
-				symbol = LineSymbol.CircleOutline;
+				symbol = breakpoint.Forbid ? LineSymbol.ForbidDotted : LineSymbol.CircleOutline;
 			}
 
 			if(breakpoint.MarkEvent) {
@@ -152,7 +161,6 @@ namespace Mesen.Debugger.Disassembly
 
 			if(!showSymbolOnly) {
 				props.TextBgColor = bgColor;
-				props.FgColor = bgColor != null ? ColorHelper.GetContrastTextColor(bgColor.Value) : null;
 			}
 			props.OutlineColor = outlineColor;
 			props.Symbol = symbol;

@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Media.Immutable;
 using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
@@ -272,7 +273,7 @@ namespace Mesen.Debugger.Controls
 				CodeLineData line = lines[i];
 				string addrFormat = baseFormat + line.CpuType.GetAddressSize();
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, i);
-				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor != null ? lineStyle.FgColor.Value : null, true);
+				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.TextBgColor != null ? ColorHelper.GetContrastTextColor(lineStyle.TextBgColor.Value) : null, true);
 
 				double x = 0;
 
@@ -460,18 +461,30 @@ namespace Mesen.Debugger.Controls
 
 		private void DrawLineSymbol(DrawingContext context, double y, LineProperties lineStyle)
 		{
-			if(lineStyle.Symbol.HasFlag(LineSymbol.Circle) || lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline)) {
+			bool showOutline = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) || lineStyle.Symbol.HasFlag(LineSymbol.Forbid) || lineStyle.Symbol.HasFlag(LineSymbol.ForbidDotted);
+			if(showOutline || lineStyle.Symbol.HasFlag(LineSymbol.Circle)) {
 				if(lineStyle.OutlineColor.HasValue) {
 					using var translation = context.PushTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
 					using var scale = context.PushTransform(Matrix.CreateScale(0.85, 0.85));
+
+					IDashStyle? dashStyle = lineStyle.Symbol.HasFlag(LineSymbol.ForbidDotted) ? new ImmutableDashStyle(new double[] { 1, 1 }, 0.5) : null;
 					EllipseGeometry geometry = new EllipseGeometry(new Rect(0, 0, LetterSize.Height, LetterSize.Height));
-					IBrush? b = lineStyle.Symbol.HasFlag(LineSymbol.Circle) ? new SolidColorBrush(lineStyle.OutlineColor.Value) : null;
-					IPen? p = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? new Pen(lineStyle.OutlineColor.Value.ToUInt32()) : null;
+					IBrush? b = lineStyle.Symbol.HasFlag(LineSymbol.Circle) ? new SolidColorBrush(lineStyle.OutlineColor.Value.ToUInt32()) : null;
+					IPen? p = showOutline ? new Pen(lineStyle.OutlineColor.Value.ToUInt32(), 1, dashStyle) : null;
 					context.DrawGeometry(b, p, geometry);
 
+					if(lineStyle.Symbol.HasFlag(LineSymbol.Forbid) || lineStyle.Symbol.HasFlag(LineSymbol.ForbidDotted)) {
+						p = new Pen(lineStyle.OutlineColor.Value.ToUInt32(), 1, dashStyle);
+						double xPos = LetterSize.Height / 2 - (Math.Cos(Math.PI / 4) * LetterSize.Height/2);
+						double yPos = LetterSize.Height / 2 - (Math.Sin(Math.PI / 4) * LetterSize.Height/2);
+						double xPos2 = LetterSize.Height / 2 + (Math.Cos(Math.PI / 4) * LetterSize.Height/2);
+						double yPos2 = LetterSize.Height / 2 + (Math.Sin(Math.PI / 4) * LetterSize.Height/2);
+						context.DrawLine(p, new Point(xPos, yPos), new Point(xPos2, yPos2));
+					}
+
 					if(lineStyle.Symbol.HasFlag(LineSymbol.Plus)) {
-						Color c = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? lineStyle.OutlineColor.Value : Colors.White;
-						p = new Pen(c.ToUInt32(), 2);
+						Color c = showOutline ? lineStyle.OutlineColor.Value : Colors.White;
+						p = new Pen(c.ToUInt32(), 2, dashStyle);
 						context.DrawLine(p, new Point(2, LetterSize.Height / 2), new Point(LetterSize.Height - 2, LetterSize.Height / 2));
 						context.DrawLine(p, new Point(LetterSize.Height / 2, 2), new Point(LetterSize.Height / 2, LetterSize.Height - 2));
 					}
@@ -573,7 +586,6 @@ namespace Mesen.Debugger.Controls
 	{
 		public Color? LineBgColor;
 		public Color? TextBgColor;
-		public Color? FgColor;
 		public Color? OutlineColor;
 		public Color? AddressColor;
 		public LineSymbol Symbol;
@@ -601,7 +613,9 @@ namespace Mesen.Debugger.Controls
 		CircleOutline = 2,
 		Arrow = 4,
 		Mark = 8,
-		Plus = 16
+		Plus = 16,
+		Forbid = 32,
+		ForbidDotted = 64,
 	}
 
 	public enum CodeSegmentType

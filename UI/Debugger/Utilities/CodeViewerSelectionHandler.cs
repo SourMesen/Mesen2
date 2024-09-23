@@ -57,20 +57,28 @@ namespace Mesen.Debugger.Utilities
 		{
 			_marginClicked = e.MarginClicked;
 
-			if(e.Properties.IsLeftButtonPressed) {
+			if(e.Properties.IsLeftButtonPressed || e.Properties.IsMiddleButtonPressed) {
 				if(_marginClicked && _allowMarginClick) {
 					CpuType cpuType = e.CodeLineData.CpuType;
 					if(e.CodeLineData.AbsoluteAddress.Address >= 0) {
-						BreakpointManager.ToggleBreakpoint(e.CodeLineData.AbsoluteAddress, cpuType);
+						if(e.Properties.IsMiddleButtonPressed) {
+							BreakpointManager.ToggleForbidBreakpoint(e.CodeLineData.AbsoluteAddress, cpuType);
+						} else {
+							BreakpointManager.ToggleBreakpoint(e.CodeLineData.AbsoluteAddress, cpuType);
+						}
 					} else if(e.CodeLineData.Address >= 0) {
 						AddressInfo relAddress = new AddressInfo() {
 							Address = e.CodeLineData.Address,
 							Type = cpuType.ToMemoryType()
 						};
 						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-						BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
+						if(e.Properties.IsMiddleButtonPressed) {
+							BreakpointManager.ToggleForbidBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
+						} else {
+							BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
+						}
 					}
-				} else {
+				} else if(e.Properties.IsLeftButtonPressed) {
 					if(e.PointerEvent.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
 						_model.ResizeSelectionTo(GetAddress(e));
 					} else {

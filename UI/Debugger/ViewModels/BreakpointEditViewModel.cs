@@ -10,6 +10,8 @@ using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Mesen.Debugger.Utilities;
+using Mesen.Localization;
+using Mesen.Debugger.Windows;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -18,6 +20,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public Breakpoint Breakpoint { get; set; }
 
 		public Control? HelpTooltip { get; } = null;
+		public string WindowTitle { get; } = "";
 		[Reactive] public bool IsConditionValid { get; private set; }
 		[Reactive] public bool OkEnabled { get; private set; }
 		[Reactive] public string MaxAddress { get; private set; } = "";
@@ -37,7 +40,9 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			HasDummyOperations = bp.CpuType.HasDummyOperations();
+			WindowTitle = ResourceHelper.GetViewLabel(nameof(BreakpointEditWindow), bp.Forbid ? "wndTitleForbid" : "wndTitle");
+
+			HasDummyOperations = bp.CpuType.HasDummyOperations() && !bp.Forbid;
 			HelpTooltip = ExpressionTooltipHelper.GetHelpTooltip(bp.CpuType, false);
 			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => bp.CpuType.CanAccessMemoryType(t) && t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 			if(!AvailableMemoryTypes.Contains(Breakpoint.MemoryType)) {
@@ -92,7 +97,6 @@ namespace Mesen.Debugger.ViewModels
 				if(Breakpoint.Type == BreakpointTypeFlags.None || !IsConditionValid) {
 					enabled = false;
 				} else {
-
 					int maxAddress = DebugApi.GetMemorySize(Breakpoint.MemoryType) - 1;
 					if(Breakpoint.StartAddress > maxAddress || Breakpoint.EndAddress > maxAddress || Breakpoint.StartAddress > Breakpoint.EndAddress) {
 						enabled = false;

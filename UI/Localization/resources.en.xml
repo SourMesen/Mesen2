@@ -1488,6 +1488,7 @@
 			<Control ID="lblCodeExecBreakpointColor">Exec Breakpoint</Control>
 			<Control ID="lblCodeWriteBreakpointColor">Write Breakpoint</Control>
 			<Control ID="lblCodeReadBreakpointColor">Read Breakpoint</Control>
+			<Control ID="lblForbidBreakpointColor">Forbid Breakpoint</Control>
 
 			<Control ID="tabIntegration">Integration</Control>
 			<Control ID="lblIntegrationSettings">Integration settings</Control>
@@ -1638,6 +1639,7 @@
 
 		<Form ID="BreakpointEditWindow">
 			<Control ID="wndTitle">Edit breakpoint...</Control>
+			<Control ID="wndTitleForbid">Edit forbid breakpoint...</Control>
 			<Control ID="chkBreakOnRead">Read</Control>
 			<Control ID="chkBreakOnWrite">Write</Control>
 			<Control ID="chkBreakOnExec">Execution</Control>
@@ -1653,6 +1655,7 @@
 			<Control ID="chkIgnoreDummyOperations">Ignore dummy reads/writes</Control>
 			<Control ID="chkMark">Mark on Event Viewer</Control>
 			<Control ID="chkEnable">Break Execution</Control>
+			<Control ID="chkEnableForbid">Enabled</Control>
 
 			<Control ID="lblConditionError">Condition contains invalid syntax or symbols.</Control>
 
@@ -3167,6 +3170,7 @@ E
 			<Value ID="FunctionList_FindOccurrences">Label List: Find Occurrences</Value>
 			<Value ID="FunctionList_ViewInMemoryViewer">Function List: View in Memory Viewer</Value>
 			<Value ID="BreakpointList_Add">Breakpoint List: Add Breakpoint</Value>
+			<Value ID="BreakpointList_AddForbid">Breakpoint List: Add Forbid Breakpoint</Value>
 			<Value ID="BreakpointList_Edit">Breakpoint List: Edit Breakpoint</Value>
 			<Value ID="BreakpointList_GoToLocation">Breakpoint List: Go to Location</Value>
 			<Value ID="BreakpointList_ViewInMemoryViewer">Breakpoint List: View in Memory Viewer</Value>
@@ -3266,6 +3270,8 @@ E
 			<Value ID="EditComment">Edit Comment</Value>
 			<Value ID="AddWatch">Add to Watch</Value>
 			<Value ID="AddBreakpoint">Add Breakpoint</Value>
+			<Value ID="AddForbidBreakpoint">Add Forbid Breakpoint</Value>
+			<Value ID="ToggleForbidBreakpoint">Toggle Forbid Breakpoint</Value>
 			<Value ID="EditTilemapBreakpoint">Edit Breakpoint (Tilemap)</Value>
 			<Value ID="EditAttributeBreakpoint">Edit Breakpoint (Attribute)</Value>
 			<Value ID="EditBreakpoint">Edit Breakpoint</Value>

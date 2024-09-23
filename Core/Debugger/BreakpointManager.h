@@ -26,6 +26,9 @@ private:
 	bool _hasBreakpoint;
 	bool _hasBreakpointType[BreakpointTypeCount] = {};
 
+	vector<Breakpoint> _forbidBreakpoints;
+	vector<ExpressionData> _forbidRpn;
+
 	unique_ptr<ExpressionEvaluator> _bpExpEval;
 
 	BreakpointType GetBreakpointType(MemoryOperationType type);
@@ -36,6 +39,8 @@ public:
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t count);
 	
+	bool IsForbidden(MemoryOperationInfo* memoryOpPtr, AddressInfo& relAddr, AddressInfo& absAddr);
+
 	__forceinline bool HasBreakpoints() { return _hasBreakpoint; }
 	__forceinline bool HasBreakpointForType(MemoryOperationType opType);
 	template<uint8_t accessWidth = 1> __forceinline int CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address, bool processMarkedBreakpoints);

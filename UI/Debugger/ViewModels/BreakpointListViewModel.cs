@@ -76,13 +76,24 @@ namespace Mesen.Debugger.ViewModels
 		{
 			DebugShortcutManager.CreateContextMenu(parent, new object[] {
 				new ContextMenuAction() {
-					ActionType = ActionType.Add,
+					ActionType = ActionType.AddBreakpoint,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Add),
 					OnClick = () => {
 						Breakpoint bp = new Breakpoint() { BreakOnRead = true, BreakOnWrite = true, BreakOnExec = true, CpuType = CpuType };
 						BreakpointEditWindow.EditBreakpoint(bp, parent);
 					}
 				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.AddForbidBreakpoint,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_AddForbid),
+					OnClick = () => {
+						Breakpoint bp = new Breakpoint() { Forbid = true, CpuType = CpuType };
+						BreakpointEditWindow.EditBreakpoint(bp, parent);
+					}
+				},
+
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.Edit,

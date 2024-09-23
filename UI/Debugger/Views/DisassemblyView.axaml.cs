@@ -84,6 +84,7 @@ namespace Mesen.Debugger.Views
 				new ContextMenuAction() {
 					ActionType = ActionType.Undo,
 					IsEnabled = () => DebugApi.HasUndoHistory(),
+					IsVisible = () => !IsMarginClick,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Undo),
 					OnClick = () => {
 						if(DebugApi.HasUndoHistory()) {
@@ -92,7 +93,7 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				},
-				new ContextMenuSeparator(),
+				new ContextMenuSeparator() { IsVisible = () => !IsMarginClick },
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Copy),
@@ -364,7 +365,18 @@ namespace Mesen.Debugger.Views
 							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
 						}
 					}
-				}
+				},
+				new ContextMenuSeparator() { IsVisible = () => IsMarginClick },
+				new ContextMenuAction() {
+					ActionType = ActionType.ToggleForbidBreakpoint,
+					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => IsMarginClick,
+					OnClick = () => {
+						if(ActionLocation.AbsAddress != null) {
+							BreakpointManager.ToggleForbidBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
+						}
+					}
+				},
 			};
 		}
 

@@ -20,7 +20,7 @@
 	Width="320" Height="180"
 	MinWidth="320" MinHeight="180"
 	ShowInTaskbar="False"
-	Title="{l:Translate wndTitle}"
+	Title="{Binding WindowTitle}"
 >
 	<Design.DataContext>
 		<vm:BreakpointEditViewModel />
@@ -38,8 +38,9 @@
 				IsChecked="{Binding Breakpoint.IgnoreDummyOperations}"
 				IsVisible="{Binding HasDummyOperations}"
 			/>
-			<CheckBox Content="{l:Translate chkMark}" IsChecked="{Binding Breakpoint.MarkEvent}" />
-			<CheckBox Content="{l:Translate chkEnable}" IsChecked="{Binding Breakpoint.Enabled}" />
+			<CheckBox Content="{l:Translate chkMark}" IsChecked="{Binding Breakpoint.MarkEvent}" IsVisible="{Binding !Breakpoint.Forbid}" />
+			<CheckBox Content="{l:Translate chkEnable}" IsChecked="{Binding Breakpoint.Enabled}" IsVisible="{Binding !Breakpoint.Forbid}" />
+			<CheckBox Content="{l:Translate chkEnableForbid}" IsChecked="{Binding Breakpoint.Enabled}" IsVisible="{Binding Breakpoint.Forbid}" />
 		</StackPanel>
 
 		<Grid
@@ -58,8 +59,8 @@
 				<TextBlock Margin="3 0 0 0" Text="{Binding MaxAddress}" Foreground="Gray" />
 			</StackPanel>
 
-			<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblBreakOn}" />
-			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1">
+			<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblBreakOn}" IsVisible="{Binding !Breakpoint.Forbid}" />
+			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1" IsVisible="{Binding !Breakpoint.Forbid}">
 				<CheckBox Content="{l:Translate chkBreakOnRead}" IsChecked="{Binding Breakpoint.BreakOnRead}" />
 				<CheckBox Content="{l:Translate chkBreakOnWrite}" IsChecked="{Binding Breakpoint.BreakOnWrite}" Margin="10 0 0 0" />
 				<CheckBox

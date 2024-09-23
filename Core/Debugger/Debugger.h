@@ -99,6 +99,8 @@ private:
 	bool IsBreakOptionEnabled(BreakSource src);
 	template<CpuType type> void SleepOnBreakRequest();
 
+	bool IsBreakpointForbidden(BreakSource source, CpuType sourceCpu, MemoryOperationInfo* operation);
+
 public:
 	Debugger(Emulator* emu, IConsole* console);
 	~Debugger();

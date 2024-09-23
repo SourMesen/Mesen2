@@ -170,6 +170,7 @@
 									<dc:ColorPickerField Color="{Binding Debugger.CodeExecBreakpointColor}" Text="{l:Translate lblCodeExecBreakpointColor}" />
 									<dc:ColorPickerField Color="{Binding Debugger.CodeWriteBreakpointColor}" Text="{l:Translate lblCodeWriteBreakpointColor}" />
 									<dc:ColorPickerField Color="{Binding Debugger.CodeReadBreakpointColor}" Text="{l:Translate lblCodeReadBreakpointColor}" />
+									<dc:ColorPickerField Color="{Binding Debugger.ForbidBreakpointColor}" Text="{l:Translate lblForbidBreakpointColor}" />
 								</StackPanel>
 								<StackPanel>
 									<dc:ColorPickerField Color="{Binding Debugger.CodeActiveStatementColor}" Text="{l:Translate lblCodeActiveStatementColor}" />

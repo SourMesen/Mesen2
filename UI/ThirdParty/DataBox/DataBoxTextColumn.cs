@@ -20,22 +20,26 @@ public class DataBoxTextColumn : DataBoxBoundColumn
 	public DataBoxTextColumn()
 	{
 		CellTemplate = new FuncDataTemplate(
-			 _ => true,
-			 (_, _) => {
-				 var textBlock = new TextBlock {
-					 [!Layoutable.MarginProperty] = new DynamicResourceExtension("DataGridTextColumnCellTextBlockMargin"),
-					 VerticalAlignment = VerticalAlignment.Top
-				 };
+			_=> true,
+			(_, _) => {
+				var textBlock = new TextBlock {
+					[!Layoutable.MarginProperty] = new DynamicResourceExtension("DataGridTextColumnCellTextBlockMargin"),
+					VerticalAlignment = VerticalAlignment.Top
+				};
 
-				 if(Binding is { }) {
-					 textBlock.Bind(TextBlock.TextProperty, Binding);
-					 if(ShowToolTip) {
-						 textBlock.Bind(ToolTip.TipProperty, Binding);
-					 }
-				 }
+				if(Binding is { }) {
+					textBlock.Bind(TextBlock.TextProperty, Binding);
+					if(ShowToolTip) {
+						textBlock.Bind(ToolTip.TipProperty, Binding);
+					}
+				}
 
-				 return textBlock;
-			 },
-			 supportsRecycling: true);
+				if(IsVisible is { }) {
+					textBlock.Bind(TextBlock.IsVisibleProperty, IsVisible);
+				}
+
+				return textBlock;
+			},
+			supportsRecycling: true);
 	}
 }
