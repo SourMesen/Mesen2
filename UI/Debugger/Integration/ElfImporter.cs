@@ -161,7 +161,7 @@ public class ElfImporterWs : ElfImporter
 		}
 
 		AddressInfo absAddr = new();
-		uint addr = symbol.PointedSection.LoadAddress;
+		uint addr = symbol.PointedSection.LoadAddress + symbol.Value;
 		if((addr & 0x80000000) != 0) {
 			absAddr.Address = (int)((addr & 0xFFFF) | ((addr & 0x7FF00000) >> 4)) & (romSize - 1);
 			absAddr.Type = MemoryType.WsPrgRom;
