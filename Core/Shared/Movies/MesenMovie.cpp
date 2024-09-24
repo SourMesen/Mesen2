@@ -223,6 +223,7 @@ bool MesenMovie::ApplySettings(istream& settingsData)
 	s.Stream(consoleType, "emu.consoleType", -1);
 
 	if(consoleType != _emu->GetConsoleType()) {
+		MessageManager::DisplayMessage("Movies", "MovieIncorrectConsole", string(magic_enum::enum_name<ConsoleType>(consoleType)));
 		return false;
 	}
 

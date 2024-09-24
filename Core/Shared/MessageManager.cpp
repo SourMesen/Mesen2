@@ -48,6 +48,7 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "MovieMissingRom", u8"Missing ROM required (%1) to play movie." },
 	{ "MovieNewerVersion", u8"Cannot load movies created by a more recent version of Mesen. Please download the latest version." },
 	{ "MovieIncompatibleVersion", u8"This movie is incompatible with this version of Mesen." },
+	{ "MovieIncorrectConsole", u8"This movie was recorded on another console (%1) and can't be loaded." },
 	{ "MoviePlaying", u8"Playing movie: %1" },
 	{ "MovieRecordingTo", u8"Recording to: %1" },
 	{ "MovieSaved", u8"Movie saved to file: %1" },
