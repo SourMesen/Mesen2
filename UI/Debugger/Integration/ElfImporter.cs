@@ -57,7 +57,6 @@ public abstract class ElfImporter
 								continue;
 							}
 
-
 							//Demangle and replace any invalid characters with underscores
 							name = LabelManager.InvalidLabelRegex.Replace(Demangle(name), "_");
 
@@ -106,11 +105,11 @@ public abstract class ElfImporter
 			List<string> parts = new();
 			int i = 0;
 
-			while(i < name.Length && (name[i] < '0' || name[i] > '9')) {
-				i++;
-			}
-
 			while(true) {
+				while(i < name.Length && (name[i] < '0' || name[i] > '9')) {
+					i++;
+				}
+
 				bool hasLen = false;
 				int start = i;
 				while(i < name.Length && name[i] >= '0' && name[i] <= '9') {
@@ -121,7 +120,7 @@ public abstract class ElfImporter
 				if(hasLen) {
 					int val = int.Parse(name.AsSpan(start, i - start));
 
-					if(start + val <= name.Length) {
+					if(i + val <= name.Length) {
 						string part = name.Substring(i, val);
 						if(!string.IsNullOrWhiteSpace(part) && part != "_GLOBAL__N_1") {
 							parts.Add(part);
@@ -187,10 +186,6 @@ public class ElfImporterGba : ElfImporter
 	protected override bool TryGetSymbolInfo(SymbolEntry<uint> symbol, int romSize, [MaybeNullWhen(false)] out ElfSymbolInfo symbolInfo)
 	{
 		symbolInfo = null;
-
-		if(symbol.Type == SymbolType.Object) {
-			return false;
-		}
 
 		uint value = symbol.Value & ~(uint)0x01;
 		AddressInfo relAddr = new AddressInfo() { Address = (int)value, Type = MemoryType.GbaMemory };
