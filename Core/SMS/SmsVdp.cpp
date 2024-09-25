@@ -525,9 +525,7 @@ void SmsVdp::ProcessScanlineEvents()
 
 				_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-				uint32_t width = _model == SmsModel::GameGear ? 160 : 256;
-				uint32_t height = _model == SmsModel::GameGear ? 144 : 240;
-				RenderedFrame frame(_currentOutputBuffer, width, height, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
+				RenderedFrame frame(_currentOutputBuffer, 256, 240, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
 				bool rewinding = _emu->GetRewindManager()->IsRewinding();
 				_emu->GetVideoDecoder()->UpdateFrame(frame, rewinding, rewinding);
 
@@ -1028,16 +1026,13 @@ void SmsVdp::SetRegion(ConsoleRegion region)
 
 void SmsVdp::DebugSendFrame()
 {
-	uint32_t width = _model == SmsModel::GameGear ? 160 : 256;
-
 	int offset = std::max(0, std::min((int)GetVisiblePixelIndex(), 256)) + (_state.Scanline * 256);
 	int pixelsToClear = 256*240 - offset;
 	if(pixelsToClear > 0) {
 		memset(_currentOutputBuffer + offset, 0, pixelsToClear * sizeof(uint16_t));
 	}
 	
-	uint32_t height = _model == SmsModel::GameGear ? 144 : 240;
-	RenderedFrame frame(_currentOutputBuffer, width, height, 1.0, _state.FrameCount);
+	RenderedFrame frame(_currentOutputBuffer, 256, 240, 1.0, _state.FrameCount);
 	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 }
 

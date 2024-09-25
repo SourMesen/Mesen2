@@ -694,6 +694,7 @@ struct SmsConfig
 
 	OverscanDimensions NtscOverscan = {};
 	OverscanDimensions PalOverscan = {};
+	OverscanDimensions GameGearOverscan = {};
 };
 
 struct CvConfig

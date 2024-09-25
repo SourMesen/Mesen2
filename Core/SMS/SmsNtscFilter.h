@@ -17,7 +17,6 @@ private:
 	unique_ptr<snes_ntsc_t> _snesNtscData;
 
 	uint32_t* _ntscBuffer = nullptr;
-	uint32_t* _snesNtscBuffer = nullptr;
 	SmsConsole* _console = nullptr;
 
 protected:

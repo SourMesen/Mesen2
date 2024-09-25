@@ -403,8 +403,7 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case RomFormat::Gbs:
 		case RomFormat::Nsf:
 		case RomFormat::PceHes:
-		case RomFormat::GameGear:
-			//No overscan for music players/GG
+			//No overscan for music players
 			return OverscanDimensions {};
 
 		case RomFormat::Gb:
@@ -430,6 +429,8 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case ConsoleType::Sms:
 			if(romFormat == RomFormat::ColecoVision) {
 				return { 0, 0, 24, 24 };
+			} else if(romFormat == RomFormat::GameGear) {
+				return _sms.GameGearOverscan;
 			} else {
 				return  _emu->GetRegion() == ConsoleRegion::Ntsc ? _sms.NtscOverscan : _sms.PalOverscan;
 			}

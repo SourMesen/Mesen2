@@ -269,8 +269,8 @@ PpuFrameInfo SmsConsole::GetPpuFrame()
 	PpuFrameInfo frame = {};
 	frame.FirstScanline = 0;
 	frame.FrameCount = _vdp->GetFrameCount();
-	frame.Width = _model == SmsModel::GameGear ? 160 : 256;
-	frame.Height = _model == SmsModel::GameGear ? 144 : 240;
+	frame.Width = 256;
+	frame.Height = 240;
 	frame.ScanlineCount = _region == ConsoleRegion::Ntsc ? 262 : 313;
 	frame.CycleCount = 342;
 	frame.FrameBufferSize = 256*240*sizeof(uint16_t);

@@ -86,36 +86,21 @@ public:
 		OverscanDimensions overscan = GetOverscan();
 		FrameInfo frame = _frameInfo;
 
-		if(_console->GetModel() == SmsModel::GameGear) {
-			int linesToSkip;
-			switch(_console->GetVdp()->GetState().VisibleScanlineCount) {
-				default: case 192: linesToSkip = 24; break;
-				case 224: linesToSkip = 40; break;
-				case 240: linesToSkip = 48; break;
-			}
+		uint32_t linesToSkip = _console->GetVdp()->GetViewportYOffset();
+		uint32_t scanlineCount = _console->GetVdp()->GetState().VisibleScanlineCount;
 
-			for(uint32_t y = 0; y < frame.Height; y++) {
+		for(uint32_t y = 0; y < frame.Height; y++) {
+			if(y + overscan.Top < linesToSkip || y > linesToSkip + scanlineCount - overscan.Top) {
+				memset(out+y*frame.Width, 0, frame.Width * sizeof(uint32_t));
+			} else {
 				for(uint32_t x = 0; x < frame.Width; x++) {
-					out[(y * frame.Width) + x] = GetPixel(in, (y + linesToSkip) * 256 + x + 48);
+					out[(y * frame.Width) + x] = GetPixel(in, (y + overscan.Top - linesToSkip) * _baseFrameInfo.Width + x + overscan.Left);
 				}
 			}
+		}
 
-			if(_blendFrames) {
-				std::copy(in, in + 256 * 240, _prevFrame);
-			}
-		} else {
-			uint32_t linesToSkip = _console->GetVdp()->GetViewportYOffset();
-			uint32_t scanlineCount = _console->GetVdp()->GetState().VisibleScanlineCount;
-
-			for(uint32_t y = 0; y < frame.Height; y++) {
-				if(y + overscan.Top < linesToSkip || y > linesToSkip + scanlineCount - overscan.Top) {
-					memset(out+y*frame.Width, 0, frame.Width * sizeof(uint32_t));
-				} else {
-					for(uint32_t x = 0; x < frame.Width; x++) {
-						out[(y * frame.Width) + x] = GetPixel(in, (y + overscan.Top - linesToSkip) * _baseFrameInfo.Width + x + overscan.Left);
-					}
-				}
-			}
+		if(_blendFrames) {
+			std::copy(in, in + 256 * 240, _prevFrame);
 		}
 	}
 };

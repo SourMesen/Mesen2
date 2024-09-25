@@ -523,6 +523,13 @@
 			<Control ID="lblOverscan">Overscan</Control>
 			<Control ID="lblOverscanNtsc">NTSC</Control>
 			<Control ID="lblOverscanPal">PAL</Control>
+			<Control ID="lblOverscanGameGear">Game Gear</Control>
+
+			<Control ID="lblGameGearPreset">Game Gear screen (default)</Control>
+			<Control ID="lblFullFramePreset">Full frame</Control>
+			<Control ID="lblFullFrameFirstColumnPreset">Full frame (excluding first column)</Control>
+
+			<Control ID="btnSelectPreset">Select Preset...</Control>
 		</Form>
 
 		<Form ID="SmsInputConfigView">

@@ -118,6 +118,24 @@
 								<TabItem Header="{l:Translate lblOverscanPal}">
 									<c:OverscanInput Overscan="{Binding Config.PalOverscan}" Margin="5" />
 								</TabItem>
+								<TabItem Header="{l:Translate lblOverscanGameGear}">
+									<StackPanel Orientation="Vertical">
+										<Button
+											Grid.Column="2"
+											Content="{l:Translate btnSelectPreset}"
+											Click="btnSelectPreset_OnClick"
+										>
+											<Button.ContextMenu>
+												<ContextMenu Placement="BottomEdgeAlignedLeft">
+													<MenuItem Header="{l:Translate lblGameGearPreset}" Click="mnuGameGearPreset_Click" />
+													<MenuItem Header="{l:Translate lblFullFramePreset}" Click="mnuFullFramePreset_Click" />
+													<MenuItem Header="{l:Translate lblFullFrameFirstColumnPreset}" Click="mnuFullFrameFirstColumnPreset_Click" />
+												</ContextMenu>
+											</Button.ContextMenu>
+										</Button>
+										<c:OverscanInput Overscan="{Binding Config.GameGearOverscan}" Margin="5" />
+									</StackPanel>
+								</TabItem>
 							</TabControl>
 						</Border>
 					</c:OptionSection>

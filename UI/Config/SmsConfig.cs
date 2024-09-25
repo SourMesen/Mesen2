@@ -43,6 +43,7 @@ public class SmsConfig : BaseConfig<SmsConfig>
 
 	[Reactive] public OverscanConfig NtscOverscan { get; set; } = new() { Top = 24, Bottom = 24 };
 	[Reactive] public OverscanConfig PalOverscan { get; set; } = new() { Top = 24, Bottom = 24 };
+	[Reactive] public OverscanConfig GameGearOverscan { get; set; } = new() { Top = 48, Bottom = 48, Left = 48, Right = 48};
 
 	public void ApplyConfig()
 	{
@@ -72,6 +73,7 @@ public class SmsConfig : BaseConfig<SmsConfig>
 
 			NtscOverscan = NtscOverscan.ToInterop(),
 			PalOverscan = PalOverscan.ToInterop(),
+			GameGearOverscan = GameGearOverscan.ToInterop(),
 		});
 	}
 
@@ -107,6 +109,7 @@ public struct InteropSmsConfig
 
 	public InteropOverscanDimensions NtscOverscan;
 	public InteropOverscanDimensions PalOverscan;
+	public InteropOverscanDimensions GameGearOverscan;
 }
 
 public enum SmsRevision
