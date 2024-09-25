@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Mesen.Config;
+using Mesen.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,19 @@ namespace Mesen.Views
 	public class VideoConfigOverrideView : UserControl
 	{
 		public static readonly StyledProperty<bool> ShowBisqwitFilterProperty = AvaloniaProperty.Register<VideoConfigOverrideView, bool>(nameof(ShowBisqwitFilter), false);
+		public static readonly StyledProperty<string> HeaderProperty = AvaloniaProperty.Register<VideoConfigOverrideView, string>(nameof(Header), ResourceHelper.GetViewLabel(nameof(VideoConfigOverrideView), "lblHeader"));
 		public static readonly StyledProperty<Enum[]> AvailableValuesProperty = AvaloniaProperty.Register<VideoConfigOverrideView, Enum[]>(nameof(ShowBisqwitFilter), Array.Empty<Enum>());
 
 		public bool ShowBisqwitFilter
 		{
 			get { return GetValue(ShowBisqwitFilterProperty); }
 			set { SetValue(ShowBisqwitFilterProperty, value); }
+		}
+
+		public string Header
+		{
+			get { return GetValue(HeaderProperty); }
+			set { SetValue(HeaderProperty, value); }
 		}
 
 		public Enum[] AvailableValues

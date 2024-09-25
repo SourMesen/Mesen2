@@ -513,6 +513,10 @@
 			<Control ID="tpgInput">Input</Control>
 
 			<Control ID="tpgVideo">Video</Control>
+
+			<Control ID="lblSmsOverrides">SMS - Global Config Overrides</Control>
+			<Control ID="lblGgOverrides">Game Gear - Global Config Overrides</Control>
+
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
 			<Control ID="chkUseSgPalette">Use SG-1000 palette when running SG-1000 software</Control>
 			<Control ID="chkGgBlendFrames">Enable LCD frame blending (Game Gear)</Control>

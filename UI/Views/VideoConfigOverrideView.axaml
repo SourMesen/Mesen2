@@ -22,7 +22,7 @@
 		<u:EnumMatchConverter x:Key="EnumMatchConverter" />
 	</UserControl.Resources>
 
-	<c:OptionSection Header="{l:Translate lblHeader}" Margin="0">
+	<c:OptionSection Header="{Binding Header, ElementName=root}" Margin="0">
 		<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 			<CheckBox
 				IsChecked="{Binding OverrideVideoFilter}"

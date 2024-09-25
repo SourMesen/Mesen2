@@ -33,6 +33,8 @@ public class ConsoleOverrideConfig : BaseConfig<GameConfig>
 			case ConsoleType.Sms:
 				if(romInfo.Format == RomFormat.ColecoVision) {
 					return ConfigManager.Config.Cv.ConfigOverrides;
+				} else if(romInfo.Format == RomFormat.GameGear) {
+					return ConfigManager.Config.Sms.GgConfigOverrides;
 				} else {
 					return ConfigManager.Config.Sms.ConfigOverrides;
 				}

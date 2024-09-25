@@ -14,6 +14,7 @@ namespace Mesen.Config;
 public class SmsConfig : BaseConfig<SmsConfig>
 {
 	[Reactive] public ConsoleOverrideConfig ConfigOverrides { get; set; } = new();
+	[Reactive] public ConsoleOverrideConfig GgConfigOverrides { get; set; } = new();
 
 	[Reactive] public SmsControllerConfig Port1 { get; set; } = new();
 	[Reactive] public SmsControllerConfig Port2 { get; set; } = new();

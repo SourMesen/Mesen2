@@ -99,7 +99,15 @@
 		<TabItem Header="{l:Translate tpgVideo}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<v:VideoConfigOverrideView DataContext="{Binding Config.ConfigOverrides}" />
+					<v:VideoConfigOverrideView
+						DataContext="{Binding Config.ConfigOverrides}"
+						Header="{l:Translate lblSmsOverrides}"
+					/>
+					<v:VideoConfigOverrideView
+						DataContext="{Binding Config.GgConfigOverrides}"
+						Header="{l:Translate lblGgOverrides}"
+						Margin="0 10 0 0"
+					/>
 
 					<c:OptionSection Header="{l:Translate lblMiscSettings}">
 						<CheckBox IsChecked="{Binding Config.GgBlendFrames}" Content="{l:Translate chkGgBlendFrames}" />
