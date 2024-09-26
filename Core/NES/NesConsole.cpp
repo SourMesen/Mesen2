@@ -64,6 +64,9 @@ void NesConsole::ProcessCpuClock()
 {
 	_mapper->ProcessCpuClock();
 	_apu->ProcessCpuClock();
+	if(_controlManager->HasPendingWrites()) {
+		_controlManager->ProcessWrites();
+	}
 }
 
 NesConsole* NesConsole::GetVsMainConsole()

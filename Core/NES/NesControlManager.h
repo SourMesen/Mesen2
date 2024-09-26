@@ -19,6 +19,9 @@ class NesControlManager : public INesMemoryHandler, public BaseControlManager
 {
 private:
 	NesConfig _prevConfig = {};
+	uint16_t _writeAddr = 0;
+	uint8_t _writeValue = 0;
+	uint8_t _writePending = 0;
 
 protected:
 	NesConsole* _console;
@@ -51,4 +54,7 @@ public:
 
 	uint8_t ReadRam(uint16_t addr) override;
 	void WriteRam(uint16_t addr, uint8_t value) override;
+	
+	__noinline void ProcessWrites();
+	__forceinline bool HasPendingWrites() { return _writePending > 0; }
 };
