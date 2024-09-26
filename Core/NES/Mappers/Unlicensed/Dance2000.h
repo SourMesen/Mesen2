@@ -15,6 +15,7 @@ protected:
 	bool AllowRegisterRead() override { return true; }
 	uint16_t GetPrgPageSize() override { return 0x4000; }
 	uint16_t GetChrPageSize() override { return 0x1000; }
+	bool EnableVramAddressHook() override { return true; }
 
 	void InitMapper() override
 	{

@@ -87,6 +87,7 @@ protected:
 	uint16_t RegisterStartAddress() override { return 0x4020; }
 	uint16_t RegisterEndAddress() override { return 0x4092; }
 	bool AllowRegisterRead() override { return true; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void InitMapper() override;
 	void InitMapper(RomData &romData) override;

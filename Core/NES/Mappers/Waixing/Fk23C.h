@@ -52,6 +52,9 @@ protected:
 	uint32_t GetWorkRamSize() override { return 0x8000; } //Somes games have up to 32kb of Work RAM (only used for iNES 1.0 files w/ no DB entry)
 	uint32_t GetWorkRamPageSize() override { return 0x2000; }
 
+	bool EnableCpuClockHook() override { return true; }
+	bool EnableVramAddressHook() override { return true; }
+
 	void InitMapper() override
 	{
 		//$5000

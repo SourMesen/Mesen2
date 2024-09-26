@@ -14,6 +14,7 @@ private:
 protected:
 	uint16_t GetPrgPageSize() override { return 0x4000; }
 	uint16_t GetChrPageSize() override { return 0x800; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void InitMapper() override
 	{

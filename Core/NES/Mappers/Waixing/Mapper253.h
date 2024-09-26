@@ -18,6 +18,7 @@ protected:
 	uint16_t GetChrPageSize() override { return 0x400; }
 	uint32_t GetChrRamSize() override { return 0x800; }
 	uint16_t GetChrRamPageSize() override { return 0x400; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void InitMapper() override
 	{

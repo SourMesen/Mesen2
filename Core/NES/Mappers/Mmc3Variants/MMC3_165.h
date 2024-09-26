@@ -12,7 +12,8 @@ protected:
 	uint16_t GetChrPageSize() override { return 0x1000; }
 	uint32_t GetChrRamSize() override { return 0x1000; }
 	uint16_t GetChrRamPageSize() override { return 0x1000; }	
-	
+	bool EnableVramAddressHook() override { return true; }
+
 	void Serialize(Serializer& s) override
 	{
 		MMC3::Serialize(s);

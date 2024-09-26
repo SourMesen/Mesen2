@@ -10,6 +10,8 @@ private:
 	uint16_t _prevAddr = 0;
 
 protected:
+	bool EnableVramAddressHook() override { return true; }
+
 	void Serialize(Serializer& s) override
 	{
 		MMC3::Serialize(s);

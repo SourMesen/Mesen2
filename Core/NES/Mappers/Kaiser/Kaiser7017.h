@@ -17,6 +17,7 @@ protected:
 	bool AllowRegisterRead() override { return true; }
 	uint16_t RegisterStartAddress() override { return 0x4020; }
 	uint16_t RegisterEndAddress() override { return 0x5FFF; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void InitMapper() override
 	{

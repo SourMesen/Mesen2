@@ -76,6 +76,7 @@ protected:
 	uint32_t GetWorkRamSize() override { return 0x4000; }
 	uint32_t GetWorkRamPageSize() override { return 0x1000; }
 	bool AllowRegisterRead() override { return true; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void Serialize(Serializer& s) override;
 

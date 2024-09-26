@@ -10,9 +10,10 @@ class OekaKids : public BaseMapper
 	uint16_t _lastAddress = 0;
 
 protected:
-	virtual uint16_t GetPrgPageSize() override { return 0x8000; }
-	virtual uint16_t GetChrPageSize() override { return 0x1000; }
-	virtual bool HasBusConflicts() override { return true; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x1000; }
+	bool HasBusConflicts() override { return true; }
+	bool EnableVramAddressHook() override { return true; }
 
 	void InitMapper() override
 	{

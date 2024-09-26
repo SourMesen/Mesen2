@@ -9,6 +9,7 @@ class JalecoSs88006 : public BaseMapper
 protected:
 	uint16_t GetPrgPageSize() override { return 0x2000; }
 	uint16_t GetChrPageSize() override { return 0x0400; }
+	bool EnableCpuClockHook() override { return true; }
 
 	static constexpr uint16_t _irqMask[4] = { 0xFFFF, 0x0FFF, 0x00FF, 0x000F };
 

@@ -598,6 +598,9 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 	}
 
 	_allowRegisterRead = AllowRegisterRead();
+	_hasCpuClockHook = EnableCpuClockHook();
+	_hasCustomReadVram = EnableCustomVramRead();
+	_hasVramAddressHook = EnableVramAddressHook();
 
 	memset(_isReadRegisterAddr, 0, sizeof(_isReadRegisterAddr));
 	memset(_isWriteRegisterAddr, 0, sizeof(_isWriteRegisterAddr));
@@ -867,16 +870,6 @@ void BaseMapper::NotifyVramAddressChange(uint16_t addr)
 {
 	//This is called when the VRAM addr on the PPU memory bus changes
 	//Used by MMC3/MMC5/etc
-}
-
-uint8_t BaseMapper::InternalReadVram(uint16_t addr)
-{
-	if(_chrMemoryAccess[addr >> 8] & MemoryAccessType::Read) {
-		return _chrPages[addr >> 8][(uint8_t)addr];
-	}
-
-	//Open bus - "When CHR is disabled, the pattern tables are open bus. Theoretically, this should return the LSB of the address read, but real-world behavior varies."
-	return _vramOpenBusValue >= 0 ? _vramOpenBusValue : addr;
 }
 
 uint8_t BaseMapper::DebugReadVram(uint16_t addr, bool disableSideEffects)

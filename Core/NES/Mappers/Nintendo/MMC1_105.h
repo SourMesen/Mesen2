@@ -12,6 +12,7 @@ private:
 
 protected:
 	uint32_t GetDipSwitchCount() override { return 4; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void InitMapper() override
 	{

@@ -56,7 +56,8 @@ protected:
 	uint16_t GetChrPageSize() override { return 0x400; }
 	uint32_t GetSaveRamPageSize() override { return 0x800; }
 	bool AllowRegisterRead() override { return true; }
-	
+	bool EnableCpuClockHook() override { return true; }
+
 	void InitMapper() override
 	{
 		_audio.reset(new Namco163Audio(_console));

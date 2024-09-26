@@ -62,7 +62,10 @@ NesConfig& NesConsole::GetNesConfig()
 
 void NesConsole::ProcessCpuClock() 
 {
-	_mapper->ProcessCpuClock();
+	if(_mapper->HasCpuClockHook()) {
+		_mapper->ProcessCpuClock();
+	}
+
 	_apu->ProcessCpuClock();
 	if(_controlManager->HasPendingWrites()) {
 		_controlManager->ProcessWrites();

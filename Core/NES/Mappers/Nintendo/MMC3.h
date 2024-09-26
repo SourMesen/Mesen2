@@ -190,6 +190,7 @@ protected:
 	uint16_t GetChrPageSize() override { return 0x0400; }
 	uint32_t GetSaveRamPageSize() override { return _romInfo.SubMapperID == 1 ? 0x200 : 0x2000; }
 	uint32_t GetSaveRamSize() override { return _romInfo.SubMapperID == 1 ? 0x400 : 0x2000; }
+	bool EnableVramAddressHook() override { return true; }
 
 	void InitMapper() override
 	{

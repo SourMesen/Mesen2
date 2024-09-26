@@ -29,7 +29,8 @@ protected:
 	uint16_t RegisterStartAddress() override { return 0x6000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
 	bool AllowRegisterRead() override { return true; }
-	
+	bool EnableCpuClockHook() override { return true; }
+
 	void InitMapper() override
 	{
 		memset(_chrRegs, 0, sizeof(_chrRegs));

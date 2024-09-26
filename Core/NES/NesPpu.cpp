@@ -641,7 +641,9 @@ template<class T> uint16_t NesPpu<T>::GetAttributeAddr()
 template<class T> void NesPpu<T>::SetBusAddress(uint16_t addr)
 {
 	_ppuBusAddress = addr;
-	_mapper->NotifyVramAddressChange(addr);
+	if(_mapper->HasVramAddressHook()) {
+		_mapper->NotifyVramAddressChange(addr);
+	}
 }
 
 template<class T> uint8_t NesPpu<T>::ReadVram(uint16_t addr, MemoryOperationType type)

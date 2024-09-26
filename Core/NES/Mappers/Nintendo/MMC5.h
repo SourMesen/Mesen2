@@ -310,6 +310,9 @@ protected:
 	uint32_t GetWorkRamPageSize() override { return 0x2000; }
 	bool ForceSaveRamSize() override { return true; }
 	bool ForceWorkRamSize() override { return true; }
+	bool AllowRegisterRead() override { return true; }
+	bool EnableCpuClockHook() override { return true; }
+	bool EnableCustomVramRead() override { return true; }
 
 	uint32_t GetSaveRamSize() override
 	{
@@ -348,8 +351,6 @@ protected:
 		
 		return size;
 	}
-
-	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
 	{

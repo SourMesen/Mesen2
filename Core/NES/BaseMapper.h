@@ -35,6 +35,10 @@ private:
 	bool _hasBusConflicts = false;
 	bool _hasDefaultWorkRam = false;
 	
+	bool _hasCustomReadVram = false;
+	bool _hasCpuClockHook = false;
+	bool _hasVramAddressHook = false;
+
 	bool _allowRegisterRead = false;
 	bool _isReadRegisterAddr[0x10000] = {};
 	bool _isWriteRegisterAddr[0x10000] = {};
@@ -101,6 +105,10 @@ protected:
 	virtual uint16_t RegisterEndAddress() { return 0xFFFF; }
 	virtual bool AllowRegisterRead() { return false; }
 
+	virtual bool EnableCpuClockHook() { return false; }
+	virtual bool EnableCustomVramRead() { return false; }
+	virtual bool EnableVramAddressHook() { return false; }
+
 	virtual uint32_t GetDipSwitchCount() { return 0; }
 	virtual uint32_t GetNametableCount() { return 0; }
 	
@@ -155,7 +163,15 @@ protected:
 	void SetMirroringType(MirroringType type);
 	MirroringType GetMirroringType();
 
-	uint8_t InternalReadVram(uint16_t addr);
+	__forceinline uint8_t InternalReadVram(uint16_t addr)
+	{
+		if(_chrMemoryAccess[addr >> 8] & MemoryAccessType::Read) {
+			return _chrPages[addr >> 8][(uint8_t)addr];
+		}
+
+		//Open bus - "When CHR is disabled, the pattern tables are open bus. Theoretically, this should return the LSB of the address read, but real-world behavior varies."
+		return _vramOpenBusValue >= 0 ? _vramOpenBusValue : addr;
+	}
 
 	virtual vector<MapperStateEntry> GetMapperStateEntries() { return {}; }
 
@@ -175,8 +191,13 @@ public:
 	bool HasDefaultWorkRam();
 
 	virtual void SetRegion(ConsoleRegion region) { }
+	
+	__forceinline bool HasCpuClockHook() { return _hasCpuClockHook; }
 	virtual void ProcessCpuClock() { }
+	
+	__forceinline bool HasVramAddressHook() { return _hasVramAddressHook; }
 	virtual void NotifyVramAddressChange(uint16_t addr);
+
 	virtual void GetMemoryRanges(MemoryRanges &ranges) override;
 	virtual uint32_t GetInternalRamSize() { return 0x800; }
 
@@ -196,7 +217,12 @@ public:
 	
 	__forceinline uint8_t ReadVram(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
 	{
-		uint8_t value = MapperReadVram(addr, type);
+		uint8_t value;
+		if(!_hasCustomReadVram) {
+			value = InternalReadVram(addr);
+		} else {
+			value = MapperReadVram(addr, type);
+		}
 		_emu->ProcessPpuRead<CpuType::Nes>(addr, value, MemoryType::NesPpuMemory, type);
 		return value;
 	}

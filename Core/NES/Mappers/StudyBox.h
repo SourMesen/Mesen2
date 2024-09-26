@@ -50,6 +50,7 @@ protected:
 	uint16_t RegisterStartAddress() override { return 0x4200; }
 	uint16_t RegisterEndAddress() override { return 0x4203; }
 	bool AllowRegisterRead() override { return true; }
+	bool EnableCpuClockHook() override { return true; }
 
 	uint16_t GetPrgPageSize() override { return 0x4000; }
 	uint16_t GetChrPageSize() override { return 0x2000; }

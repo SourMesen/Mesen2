@@ -23,6 +23,7 @@ protected:
 	uint16_t GetPrgPageSize() override { return 0x8000; }
 	uint16_t GetChrPageSize() override { return 0x1000; }
 	bool AllowRegisterRead() override { return true; }
+	bool EnableVramAddressHook() override { return true; }
 	uint16_t RegisterStartAddress() override { return 0x5000; }
 	uint16_t RegisterEndAddress() override { return 0x5FFF; }
 

@@ -13,6 +13,7 @@ protected:
 	uint32_t GetChrRamSize() override { return 0x10000; }
 	uint32_t GetSaveRamSize() override { return 0; }
 	bool ForceChrBattery() override { return true; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void InitMapper() override
 	{

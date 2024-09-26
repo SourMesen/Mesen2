@@ -16,6 +16,7 @@ protected:
 	uint32_t GetChrRamSize() override { return 0x8000; }
 	uint16_t RegisterStartAddress() override { return 0x42FE; }
 	uint16_t RegisterEndAddress() override { return 0x4517; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void InitMapper() override
 	{

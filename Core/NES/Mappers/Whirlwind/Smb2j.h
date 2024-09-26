@@ -15,6 +15,7 @@ protected:
 	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x4122; }
 	uint16_t RegisterEndAddress() override { return 0x4122; }
+	bool EnableCpuClockHook() override { return true; }
 
 	void InitMapper() override
 	{
