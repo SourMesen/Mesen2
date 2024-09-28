@@ -531,9 +531,17 @@ void NesCpu::StartDmcTransfer()
 
 void NesCpu::StopDmcTransfer()
 {
-	if(_needHalt && _dmcDmaRunning) {
-		_abortDmcDma = true;
-		_needDummyRead = false;
+	if(_dmcDmaRunning) {
+		if(_needHalt) {
+			//If interrupted before the halt cycle starts, cancel DMA completely
+			//This can happen when a write prevents the DMA from starting after being queued
+			_dmcDmaRunning = false;
+			_needDummyRead = false;
+			_needHalt = false;
+		} else {
+			//Abort DMA if possible (this only appears to be possible if done within the first cycle of DMA)
+			_abortDmcDma = true;
+		}
 	}
 }
 
