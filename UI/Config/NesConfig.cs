@@ -70,7 +70,8 @@ namespace Mesen.Config
 		[Reactive] public bool EnablePpu2006ScrollGlitch { get; set; } = false;
 		[Reactive] public bool RestrictPpuAccessOnFirstFrame { get; set; } = false;
 		[Reactive] public bool EnableDmcSampleDuplicationGlitch { get; set; } = false;
-
+		[Reactive] public bool EnableCpuTestMode { get; set; } = false;
+		
 		[Reactive] public NesConsoleType ConsoleType { get; set; } = NesConsoleType.Nes001;
 		[Reactive] public bool DisablePpuReset { get; set; } = false;
 		[Reactive] public bool AllowInvalidInput { get; set; } = false;
@@ -191,6 +192,7 @@ namespace Mesen.Config
 				EnablePpu2006ScrollGlitch = EnablePpu2006ScrollGlitch,
 				RestrictPpuAccessOnFirstFrame = RestrictPpuAccessOnFirstFrame,
 				EnableDmcSampleDuplicationGlitch = EnableDmcSampleDuplicationGlitch,
+				EnableCpuTestMode = EnableCpuTestMode,
 
 				RandomizeMapperPowerOnState = RandomizeMapperPowerOnState,
 				RandomizeCpuPpuAlignment = RandomizeCpuPpuAlignment,
@@ -323,6 +325,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool EnablePpu2006ScrollGlitch;
 		[MarshalAs(UnmanagedType.I1)] public bool RestrictPpuAccessOnFirstFrame;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableDmcSampleDuplicationGlitch;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableCpuTestMode;
 
 		[MarshalAs(UnmanagedType.I1)] public bool RandomizeMapperPowerOnState;
 		[MarshalAs(UnmanagedType.I1)] public bool RandomizeCpuPpuAlignment;

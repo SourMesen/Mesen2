@@ -370,9 +370,9 @@ bool NesDebugger::IsRegister(MemoryOperationInfo& op)
 		return true;
 	} else if((op.Address >= 0x4000 && op.Address <= 0x4015) || (op.Address == 0x4017 && op.Type == MemoryOperationType::Write)) {
 		return true;
-	} else if(op.Address == 0x4016 || (op.Address == 0x4017 && op.Type == MemoryOperationType::Read)) {
+	} else if(op.Address == 0x4016 || (op.Address >= 0x4017 && op.Address <= 0x401A && op.Type == MemoryOperationType::Read)) {
 		return true;
-	} else if(op.Address >= 0x4018 && ((op.Type == MemoryOperationType::Write && _mapper->IsWriteRegister(op.Address)) || (op.Type == MemoryOperationType::Read && _mapper->IsReadRegister(op.Address)))) {
+	} else if(op.Address >= 0x4020 && ((op.Type == MemoryOperationType::Write && _mapper->IsWriteRegister(op.Address)) || (op.Type == MemoryOperationType::Read && _mapper->IsReadRegister(op.Address)))) {
 		return true;
 	}
 	return false;

@@ -90,12 +90,27 @@ uint8_t NesApu::ReadRam(uint16_t addr)
 	//$4015 read
 	Run();
 
-	uint8_t status = GetStatus() | (_console->GetMemoryManager()->GetInternalOpenBus() & 0x20);
+	if(addr >= 0x4018 && !_console->GetNesConfig().EnableCpuTestMode) {
+		return _console->GetMemoryManager()->GetOpenBus();
+	}
 
-	//Reading $4015 clears the Frame Counter interrupt flag.
-	_console->GetCpu()->ClearIrqSource(IRQSource::FrameCounter);
+	switch(addr) {
+		case 0x4015: {
+			uint8_t status = GetStatus() | (_console->GetMemoryManager()->GetInternalOpenBus() & 0x20);
 
-	return status;
+			//Reading $4015 clears the Frame Counter interrupt flag.
+			_console->GetCpu()->ClearIrqSource(IRQSource::FrameCounter);
+
+			return status;
+		}
+
+		case 0x4018: return _square1->GetOutput() | (_square2->GetOutput() << 4);
+		case 0x4019: return _triangle->GetOutput() | (_noise->GetOutput() << 4);
+		case 0x401A: return _dmc->GetOutput();
+
+		default:
+			return _console->GetMemoryManager()->GetOpenBus();
+	}
 }
 
 uint8_t NesApu::PeekRam(uint16_t addr)
@@ -126,6 +141,7 @@ void NesApu::WriteRam(uint16_t addr, uint8_t value)
 void NesApu::GetMemoryRanges(MemoryRanges &ranges)
 {
 	ranges.AddHandler(MemoryOperation::Read, 0x4015);
+	ranges.AddHandler(MemoryOperation::Read, 0x4018, 0x401A);
 	ranges.AddHandler(MemoryOperation::Write, 0x4015);
 }
 

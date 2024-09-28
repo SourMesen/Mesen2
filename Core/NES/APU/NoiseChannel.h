@@ -128,6 +128,11 @@ public:
 		}
 	}
 
+	uint8_t GetOutput()
+	{
+		return _timer.GetLastOutput();
+	}
+
 	ApuNoiseState GetState()
 	{
 		ApuNoiseState state;

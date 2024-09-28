@@ -59,5 +59,6 @@ public:
 	uint16_t GetDmcReadAddress();
 	void SetDmcReadBuffer(uint8_t value);
 
+	uint8_t GetOutput() { return _timer.GetLastOutput(); }
 	ApuDmcState GetState();
 };

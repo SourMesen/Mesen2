@@ -225,6 +225,11 @@ public:
 		return _envelope.LengthCounter.GetStatus();
 	}
 
+	uint8_t GetOutput()
+	{
+		return _timer.GetLastOutput();
+	}
+
 	ApuSquareState GetState()
 	{
 		ApuSquareState state;

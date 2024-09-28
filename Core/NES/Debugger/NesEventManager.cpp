@@ -169,9 +169,9 @@ EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
 						case 0x2006: return _config.Ppu2006Write;
 						case 0x2007: return _config.Ppu2007Write;
 					}
-				} else if(addr >= 0x4018 && _mapper->IsWriteRegister(addr)) {
+				} else if(addr >= 0x4020 && _mapper->IsWriteRegister(addr)) {
 					return _config.MapperRegisterWrites;
-				} else if((addr >= 0x4000 && addr <= 0x4015) || addr == 0x4017) {
+				} else if((addr >= 0x4000 && addr <= 0x4015) || addr == 0x4017 || addr == 0x401A) {
 					return _config.ApuRegisterWrites;
 				} else if(addr == 0x4016) {
 					return _config.ControlRegisterWrites;
@@ -183,9 +183,9 @@ EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
 						case 0x2004: return _config.Ppu2004Read;
 						case 0x2007: return _config.Ppu2007Read;
 					}
-				} else if(addr >= 0x4018 && _mapper->IsReadRegister(addr)) {
+				} else if(addr >= 0x4020 && _mapper->IsReadRegister(addr)) {
 					return _config.MapperRegisterReads;
-				} else if(addr >= 0x4000 && addr <= 0x4015) {
+				} else if((addr >= 0x4000 && addr <= 0x4015) || (addr >= 0x4018 && addr <= 0x401A)) {
 					return _config.ApuRegisterReads;
 				} else if(addr == 0x4016 || addr == 0x4017) {
 					return _config.ControlRegisterReads;

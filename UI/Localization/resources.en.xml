@@ -338,6 +338,7 @@
 			<Control ID="chkDisableGameGenieBusConflicts">Disable Game Genie bus conflict emulation</Control>
 			<Control ID="chkDisableFlashSaves">Disable flash saves (UNROM512 / GTROM)</Control>
 			<Control ID="chkEnableDmcSampleDuplicationGlitch">Enable DMC sample duplication glitch (late-G &amp; H CPU behavior)</Control>
+			<Control ID="chkEnableCpuTestMode">Enable CPU test mode registers</Control>
 			<Control ID="lblConsoleType">Console model:</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 		</Form>

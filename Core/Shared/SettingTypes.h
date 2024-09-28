@@ -635,6 +635,7 @@ struct NesConfig
 	bool EnablePpu2006ScrollGlitch = false;
 	bool RestrictPpuAccessOnFirstFrame = false;
 	bool EnableDmcSampleDuplicationGlitch = false;
+	bool EnableCpuTestMode = false;
 
 	bool RandomizeMapperPowerOnState = false;
 	bool RandomizeCpuPpuAlignment = false;

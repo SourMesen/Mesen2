@@ -720,8 +720,8 @@ void BaseMapper::GetMemoryRanges(MemoryRanges &ranges)
 		ranges.AddHandler(MemoryOperation::Read, 0x6000, 0xFFFF);
 		ranges.AddHandler(MemoryOperation::Write, 0x6000, 0xFFFF);
 	} else {
-		ranges.AddHandler(MemoryOperation::Read, 0x4018, 0xFFFF);
-		ranges.AddHandler(MemoryOperation::Write, 0x4018, 0xFFFF);
+		ranges.AddHandler(MemoryOperation::Read, 0x4020, 0xFFFF);
+		ranges.AddHandler(MemoryOperation::Write, 0x4020, 0xFFFF);
 	}
 }
 

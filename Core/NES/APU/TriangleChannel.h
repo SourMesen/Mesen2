@@ -136,6 +136,11 @@ public:
 		return _lengthCounter.GetStatus();
 	}
 
+	uint8_t GetOutput()
+	{
+		return _timer.GetLastOutput();
+	}
+
 	ApuTriangleState GetState()
 	{
 		ApuTriangleState state;
