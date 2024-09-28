@@ -44,6 +44,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int SelectedPalette { get; set; } = 0;
 
 		[Reactive] public int AddressIncrement { get; private set; }
+		[Reactive] public int TileIncrement { get; private set; }
 		[Reactive] public int MaximumAddress { get; private set; } = int.MaxValue;
 
 		[Reactive] public int GridSizeX { get; set; } = 8;
@@ -235,12 +236,20 @@ namespace Mesen.Debugger.ViewModels
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.ColumnCount, x => x.Config.RowCount, x => x.Config.Format).Subscribe(x => {
+
+				PixelSize tileSize = Config.Format.GetTileSize();
+
+				int bitsPerPixel = Config.Format.GetBitsPerPixel();
+				int bytesPerTile = tileSize.Width * tileSize.Height * bitsPerPixel / 8;
+
 				//Enforce min/max values for column/row counts
 				Config.ColumnCount = ColumnCount;
 				Config.RowCount = RowCount;
 
 				ApplyColumnRowCountRestrictions();
-				AddressIncrement = ColumnCount * RowCount * 8 * 8 * Config.Format.GetBitsPerPixel() / 8;
+
+				TileIncrement = bytesPerTile;
+				AddressIncrement = ColumnCount * RowCount * bytesPerTile;
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Source).Subscribe(memType => {
