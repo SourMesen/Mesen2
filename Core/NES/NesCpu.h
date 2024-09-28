@@ -39,6 +39,7 @@ private:
 	bool _needHalt = false;
 	bool _spriteDmaTransfer = false;
 	bool _dmcDmaRunning = false;
+	bool _abortDmcDma = false;
 	bool _needDummyRead = false;
 	uint8_t _spriteDmaOffset;
 
@@ -788,6 +789,7 @@ public:
 
 	void RunDMATransfer(uint8_t offsetValue);
 	void StartDmcTransfer();
+	void StopDmcTransfer();
 
 	bool IsCpuWrite() { return _cpuWrite; }
 	bool IsDmcDma() { return _isDmcDmaRead; }

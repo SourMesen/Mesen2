@@ -186,6 +186,7 @@ void NesApu::Exec()
 
 void NesApu::EndFrame()
 {
+	_dmc->ProcessClock();
 	Run();
 	_square1->EndFrame();
 	_square2->EndFrame();

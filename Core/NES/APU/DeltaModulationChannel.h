@@ -30,7 +30,8 @@ private:
 	uint8_t _bitsRemaining = 0;
 	bool _silenceFlag = true;
 	bool _needToRun = false;
-	uint8_t _needInit = 0;
+	uint8_t _disableDelay = 0;
+	uint8_t _transferStartDelay = 0;
 
 	uint8_t _lastValue4011 = 0;
 
@@ -53,6 +54,7 @@ public:
 	void EndFrame();
 
 	void SetEnabled(bool enabled);
+	void ProcessClock();
 	void StartDmcTransfer();
 	uint16_t GetDmcReadAddress();
 	void SetDmcReadBuffer(uint8_t value);

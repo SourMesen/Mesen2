@@ -51,7 +51,7 @@ void DeltaModulationChannel::InitSample()
 {
 	_currentAddr = _sampleAddr;
 	_bytesRemaining = _sampleLength;
-	_needToRun = _bytesRemaining > 0;
+	_needToRun |= _bytesRemaining > 0;
 }
 
 void DeltaModulationChannel::StartDmcTransfer()
@@ -81,7 +81,6 @@ void DeltaModulationChannel::SetDmcReadBuffer(uint8_t value)
 		_bytesRemaining--;
 
 		if(_bytesRemaining == 0) {
-			_needToRun = false;
 			if(_loopFlag) {
 				//Looped sample should never set IRQ flag
 				InitSample();
@@ -117,7 +116,8 @@ void DeltaModulationChannel::Run(uint32_t targetCycle)
 				_silenceFlag = false;
 				_shiftRegister = _readBuffer;
 				_bufferEmpty = true;
-				StartDmcTransfer();
+				_needToRun = true;
+				_transferStartDelay = 2;
 			}
 		}
 
@@ -128,7 +128,7 @@ void DeltaModulationChannel::Run(uint32_t targetCycle)
 void DeltaModulationChannel::Serialize(Serializer &s)
 {
 	SV(_sampleAddr); SV(_sampleLength); SV(_outputLevel); SV(_irqEnabled); SV(_loopFlag); SV(_currentAddr); SV(_bytesRemaining); SV(_readBuffer); SV(_bufferEmpty); SV(_shiftRegister); SV(_bitsRemaining); SV(_silenceFlag); SV(_needToRun);
-	SV(_timer);
+	SV(_timer); SV(_transferStartDelay); SV(_disableDelay);
 }
 
 bool DeltaModulationChannel::IrqPending(uint32_t cyclesToRun)
@@ -215,28 +215,52 @@ void DeltaModulationChannel::EndFrame()
 void DeltaModulationChannel::SetEnabled(bool enabled)
 {
 	if(!enabled) {
-		_bytesRemaining = 0;
-		_needToRun = false;
+		if(_disableDelay == 0) {
+			//Disabling takes effect with a 1 apu cycle delay
+			//If a DMA starts during this time, it gets cancelled
+			//but this will still cause the CPU to be halted for 1 cycle
+			if((_console->GetCpu()->GetCycleCount() & 0x01) == 0) {
+				_disableDelay = 2;
+			} else {
+				_disableDelay = 3;
+			}
+		}
+		_needToRun = true;
 	} else if(_bytesRemaining == 0) {
 		InitSample();
 		
 		//Delay a number of cycles based on odd/even cycles
 		//Allows behavior to match dmc_dma_start_test
 		if((_console->GetCpu()->GetCycleCount() & 0x01) == 0) {
-			_needInit = 2;
+			_transferStartDelay = 2;
 		} else {
-			_needInit = 3;
+			_transferStartDelay = 3;
 		}
+		_needToRun = true;
 	}
+}
+
+void DeltaModulationChannel::ProcessClock()
+{
+	if(_disableDelay && --_disableDelay == 0) {
+		_disableDelay = 0;
+		_bytesRemaining = 0;
+
+		//Abort any on-going transfer that hasn't fully started
+		_console->GetCpu()->StopDmcTransfer();
+	}
+
+	if(_transferStartDelay && --_transferStartDelay == 0) {
+		StartDmcTransfer();
+	}
+
+	_needToRun = _disableDelay || _transferStartDelay || _bytesRemaining;
 }
 
 bool DeltaModulationChannel::NeedToRun()
 {
-	if(_needInit > 0) {
-		_needInit--;
-		if(_needInit == 0) {
-			StartDmcTransfer();
-		}
+	if(_needToRun) {
+		ProcessClock();
 	}
 	return _needToRun;
 }

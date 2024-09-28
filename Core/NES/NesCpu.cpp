@@ -364,6 +364,12 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 	EndCpuCycle(true);
 	_needHalt = false;
 
+	if(_abortDmcDma) {
+		_dmcDmaRunning = false;
+		_abortDmcDma = false;
+		return;
+	}
+
 	uint16_t spriteDmaCounter = 0;
 	uint8_t spriteReadAddr = 0;
 	uint8_t readValue = 0;
@@ -376,7 +382,11 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 
 	auto processCycle = [this] {
 		//Sprite DMA cycles count as halt/dummy cycles for the DMC DMA when both run at the same time
-		if(_needHalt) {
+		if(_abortDmcDma) {
+			_dmcDmaRunning = false;
+			_abortDmcDma = false;
+			_needHalt = false;
+		} else if(_needHalt) {
 			_needHalt = false;
 		} else if(_needDummyRead) {
 			_needDummyRead = false;
@@ -396,6 +406,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 				EndCpuCycle(true);
 				_console->GetApu()->SetDmcReadBuffer(readValue);
 				_dmcDmaRunning = false;
+				_abortDmcDma = false;
 			} else if(_spriteDmaTransfer) {
 				//DMC DMA is not running, or not ready, run sprite DMA
 				processCycle();
@@ -518,6 +529,14 @@ void NesCpu::StartDmcTransfer()
 	_needHalt = true;
 }
 
+void NesCpu::StopDmcTransfer()
+{
+	if(_needHalt && _dmcDmaRunning) {
+		_abortDmcDma = true;
+		_needDummyRead = false;
+	}
+}
+
 void NesCpu::SetMasterClockDivider(ConsoleRegion region)
 {
 	switch(region) {
@@ -554,6 +573,7 @@ void NesCpu::Serialize(Serializer &s)
 		SV(_state.NmiFlag);
 		SV(_state.IrqFlag);
 		SV(_dmcDmaRunning);
+		SV(_abortDmcDma);
 		SV(_spriteDmaTransfer);
 		SV(_needDummyRead);
 		SV(_needHalt);
