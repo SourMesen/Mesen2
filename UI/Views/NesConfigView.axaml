@@ -321,6 +321,7 @@
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableOamAddrBug}" Text="{l:Translate chkDisableOamAddrBug}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisablePaletteRead}" Text="{l:Translate chkDisablePaletteRead}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.EnableDmcSampleDuplicationGlitch}" Text="{l:Translate chkEnableDmcSampleDuplicationGlitch}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableGameGenieBusConflicts}" Text="{l:Translate chkDisableGameGenieBusConflicts}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableFlashSaves}" Text="{l:Translate chkDisableFlashSaves}" />
 

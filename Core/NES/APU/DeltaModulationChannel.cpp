@@ -89,6 +89,29 @@ void DeltaModulationChannel::SetDmcReadBuffer(uint8_t value)
 			}
 		}
 	}
+
+	if(_sampleLength == 1 && !_loopFlag) {
+		//When DMA ends around the time the bit counter resets, a CPU glitch sometimes causes another DMA to be requested immediately.
+		if(_bitsRemaining == 8 && _timer.GetTimer() == _timer.GetPeriod() && _console->GetNesConfig().EnableDmcSampleDuplicationGlitch) {
+			//When the DMA ends on the same cycle as the bit counter resets
+			//This glitch exists on all H CPUs and some G CPUs (those from around 1990 and later)
+			//In this case, a full DMA is performed on the same address, and the same sample byte 
+			//is played twice in a row by the DMC
+			_shiftRegister = _readBuffer;
+			_silenceFlag = false;
+			_bufferEmpty = true;
+			InitSample();
+			StartDmcTransfer();
+		} else if(_bitsRemaining == 1 && _timer.GetTimer() < 2) {
+			//When the DMA ends on the APU cycle before the bit counter resets
+			//If it this happens right before the bit counter resets,
+			//a DMA is triggered and aborted 1 cycle later (causing one halted CPU cycle)
+			_shiftRegister = _readBuffer;
+			_bufferEmpty = false;
+			InitSample();
+			_disableDelay = 3;
+		}
+	}
 }
 
 void DeltaModulationChannel::Run(uint32_t targetCycle)
@@ -117,18 +140,12 @@ void DeltaModulationChannel::Run(uint32_t targetCycle)
 				_shiftRegister = _readBuffer;
 				_bufferEmpty = true;
 				_needToRun = true;
-				_transferStartDelay = 2;
+				StartDmcTransfer();
 			}
 		}
 
 		_timer.AddOutput(_outputLevel);
 	}
-}
-
-void DeltaModulationChannel::Serialize(Serializer &s)
-{
-	SV(_sampleAddr); SV(_sampleLength); SV(_outputLevel); SV(_irqEnabled); SV(_loopFlag); SV(_currentAddr); SV(_bytesRemaining); SV(_readBuffer); SV(_bufferEmpty); SV(_shiftRegister); SV(_bitsRemaining); SV(_silenceFlag); SV(_needToRun);
-	SV(_timer); SV(_transferStartDelay); SV(_disableDelay);
 }
 
 bool DeltaModulationChannel::IrqPending(uint32_t cyclesToRun)
@@ -279,4 +296,25 @@ ApuDmcState DeltaModulationChannel::GetState()
 	state.NextSampleAddr = _currentAddr;
 	state.SampleLength = _sampleLength;
 	return state;
+}
+
+void DeltaModulationChannel::Serialize(Serializer& s)
+{
+	SV(_sampleAddr);
+	SV(_sampleLength);
+	SV(_outputLevel);
+	SV(_irqEnabled);
+	SV(_loopFlag);
+	SV(_currentAddr);
+	SV(_bytesRemaining);
+	SV(_readBuffer);
+	SV(_bufferEmpty);
+	SV(_shiftRegister);
+	SV(_bitsRemaining);
+	SV(_silenceFlag);
+	SV(_needToRun);
+	SV(_timer);
+
+	SV(_transferStartDelay);
+	SV(_disableDelay);
 }

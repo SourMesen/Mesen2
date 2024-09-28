@@ -404,9 +404,9 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 				readValue = ProcessDmaRead(_console->GetApu()->GetDmcReadAddress(), prevReadAddress, enableInternalRegReads, isNesBehavior);
 				_isDmcDmaRead = false;
 				EndCpuCycle(true);
-				_console->GetApu()->SetDmcReadBuffer(readValue);
 				_dmcDmaRunning = false;
 				_abortDmcDma = false;
+				_console->GetApu()->SetDmcReadBuffer(readValue);
 			} else if(_spriteDmaTransfer) {
 				//DMC DMA is not running, or not ready, run sprite DMA
 				processCycle();
