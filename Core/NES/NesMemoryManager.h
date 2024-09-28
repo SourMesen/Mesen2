@@ -57,4 +57,5 @@ public:
 	void Write(uint16_t addr, uint8_t value, MemoryOperationType operationType);
 
 	uint8_t GetOpenBus(uint8_t mask = 0xFF);
+	uint8_t GetInternalOpenBus(uint8_t mask = 0xFF);
 };

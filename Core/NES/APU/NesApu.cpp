@@ -90,7 +90,7 @@ uint8_t NesApu::ReadRam(uint16_t addr)
 	//$4015 read
 	Run();
 
-	uint8_t status = GetStatus() | (_console->GetMemoryManager()->GetOpenBus() & 0x20);
+	uint8_t status = GetStatus() | (_console->GetMemoryManager()->GetInternalOpenBus() & 0x20);
 
 	//Reading $4015 clears the Frame Counter interrupt flag.
 	_console->GetCpu()->ClearIrqSource(IRQSource::FrameCounter);

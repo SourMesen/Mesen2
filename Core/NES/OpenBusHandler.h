@@ -1,21 +1,22 @@
 #pragma once
 #include "pch.h"
 #include "NES/INesMemoryHandler.h"
+#include "Utilities/Serializer.h"
 
-class OpenBusHandler : public INesMemoryHandler
+class OpenBusHandler : public INesMemoryHandler, public ISerializable
 {
 private:
-	uint8_t _lastReadValue;
+	uint8_t _externalOpenBus = 0;
+	uint8_t _internalOpenBus = 0;
 
 public:
 	OpenBusHandler()
 	{
-		_lastReadValue = 0;
 	}
 
 	uint8_t ReadRam(uint16_t addr) override
 	{
-		return _lastReadValue;
+		return _externalOpenBus;
 	}
 
 	uint8_t PeekRam(uint16_t addr) override
@@ -25,12 +26,22 @@ public:
 
 	__forceinline uint8_t GetOpenBus()
 	{
-		return _lastReadValue;
+		return _externalOpenBus;
 	}
 
-	__forceinline void SetOpenBus(uint8_t value)
+	__forceinline uint8_t GetInternalOpenBus()
 	{
-		_lastReadValue = value;
+		return _externalOpenBus;
+	}
+
+	__forceinline void SetOpenBus(uint8_t value, bool setInternalOnly)
+	{
+		//Reads to $4015 don't update the value on the external bus
+		//Only the CPU's internal bus is updated
+		if(!setInternalOnly) {
+			_externalOpenBus = value;
+		}
+		_internalOpenBus = value;
 	}
 
 	void GetMemoryRanges(MemoryRanges & ranges) override
@@ -39,5 +50,11 @@ public:
 
 	void WriteRam(uint16_t addr, uint8_t value) override
 	{
+	}
+
+	void Serialize(Serializer& s) override
+	{
+		SV(_internalOpenBus);
+		SV(_externalOpenBus);
 	}
 };
