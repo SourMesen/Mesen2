@@ -22,6 +22,15 @@ namespace Mesen.Views
 				//game only and doesn't re-activate the main menu
 				ApplicationHelper.GetMainWindow()?.Focus();
 			};
+
+			Panel panel = this.GetControl<Panel>("MenuPanel");
+			panel.PointerPressed += (s, e) => {
+				if(s == panel) {
+					//Close the menu when the blank space on the right is clicked
+					MainMenu.Close();
+					ApplicationHelper.GetMainWindow()?.Focus();
+				}
+			};
 		}
 
 		private void InitializeComponent()

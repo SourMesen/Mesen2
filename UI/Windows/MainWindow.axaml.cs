@@ -63,6 +63,7 @@ namespace Mesen.Windows
 
 		private Stopwatch _stopWatch = Stopwatch.StartNew();
 		private Dictionary<Key, long> _keyPressedStamp = new();
+		private bool _focusInMenu;
 
 		static MainWindow()
 		{
@@ -202,7 +203,7 @@ namespace Mesen.Windows
 			ConfigManager.Config.Preferences.ApplyFontOptions();
 			ConfigManager.Config.Debug.Fonts.ApplyConfig();
 
-			_timerBackgroundFlag.Interval = TimeSpan.FromMilliseconds(200);
+			_timerBackgroundFlag.Interval = TimeSpan.FromMilliseconds(100);
 			_timerBackgroundFlag.Tick += timerUpdateBackgroundFlag;
 			_timerBackgroundFlag.Start();
 			
@@ -594,6 +595,10 @@ namespace Mesen.Windows
 				return;
 			}
 
+			if(_focusInMenu) {
+				return;
+			}
+
 			if(e.Key != Key.None) {
 				_keyPressedStamp[e.Key] = _stopWatch.ElapsedTicks;
 
@@ -652,6 +657,12 @@ namespace Mesen.Windows
 			Window? activeWindow = ApplicationHelper.GetActiveWindow();
 
 			PreferencesConfig cfg = ConfigManager.Config.Preferences;
+
+			bool focusInMenu = MenuHelper.IsFocusInMenu(_mainMenu.MainMenu);
+			if(focusInMenu && !_focusInMenu) {
+				InputApi.ResetKeyState();
+			}
+			_focusInMenu = focusInMenu;
 
 			bool needPause = activeWindow == null && cfg.PauseWhenInBackground;
 			if(activeWindow != null) {

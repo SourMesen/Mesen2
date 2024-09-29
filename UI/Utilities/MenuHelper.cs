@@ -54,5 +54,47 @@ namespace Mesen.Utilities
 
 			return false;
 		}
+
+		private static bool IsFocusInItem(MenuItem item)
+		{
+			if(item.IsSubMenuOpen) {
+				bool checkPopup = true;
+				foreach(var child in item.GetLogicalChildren()) {
+					if(child is MenuItem subItem) {
+						if(IsFocusInItem(subItem)) {
+							return true;
+						} else if(checkPopup) {
+							if(subItem.GetVisualRoot() is PopupRoot root) {
+								if(root.IsKeyboardFocusWithin) {
+									return true;
+								}
+							}
+							checkPopup = false;
+						}
+					} else if(child is InputElement inputElem && inputElem.IsKeyboardFocusWithin) {
+						return true;
+					}
+				}
+			}
+
+			return item.IsKeyboardFocusWithin;
+		}
+
+		public static bool IsFocusInMenu(Menu menu)
+		{
+			if(menu.IsKeyboardFocusWithin) {
+				return true;
+			}
+
+			if(menu.Items != null) {
+				foreach(MenuItem? item in menu.Items) {
+					if(item != null && IsFocusInItem(item)) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
 	}
 }
