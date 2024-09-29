@@ -91,6 +91,7 @@ void NesCpu::Reset(bool softReset, ConsoleRegion region)
 	_spriteDmaOffset = 0;
 	_needHalt = false;
 	_dmcDmaRunning = false;
+	_abortDmcDma = false;
 	_isDmcDmaRead = false;
 	_cpuWrite = false;
 	_lastCrashWarning = 0;

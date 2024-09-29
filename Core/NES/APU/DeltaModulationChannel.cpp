@@ -36,6 +36,8 @@ void DeltaModulationChannel::Reset(bool softReset)
 	_bitsRemaining = 8;
 	_silenceFlag = true;
 	_needToRun = false;
+	_transferStartDelay = 0;
+	_disableDelay = 0;
 
 	_lastValue4011 = 0;
 
