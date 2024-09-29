@@ -267,7 +267,7 @@ namespace Mesen.Config
 			//Trace Logger
 			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_EditBreakpoint, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_EditLabel, KeyBinding = new(Key.F2) });
-			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_ViewInDebugger, KeyBinding = new(Key.F3) });
+			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_ViewInDebugger, KeyBinding = new(KeyModifiers.Control, Key.F1) });
 			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 
 			//Script Window
@@ -497,7 +497,20 @@ namespace Mesen.Config
 		public override string ToString()
 		{
 			if(ShortcutKey != Key.None) {
-				string shortcut = new KeyGesture(ShortcutKey, Modifiers).ToString();
+				KeyModifiers modifiers = Modifiers;
+				switch(ShortcutKey) {
+					case Key.LeftAlt:
+					case Key.LeftShift:
+					case Key.LeftCtrl:
+					case Key.RightAlt:
+					case Key.RightShift:
+					case Key.RightCtrl:
+						//Display "LeftCtrl" as "LeftCtrl" instead of "Ctrl+LeftCtrl", etc.
+						modifiers = KeyModifiers.None;
+						break;
+				}
+
+				string shortcut = new KeyGesture(ShortcutKey, modifiers).ToString();
 				shortcut = shortcut.Replace("Oem", "");
 				
 				//Rename D0-D9 to 0-9
