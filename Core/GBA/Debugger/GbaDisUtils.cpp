@@ -269,7 +269,7 @@ void GbaDisUtils::ThumbDisassemble(DisassemblyInfo& info, string& out, uint32_t 
 
 			str.Write(' ');
 			WriteReg(str, rd);
-			str.WriteAll(", [SP, #$", HexUtilities::ToHex(immValue << 1), ']');
+			str.WriteAll(", [SP, #$", HexUtilities::ToHex(immValue << 2), ']');
 			break;
 		}
 
