@@ -94,6 +94,11 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
+		public static bool HasOpenedDebugWindows()
+		{
+			return _debugWindowCounter > 0;
+		}
+
 		public static void CloseAllWindows()
 		{
 			//Iterate on a copy of the list since it will change during iteration
