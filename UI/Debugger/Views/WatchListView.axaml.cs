@@ -11,6 +11,7 @@ using Avalonia.Styling;
 using Avalonia.LogicalTree;
 using Avalonia.Controls.Selection;
 using Avalonia.Threading;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Views
 {
@@ -119,8 +120,7 @@ namespace Mesen.Debugger.Views
 			//(except when control is held, to allow Ctrl+A select all to work properly)
 			if(e.Source is DataBoxRow row && e.KeyModifiers != KeyModifiers.Control && IsTextKey(e.Key)) {
 				WatchListTextBox? txt = row.CellsPresenter?.GetControl<WatchListTextBox>(0);
-				txt?.SelectAll();
-				txt?.Focus();
+				txt?.FocusAndSelectAll();
 			}
 		}
 	}

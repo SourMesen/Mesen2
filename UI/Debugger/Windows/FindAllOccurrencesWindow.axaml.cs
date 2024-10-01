@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.Controls;
+using Mesen.Utilities;
 using ReactiveUI.Fody.Helpers;
 using System;
 
@@ -38,9 +39,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			TextBox txt = this.GetControl<TextBox>("txtSearch");
-			txt.Focus();
-			txt.SelectAll();
+			this.GetControl<TextBox>("txtSearch").FocusAndSelectAll();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)

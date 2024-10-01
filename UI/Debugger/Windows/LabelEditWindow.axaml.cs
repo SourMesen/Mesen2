@@ -38,7 +38,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.GetControl<TextBox>("txtLabel").Focus();
+			this.GetControl<TextBox>("txtLabel").FocusAndSelectAll();
 		}
 
 		public static async void EditLabel(CpuType cpuType, Control parent, CodeLabel label)

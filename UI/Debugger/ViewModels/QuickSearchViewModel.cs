@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -46,8 +47,7 @@ public class QuickSearchViewModel : ViewModelBase
 	public void Open()
 	{
 		IsSearchBoxVisible = true;
-		_txtSearch?.Focus();
-		_txtSearch?.SelectAll();
+		_txtSearch?.FocusAndSelectAll();
 	}
 
 	public void Close(object? param = null)

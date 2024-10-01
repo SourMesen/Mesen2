@@ -60,9 +60,7 @@ namespace Mesen.Debugger.Windows
 			Dispatcher.UIThread.Post(() => {
 				//Post this to run later, otherwise Linux seems to type the
 				//comma (from the Ctrl+comma shortcut) inside the textbox
-				TextBox txt = this.GetControl<TextBox>("txtSearch");
-				txt.Focus();
-				txt.SelectAll();
+				this.GetControl<TextBox>("txtSearch").FocusAndSelectAll();
 			});
 		}
 

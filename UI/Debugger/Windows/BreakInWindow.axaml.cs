@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.Controls;
 using Mesen.Interop;
+using Mesen.Utilities;
 using ReactiveUI.Fody.Helpers;
 using System;
 
@@ -63,7 +64,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.GetControl<MesenNumericTextBox>("txtValue").Focus();
+			this.GetControl<MesenNumericTextBox>("txtValue").FocusAndSelectAll();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)

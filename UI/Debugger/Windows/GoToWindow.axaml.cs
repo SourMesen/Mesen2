@@ -7,6 +7,7 @@ using Mesen.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Localization;
+using Mesen.Utilities;
 using Mesen.Views;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -55,8 +56,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.GetControl<TextBox>("txtAddress").Focus();
-			this.GetControl<TextBox>("txtAddress").SelectAll();
+			this.GetControl<TextBox>("txtAddress").FocusAndSelectAll();
 		}
 
 		private int GetEffectiveAddress()

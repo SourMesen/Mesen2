@@ -7,6 +7,7 @@ using Mesen.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
+using Mesen.Utilities;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
@@ -43,8 +44,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.GetControl<TextBox>("txtValue").Focus();
-			this.GetControl<TextBox>("txtValue").SelectAll();
+			this.GetControl<TextBox>("txtValue").FocusAndSelectAll();
 
 			DebugShortcutManager.RegisterActions(this, new List<ContextMenuAction>() {
 				new ContextMenuAction() {

@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Mesen.Controls;
+using Mesen.Utilities;
 using System;
 using System.Linq;
 
@@ -50,8 +51,7 @@ namespace Mesen.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.GetControl<TextBox>("txtBarcode").Focus();
-			this.GetControl<TextBox>("txtBarcode").SelectAll();
+			this.GetControl<TextBox>("txtBarcode").FocusAndSelectAll();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
