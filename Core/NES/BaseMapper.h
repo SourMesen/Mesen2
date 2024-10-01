@@ -10,12 +10,15 @@
 #include "Utilities/ISerializable.h"
 
 class NesConsole;
+class Epsm;
 enum class MemoryType;
 struct MapperStateEntry;
 
 class BaseMapper : public INesMemoryHandler, public ISerializable
 {
 private:
+	unique_ptr<Epsm> _epsm;
+
 	MirroringType _mirroringType = {};
 	string _batteryFilename;
 
@@ -157,6 +160,8 @@ protected:
 
 	void RestorePrgChrState();
 
+	void BaseProcessCpuClock();
+
 	uint8_t* GetNametable(uint8_t nametableIndex);
 	void SetNametable(uint8_t index, uint8_t nametableIndex);
 	void SetNametables(uint8_t nametable1Index, uint8_t nametable2Index, uint8_t nametable3Index, uint8_t nametable4Index);
@@ -181,6 +186,7 @@ public:
 	void Initialize(NesConsole* console, RomData &romData);
 	void InitSpecificMapper(RomData& romData);
 
+	BaseMapper();
 	virtual ~BaseMapper();
 	virtual void Reset(bool softReset);
 	virtual void OnAfterResetPowerOn() {}
@@ -188,12 +194,14 @@ public:
 	GameSystem GetGameSystem();
 	PpuModel GetPpuModel();
 	
+	Epsm* GetEpsm() { return _epsm.get(); }
+	
 	bool HasDefaultWorkRam();
 
-	virtual void SetRegion(ConsoleRegion region) { }
-	
+	void SetRegion(ConsoleRegion region);
+
 	__forceinline bool HasCpuClockHook() { return _hasCpuClockHook; }
-	virtual void ProcessCpuClock() { }
+	virtual void ProcessCpuClock();
 	
 	__forceinline bool HasVramAddressHook() { return _hasVramAddressHook; }
 	virtual void NotifyVramAddressChange(uint16_t addr);

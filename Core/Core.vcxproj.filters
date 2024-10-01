@@ -2922,6 +2922,12 @@
     <ClInclude Include="WS\WsSerial.h">
       <Filter>WS</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Epsm.h">
+      <Filter>NES</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\OpnInterface.h">
+      <Filter>NES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -3256,6 +3262,9 @@
     </ClCompile>
     <ClCompile Include="WS\WsEeprom.cpp">
       <Filter>WS</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\Epsm.cpp">
+      <Filter>NES</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

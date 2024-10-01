@@ -148,6 +148,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_processBitDelay > 0) {
 			_processBitDelay--;
 			if(_processBitDelay == 0) {

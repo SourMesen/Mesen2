@@ -139,7 +139,7 @@
 					<c:OptionSection Header="{l:Translate lblVolume}">
 						<Grid ColumnDefinitions="50*,50*" RowDefinitions="Auto">
 							<StackPanel Grid.Column="0" Margin="0 0 4 0">
-								<Grid Classes="Volume" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+								<Grid Classes="Volume" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 									<StackPanel Grid.Row="0" >
 										<TextBlock Text="Square 1" />
 										<TextBlock Text="{Binding Config.Square1Volume}" />
@@ -169,6 +169,12 @@
 										<TextBlock Text="{Binding Config.DmcVolume}" />
 									</StackPanel>
 									<c:MesenSlider Grid.Row="4" Value="{Binding Config.DmcVolume}" />
+
+									<StackPanel Grid.Row="5" >
+										<TextBlock Text="EPSM" />
+										<TextBlock Text="{Binding Config.EpsmVolume}" />
+									</StackPanel>
+									<c:MesenSlider Grid.Row="5" Value="{Binding Config.EpsmVolume}" />
 								</Grid>
 							</StackPanel>
 							<StackPanel Grid.Column="1" Margin="4 0 0 0">

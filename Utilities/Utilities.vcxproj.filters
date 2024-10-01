@@ -25,6 +25,9 @@
     <Filter Include="Scale2x">
       <UniqueIdentifier>{87329bd1-28ac-4ced-a4c2-b51777018d16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio\ymfm">
+      <UniqueIdentifier>{82a19ba0-fe04-4284-bb06-5ac16dd58487}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xBRZ\config.h">
@@ -188,6 +191,27 @@
     <ClInclude Include="Audio\OnePoleLowPassFilter.h">
       <Filter>Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Audio\ymfm\ymfm.h">
+      <Filter>Audio\ymfm</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\ymfm\ymfm_fm.h">
+      <Filter>Audio\ymfm</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\ymfm\ymfm_fm.ipp">
+      <Filter>Audio\ymfm</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\ymfm\ymfm_misc.h">
+      <Filter>Audio\ymfm</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\ymfm\ymfm_opn.h">
+      <Filter>Audio\ymfm</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\ymfm\ymfm_ssg.h">
+      <Filter>Audio\ymfm</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\ymfm\ymfm_adpcm.h">
+      <Filter>Audio\ymfm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">
@@ -309,6 +333,18 @@
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="NTSC\sms_ntsc.cpp">
       <Filter>NTSC</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\ymfm\ymfm_misc.cpp">
+      <Filter>Audio\ymfm</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\ymfm\ymfm_opn.cpp">
+      <Filter>Audio\ymfm</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\ymfm\ymfm_ssg.cpp">
+      <Filter>Audio\ymfm</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\ymfm\ymfm_adpcm.cpp">
+      <Filter>Audio\ymfm</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

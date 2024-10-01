@@ -54,6 +54,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_irqCounterEnabled) {
 			_irqCounter--;
 			if(_irqCounter == 0xFFFF) {

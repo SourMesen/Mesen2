@@ -38,6 +38,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_irqEnabled) {
 			_irqCounter++;
 			if(_irqCounter == 0x1000) {

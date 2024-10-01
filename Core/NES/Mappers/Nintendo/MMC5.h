@@ -229,6 +229,8 @@ private:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		_audio->Clock();
 
 		if(_ppuIdleCounter) {

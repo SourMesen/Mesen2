@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NES\Epsm.h" />
+    <ClInclude Include="NES\OpnInterface.h" />
     <ClInclude Include="SMS\Input\ColecoVisionController.h" />
     <ClInclude Include="Debugger\AddressInfo.h" />
     <ClInclude Include="Debugger\Base6502Assembler.h" />
@@ -834,6 +836,7 @@
     <ClCompile Include="NES\Debugger\NesAssembler.cpp" />
     <ClCompile Include="NES\Debugger\NesEventManager.cpp" />
     <ClCompile Include="NES\Debugger\NesTraceLogger.cpp" />
+    <ClCompile Include="NES\Epsm.cpp" />
     <ClCompile Include="NES\HdPacks\HdAudioDevice.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPack.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />

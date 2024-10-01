@@ -81,6 +81,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_controlManager && _prgChrSelectBit != _controlManager->GetPrgChrSelectBit()) {
 			_prgChrSelectBit = _controlManager->GetPrgChrSelectBit();
 

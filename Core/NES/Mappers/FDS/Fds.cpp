@@ -248,6 +248,8 @@ void Fds::ProcessAutoDiskInsert()
 
 void Fds::ProcessCpuClock()
 {
+	BaseProcessCpuClock();
+
 	if(_settings->FdsFastForwardOnLoad) {
 		_emu->GetSettings()->SetFlagState(EmulationFlags::MaximumSpeed, _scanningDisk || !_gameStarted);
 	} else {

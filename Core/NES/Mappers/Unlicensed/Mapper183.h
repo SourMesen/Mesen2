@@ -85,6 +85,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_needIrq) {
 			_console->GetCpu()->SetIrqSource(IRQSource::External);
 			_needIrq = false;

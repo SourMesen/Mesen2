@@ -110,6 +110,8 @@ class VRC2_4 : public BaseMapper
 		
 		void ProcessCpuClock() override
 		{
+			BaseProcessCpuClock();
+
 			if((_useHeuristics && _romInfo.MapperID != 22) || _variant >= VRCVariant::VRC4a) {
 				//Only VRC4 supports IRQs
 				_irq->ProcessCpuClock();

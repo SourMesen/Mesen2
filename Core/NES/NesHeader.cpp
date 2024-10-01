@@ -53,6 +53,7 @@ GameSystem NesHeader::GetGameSystem()
 					case 0x0: return GetNesGameSystem();
 					case 0x1: return GameSystem::VsSystem;
 					case 0x2: return GameSystem::Playchoice;
+					case 0x4: return GetNesGameSystem(); //EPSM
 					case 0xC: return GameSystem::FamicomNetworkSystem;
 					default:
 						MessageManager::Log("[iNes] Unsupported console type detected (using NES NTSC instead)");
@@ -69,6 +70,14 @@ GameSystem NesHeader::GetGameSystem()
 		}
 	}
 	return GetNesGameSystem();
+}
+
+bool NesHeader::HasEpsm()
+{
+	if(GetRomHeaderVersion() == RomHeaderVersion::Nes2_0) {
+		return (Byte7 & 0x03) == 0x03 && (Byte13 & 0xF) == 0x04;
+	}
+	return false;
 }
 
 RomHeaderVersion NesHeader::GetRomHeaderVersion()

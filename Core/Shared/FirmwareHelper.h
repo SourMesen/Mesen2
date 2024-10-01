@@ -32,6 +32,7 @@ enum class FirmwareType
 	WonderSwan,
 	WonderSwanColor,
 	SwanCrystal,
+	Ymf288AdpcmRom
 };
 
 struct MissingFirmwareMessage
@@ -127,6 +128,10 @@ struct MissingFirmwareMessage
 			
 			case FirmwareType::SwanCrystal:
 				FileHashes[0] = "82E96ADDF5AB1CE09A84B6EEDAA904E4CA432756851F7E0CC0649006C183834D";
+				break;
+
+			case FirmwareType::Ymf288AdpcmRom:
+				FileHashes[0] = "53AFD0FA9C62EDA3E2BE939E23F3ADF48A2AF8AD37BB1640261726C5D5ADEBA8";
 				break;
 
 			default:
@@ -452,4 +457,24 @@ public:
 		MessageManager::DisplayMessage("Error", "Could not find boot rom for the WonderSwan, skipping boot screen.");
 		return false;
 	}
+
+	static bool LoadYmf288AdpcmRom(Emulator* emu, vector<uint8_t>& romData)
+	{
+		string filename = "ymf288_adpcm_rom.bin";
+		uint32_t size = 0x2000;
+		if(AttemptLoadFirmware(romData, filename, size)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::Ymf288AdpcmRom, size);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(romData, filename, size)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find ADPCM ROM for YMF288 (EPSM) - sound emulation will be incorrect.");
+		return false;
+	}
+
 };

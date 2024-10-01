@@ -19,6 +19,7 @@ class BaseVideoFilter;
 class BaseControlManager;
 class HdAudioDevice;
 class HdPackBuilder;
+class Epsm;
 struct HdPackData;
 struct HdPackBuilderOptions;
 
@@ -77,6 +78,8 @@ public:
 	NesConfig& GetNesConfig();
 
 	void ProcessCpuClock();
+
+	Epsm* GetEpsm();
 
 	NesConsole* GetVsMainConsole();
 	NesConsole* GetVsSubConsole();

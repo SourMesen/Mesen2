@@ -82,6 +82,7 @@ struct NesRomInfo
 
 	bool HasChrRam = false;
 	bool HasBattery = false;
+	bool HasEpsm = false;
 	bool HasTrainer = false;
 	MirroringType Mirroring = MirroringType::Horizontal;
 	BusConflictType BusConflicts = BusConflictType::Default;

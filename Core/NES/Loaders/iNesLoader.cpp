@@ -31,6 +31,7 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 	romData.Info.SubMapperID = header.GetSubMapper();
 	romData.Info.Mirroring = header.GetMirroringType();
 	romData.Info.HasBattery = header.HasBattery();
+	romData.Info.HasEpsm = header.HasEpsm();
 	romData.Info.System = header.GetGameSystem();
 	romData.Info.VsType = header.GetVsSystemType();
 	romData.Info.VsPpuModel = header.GetVsSystemPpuModel();
@@ -136,6 +137,9 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 	Log("[iNes] Battery: " + string(romData.Info.HasBattery ? "Yes" : "No"));
 	if(romData.Info.HasTrainer) {
 		Log("[iNes] Trainer: Yes");
+	}
+	if(romData.Info.HasEpsm) {
+		Log("[iNes] EPSM: Yes");
 	}
 
 	if(!_checkOnly && !romData.Info.IsNes20Header) {

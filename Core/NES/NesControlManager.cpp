@@ -38,6 +38,7 @@
 #include "NES/Input/AsciiTurboFile.h"
 #include "NES/Input/BattleBox.h"
 #include "NES/Input/VirtualBoyController.h"
+#include "NES/Epsm.h"
 
 NesControlManager::NesControlManager(NesConsole* console) : BaseControlManager(console->GetEmulator(), CpuType::Nes)
 {
@@ -259,6 +260,10 @@ void NesControlManager::WriteRam(uint16_t addr, uint8_t value)
 void NesControlManager::ProcessWrites()
 {
 	if(_writePending && --_writePending == 0) {
+		if(_console->GetEpsm() && _writeAddr == 0x4016) {
+			_console->GetEpsm()->Write(_console->GetMemoryManager()->GetOpenBus());
+		}
+
 		for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
 			if(device->IsConnected()) {
 				device->WriteRam(_writeAddr, _writeValue);

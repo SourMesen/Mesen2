@@ -84,6 +84,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_licensingTimer) {
 			_licensingTimer--;
 			if(_licensingTimer == 0) {

@@ -2656,6 +2656,7 @@ E
 			<Value ID="WonderSwan">WonderSwan</Value>
 			<Value ID="WonderSwanColor">WonderSwan Color</Value>
 			<Value ID="SwanCrystal">SwanCrystal</Value>
+			<Value ID="Ymf288AdpcmRom">YFM288 ADPCM ROM (EPSM)</Value>
 		</Enum>
 
 		<Enum ID="CpuType">

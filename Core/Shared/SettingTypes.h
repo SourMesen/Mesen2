@@ -657,6 +657,7 @@ struct NesConfig
 	uint32_t UserPalette[512] = { };
 
 	uint32_t ChannelVolumes[11] = {};
+	uint32_t EpsmVolume = 100;
 	uint32_t ChannelPanning[11] = {};
 
 	StereoFilterType StereoFilter = StereoFilterType::None;

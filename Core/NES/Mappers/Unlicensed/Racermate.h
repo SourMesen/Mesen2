@@ -31,6 +31,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		_irqCounter--;
 		if(_irqCounter == 0) {
 			_irqCounter = 1024;

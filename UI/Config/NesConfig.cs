@@ -102,6 +102,7 @@ namespace Mesen.Config
 		[Reactive] [MinMax(0, 100)] public UInt32 Vrc7Volume { get; set; } = 100;
 		[Reactive] [MinMax(0, 100)] public UInt32 Namco163Volume { get; set; } = 100;
 		[Reactive] [MinMax(0, 100)] public UInt32 Sunsoft5bVolume { get; set; } = 100;
+		[Reactive] [MinMax(0, 100)] public UInt32 EpsmVolume { get; set; } = 100;
 
 		[Reactive] [MinMax(-100, 100)] public Int32 Square1Panning { get; set; } = 0;
 		[Reactive] [MinMax(-100, 100)] public Int32 Square2Panning { get; set; } = 0;
@@ -217,6 +218,7 @@ namespace Mesen.Config
 				Vrc7Volume = Vrc7Volume,
 				Namco163Volume = Namco163Volume,
 				Sunsoft5bVolume = Sunsoft5bVolume,
+				EpsmVolume = EpsmVolume,
 				Square1Panning = Square1Panning,
 				Square2Panning = Square2Panning,
 				TrianglePanning = TrianglePanning,
@@ -358,6 +360,7 @@ namespace Mesen.Config
 		public UInt32 Vrc7Volume;
 		public UInt32 Namco163Volume;
 		public UInt32 Sunsoft5bVolume;
+		public UInt32 EpsmVolume;
 
 		public Int32 Square1Panning;
 		public Int32 Square2Panning;

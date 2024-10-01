@@ -140,6 +140,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_irqCounter & 0x8000 && (_irqCounter & 0x7FFF) != 0x7FFF) {
 			_irqCounter++;
 			if((_irqCounter & 0x7FFF) == 0x7FFF) {

@@ -35,6 +35,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_irqEnabled) {
 			if(_smallCounter) {
 				uint8_t smallCounter = _irqCounter & 0xFF;

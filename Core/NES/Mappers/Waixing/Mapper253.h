@@ -65,6 +65,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_irqEnabled) {
 			_irqScaler++;
 			if(_irqScaler >= 114) {

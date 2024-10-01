@@ -39,6 +39,8 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_irqDelay > 0) {
 			_irqDelay--;
 			if(_irqDelay == 0) {

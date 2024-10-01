@@ -197,6 +197,13 @@
     <ClInclude Include="Audio\StereoDelayFilter.h" />
     <ClInclude Include="Audio\StereoPanningFilter.h" />
     <ClInclude Include="Audio\WavReader.h" />
+    <ClInclude Include="Audio\ymfm\ymfm.h" />
+    <ClInclude Include="Audio\ymfm\ymfm_adpcm.h" />
+    <ClInclude Include="Audio\ymfm\ymfm_fm.h" />
+    <ClInclude Include="Audio\ymfm\ymfm_fm.ipp" />
+    <ClInclude Include="Audio\ymfm\ymfm_misc.h" />
+    <ClInclude Include="Audio\ymfm\ymfm_opn.h" />
+    <ClInclude Include="Audio\ymfm\ymfm_ssg.h" />
     <ClInclude Include="Base64.h" />
     <ClInclude Include="BitUtilities.h" />
     <ClInclude Include="CompressionHelper.h" />
@@ -271,6 +278,30 @@
     <ClCompile Include="Audio\StereoDelayFilter.cpp" />
     <ClCompile Include="Audio\StereoPanningFilter.cpp" />
     <ClCompile Include="Audio\WavReader.cpp" />
+    <ClCompile Include="Audio\ymfm\ymfm_adpcm.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Audio\ymfm\ymfm_misc.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Audio\ymfm\ymfm_opn.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Audio\ymfm\ymfm_ssg.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="CRC32.cpp" />
     <ClCompile Include="FolderUtilities.cpp" />
     <ClCompile Include="HexUtilities.cpp" />

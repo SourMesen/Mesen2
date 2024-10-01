@@ -6,6 +6,7 @@
 #include "NES/NesTypes.h"
 #include "NES/NesMemoryManager.h"
 #include "NES/RomData.h"
+#include "NES/Epsm.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/MessageManager.h"
 #include "Shared/CheatManager.h"
@@ -17,6 +18,7 @@
 #include "Utilities/Serializer.h"
 #include "Shared/MemoryType.h"
 #include "Shared/MemoryOperationType.h"
+#include "Shared/FirmwareHelper.h"
 
 void BaseMapper::WriteRegister(uint16_t addr, uint8_t value) { }
 uint8_t BaseMapper::ReadRegister(uint16_t addr) { return 0; }
@@ -543,6 +545,10 @@ void BaseMapper::Serialize(Serializer& s)
 
 	SV(_mirroringType);
 
+	if(_epsm) {
+		SV(_epsm);
+	}
+
 	if(!s.IsSaving()) {
 		RestorePrgChrState();
 	}
@@ -696,12 +702,23 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 	LoadBattery();
 
 	_romInfo.HasChrRam = HasChrRam();
+
+	if(_romInfo.HasEpsm) {
+		vector<uint8_t> adpcmRom;
+		FirmwareHelper::LoadYmf288AdpcmRom(_emu, adpcmRom);
+		_epsm.reset(new Epsm(_emu, _console, adpcmRom));
+		_hasCpuClockHook = true;
+	}
 }
 
 void BaseMapper::InitSpecificMapper(RomData& romData)
 {
 	InitMapper();
 	InitMapper(romData);
+}
+
+BaseMapper::BaseMapper()
+{
 }
 
 BaseMapper::~BaseMapper()
@@ -864,6 +881,25 @@ void BaseMapper::WritePrgRam(uint16_t addr, uint8_t value)
 	if(_prgMemoryAccess[addr >> 8] & MemoryAccessType::Write) {
 		_prgPages[addr >> 8][(uint8_t)addr] = value;
 	}
+}
+
+void BaseMapper::SetRegion(ConsoleRegion region)
+{
+	if(_epsm) {
+		_epsm->OnRegionChanged();
+	}
+}
+
+void BaseMapper::BaseProcessCpuClock()
+{
+	if(_epsm) {
+		_epsm->Exec();
+	}
+}
+
+void BaseMapper::ProcessCpuClock()
+{
+	BaseProcessCpuClock();
 }
 
 void BaseMapper::NotifyVramAddressChange(uint16_t addr)

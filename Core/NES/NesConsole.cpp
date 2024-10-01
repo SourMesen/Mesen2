@@ -20,6 +20,7 @@
 #include "NES/NesNtscFilter.h"
 #include "NES/BisqwitNtscFilter.h"
 #include "NES/NesConstants.h"
+#include "NES/Epsm.h"
 #include "NES/Mappers/VsSystem/VsControlManager.h"
 #include "NES/Mappers/NSF/NsfMapper.h"
 #include "NES/Mappers/FDS/Fds.h"
@@ -70,6 +71,11 @@ void NesConsole::ProcessCpuClock()
 	if(_controlManager->HasPendingWrites()) {
 		_controlManager->ProcessWrites();
 	}
+}
+
+Epsm* NesConsole::GetEpsm()
+{
+	return _mapper->GetEpsm();
 }
 
 NesConsole* NesConsole::GetVsMainConsole()
@@ -178,6 +184,9 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 
 		_mapper->InitSpecificMapper(romData);
 
+		if(_mapper->GetEpsm()) {
+			_memoryManager->RegisterIODevice(_mapper->GetEpsm());
+		}
 		_memoryManager->RegisterIODevice(_ppu.get());
 		_memoryManager->RegisterIODevice(_apu.get());
 		_memoryManager->RegisterIODevice(_controlManager.get());

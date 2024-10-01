@@ -35,6 +35,7 @@ struct NesHeader
 	bool HasTrainer();
 	GameSystem GetNesGameSystem();
 	GameSystem GetGameSystem();
+	bool HasEpsm();
 	RomHeaderVersion GetRomHeaderVersion();
 	uint32_t GetSizeValue(uint32_t exponent, uint32_t multiplier);
 	uint32_t GetPrgSize();

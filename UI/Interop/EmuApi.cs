@@ -273,6 +273,7 @@ namespace Mesen.Interop
 		WonderSwan,
 		WonderSwanColor,
 		SwanCrystal,
+		Ymf288AdpcmRom
 	}
 
 	public struct MissingFirmwareMessage

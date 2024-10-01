@@ -61,7 +61,8 @@ namespace Mesen.Windows
 				new("CSCD Codec (lsnes)", "", "GPL2+", "https://repo.or.cz/lsnes.git"),
 				new("kissfft", "", "BSD 3-clause", "https://github.com/mborgerding/kissfft"),
 				new("orfanidis_eq", "", "MIT", "https://github.com/thedrgreenthumb/orfanidis_eq"),
-				new("ELFSharp", "", "MIT", "https://github.com/konrad-kruczynski/elfsharp")
+				new("ELFSharp", "", "MIT", "https://github.com/konrad-kruczynski/elfsharp"),
+				new("ymfm", "", "BSD 3-clause", "https://github.com/aaronsgiles/ymfm"),
 			};
 
 			LibraryList.Sort((a, b) => a.Name.CompareTo(b.Name));

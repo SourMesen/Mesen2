@@ -40,6 +40,7 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
 		_irq->ProcessCpuClock();
 	}
 

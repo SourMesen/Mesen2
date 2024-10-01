@@ -61,6 +61,7 @@ protected:
 
 	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
 		_irq->ProcessCpuClock();
 		_audio->Clock();
 	}

@@ -52,8 +52,10 @@ protected:
 		SV(_forceClock);
 	}
 
-	virtual void ProcessCpuClock() override
+	void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		if(_needIrqDelay) {
 			_needIrqDelay--;
 			if(_needIrqDelay == 0) {

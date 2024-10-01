@@ -78,6 +78,8 @@ protected:
 
 	virtual void ProcessCpuClock() override
 	{
+		BaseProcessCpuClock();
+
 		//Clock irq counter every memory read/write (each cpu cycle either reads or writes memory)
 		ClockIrqCounter();
 	}
