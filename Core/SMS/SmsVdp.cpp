@@ -92,6 +92,7 @@ void SmsVdp::UpdateConfig()
 	_disableBackground = _model == SmsModel::ColecoVision ? _emu->GetSettings()->GetCvConfig().DisableBackground : _emu->GetSettings()->GetSmsConfig().DisableBackground;
 	_disableSprites = _model == SmsModel::ColecoVision ? _emu->GetSettings()->GetCvConfig().DisableSprites : _emu->GetSettings()->GetSmsConfig().DisableSprites;
 	_removeSpriteLimit  = _model == SmsModel::ColecoVision ? _emu->GetSettings()->GetCvConfig().RemoveSpriteLimit : _emu->GetSettings()->GetSmsConfig().RemoveSpriteLimit;
+	_revision = _console->GetRevision();
 }
 
 void SmsVdp::UpdateIrqState()
@@ -108,8 +109,7 @@ void SmsVdp::UpdateIrqState()
 void SmsVdp::UpdateDisplayMode()
 {
 	if(_state.UseMode4) {
-		SmsRevision revision = _console->GetRevision();
-		if(_console->GetRegion() == ConsoleRegion::Pal || revision == SmsRevision::Sms2) {
+		if(_console->GetRegion() == ConsoleRegion::Pal || _revision == SmsRevision::Sms2) {
 			//Disable the mask for 224+ line mode, micromachines doesn't except this to have an effect
 			//Does it not affect the PAL SMS?
 			_state.NametableAddressMask = 0x3FFF;
@@ -119,7 +119,7 @@ void SmsVdp::UpdateDisplayMode()
 			_state.NametableAddressMask = (_state.NametableAddress & 0x400) ? ~0 : ~0x400;
 		}
 
-		if(revision != SmsRevision::Sms1 && (_state.M3_Use240LineMode || _state.M1_Use224LineMode)) {
+		if(_revision != SmsRevision::Sms1 && (_state.M3_Use240LineMode || _state.M1_Use224LineMode)) {
 			_state.VisibleScanlineCount = _state.M3_Use240LineMode ? 240 : 224;
 			_state.NametableHeight = 256;
 			_state.EffectiveNametableAddress = (_state.NametableAddress & 0x3000) | 0x700;
@@ -264,23 +264,26 @@ void SmsVdp::LoadBgTilesSms()
 			}
 			break;
 
-		case 4:
+		case 4: {
+			uint16_t addr = _revision == SmsRevision::Sms1 ? ((_bgTileAddr & _state.ColorTableAddress) | (_bgTileAddr & 0x3F)) : _bgTileAddr;
 			if(_bgHorizontalMirror) {
-				_bgShifters[0] |= ReverseBitOrder(_videoRam[_bgTileAddr]) << (16 - _pixelsAvailable);
-				_bgShifters[1] |= ReverseBitOrder(_videoRam[_bgTileAddr + 1]) << (16 - _pixelsAvailable);
+				_bgShifters[0] |= ReverseBitOrder(_videoRam[addr]) << (16 - _pixelsAvailable);
+				_bgShifters[1] |= ReverseBitOrder(_videoRam[addr + 1]) << (16 - _pixelsAvailable);
 			} else {
-				_bgShifters[0] |= _videoRam[_bgTileAddr] << (16 - _pixelsAvailable);
-				_bgShifters[1] |= _videoRam[_bgTileAddr + 1] << (16 - _pixelsAvailable);
+				_bgShifters[0] |= _videoRam[addr] << (16 - _pixelsAvailable);
+				_bgShifters[1] |= _videoRam[addr + 1] << (16 - _pixelsAvailable);
 			}
 			break;
+		}
 
-		case 6:
+		case 6: {
+			uint16_t addr = _revision == SmsRevision::Sms1 ? ((_bgTileAddr & _state.BgPatternTableAddress) | (_bgTileAddr & 0x7FF)) : _bgTileAddr;
 			if(_bgHorizontalMirror) {
-				_bgShifters[2] |= ReverseBitOrder(_videoRam[_bgTileAddr + 2]) << (16 - _pixelsAvailable);
-				_bgShifters[3] |= ReverseBitOrder(_videoRam[_bgTileAddr + 3]) << (16 - _pixelsAvailable);
+				_bgShifters[2] |= ReverseBitOrder(_videoRam[addr + 2]) << (16 - _pixelsAvailable);
+				_bgShifters[3] |= ReverseBitOrder(_videoRam[addr + 3]) << (16 - _pixelsAvailable);
 			} else {
-				_bgShifters[2] |= _videoRam[_bgTileAddr + 2] << (16 - _pixelsAvailable);
-				_bgShifters[3] |= _videoRam[_bgTileAddr + 3] << (16 - _pixelsAvailable);
+				_bgShifters[2] |= _videoRam[addr + 2] << (16 - _pixelsAvailable);
+				_bgShifters[3] |= _videoRam[addr + 3] << (16 - _pixelsAvailable);
 			}
 
 			if(_disableBackground) {
@@ -290,6 +293,7 @@ void SmsVdp::LoadBgTilesSms()
 
 			_pixelsAvailable += 8;
 			break;
+		}
 	}
 }
 
@@ -721,7 +725,7 @@ bool SmsVdp::IsZoomedSpriteAllowed(int spriteIndex)
 	// -If the scanline has 8 sprites, 4 sprites will be zoomed.
 	//Which sprites get zoomed is based on their draw priority (i.e the earlier entries in sprite ram get zoomed first)
 	//See thread/test rom: https://www.smspower.org/forums/19189-SMS1DoubleSizeSpritesBitTest
-	return _state.EnableDoubleSpriteSize && (!_state.UseMode4 || spriteIndex < ((int)_spriteCount - 4) || _console->GetRevision() != SmsRevision::Sms1);
+	return _state.EnableDoubleSpriteSize && (!_state.UseMode4 || spriteIndex < ((int)_spriteCount - 4) || _revision != SmsRevision::Sms1);
 }
 
 uint16_t SmsVdp::GetPixelColor()
@@ -1179,6 +1183,7 @@ void SmsVdp::Serialize(Serializer& s)
 		SV(_spriteCount);
 		SV(_scanlineCount);
 		SV(_region);
+		SV(_revision);
 		SV(_latchRequest);
 		SV(_latchPos);
 		SV(_writePending);

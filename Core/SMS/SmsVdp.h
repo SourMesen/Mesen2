@@ -43,6 +43,7 @@ private:
 	bool _disableSprites = false;
 	bool _removeSpriteLimit = false;
 	SmsModel _model = {};
+	SmsRevision _revision = {};
 
 	uint16_t* _outputBuffers[2] = {};
 	uint16_t* _currentOutputBuffer = nullptr;
