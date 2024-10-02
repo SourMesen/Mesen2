@@ -21,6 +21,7 @@ private:
 
 	uint64_t _masterClockRate = 0;
 	uint64_t _clockCounter = 0;
+	uint8_t _sampleClockCounter = 0;
 	uint8_t _prevValue = 0;
 	uint8_t _data = 0;
 	uint8_t _addr = 0;

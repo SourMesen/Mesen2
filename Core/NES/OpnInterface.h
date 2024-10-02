@@ -26,6 +26,7 @@ public:
 		_adpcmRom.resize(0x2000);
 
 		_console = console;
+		_opn.set_fidelity(ymfm::OPN_FIDELITY_MED);
 		_opn.reset();
 	}
 

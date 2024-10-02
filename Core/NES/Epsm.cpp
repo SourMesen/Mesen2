@@ -62,7 +62,7 @@ uint64_t Epsm::GetTargetClock()
 
 void Epsm::Exec()
 {
-	constexpr int clocksPerSample = 16;
+	constexpr int clocksPerSample = 144;
 
 	uint64_t targetClock = GetTargetClock();
 
@@ -70,8 +70,9 @@ void Epsm::Exec()
 		_clockCounter++;
 		_opn.Exec();
 
-		if((_clockCounter & (clocksPerSample - 1)) == 0) {
+		if(++_sampleClockCounter == clocksPerSample) {
 			_opn.GenerateSamples(_samples);
+			_sampleClockCounter = 0;
 		}
 	}
 }
@@ -101,6 +102,7 @@ void Epsm::Serialize(Serializer& s)
 	SV(_addr);
 	SV(_data);
 	SV(_masterClockRate);
+	SV(_sampleClockCounter);
 
 	SV(_opn);
 }
