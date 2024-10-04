@@ -46,7 +46,7 @@ namespace Mesen.Debugger.Views
 		bool inSelectionChanged = false;
 		private void Selection_SelectionChanged(object? sender, SelectionModelSelectionChangedEventArgs<WatchValueInfo> e)
 		{
-			if(inSelectionChanged || Model == null) {
+			if(inSelectionChanged || Model == null || !IsKeyboardFocusWithin) {
 				return;
 			}
 
