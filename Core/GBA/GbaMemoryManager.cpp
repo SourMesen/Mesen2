@@ -736,11 +736,13 @@ uint8_t GbaMemoryManager::DebugRead(uint32_t addr)
 		case 0x07: return _oam[addr & (GbaConsole::SpriteRamSize - 1)];
 
 		case 0x08: case 0x09: case 0x0A:
-		case 0x0B: case 0x0C: case 0x0D:
-			if(addr < _prgRomSize) {
-				return _prgRom[addr];
+		case 0x0B: case 0x0C: case 0x0D: {
+			uint32_t romAddr = ((bank & 0x01) << 24) | addr;
+			if(romAddr < _prgRomSize) {
+				return _prgRom[romAddr];
 			}
 			break;
+		}
 
 		case 0x0E: case 0x0F:
 			return _cart->ReadRam(addr, addr);
