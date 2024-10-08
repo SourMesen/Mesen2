@@ -74,18 +74,21 @@ namespace Mesen.Debugger.ViewModels
 			Dictionary<NesPrgMemoryType, Color> mainColors = new() {
 				{ NesPrgMemoryType.WorkRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
 				{ NesPrgMemoryType.SaveRam, Color.FromRgb(0xFA, 0xDC, 0xCD) },
-				{ NesPrgMemoryType.PrgRom, Color.FromRgb(0xC4, 0xE7, 0xD4) }
+				{ NesPrgMemoryType.PrgRom, Color.FromRgb(0xC4, 0xE7, 0xD4) },
+				{ NesPrgMemoryType.MapperRam, Color.FromRgb(0xFF, 0xEB, 0x6F) }
 			};
 
 			Dictionary<NesPrgMemoryType, Color> altColors = new() {
 				{ NesPrgMemoryType.WorkRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
 				{ NesPrgMemoryType.SaveRam, Color.FromRgb(0xEA, 0xCC, 0xBD) },
-				{ NesPrgMemoryType.PrgRom, Color.FromRgb(0xA4, 0xD7, 0xB4) }
+				{ NesPrgMemoryType.PrgRom, Color.FromRgb(0xA4, 0xD7, 0xB4) },
+				{ NesPrgMemoryType.MapperRam, Color.FromRgb(0xEF, 0xDB, 0x5F) }
 			};
 
 			Dictionary<NesPrgMemoryType, string> blockNames = new() {
 				{ NesPrgMemoryType.WorkRam, "WRAM" },
 				{ NesPrgMemoryType.SaveRam, "SRAM" },
+				{ NesPrgMemoryType.MapperRam, "EXRAM" },
 				{ NesPrgMemoryType.PrgRom, "" }
 			};
 
@@ -121,7 +124,8 @@ namespace Mesen.Debugger.ViewModels
 					int page = memoryType.Value switch {
 						NesPrgMemoryType.WorkRam => (int)(state.PrgMemoryOffset[startIndex] / state.WorkRamPageSize),
 						NesPrgMemoryType.SaveRam => (int)(state.PrgMemoryOffset[startIndex] / state.SaveRamPageSize),
-						_ or NesPrgMemoryType.PrgRom => (int)(state.PrgMemoryOffset[startIndex] / state.PrgPageSize)
+						NesPrgMemoryType.PrgRom => (int)(state.PrgMemoryOffset[startIndex] / state.PrgPageSize),
+						_ => -1
 					};
 
 					mappings.Add(new MemoryMappingBlock() { Length = currentSize, Name = blockNames[memoryType.Value], Page = page, Note = accessNotes[accessType], Color = color });
@@ -166,13 +170,15 @@ namespace Mesen.Debugger.ViewModels
 			Dictionary<NesChrMemoryType, Color> mainColors = new() {
 				{ NesChrMemoryType.NametableRam, Color.FromRgb(0xF4, 0xC7, 0xD4) },
 				{ NesChrMemoryType.ChrRom, Color.FromRgb(0xC4, 0xE7, 0xD4) },
-				{ NesChrMemoryType.ChrRam, Color.FromRgb(0xC4, 0xE0, 0xF4) }
+				{ NesChrMemoryType.ChrRam, Color.FromRgb(0xC4, 0xE0, 0xF4) },
+				{ NesChrMemoryType.MapperRam, Color.FromRgb(0xFF, 0xEB, 0x6F) }
 			};
 
 			Dictionary<NesChrMemoryType, Color> altColors = new() {
 				{ NesChrMemoryType.NametableRam, Color.FromRgb(0xD4, 0xA7, 0xB4) },
 				{ NesChrMemoryType.ChrRom, Color.FromRgb(0xA4, 0xD7, 0xB4) },
-				{ NesChrMemoryType.ChrRam, Color.FromRgb(0xB4, 0xD0, 0xE4) }
+				{ NesChrMemoryType.ChrRam, Color.FromRgb(0xB4, 0xD0, 0xE4) },
+				{ NesChrMemoryType.MapperRam, Color.FromRgb(0xEF, 0xDB, 0x5F) }
 			};
 
 			Dictionary<NesMemoryAccessType, string> accessNotes = new() {
@@ -202,13 +208,16 @@ namespace Mesen.Debugger.ViewModels
 					int page = memoryType.Value switch {
 						NesChrMemoryType.NametableRam => (int)(state.ChrMemoryOffset[startIndex] / 0x400),
 						NesChrMemoryType.ChrRom => (int)(state.ChrMemoryOffset[startIndex] / state.ChrPageSize),
-						_ or NesChrMemoryType.ChrRam => (int)(state.ChrMemoryOffset[startIndex] / state.ChrRamPageSize),
+						NesChrMemoryType.ChrRam => (int)(state.ChrMemoryOffset[startIndex] / state.ChrRamPageSize),
+						_ => -1
 					};
 
 					string name = "";
 					if(memoryType == NesChrMemoryType.NametableRam) {
 						name = "NT" + page.ToString();
 						page = -1;
+					} else if(memoryType == NesChrMemoryType.MapperRam) {
+						name = "EXRAM";
 					}
 
 					mappings.Add(new MemoryMappingBlock() { Length = currentSize, Name = name, Page = page, Note = accessNotes[accessType], Color = color });

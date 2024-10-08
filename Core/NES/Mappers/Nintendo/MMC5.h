@@ -4,19 +4,18 @@
 #include "NES/NesConsole.h"
 #include "NES/NesCpu.h"
 #include "NES/Mappers/Audio/Mmc5Audio.h"
+#include "NES/Debugger/IExtModeMapperDebug.h"
 #include "NES/Mappers/Nintendo/Mmc5MemoryHandler.h"
 #include "Utilities/HexUtilities.h"
 
-class MMC5 : public BaseMapper
+class MMC5 : public BaseMapper, public IExtModeMapperDebug
 {
 private:
-	static constexpr int ExRamSize = 0x400;
-
 	unique_ptr<Mmc5Audio> _audio;
 	unique_ptr<Mmc5MemoryHandler> _mmc5MemoryHandler;
 
-	uint8_t* _fillNametable;
-	uint8_t* _emptyNametable;
+	uint8_t* _fillNametable = nullptr;
+	uint8_t* _emptyNametable = nullptr;
 
 	uint8_t _prgRamProtect1 = 0;
 	uint8_t _prgRamProtect2 = 0;
@@ -93,34 +92,18 @@ private:
 			// 1x 8kb   : 0 0 0 0 - - - -
 			// 2x 8kb   : 0 0 0 0 1 1 1 1
 			// 1x 32kb  : 0 1 2 3 - - - -
-			int32_t realWorkRamSize = _workRamSize - (HasBattery() ? 0 : MMC5::ExRamSize);
-			int32_t realSaveRamSize = _saveRamSize - (!HasBattery() ? 0 : MMC5::ExRamSize);
 			if(IsNes20() || _romInfo.IsInDatabase) {
 				memoryType = PrgMemoryType::WorkRam;
-				if(HasBattery() && (bankNumber <= 3 || realSaveRamSize > 0x2000)) {
+				if(HasBattery() && (bankNumber <= 3 || _saveRamSize > 0x2000)) {
 					memoryType = PrgMemoryType::SaveRam;
 				}
 
-				if(realSaveRamSize + realWorkRamSize != 0x4000 && bankNumber >= 4) {
+				if(_saveRamSize + _workRamSize != 0x4000 && bankNumber >= 4) {
 					//When not 2x 8kb (=16kb), banks 4/5/6/7 select the empty socket and return open bus
 					accessType = MemoryAccessType::NoAccess;
 				}
 			} else {
 				memoryType = HasBattery() ? PrgMemoryType::SaveRam : PrgMemoryType::WorkRam;
-			}			
-
-			if(memoryType == PrgMemoryType::WorkRam) {
-				//Properly mirror work ram (by ignoring the extra 1kb ExRAM section)
-				bankNumber &= (realWorkRamSize / 0x2000) - 1;
-				if(_workRamSize == MMC5::ExRamSize) {
-					accessType = MemoryAccessType::NoAccess;
-				}
-			} else if(memoryType == PrgMemoryType::SaveRam) {
-				//Properly mirror work ram (by ignoring the extra 1kb ExRAM section)
-				bankNumber &= (realSaveRamSize / 0x2000) - 1;
-				if(_saveRamSize == MMC5::ExRamSize) {
-					accessType = MemoryAccessType::NoAccess;
-				}
 			}
 		} else {
 			accessType = MemoryAccessType::Read;
@@ -253,8 +236,7 @@ private:
 				SetNametable(i, nametableId);
 			} else if(nametableId == 2) {
 				if(_extendedRamMode <= 1) {
-					uint8_t* source = HasBattery() ? (_saveRam + (_saveRamSize - MMC5::ExRamSize)) : (_workRam + (_workRamSize - MMC5::ExRamSize));
-					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, source, 0, MMC5::ExRamSize, MemoryAccessType::ReadWrite);
+					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, ChrMemoryType::MapperRam, 0, MemoryAccessType::ReadWrite);
 				} else {
 					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, _emptyNametable, 0, BaseMapper::NametableSize, MemoryAccessType::Read);
 				}
@@ -281,11 +263,7 @@ private:
 			accessType = MemoryAccessType::Read;
 		}
 
-		if(HasBattery()) {
-			SetCpuMemoryMapping(0x5C00, 0x5FFF, PrgMemoryType::SaveRam, _saveRamSize - MMC5::ExRamSize, accessType);
-		} else {
-			SetCpuMemoryMapping(0x5C00, 0x5FFF, PrgMemoryType::WorkRam, _workRamSize - MMC5::ExRamSize, accessType);
-		}
+		SetCpuMemoryMapping(0x5C00, 0x5FFF, PrgMemoryType::MapperRam, 0, accessType);
 
 		SetNametableMapping(_nametableMapping);
 	}
@@ -306,6 +284,7 @@ private:
 protected:
 	uint16_t GetPrgPageSize() override { return 0x2000; }
 	uint16_t GetChrPageSize() override { return 0x400; }
+	uint32_t GetMapperRamSize() override { return 0x400; }
 	uint16_t RegisterStartAddress() override { return 0x5000; }
 	uint16_t RegisterEndAddress() override { return 0x5206; }
 	uint32_t GetSaveRamPageSize() override { return 0x2000; }
@@ -327,12 +306,6 @@ protected:
 			//Emulate as if a single 64k block of work/save ram existed
 			size = _romInfo.HasBattery ? 0x10000 : 0;
 		}
-
-		if(HasBattery()) {
-			//If there's a battery on the board, exram gets saved, too.
-			size += MMC5::ExRamSize;
-		}
-
 		return size;
 	}
 
@@ -347,10 +320,6 @@ protected:
 			//Emulate as if a single 64k block of work/save ram existed (+ 1kb of ExRAM)
 			size = (_romInfo.HasBattery ? 0 : 0x10000);
 		}
-		if(!HasBattery()) {
-			size += MMC5::ExRamSize;
-		}
-		
 		return size;
 	}
 
@@ -391,6 +360,27 @@ protected:
 	void Reset(bool softReset) override
 	{
 		_console->GetMemoryManager()->RegisterWriteHandler(_mmc5MemoryHandler.get(), 0x2000, 0x2007);
+	}
+
+	void LoadBattery() override
+	{
+		if(HasBattery() && _saveRamSize > 0) {
+			//Load EXRAM and save ram from the same file
+			vector<uint8_t> data(_saveRamSize + _mapperRamSize);
+			_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize + _mapperRamSize);
+			memcpy(_saveRam, data.data(), _saveRamSize);
+			memcpy(_mapperRam, data.data()+_saveRamSize, _mapperRamSize);
+		}
+	}
+
+	void SaveBattery() override
+	{
+		if(HasBattery()) {
+			//Save EXRAM and save ram to the same file
+			vector<uint8_t> data(_saveRam, _saveRam + _saveRamSize);
+			data.insert(data.end(), _mapperRam, _mapperRam + _mapperRamSize);
+			_emu->GetBatteryManager()->SaveBattery(".sav", data.data(), (uint32_t)data.size());
+		}
 	}
 
 	void Serialize(Serializer& s) override
@@ -681,31 +671,52 @@ protected:
 	}
 
 public:
-	bool IsExtendedAttributes()
+	bool HasExtendedAttributes(ExtModeConfig& cfg, uint8_t ntIndex) override
 	{
-		return _extendedRamMode == 1;
+		return cfg.Nametables[0].AttrExtMode;
+	}
+	
+	bool HasExtendedBackground(ExtModeConfig& cfg, uint8_t ntIndex) override
+	{
+		if(ntIndex == 4) {
+			return true;
+		}
+
+		return cfg.Nametables[0].BgExtMode;
 	}
 
-	uint8_t GetExAttributeNtPalette(uint16_t ntAddr)
+	uint8_t GetExAttributePalette(ExtModeConfig& cfg, uint8_t ntIndex, uint16_t ntOffset) override
 	{
-		ntAddr &= 0x3FF;		
-		uint8_t value = InternalReadRam(0x5C00 + ntAddr);
+		uint8_t value = cfg.ExtRam[ntOffset];
 		return (value & 0xC0) >> 6;
 	}
 
-	uint32_t GetExAttributeAbsoluteTileAddr(uint16_t ntAddr, uint16_t chrAddr)
+	uint8_t GetExBackgroundChrData(ExtModeConfig& cfg, uint8_t ntIndex, uint16_t ntOffset, uint16_t chrAddr) override
 	{
-		ntAddr &= 0x3FF;
-		uint8_t value = InternalReadRam(0x5C00 + ntAddr);
-
-		//"The pattern fetches ignore the standard CHR banking bits, and instead use the top two bits of $5130 and the bottom 6 bits from Expansion RAM to choose a 4KB bank to select the tile from."
-		uint16_t chrBank = (value & 0x3F) | (_chrUpperBits << 6);
-
-		return (chrBank << 12) + (chrAddr & 0xFFF);
+		if(ntIndex == 4) {
+			//Split mode
+			return ReadFromChr((cfg.Nametables[4].SourceOffset << 12) + (chrAddr & 0xFFF));
+		} else {
+			uint8_t value = cfg.ExtRam[ntOffset];
+			uint16_t chrBank = (value & 0x3F) | (cfg.BgExtBank << 6);
+			uint32_t addr = (chrBank << 12) + (chrAddr & 0xFFF);
+			return ReadFromChr(addr);
+		}
 	}
 
-	uint8_t GetExAttributeTileData(uint16_t ntAddr, uint16_t chrAddr)
+	ExtModeConfig GetExModeConfig() override
 	{
-		return ReadFromChr(GetExAttributeAbsoluteTileAddr(ntAddr, chrAddr));
+		ExtModeConfig cfg = {};
+
+		cfg.Nametables[0].AttrExtMode = _extendedRamMode == 1;
+		cfg.Nametables[0].BgExtMode = _extendedRamMode == 1;
+		cfg.BgExtBank = _chrUpperBits;
+
+		cfg.Nametables[4].SourceOffset = _verticalSplitBank;
+		cfg.WindowScrollY = _verticalSplitScroll;
+
+		memcpy(cfg.ExtRam, _mapperRam, _mapperRamSize);
+
+		return cfg;
 	}
 };

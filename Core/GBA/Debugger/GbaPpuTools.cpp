@@ -15,7 +15,7 @@ void GbaPpuTools::SetMemoryAccessData(uint16_t scanline, uint8_t* data)
 	memcpy(_memoryAccess + scanline * 308 * 4, data, 308 * 4);
 }
 
-DebugTilemapInfo GbaPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo GbaPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	GbaPpuState& state = (GbaPpuState&)baseState;
 	FrameInfo outputSize = GetTilemapSize(options, state);
@@ -256,7 +256,7 @@ FrameInfo GbaPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& base
 	return { 0, 0 };
 }
 
-DebugTilemapTileInfo GbaPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+DebugTilemapTileInfo GbaPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	DebugTilemapTileInfo result = {};
 
@@ -397,7 +397,7 @@ void GbaPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	}
 }
 
-DebugSpritePreviewInfo GbaPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
+DebugSpritePreviewInfo GbaPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state, BaseState& ppuToolsState)
 {
 	DebugSpritePreviewInfo info = {};
 	info.Height = 256;
@@ -586,7 +586,7 @@ void GbaPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview
 	}
 }
 
-void GbaPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
+void GbaPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	GbaPpuState& state = (GbaPpuState&)baseState;
 	for(int i = 0; i < 128; i++) {

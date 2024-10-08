@@ -10,7 +10,7 @@ GbPpuTools::GbPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugger, e
 {
 }
 
-DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 	uint32_t offset = options.Layer == 1 ? 0x1C00 : 0x1800;
@@ -108,7 +108,7 @@ FrameInfo GbPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& state
 	return { 256, 256 };
 }
 
-DebugTilemapTileInfo GbPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+DebugTilemapTileInfo GbPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	DebugTilemapTileInfo result = {};
 
@@ -158,7 +158,7 @@ DebugTilemapTileInfo GbPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint
 	return result;
 }
 
-DebugSpritePreviewInfo GbPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
+DebugSpritePreviewInfo GbPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state, BaseState& ppuToolsState)
 {
 	DebugSpritePreviewInfo info = {};
 	info.Height = 256;
@@ -241,7 +241,7 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview,
 	}
 }
 
-void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
+void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 	for(int i = 0; i < 40; i++) {

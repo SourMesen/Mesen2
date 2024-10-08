@@ -49,6 +49,7 @@ namespace Mesen.Interop
 				case MemoryType.NesChrRom:
 				case MemoryType.NesInternalRam:
 				case MemoryType.NesNametableRam:
+				case MemoryType.NesMapperRam:
 				case MemoryType.NesPaletteRam:
 				case MemoryType.NesSpriteRam:
 				case MemoryType.NesPpuMemory:
@@ -272,6 +273,7 @@ namespace Mesen.Interop
 				case MemoryType.NesWorkRam:
 				case MemoryType.NesSaveRam:
 				case MemoryType.NesInternalRam:
+				case MemoryType.NesMapperRam:
 				case MemoryType.NesMemory:
 
 				//PC Engine
@@ -455,6 +457,7 @@ namespace Mesen.Interop
 				MemoryType.NesPrgRom => "PRG",
 				MemoryType.NesWorkRam => "WRAM",
 				MemoryType.NesSaveRam => "SRAM",
+				MemoryType.NesMapperRam => "EXRAM",
 				MemoryType.NesInternalRam => "RAM",
 
 				MemoryType.NesSpriteRam => "SPR",

@@ -17,7 +17,7 @@ FrameInfo WsPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseS
 	return { 256, 256 };
 }
 
-DebugTilemapInfo WsPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo WsPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	WsPpuState& state = (WsPpuState&)baseState;
 
@@ -115,7 +115,7 @@ DebugTilemapInfo WsPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 	return result;
 }
 
-DebugTilemapTileInfo WsPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+DebugTilemapTileInfo WsPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	DebugTilemapTileInfo result = {};
 
@@ -200,7 +200,7 @@ void WsPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& ba
 	}
 }
 
-DebugSpritePreviewInfo WsPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState)
+DebugSpritePreviewInfo WsPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	DebugSpritePreviewInfo info = {};
 	info.Height = 256;
@@ -318,7 +318,7 @@ void WsPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview,
 	}
 }
 
-void WsPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
+void WsPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	WsPpuState& state = (WsPpuState&)baseState;
 	int spriteCount = 128;

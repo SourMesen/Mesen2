@@ -29,7 +29,7 @@ FrameInfo PceVdcTools::GetTilemapSize(GetTilemapOptions options, BaseState& base
 	}
 }
 
-DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	DebugTilemapTileInfo result = {};
 
@@ -61,7 +61,7 @@ DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	return result;
 }
 
-DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	PceVdcState& state = options.Layer == 0 ? ((PceVideoState&)baseState).Vdc : ((PceVideoState&)baseState).Vdc2;
 
@@ -296,7 +296,7 @@ void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* sprit
 	}
 }
 
-void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
+void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	PceVdcState& state = ((PceVideoState&)baseState).Vdc;
 	for(int i = 0, len = _console->IsSuperGrafx() ? 128 : 64; i < len; i++) {
@@ -307,7 +307,7 @@ void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& base
 	GetSpritePreview(options, baseState, outBuffer, spritePreviews, palette, screenPreview);
 }
 
-DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState)
+DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	PceVdcState& state = ((PceVideoState&)baseState).Vdc;
 	

@@ -60,7 +60,7 @@ void NesMemoryManager::InitializeMemoryHandlers(INesMemoryHandler** memoryHandle
 {
 	for(uint16_t address : *addresses) {
 		if(!allowOverride && memoryHandlers[address] != &_openBusHandler && memoryHandlers[address] != handler) {
-			throw std::runtime_error("Not supported");
+			throw std::runtime_error("Can't override existing mapping");
 		}
 		memoryHandlers[address] = handler;
 	}
@@ -77,8 +77,15 @@ void NesMemoryManager::RegisterIODevice(INesMemoryHandler*handler)
 
 void NesMemoryManager::RegisterWriteHandler(INesMemoryHandler* handler, uint32_t start, uint32_t end)
 {
-	for(uint32_t i = start; i < end; i++) {
+	for(uint32_t i = start; i <= end; i++) {
 		_ramWriteHandlers[i] = handler;
+	}
+}
+
+void NesMemoryManager::RegisterReadHandler(INesMemoryHandler* handler, uint32_t start, uint32_t end)
+{
+	for(uint32_t i = start; i <= end; i++) {
+		_ramReadHandlers[i] = handler;
 	}
 }
 

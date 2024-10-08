@@ -101,6 +101,7 @@ public:
 			case MemoryType::NesInternalRam:
 			case MemoryType::NesMemory:
 			case MemoryType::NesNametableRam:
+			case MemoryType::NesMapperRam:
 			case MemoryType::NesPaletteRam:
 			case MemoryType::NesPpuMemory:
 			case MemoryType::NesPrgRom:

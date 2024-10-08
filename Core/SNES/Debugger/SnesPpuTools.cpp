@@ -40,7 +40,7 @@ void SnesPpuTools::SetPpuRowBuffers(uint16_t scanline, uint16_t xStart, uint16_t
 	}
 }
 
-DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	SnesPpuState& state = (SnesPpuState&)baseState;
 	FrameInfo outputSize = GetTilemapSize(options, state);
@@ -229,10 +229,10 @@ static constexpr uint8_t _oamSizes[8][2][2] = {
 	{ { 2, 4 }, { 4, 4 } }  //16x32 + 32x32
 };
 
-void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, DebugSpriteInfo* sprites, uint32_t* spritePreviews, uint32_t* palette, uint32_t* outBuffer)
+void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState, DebugSpriteInfo* sprites, uint32_t* spritePreviews, uint32_t* palette, uint32_t* outBuffer)
 {
 	SnesPpuState& state = (SnesPpuState&)baseState;
-	DebugSpritePreviewInfo size = GetSpritePreviewInfo(options, state);
+	DebugSpritePreviewInfo size = GetSpritePreviewInfo(options, state, ppuToolsState);
 	uint32_t bgColor = GetSpriteBackgroundColor(options.Background, palette, false);
 
 	std::fill(outBuffer, outBuffer + size.Width * size.Height, GetSpriteBackgroundColor(options.Background, palette, true));
@@ -393,7 +393,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePrevie
 	}
 }
 
-void SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
+void SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	SnesPpuState& state = (SnesPpuState&)baseState;
 	for(int i = 0; i < 128; i++) {
@@ -401,7 +401,7 @@ void SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& bas
 		GetSpriteInfo(outBuffer[i], spritePreviews + (i * _spritePreviewSize), i, options, state, vram, oamRam, palette);
 	}
 	
-	GetSpritePreview(options, baseState, outBuffer, spritePreviews, palette, screenPreview);
+	GetSpritePreview(options, baseState, ppuToolsState, outBuffer, spritePreviews, palette, screenPreview);
 }
 
 FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
@@ -444,7 +444,7 @@ FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& bas
 	return size;
 }
 
-DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	DebugTilemapTileInfo result = {};
 
@@ -514,7 +514,7 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 	return result;
 }
 
-DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState)
+DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	SnesPpuState& state = (SnesPpuState&)baseState;
 

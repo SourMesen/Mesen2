@@ -138,14 +138,24 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, PrgMe
 		case PrgMemoryType::PrgRom: source = _prgRom; sourceSize = _prgSize; break;
 		case PrgMemoryType::SaveRam: source = _saveRam; sourceSize = _saveRamSize; break;
 		case PrgMemoryType::WorkRam: source = _workRam; sourceSize = _workRamSize; break;
+		case PrgMemoryType::MapperRam: source = _mapperRam; sourceSize = _mapperRamSize; break;
 	}
 
 	int firstSlot = startAddr >> 8;
 	int slotCount = (endAddr - startAddr + 1) >> 8;
 	for(int i = 0; i < slotCount; i++) {
-		_prgMemoryOffset[firstSlot + i] = sourceOffset + i * 0x100;
-		_prgMemoryType[firstSlot + i] = type;
-		_prgMemoryAccess[firstSlot + i] = (MemoryAccessType)accessType;
+		if(sourceSize == 0) {
+			_prgPages[i] = nullptr;
+			_prgMemoryAccess[i] = MemoryAccessType::NoAccess;
+		} else {
+			while(sourceOffset >= sourceSize) {
+				sourceOffset -= sourceSize;
+			}
+			_prgPages[firstSlot + i] = source + sourceOffset;
+			_prgMemoryOffset[firstSlot + i] = sourceOffset + i * 0x100;
+			_prgMemoryType[firstSlot + i] = type;
+			_prgMemoryAccess[firstSlot + i] = (MemoryAccessType)accessType;
+		}
 	}
 
 	SetCpuMemoryMapping(startAddr, endAddr, source, sourceOffset, sourceSize, accessType);
@@ -233,6 +243,9 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint1
 			pageCount = _nametableCount;
 			defaultAccessType |= MemoryAccessType::Write;
 			break;
+
+		default:
+			throw new std::runtime_error("Invalid parameter");
 	}
 
 	if(pageCount == 0) {
@@ -285,14 +298,27 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, ChrMe
 			sourceMemory = _nametableRam;
 			sourceSize = _ntRamSize;
 			break;
+
+		case ChrMemoryType::MapperRam:
+			sourceMemory = _mapperRam;
+			sourceSize = _mapperRamSize;
+			break;
 	}
 
 	int firstSlot = startAddr >> 8;
 	int slotCount = (endAddr - startAddr + 1) >> 8;
 	for(int i = 0; i < slotCount; i++) {
-		_chrMemoryOffset[firstSlot + i] = sourceOffset + i * 256;
-		_chrMemoryType[firstSlot + i] = type;
-		_chrMemoryAccess[firstSlot + i] = (MemoryAccessType)accessType;
+		if(sourceSize == 0) {
+			_chrPages[i] = nullptr;
+			_chrMemoryAccess[i] = MemoryAccessType::NoAccess;
+		} else {
+			while(sourceOffset >= sourceSize) {
+				sourceOffset -= sourceSize;
+			}
+			_chrMemoryOffset[firstSlot + i] = sourceOffset + i * 256;
+			_chrMemoryType[firstSlot + i] = type;
+			_chrMemoryAccess[firstSlot + i] = (MemoryAccessType)accessType;
+		}
 	}
 
 	SetPpuMemoryMapping(startAddr, endAddr, sourceMemory, sourceOffset, sourceSize, accessType);
@@ -534,6 +560,7 @@ void BaseMapper::Serialize(Serializer& s)
 	SVArray(_chrRam, _chrRamSize);
 	SVArray(_workRam, _workRamSize);
 	SVArray(_saveRam, _saveRamSize);
+	SVArray(_mapperRam, _mapperRamSize);
 	SVArray(_nametableRam, _ntRamSize);
 
 	SVArray(_prgMemoryOffset, 0x100);
@@ -647,8 +674,13 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 	_workRam = new uint8_t[_workRamSize];
 	_emu->RegisterMemory(MemoryType::NesWorkRam, _workRam, _workRamSize);
 
+	_mapperRamSize = GetMapperRamSize();
+	_mapperRam = new uint8_t[_mapperRamSize];
+	_emu->RegisterMemory(MemoryType::NesMapperRam, _mapperRam, _mapperRamSize);
+
 	_console->InitializeRam(_saveRam, _saveRamSize);
 	_console->InitializeRam(_workRam, _workRamSize);
+	_console->InitializeRam(_mapperRam, _mapperRamSize);
 
 	_nametableCount = GetNametableCount();
 	if(_nametableCount == 0) {
@@ -728,6 +760,7 @@ BaseMapper::~BaseMapper()
 	delete[] _prgRom;
 	delete[] _saveRam;
 	delete[] _workRam;
+	delete[] _mapperRam;
 	delete[] _nametableRam;
 }
 
@@ -941,7 +974,16 @@ void BaseMapper::DebugWriteVram(uint16_t addr, uint8_t value, bool disableSideEf
 void BaseMapper::WriteVram(uint16_t addr, uint8_t value)
 {
 	_emu->ProcessPpuWrite<CpuType::Nes>(addr, value, MemoryType::NesPpuMemory);
+	MapperWriteVram(addr, value);
+}
 
+void BaseMapper::MapperWriteVram(uint16_t addr, uint8_t value)
+{
+	InternalWriteVram(addr, value);
+}
+
+void BaseMapper::InternalWriteVram(uint16_t addr, uint8_t value)
+{
 	if(_chrMemoryAccess[addr >> 8] & MemoryAccessType::Write) {
 		_chrPages[addr >> 8][(uint8_t)addr] = value;
 	}
@@ -969,16 +1011,19 @@ AddressInfo BaseMapper::GetAbsoluteAddress(uint16_t relativeAddr)
 		info.Address = relativeAddr & _internalRamMask;
 		info.Type = MemoryType::NesInternalRam;
 	} else {
-		uint8_t *prgAddr = _prgPages[relativeAddr >> 8] + (uint8_t)relativeAddr;
-		if(prgAddr >= _prgRom && prgAddr < _prgRom + _prgSize) {
-			info.Address = (uint32_t)(prgAddr - _prgRom);
+		uint8_t *addr = _prgPages[relativeAddr >> 8] + (uint8_t)relativeAddr;
+		if(addr >= _prgRom && addr < _prgRom + _prgSize) {
+			info.Address = (uint32_t)(addr - _prgRom);
 			info.Type = MemoryType::NesPrgRom;
-		} else if(prgAddr >= _workRam && prgAddr < _workRam + _workRamSize) {
-			info.Address = (uint32_t)(prgAddr - _workRam);
+		} else if(addr >= _workRam && addr < _workRam + _workRamSize) {
+			info.Address = (uint32_t)(addr - _workRam);
 			info.Type = MemoryType::NesWorkRam;
-		} else if(prgAddr >= _saveRam && prgAddr < _saveRam + _saveRamSize) {
-			info.Address = (uint32_t)(prgAddr - _saveRam);
+		} else if(addr >= _saveRam && addr < _saveRam + _saveRamSize) {
+			info.Address = (uint32_t)(addr - _saveRam);
 			info.Type = MemoryType::NesSaveRam;
+		} else if(addr >= _mapperRam && addr < _mapperRam + _mapperRamSize) {
+			info.Address = (uint32_t)(addr - _mapperRam);
+			info.Type = MemoryType::NesMapperRam;
 		} else {
 			info.Address = -1;
 			info.Type = MemoryType::None;
@@ -1000,6 +1045,9 @@ void BaseMapper::GetPpuAbsoluteAddress(uint16_t relativeAddr, AddressInfo& info)
 		} else if(addr >= _chrRam && addr < _chrRam + _chrRamSize) {
 			info.Address = (uint32_t)(addr - _chrRam);
 			info.Type = MemoryType::NesChrRam;
+		} else if(addr >= _mapperRam && addr < _mapperRam + _mapperRamSize) {
+			info.Address = (uint32_t)(addr - _mapperRam);
+			info.Type = MemoryType::NesMapperRam;
 		} else if(addr >= _nametableRam && addr < _nametableRam + _nametableCount * BaseMapper::NametableSize) {
 			info.Address = (uint32_t)(addr - _nametableRam);
 			info.Type = MemoryType::NesNametableRam;
@@ -1025,6 +1073,7 @@ AddressInfo BaseMapper::GetRelativeAddress(AddressInfo& addr)
 		case MemoryType::NesPrgRom: ptrAddress = _prgRom; break;
 		case MemoryType::NesWorkRam: ptrAddress = _workRam; break;
 		case MemoryType::NesSaveRam: ptrAddress = _saveRam; break;
+		case MemoryType::NesMapperRam: ptrAddress = _mapperRam; break;
 		case MemoryType::NesInternalRam: return { (int32_t)(addr.Address & _internalRamMask), MemoryType::NesMemory };
 		default: return { GetPpuRelativeAddress(addr), MemoryType::NesPpuMemory };
 	}
@@ -1049,6 +1098,7 @@ int32_t BaseMapper::GetPpuRelativeAddress(AddressInfo& addr)
 		case MemoryType::NesChrRom: ptrAddress = _chrRom; break;
 		case MemoryType::NesChrRam: ptrAddress = _chrRam; break;
 		case MemoryType::NesNametableRam: ptrAddress = _nametableRam; break;
+		case MemoryType::NesMapperRam: ptrAddress = _mapperRam; break;
 		case MemoryType::NesPaletteRam: return 0x3F00 | (addr.Address & 0x1F); break;
 		default: return -1;
 	}
@@ -1106,6 +1156,7 @@ CartridgeState BaseMapper::GetState()
 	state.SaveRamPageSize = GetSaveRamPageSize();
 
 	vector<MapperStateEntry> entries = GetMapperStateEntries();
+	assert(entries.size() <= 200);
 	state.CustomEntryCount = (uint32_t)entries.size();
 	for(int i = 0; i < entries.size(); i++) {
 		state.CustomEntries[i] = entries[i];

@@ -54,6 +54,7 @@ namespace Mesen.Config
 				case MemoryType.GbVideoRam:
 				case MemoryType.GbSpriteRam:
 				case MemoryType.NesNametableRam:
+				case MemoryType.NesMapperRam:
 				case MemoryType.NesSpriteRam:
 				case MemoryType.NesSecondarySpriteRam:
 				case MemoryType.NesPaletteRam:

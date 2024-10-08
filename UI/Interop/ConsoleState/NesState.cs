@@ -101,6 +101,7 @@ public enum NesPrgMemoryType
 	PrgRom,
 	SaveRam,
 	WorkRam,
+	MapperRam,
 }
 
 public enum NesChrMemoryType
@@ -108,7 +109,8 @@ public enum NesChrMemoryType
 	Default,
 	ChrRom,
 	ChrRam,
-	NametableRam
+	NametableRam,
+	MapperRam,
 }
 
 public enum NesMemoryAccessType
@@ -210,7 +212,7 @@ public struct NesCartridgeState
 	public bool HasBattery;
 
 	public UInt32 CustomEntryCount;
-	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 200)]
 	public MapperStateEntry[] CustomEntries;
 }
 
@@ -336,4 +338,33 @@ public struct NesApuState
 	public NesApuNoiseState Noise;
 	public NesApuDmcState Dmc;
 	public NesApuFrameCounterState FrameCounter;
+}
+
+public struct NtExtConfig
+{
+	public UInt16 SourceOffset;
+	[MarshalAs(UnmanagedType.I1)] public bool AttrExtMode;
+	[MarshalAs(UnmanagedType.I1)] public bool BgExtMode;
+	[MarshalAs(UnmanagedType.I1)] public bool FillMode;
+};
+
+public struct ExtModeConfig
+{
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+	public NtExtConfig[] Nametables;
+
+	[MarshalAs(UnmanagedType.I1)] public bool SpriteExtMode;
+	public byte BgExtBank;
+	public byte SpriteExtBank;
+
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+	public byte[] SpriteExtData;
+
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x2000)]
+	public byte[] ExtRam;
+};
+
+public struct NesPpuToolsState : BaseState
+{
+	public ExtModeConfig ExtConfig;
 }

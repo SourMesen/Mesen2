@@ -59,6 +59,7 @@ enum class PrgMemoryType
 	PrgRom,
 	SaveRam,
 	WorkRam,
+	MapperRam,
 };
 
 enum class ChrMemoryType
@@ -66,7 +67,8 @@ enum class ChrMemoryType
 	Default,
 	ChrRom,
 	ChrRam,
-	NametableRam
+	NametableRam,
+	MapperRam,
 };
 
 enum MemoryAccessType
@@ -165,7 +167,7 @@ struct CartridgeState
 	bool HasBattery = false;
 
 	uint32_t CustomEntryCount = 0;
-	MapperStateEntry CustomEntries[100] = {};
+	MapperStateEntry CustomEntries[200] = {};
 };
 
 struct PPUStatusFlags

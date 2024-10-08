@@ -495,6 +495,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			lock(_updateLock) {
 				_coreData.PpuState = DebugApi.GetPpuState(CpuType);
+				_coreData.PpuToolsState = DebugApi.GetPpuToolsState(CpuType);
 
 				UpdateVramData();
 
@@ -534,7 +535,7 @@ namespace Mesen.Debugger.ViewModels
 					_coreData.CopyTo(_data);
 				}
 
-				if(_data.PpuState == null || _data.Palette == null) {
+				if(_data.PpuState == null || _data.Palette == null || _data.PpuToolsState == null) {
 					return;
 				}
 
@@ -542,7 +543,7 @@ namespace Mesen.Debugger.ViewModels
 					Background = Config.Background
 				};
 
-				DebugSpritePreviewInfo previewInfo = DebugApi.GetSpritePreviewInfo(CpuType, options, _data.PpuState);
+				DebugSpritePreviewInfo previewInfo = DebugApi.GetSpritePreviewInfo(CpuType, options, _data.PpuState, _data.PpuToolsState);
 				InitBitmap((int)previewInfo.Width, (int)previewInfo.Height);
 
 				UInt32[] palette = _data.Palette.Value.GetRgbPalette();
@@ -553,7 +554,7 @@ namespace Mesen.Debugger.ViewModels
 				BottomClipSize = Config.ShowOffscreenRegions ? 0 : (int)(previewInfo.Height - (previewInfo.VisibleHeight + previewInfo.VisibleY));
 
 				using(var framebuffer = ViewerBitmap.Lock(true)) {
-					DebugApi.GetSpriteList(ref _spriteList, ref _spritePreviews, CpuType, options, _data.PpuState, _data.Vram, _data.SpriteRam, palette, framebuffer.FrameBuffer.Address);
+					DebugApi.GetSpriteList(ref _spriteList, ref _spritePreviews, CpuType, options, _data.PpuState, _data.PpuToolsState, _data.Vram, _data.SpriteRam, palette, framebuffer.FrameBuffer.Address);
 				}
 
 				InitPreviews(_spriteList, _spritePreviews, previewInfo);
@@ -672,6 +673,7 @@ namespace Mesen.Debugger.ViewModels
 	public class SpriteViewerData
 	{
 		public BaseState? PpuState;
+		public BaseState? PpuToolsState;
 		public byte[] SpriteRam = Array.Empty<byte>();
 		public byte[] Vram = Array.Empty<byte>();
 		public DebugPaletteInfo? Palette = null;
@@ -680,6 +682,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			dst.PpuState = PpuState;
 			dst.Palette = Palette;
+			dst.PpuToolsState = PpuToolsState;
 			CopyArray(SpriteRam, ref dst.SpriteRam);
 			CopyArray(Vram, ref dst.Vram);
 		}

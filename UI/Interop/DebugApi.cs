@@ -138,7 +138,7 @@ namespace Mesen.Interop
 		{
 			return cpuType switch {
 				CpuType.Snes => GetPpuToolsState<SnesPpuToolsState>(cpuType),
-				CpuType.Nes => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
+				CpuType.Nes => GetPpuToolsState<NesPpuToolsState>(cpuType),
 				CpuType.Gameboy => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
 				CpuType.Pce => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
 				CpuType.Sms => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
@@ -283,8 +283,8 @@ namespace Mesen.Interop
 			DebugApi.GetMemoryStateWrapper(type, dst);
 		}
 
-		[DllImport(DllPath)] private static extern DebugTilemapInfo GetTilemap(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state, byte[] vram, UInt32[] palette, IntPtr outputBuffer);
-		public unsafe static DebugTilemapInfo GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState state, byte[] vram, UInt32[] palette, IntPtr outputBuffer)
+		[DllImport(DllPath)] private static extern DebugTilemapInfo GetTilemap(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state, IntPtr ppuToolsState, byte[] vram, UInt32[] palette, IntPtr outputBuffer);
+		public unsafe static DebugTilemapInfo GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState state, BaseState ppuToolsState, byte[] vram, UInt32[] palette, IntPtr outputBuffer)
 		{
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
@@ -293,10 +293,14 @@ namespace Mesen.Interop
 				fixed(AddressCounters* accessCounters = options.AccessCounters) {
 					byte* stateBuffer = stackalloc byte[GetStateSize(state)];
 					Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
+
+					byte* ppuToolsStateBuffer = stackalloc byte[GetStateSize(ppuToolsState)];
+					Marshal.StructureToPtr(ppuToolsState, (IntPtr)ppuToolsStateBuffer, false);
+
 					InteropGetTilemapOptions interopOptions = options.ToInterop();
 					interopOptions.CompareVram = (IntPtr)compareVramPtr;
 					interopOptions.AccessCounters = (IntPtr)accessCounters;
-					return DebugApi.GetTilemap(cpuType, interopOptions, (IntPtr)stateBuffer, vram, palette, outputBuffer);
+					return DebugApi.GetTilemap(cpuType, interopOptions, (IntPtr)stateBuffer, (IntPtr)ppuToolsStateBuffer, vram, palette, outputBuffer);
 				}
 			}
 		}
@@ -309,36 +313,45 @@ namespace Mesen.Interop
 
 			byte* ptr = stackalloc byte[GetStateSize(state)];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
+
 			return DebugApi.GetTilemapSize(cpuType, options.ToInterop(), (IntPtr)ptr);
 		}
 
-		[DllImport(DllPath)] private static extern DebugTilemapTileInfo GetTilemapTileInfo(UInt32 x, UInt32 y, CpuType cpuType, InteropGetTilemapOptions options, byte[] vram, IntPtr state);
-		public unsafe static DebugTilemapTileInfo? GetTilemapTileInfo(UInt32 x, UInt32 y, CpuType cpuType, GetTilemapOptions options, byte[] vram, BaseState state)
+		[DllImport(DllPath)] private static extern DebugTilemapTileInfo GetTilemapTileInfo(UInt32 x, UInt32 y, CpuType cpuType, InteropGetTilemapOptions options, byte[] vram, IntPtr state, IntPtr ppuToolsState);
+		public unsafe static DebugTilemapTileInfo? GetTilemapTileInfo(UInt32 x, UInt32 y, CpuType cpuType, GetTilemapOptions options, byte[] vram, BaseState state, BaseState ppuToolsState)
 		{
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
 			byte* ptr = stackalloc byte[GetStateSize(state)];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
-			DebugTilemapTileInfo info = DebugApi.GetTilemapTileInfo(x, y, cpuType, options.ToInterop(), vram, (IntPtr)ptr);
+
+			byte* ppuToolsStateBuffer = stackalloc byte[GetStateSize(ppuToolsState)];
+			Marshal.StructureToPtr(ppuToolsState, (IntPtr)ppuToolsStateBuffer, false);
+
+			DebugTilemapTileInfo info = DebugApi.GetTilemapTileInfo(x, y, cpuType, options.ToInterop(), vram, (IntPtr)ptr, (IntPtr)ppuToolsStateBuffer);
 			return info.Row >= 0 ? info : null;
 		}
 
 		[DllImport(DllPath)] public static extern void GetTileView(CpuType cpuType, GetTileViewOptions options, byte[] source, int srcSize, UInt32[] palette, IntPtr buffer);
 
-		[DllImport(DllPath)] private static extern DebugSpritePreviewInfo GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state);
-		public unsafe static DebugSpritePreviewInfo GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, BaseState state)
+		[DllImport(DllPath)] private static extern DebugSpritePreviewInfo GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, IntPtr ppuToolsState);
+		public unsafe static DebugSpritePreviewInfo GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, BaseState state, BaseState ppuToolsState)
 		{
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
 			byte* ptr = stackalloc byte[GetStateSize(state)];
 			Marshal.StructureToPtr(state, (IntPtr)ptr, false);
-			return DebugApi.GetSpritePreviewInfo(cpuType, options, (IntPtr)ptr);
+
+			byte* ppuToolsStateBuffer = stackalloc byte[GetStateSize(ppuToolsState)];
+			Marshal.StructureToPtr(ppuToolsState, (IntPtr)ppuToolsStateBuffer, false);
+
+			return DebugApi.GetSpritePreviewInfo(cpuType, options, (IntPtr)ptr, (IntPtr)ppuToolsStateBuffer);
 		}
 
-		[DllImport(DllPath)] private static extern void GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[]? spriteRam, UInt32[] palette, IntPtr sprites, IntPtr spritePreviews, IntPtr screenPreview);
-		public unsafe static void GetSpriteList(ref DebugSpriteInfo[] result, ref UInt32[] spritePreviews, CpuType cpuType, GetSpritePreviewOptions options, BaseState state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr screenPreview)
+		[DllImport(DllPath)] private static extern void GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, IntPtr ppuToolsState, byte[] vram, byte[]? spriteRam, UInt32[] palette, IntPtr sprites, IntPtr spritePreviews, IntPtr screenPreview);
+		public unsafe static void GetSpriteList(ref DebugSpriteInfo[] result, ref UInt32[] spritePreviews, CpuType cpuType, GetSpritePreviewOptions options, BaseState state, BaseState ppuToolsState, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr screenPreview)
 		{
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
@@ -346,7 +359,10 @@ namespace Mesen.Interop
 			byte* statePtr = stackalloc byte[GetStateSize(state)];
 			Marshal.StructureToPtr(state, (IntPtr)statePtr, false);
 
-			int count = (int)GetSpritePreviewInfo(cpuType, options, (IntPtr)statePtr).SpriteCount;
+			byte* ppuToolsStateBuffer = stackalloc byte[GetStateSize(ppuToolsState)];
+			Marshal.StructureToPtr(ppuToolsState, (IntPtr)ppuToolsStateBuffer, false);
+
+			int count = (int)GetSpritePreviewInfo(cpuType, options, (IntPtr)statePtr, (IntPtr)ppuToolsStateBuffer).SpriteCount;
 			if(count != result.Length) {
 				Array.Resize(ref result, count);
 			}
@@ -357,7 +373,7 @@ namespace Mesen.Interop
 
 			fixed(DebugSpriteInfo* spritesPtr = result) {
 				fixed(UInt32* spritePreviewsPtr = spritePreviews) {
-					DebugApi.GetSpriteList(cpuType, options, (IntPtr)statePtr, vram, spriteRam.Length > 0 ? spriteRam : null, palette, (IntPtr)spritesPtr, (IntPtr)spritePreviewsPtr, screenPreview);
+					DebugApi.GetSpriteList(cpuType, options, (IntPtr)statePtr, (IntPtr)ppuToolsStateBuffer, vram, spriteRam.Length > 0 ? spriteRam : null, palette, (IntPtr)spritesPtr, (IntPtr)spritePreviewsPtr, screenPreview);
 				}
 			}
 		}
@@ -614,6 +630,7 @@ namespace Mesen.Interop
 		NesWorkRam,
 		NesSaveRam,
 		NesNametableRam,
+		NesMapperRam,
 		NesSpriteRam,
 		NesSecondarySpriteRam,
 		NesPaletteRam,

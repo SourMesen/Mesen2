@@ -336,7 +336,7 @@
 			<Control ID="chkDisablePpu2004Reads">Disable PPU $2004 reads (Famicom behavior)</Control>
 			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>
 			<Control ID="chkDisableGameGenieBusConflicts">Disable Game Genie bus conflict emulation</Control>
-			<Control ID="chkDisableFlashSaves">Disable flash saves (UNROM512 / GTROM)</Control>
+			<Control ID="chkDisableFlashSaves">Disable flash saves (UNROM512 / GTROM / Rainbow)</Control>
 			<Control ID="chkEnableDmcSampleDuplicationGlitch">Enable DMC sample duplication glitch (late-G &amp; H CPU behavior)</Control>
 			<Control ID="chkEnableCpuTestMode">Enable CPU test mode registers</Control>
 			<Control ID="lblConsoleType">Console model:</Control>
@@ -2716,6 +2716,7 @@ E
 			<Value ID="NesWorkRam">Work RAM</Value>
 			<Value ID="NesSaveRam">Save RAM</Value>
 			<Value ID="NesNametableRam">Nametable RAM (CIRAM)</Value>
+			<Value ID="NesMapperRam">Mapper RAM (EXRAM)</Value>
 			<Value ID="NesSpriteRam">Sprite RAM (OAM)</Value>
 			<Value ID="NesSecondarySpriteRam">Secondary OAM RAM</Value>
 			<Value ID="NesChrRom">CHR ROM</Value>

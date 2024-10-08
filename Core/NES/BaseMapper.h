@@ -81,6 +81,9 @@ protected:
 	bool _hasChrBattery = false;
 	int16_t _vramOpenBusValue = -1;
 
+	uint8_t* _mapperRam = nullptr;
+	uint32_t _mapperRamSize = 0;
+
 	virtual void InitMapper() = 0;
 	virtual void InitMapper(RomData &romData);
 	virtual uint16_t GetPrgPageSize() = 0;
@@ -104,6 +107,8 @@ protected:
 	virtual uint32_t GetWorkRamSize() { return 0x2000; }
 	virtual uint32_t GetWorkRamPageSize() { return 0x2000; }
 	
+	virtual uint32_t GetMapperRamSize() { return 0; }
+
 	virtual uint16_t RegisterStartAddress() { return 0x8000; }
 	virtual uint16_t RegisterEndAddress() { return 0xFFFF; }
 	virtual bool AllowRegisterRead() { return false; }
@@ -140,7 +145,7 @@ protected:
 	void RemovePpuMemoryMapping(uint16_t startAddr, uint16_t endAddr);
 
 	bool HasBattery();
-	void LoadBattery();
+	virtual void LoadBattery();
 	string GetBatteryFilename();
 
 	uint32_t GetPrgPageCount();
@@ -167,6 +172,8 @@ protected:
 	void SetNametables(uint8_t nametable1Index, uint8_t nametable2Index, uint8_t nametable3Index, uint8_t nametable4Index);
 	void SetMirroringType(MirroringType type);
 	MirroringType GetMirroringType();
+
+	void InternalWriteVram(uint16_t addr, uint8_t value);
 
 	__forceinline uint8_t InternalReadVram(uint16_t addr)
 	{
@@ -222,7 +229,8 @@ public:
 	void WritePrgRam(uint16_t addr, uint8_t value);
 
 	virtual uint8_t MapperReadVram(uint16_t addr, MemoryOperationType operationType);
-	
+	virtual void MapperWriteVram(uint16_t addr, uint8_t value);
+
 	__forceinline uint8_t ReadVram(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
 	{
 		uint8_t value;

@@ -48,6 +48,7 @@ enum class MemoryType
 	NesWorkRam,
 	NesSaveRam,
 	NesNametableRam,
+	NesMapperRam,
 	NesSpriteRam,
 	NesSecondarySpriteRam,
 	NesPaletteRam,

@@ -2928,6 +2928,18 @@
     <ClInclude Include="NES\OpnInterface.h">
       <Filter>NES</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Homebrew\Rainbow.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Homebrew\RainbowAudio.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Debugger\IExtModeMapperDebug.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Homebrew\FlashS29.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -3265,6 +3277,9 @@
     </ClCompile>
     <ClCompile Include="NES\Epsm.cpp">
       <Filter>NES</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\Mappers\Homebrew\Rainbow.cpp">
+      <Filter>NES\Mappers\Homebrew</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

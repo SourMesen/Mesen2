@@ -177,7 +177,7 @@ vector<uint8_t> IpsPatcher::CreatePatch(vector<uint8_t> originalData, vector<uin
 				patchRecord.RepeatCount = rleCount;
 				patchRecord.Value = rleByte;
 			} else {
-				patchRecord.Replacement = vector<uint8_t>(&newData[patchRecord.Address], &newData[patchRecord.Address + patchRecord.Length]);
+				patchRecord.Replacement = vector<uint8_t>(newData.data() + patchRecord.Address, newData.data() + patchRecord.Address + patchRecord.Length);
 			}
 			patchRecord.WriteRecord(patchFile);
 		}

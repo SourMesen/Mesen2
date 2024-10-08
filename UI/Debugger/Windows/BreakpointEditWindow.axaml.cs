@@ -13,6 +13,9 @@ namespace Mesen.Debugger.Windows
 {
 	public class BreakpointEditWindow : MesenWindow
 	{
+		[Obsolete("For designer only")]
+		public BreakpointEditWindow() : this(new BreakpointEditViewModel()) { }
+
 		public BreakpointEditWindow(BreakpointEditViewModel model)
 		{
 			DataContext = model;

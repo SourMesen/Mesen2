@@ -19,7 +19,7 @@ FrameInfo SmsVdpTools::GetTilemapSize(GetTilemapOptions options, BaseState& base
 	return { isTextMode ? 240u : 256u, state.NametableHeight };
 }
 
-DebugTilemapInfo SmsVdpTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo SmsVdpTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	SmsVdpState& state = (SmsVdpState&)baseState;
 
@@ -149,7 +149,7 @@ DebugTilemapInfo SmsVdpTools::GetTilemap(GetTilemapOptions options, BaseState& b
 	return result;
 }
 
-DebugTilemapTileInfo SmsVdpTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+DebugTilemapTileInfo SmsVdpTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	DebugTilemapTileInfo result = {};
 
@@ -277,7 +277,7 @@ void SmsVdpTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	}
 }
 
-DebugSpritePreviewInfo SmsVdpTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState)
+DebugSpritePreviewInfo SmsVdpTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState)
 {
 	SmsVdpState& state = (SmsVdpState&)baseState;
 	DebugSpritePreviewInfo info = {};
@@ -391,7 +391,7 @@ void SmsVdpTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview
 	}
 }
 
-void SmsVdpTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
+void SmsVdpTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[], uint32_t* spritePreviews, uint32_t* screenPreview)
 {
 	SmsVdpState& state = (SmsVdpState&)baseState;
 	int spriteCount = state.UseMode4 ? 64 : 32;
