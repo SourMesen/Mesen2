@@ -138,7 +138,7 @@ uint8_t Rainbow::ReadRam(uint16_t addr)
 		if(_cpuIrqAckOn4011) {
 			AckCpuIrq();
 		}
-		return _audio->GetLastOutput();
+		return (_audio->GetLastOutput() << 1);
 	}
 	return BaseMapper::ReadRam(addr);
 }
