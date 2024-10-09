@@ -234,6 +234,10 @@ namespace Mesen.Debugger.ViewModels
 				ApplyColumnRowCountRestrictions();
 			}));
 
+			AddDisposable(this.WhenAnyValue(x => x.Config.StartAddress).Subscribe(x => {
+				RefreshData();
+			}));
+
 			AddDisposable(this.WhenAnyValue(x => x.Config.ColumnCount, x => x.Config.RowCount, x => x.Config.Format).Subscribe(x => {
 				//Enforce min/max values for column/row counts
 				Config.ColumnCount = ColumnCount;
@@ -241,6 +245,8 @@ namespace Mesen.Debugger.ViewModels
 
 				ApplyColumnRowCountRestrictions();
 				AddressIncrement = ColumnCount * RowCount * 8 * 8 * Config.Format.GetBitsPerPixel() / 8;
+
+				RefreshData();
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Source).Subscribe(memType => {
@@ -336,9 +342,8 @@ namespace Mesen.Debugger.ViewModels
 			SelectedPalette = paletteIndex;
 			Config.StartAddress = address / AddressIncrement * AddressIncrement;
 			Config.Layout = layout;
-			int bitsPerPixel = Config.Format.GetBitsPerPixel();
 			PixelSize tileSize = Config.Format.GetTileSize();
-			int bytesPerTile = tileSize.Width * tileSize.Height * bitsPerPixel / 8;
+			int bytesPerTile = Config.Format.GetBytesPerTile();
 
 			int gap = address - Config.StartAddress;
 			int tileNumber = gap / bytesPerTile;
@@ -431,8 +436,12 @@ namespace Mesen.Debugger.ViewModels
 			
 			RefreshPalette();
 
+			int bytesPerTile = Config.Format.GetBytesPerTile();
+			int tileCount = Config.RowCount * Config.ColumnCount;
+			int totalSize = bytesPerTile * tileCount;
+
 			lock(_updateLock) {
-				DebugApi.GetMemoryState(Config.Source, ref _coreSourceData);
+				DebugApi.GetMemoryValues(Config.Source, (uint)Config.StartAddress, (uint)(Config.StartAddress + totalSize - 1), ref _coreSourceData);
 			}
 
 			RefreshTab();
@@ -481,9 +490,8 @@ namespace Mesen.Debugger.ViewModels
 
 		private int GetTileAddress(PixelPoint pixelPosition)
 		{
-			int bitsPerPixel = Config.Format.GetBitsPerPixel();
 			PixelSize tileSize = Config.Format.GetTileSize();
-			int bytesPerTile = tileSize.Width * tileSize.Height * bitsPerPixel / 8;
+			int bytesPerTile = Config.Format.GetBytesPerTile();
 			PixelPoint pos = FromLayoutCoordinates(Config.Layout, new PixelPoint(pixelPosition.X / tileSize.Width, pixelPosition.Y / tileSize.Height));
 			int offset = (pos.Y * ColumnCount * 8 / tileSize.Width + pos.X) * bytesPerTile;
 			return (Config.StartAddress + offset) % (MaximumAddress + 1);

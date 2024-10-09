@@ -1393,6 +1393,13 @@ namespace Mesen.Interop
 				_ => throw new Exception("TileFormat not supported"),
 			};
 		}
+
+		public static int GetBytesPerTile(this TileFormat format)
+		{
+			int bitsPerPixel = format.GetBitsPerPixel();
+			PixelSize tileSize = format.GetTileSize();
+			return tileSize.Width * tileSize.Height * bitsPerPixel / 8;
+		}
 	}
 
 	public enum TileLayout

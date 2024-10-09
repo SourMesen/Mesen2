@@ -148,7 +148,7 @@ void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, 
 		}
 
 		for(int column = 0; column < options.Width; column++) {
-			uint32_t addr = baseOffset + options.StartAddress + bytesPerTile * column;
+			uint32_t addr = baseOffset + bytesPerTile * column;
 
 			int baseOutputOffset;
 			if(options.Layout == TileLayout::SingleLine8x16) {

@@ -43,7 +43,6 @@ public class TileEditorViewModel : DisposableViewModel
 	private int _columnCount = 1;
 	private int _rowCount = 1;
 	private TileFormat _tileFormat;
-	private byte[] _sourceData = Array.Empty<byte>();
 	private UInt32[] _tileBuffer = Array.Empty<UInt32>();
 
 	[Obsolete("For designer only")]
@@ -282,14 +281,16 @@ public class TileEditorViewModel : DisposableViewModel
 			RawFormat = palette.RawFormat;
 			PaletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
 
-			_sourceData = DebugApi.GetMemoryState(_tileAddresses[0].Type);
 			PixelSize tileSize = _tileFormat.GetTileSize();
+			int bytesPerTile = _tileFormat.GetBytesPerTile();
 
 			using(var framebuffer = ViewerBitmap.Lock()) {
 				for(int y = 0; y < _rowCount; y++) {
 					for(int x = 0; x < _columnCount; x++) {
 						fixed(UInt32* ptr = _tileBuffer) {
-							DebugApi.GetTileView(_cpuType, GetOptions(x, y), _sourceData, _sourceData.Length, PaletteColors, (IntPtr)ptr);
+							AddressInfo addr = _tileAddresses[y * _rowCount + x];
+							byte[] sourceData = DebugApi.GetMemoryValues(addr.Type, (uint)addr.Address, (uint)(addr.Address + bytesPerTile - 1));
+							DebugApi.GetTileView(_cpuType, GetOptions(x, y), sourceData, sourceData.Length, PaletteColors, (IntPtr)ptr);
 							UInt32* viewer = (UInt32*)framebuffer.FrameBuffer.Address;
 							int rowPitch = ViewerBitmap.PixelSize.Width;
 							int baseOffset = x * tileSize.Width + y * tileSize.Height * rowPitch;
