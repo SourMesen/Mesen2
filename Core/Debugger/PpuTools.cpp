@@ -251,18 +251,21 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 
 	uint8_t* ram = (uint8_t*)memInfo.Memory;
 	int rowStart = tileAddress.Address + (y * rowOffset);
-	int ramMask = (memInfo.Size - 1);
 
 	uint8_t shift = (7 - x);
 
 	auto setBit = [&](uint32_t addr, uint8_t pixelNumber, uint8_t bitNumber) {
+		if(addr >= memInfo.Size) {
+			return;
+		}
+
 		if(forGet) {
-			uint8_t bitValue = ((ram[addr & ramMask] >> pixelNumber) & 0x01);
+			uint8_t bitValue = ((ram[addr] >> pixelNumber) & 0x01);
 			color |= bitValue << bitNumber;
 		} else {
 			uint8_t bitValue = (color >> bitNumber) & 0x01;
-			ram[addr & ramMask] &= ~(1 << pixelNumber);
-			ram[addr & ramMask] |= (bitValue & 0x01) << pixelNumber;
+			ram[addr] &= ~(1 << pixelNumber);
+			ram[addr] |= (bitValue & 0x01) << pixelNumber;
 		}
 	};
 
@@ -298,13 +301,17 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 
 		case TileFormat::Mode7:
 		case TileFormat::Mode7DirectColor:
-		case TileFormat::Mode7ExtBg:
-			if(forGet) {
-				color = ram[(rowStart + x * 2 + 1) & ramMask];
-			} else {
-				ram[(rowStart + x * 2 + 1) & ramMask] = color;
+		case TileFormat::Mode7ExtBg: {
+			uint32_t addr = (rowStart + x * 2 + 1);
+			if(addr < memInfo.Size) {
+				if(forGet) {
+					color = ram[addr];
+				} else {
+					ram[addr] = color;
+				}
 			}
 			break;
+		}
 
 		case TileFormat::PceSpriteBpp4:
 		case TileFormat::PceSpriteBpp2Sp01:
@@ -361,11 +368,9 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 		case TileFormat::GbaBpp4: {
 			uint8_t pixelOffset = (7 - shift);
 			int32_t addr = (rowStart + (pixelOffset >> 1));
-			if(addr <= ramMask) {
-				int offset = pixelOffset & 0x01 ? 4 : 0;
-				for(int i = 0; i < 4; i++) {
-					setBit(addr, i+offset, i);
-				}
+			int offset = pixelOffset & 0x01 ? 4 : 0;
+			for(int i = 0; i < 4; i++) {
+				setBit(addr, i+offset, i);
 			}
 			break;
 		}
@@ -373,10 +378,8 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 		case TileFormat::GbaBpp8: {
 			uint8_t pixelOffset = (7 - shift);
 			int32_t addr = rowStart + pixelOffset;
-			if(addr <= ramMask) {
-				for(int i = 0; i < 8; i++) {
-					setBit(addr, i, i);
-				}
+			for(int i = 0; i < 8; i++) {
+				setBit(addr, i, i);
 			}
 			break;
 		}
@@ -384,11 +387,9 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 		case TileFormat::WsBpp4Packed: {
 			uint8_t pixelOffset = (7 - shift);
 			int32_t addr = (rowStart + (pixelOffset >> 1));
-			if(addr <= ramMask) {
-				int offset = pixelOffset & 0x01 ? 0 : 4;
-				for(int i = 0; i < 4; i++) {
-					setBit(addr, i+offset, i);
-				}
+			int offset = pixelOffset & 0x01 ? 0 : 4;
+			for(int i = 0; i < 4; i++) {
+				setBit(addr, i+offset, i);
 			}
 			break;
 		}
