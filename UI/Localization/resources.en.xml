@@ -392,6 +392,7 @@
 
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblSaveType">Save Type:</Control>
+			<Control ID="lblRtcType">Real-Time Clock:</Control>
 			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 			<Control ID="chkEnableMgbaLogApi">Enable mGBA log API</Control>
@@ -2494,6 +2495,11 @@ E
 			<Value ID="Eeprom8192">EEPROM (8 KB)</Value>
 			<Value ID="Flash64">Flash (64 KB)</Value>
 			<Value ID="Flash128">Flash (128 KB)</Value>
+		</Enum>
+		<Enum ID="GbaRtcType">
+			<Value ID="AutoDetect">Auto-detect</Value>
+			<Value ID="Enabled">Enabled</Value>
+			<Value ID="Disabled">Disabled</Value>
 		</Enum>
 
 		<Enum ID="MemorySizes">

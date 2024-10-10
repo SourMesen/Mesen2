@@ -28,6 +28,7 @@ namespace Mesen.Config
 
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.AllZeros;
 		[Reactive] public GbaSaveType SaveType { get; set; } = GbaSaveType.AutoDetect;
+		[Reactive] public GbaRtcType RtcType { get; set; } = GbaRtcType.AutoDetect;
 		[Reactive] public bool AllowInvalidInput { get; set; } = false;
 		[Reactive] public bool EnableMgbaLogApi { get; set; } = false;
 
@@ -57,6 +58,7 @@ namespace Mesen.Config
 
 				RamPowerOnState = RamPowerOnState,
 				SaveType = SaveType,
+				RtcType = RtcType,
 				AllowInvalidInput = AllowInvalidInput,
 				EnableMgbaLogApi = EnableMgbaLogApi,
 
@@ -93,6 +95,7 @@ namespace Mesen.Config
 
 		public RamState RamPowerOnState;
 		public GbaSaveType SaveType;
+		public GbaRtcType RtcType;
 		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableMgbaLogApi;
 
@@ -114,5 +117,12 @@ namespace Mesen.Config
 		Eeprom8192 = 5,
 		Flash64 = 6,
 		Flash128 = 7
+	}
+
+	public enum GbaRtcType
+	{
+		AutoDetect = 0,
+		Enabled = 1,
+		Disabled = 2,
 	}
 }

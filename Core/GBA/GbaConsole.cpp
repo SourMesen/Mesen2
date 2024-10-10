@@ -111,7 +111,7 @@ LoadRomResult GbaConsole::LoadRom(VirtualFile& romFile)
 	_memoryManager.reset(new GbaMemoryManager(_emu, this, _ppu.get(), _dmaController.get(), _controlManager.get(), _timer.get(), _apu.get(), _cart.get(), _serial.get(), _prefetch.get()));
 
 	_prefetch->Init(_memoryManager.get());
-	_cart->Init(_emu, this, _memoryManager.get(), _saveType, _cartType);
+	_cart->Init(_emu, this, _memoryManager.get(), _saveType, _rtcType, _cartType);
 	_ppu->Init(_emu, this, _memoryManager.get());
 	_apu->Init(_emu, this, _dmaController.get(), _memoryManager.get());
 	_timer->Init(_memoryManager.get(), _apu.get());
@@ -155,10 +155,18 @@ void GbaConsole::InitCart(VirtualFile& romFile, vector<uint8_t>& romData)
 		_cartType = GbaCartridgeType::TiltSensor;
 	}
 
-	string rtcMarker = "SIIRTC_V001";
-	if(std::search(romData.begin(), romData.end(), rtcMarker.begin(), rtcMarker.end()) != romData.end()) {
-		MessageManager::Log("RTC detected.");
-		_cartType = GbaCartridgeType::Rtc;
+	_rtcType = _emu->GetSettings()->GetGbaConfig().RtcType;
+	if(_rtcType == GbaRtcType::AutoDetect) {
+		string rtcMarker = "SIIRTC_V001";
+		if(std::search(romData.begin(), romData.end(), rtcMarker.begin(), rtcMarker.end()) != romData.end()) {
+			_rtcType = GbaRtcType::Enabled;
+		} else {
+			_rtcType = GbaRtcType::Disabled;
+		}
+	}
+
+	if(_rtcType == GbaRtcType::Enabled) {
+		MessageManager::Log("RTC enabled");
 	}
 
 	InitSaveRam(gameCode, romData);

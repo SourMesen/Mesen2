@@ -437,11 +437,17 @@ enum class GbaSaveType
 	Flash128
 };
 
+enum class GbaRtcType
+{
+	AutoDetect = 0,
+	Enabled = 1,
+	Disabled = 2,
+};
+
 enum class GbaCartridgeType
 {
 	Default,
-	TiltSensor,
-	Rtc
+	TiltSensor
 };
 
 struct GbaConfig
@@ -459,6 +465,7 @@ struct GbaConfig
 
 	RamState RamPowerOnState = RamState::AllZeros;
 	GbaSaveType SaveType = GbaSaveType::AutoDetect;
+	GbaRtcType RtcType = GbaRtcType::AutoDetect;
 	bool AllowInvalidInput = false;
 	bool EnableMgbaLogApi = false;
 

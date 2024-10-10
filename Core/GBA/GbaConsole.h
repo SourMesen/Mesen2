@@ -48,6 +48,7 @@ private:
 	unique_ptr<GbaRomPrefetch> _prefetch;
 
 	GbaSaveType _saveType = GbaSaveType::AutoDetect;
+	GbaRtcType _rtcType = GbaRtcType::AutoDetect;
 	GbaCartridgeType _cartType = GbaCartridgeType::Default;
 
 	uint8_t* _prgRom = nullptr;
