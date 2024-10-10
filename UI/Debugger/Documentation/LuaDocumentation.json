@@ -495,7 +495,7 @@
 		{ "name": "pce", "description": "PC Engine - Main CPU - HuC6280" },
 		{ "name": "sms", "description": "SMS - Main CPU - Z80" },
 		{ "name": "gba", "description": "GBA - Main CPU - ARM7TDMI" },
-		{ "name": "ws", "description": "WS - Main CPU - NEC V30MZ" },
+		{ "name": "ws", "description": "WS - Main CPU - NEC V30MZ" }
 	]
 },
 {
@@ -622,14 +622,14 @@
 		{ "name": "gbaBootRom", "description": "GBA - BIOS ROM" },
 		{ "name": "gbaVideoRam", "description": "GBA - Video RAM" },
 		{ "name": "gbaSpriteRam", "description": "GBA - Sprite RAM" },
-		{ "name": "gbaPaletteRam", "description": "GBA - Palette RAM" }
+		{ "name": "gbaPaletteRam", "description": "GBA - Palette RAM" },
 
-		{ "name": "wsPrgRom", "description": "WS - ROM" }
-		{ "name": "wsWorkRam", "description": "WS - Work RAM" }
-		{ "name": "wsCartRam", "description": "WS - Save RAM" }
-		{ "name": "wsCartEeprom", "description": "WS - Cart EEPROM" }
-		{ "name": "wsBootRom", "description": "WS - Boot ROM" }
-		{ "name": "wsInternalEeprom", "description": "WS - Internal EEPROM" }
+		{ "name": "wsPrgRom", "description": "WS - ROM" },
+		{ "name": "wsWorkRam", "description": "WS - Work RAM" },
+		{ "name": "wsCartRam", "description": "WS - Save RAM" },
+		{ "name": "wsCartEeprom", "description": "WS - Cart EEPROM" },
+		{ "name": "wsBootRom", "description": "WS - Boot ROM" },
+		{ "name": "wsInternalEeprom", "description": "WS - Internal EEPROM" },
 		{ "name": "wsPort", "description": "WS - I/O Port" }
 	]
 },
