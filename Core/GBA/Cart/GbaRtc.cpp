@@ -84,7 +84,7 @@ void GbaRtc::ProcessDataIn(uint8_t value)
 	if(_dataInSize == 0) {
 		switch(cmd) {
 			case Command::Status:
-				_state.Status &= 0x7F;
+				_state.Status &= 0x80;
 				_state.Status |= (_dataIn & 0x6A);
 				break;
 
