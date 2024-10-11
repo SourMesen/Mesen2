@@ -966,6 +966,10 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 				_overflowBugCounter = 0;
 
 				_oamCopyDone = false;
+
+				//Sprite evaluation does not necessarily start on the first byte of OAM
+				//it can start on any byte (based on the OAM address in 2003), and interprets
+				//that byte as the "sprite 0" Y coordinate.
 				_spriteAddrH = (_spriteRamAddr >> 2) & 0x3F;
 				_spriteAddrL = _spriteRamAddr & 0x03;
 
@@ -996,11 +1000,19 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 						_secondarySpriteRam[_secondaryOamAddr] = _oamCopybuffer;
 
 						if(_spriteInRange) {
+							if(_cycle == 66) {
+								//If the first Y coordinate we load is in range, set the sprite 0 flag
+								//This happens even if this isn't actually the first sprite in OAM
+								//(i.e because OAMADDR was not 0 when evaluation started)
+								_sprite0Added = true;
+							}
+
 							_spriteAddrL++;
 							_secondaryOamAddr++;
 
-							if(_spriteAddrH == 0) {
-								_sprite0Added = true;
+							if(_spriteAddrL >= 4) {
+								_spriteAddrH = (_spriteAddrH + 1) & 0x3F;
+								_spriteAddrL = 0;
 							}
 
 							//Note: Using "(_secondaryOamAddr & 0x03) == 0" instead of "_spriteAddrL == 0" is required
@@ -1009,9 +1021,20 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 							if((_secondaryOamAddr & 0x03) == 0) {
 								//Done copying all 4 bytes
 								_spriteInRange = false;
-								_spriteAddrL = 0;
+
+								if(_spriteAddrL != 0) {
+									//Normally, if the sprite eval started on a non-multiple-of-4 address, it would
+									//resync here and start reading the first byte of next entry as the Y value.
+									//But if the last byte read/copied, interpreted as a Y coordinate, has a value
+									//that makes it fall "in range" with the current scanline, then the lower 2 bits
+									//of the address aren't reset, which means the next sprite will also be interpreted incorrectly
+									bool inRange = (_scanline >= _oamCopybuffer && _scanline < _oamCopybuffer + (_control.LargeSprites ? 16 : 8));
+									if(!inRange) {
+										_spriteAddrL = 0;
+									}
+								}
+
 								_lastVisibleSpriteAddr = _spriteAddrH * 4;
-								_spriteAddrH = (_spriteAddrH + 1) & 0x3F;
 								if(_spriteAddrH == 0) {
 									_oamCopyDone = true;
 								}
