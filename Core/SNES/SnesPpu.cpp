@@ -1824,11 +1824,12 @@ uint8_t SnesPpu::Read(uint16_t addr)
 
 			if(_regs->GetIoPortOutput() & 0x80) {
 				_locationLatched = false;
-
-				//"The high/low selector is reset to elowf when $213F is read" (the selector is NOT reset when the counter is latched)
-				_horizontalLocToggle = false;
-				_verticalLocationToggle = false;
 			}
+
+			//"The high/low selector is reset to elowf when $213F is read" (the selector is NOT reset when the counter is latched)
+			_horizontalLocToggle = false;
+			_verticalLocationToggle = false;
+
 			_state.Ppu2OpenBus = value;
 			return value;
 		}
