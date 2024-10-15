@@ -22,7 +22,7 @@ private:
 	uint64_t _masterClockRate = 0;
 	uint64_t _clockCounter = 0;
 	uint8_t _sampleClockCounter = 0;
-	uint8_t _prevValue = 0;
+	uint8_t _prevOutPins = 0;
 	uint8_t _data = 0;
 	uint8_t _addr = 0;
 
@@ -32,7 +32,7 @@ public:
 	Epsm(Emulator* emu, NesConsole* console, vector<uint8_t>& adpcmRom);
 	~Epsm();
 
-	void Write(uint8_t value);
+	void Write(uint8_t dataBus, uint8_t outPins);
 	void WriteRam(uint16_t addr, uint8_t value) override;
 	void Exec();
 

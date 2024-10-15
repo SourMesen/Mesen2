@@ -18,23 +18,25 @@ Epsm::~Epsm()
 	_emu->GetSoundMixer()->UnregisterAudioProvider(this);
 }
 
-void Epsm::Write(uint8_t value)
+void Epsm::Write(uint8_t dataBus, uint8_t outPins)
 {
 	//4016 writes
-	bool isHigh = (value & 0x02);
-	bool wasHigh = (_prevValue & 0x02);
+	//The EPSM uses the value of the data bus + the OUT1 pin
+	//The OUT1 can be delayed by a cycle, but not the data bus
+	bool isHigh = (outPins & 0x02);
+	bool wasHigh = (_prevOutPins & 0x02);
 
 	if(isHigh && !wasHigh) {
 		//rising edge
-		_data = (value & 0xF0) | (_data & 0x0F);
-		_addr = ((value & 0x04) >> 1) | ((value & 0x08) >> 3);
+		_data = (dataBus & 0xF0) | (_data & 0x0F);
+		_addr = ((dataBus & 0x04) >> 1) | ((dataBus & 0x08) >> 3);
 	} else if(!isHigh && wasHigh) {
 		//falling edge
-		_data = (_data & 0xF0) | ((value & 0xF0) >> 4);
+		_data = (_data & 0xF0) | ((dataBus & 0xF0) >> 4);
 		_opn.Write(_addr, _data);
 	}
 
-	_prevValue = value;
+	_prevOutPins = outPins;
 }
 
 void Epsm::WriteRam(uint16_t addr, uint8_t value)
@@ -98,7 +100,7 @@ uint8_t Epsm::ReadRam(uint16_t addr)
 void Epsm::Serialize(Serializer& s)
 {
 	SV(_clockCounter);
-	SV(_prevValue);
+	SV(_prevOutPins);
 	SV(_addr);
 	SV(_data);
 	SV(_masterClockRate);

@@ -261,7 +261,7 @@ void NesControlManager::ProcessWrites()
 {
 	if(_writePending && --_writePending == 0) {
 		if(_console->GetEpsm() && _writeAddr == 0x4016) {
-			_console->GetEpsm()->Write(_console->GetMemoryManager()->GetOpenBus());
+			_console->GetEpsm()->Write(_console->GetMemoryManager()->GetOpenBus(), _writeValue);
 		}
 
 		for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
