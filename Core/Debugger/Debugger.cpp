@@ -457,6 +457,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 		//If SleepUntilResume was called outside of ProcessInstruction, keep running
 		return;
 	} else if(IsBreakpointForbidden(source, sourceCpu, operation)) {
+		ClearPendingBreakRequests();
 		return;
 	}
 
@@ -653,6 +654,15 @@ void Debugger::Run()
 		}
 	}
 	_waitForBreakResume = false;
+}
+
+void Debugger::ClearPendingBreakRequests()
+{
+	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
+		if(_debuggers[i].Debugger) {
+			_debuggers[i].Debugger->Run();
+		}
+	}
 }
 
 void Debugger::PauseOnNextFrame()
