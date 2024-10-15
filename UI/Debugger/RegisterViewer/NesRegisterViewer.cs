@@ -137,7 +137,7 @@ public class NesRegisterViewer
 		entries.AddRange(new List<RegEntry>() {
 			new RegEntry("$4008-$400B", "Triangle"),
 			new RegEntry("$4008.0-6", "Linear Counter - Reload", trg.LinearCounterReload, Format.X8),
-			new RegEntry("$4008.1", "Length Counter - Halted", trg.LengthCounter.Halt),
+			new RegEntry("$4008.7", "Length Counter - Halted", trg.LengthCounter.Halt),
 
 			new RegEntry("$400A/$400B.0-2", "Period", trg.Period, Format.X16),
 			new RegEntry("$400B.3-7", "Length Counter - Reload Value", trg.LengthCounter.ReloadValue, Format.X16),
