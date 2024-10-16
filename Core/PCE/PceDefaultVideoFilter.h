@@ -25,8 +25,49 @@ protected:
 			frame.Height = 240;
 			return frame;
 		} else {
-			PceDefaultVideoFilter::GetPceFrameSize(_pceConfig, BaseVideoFilter::GetFrameInfo(), _ppuOutputBuffer, BaseVideoFilter::GetOverscan(), _pceFrameSize, _frameDivider);
+			UpdateFrameSize();
 			return _pceFrameSize;
+		}
+	}
+
+	void UpdateFrameSize()
+	{
+		if(!_pceConfig.ForceFixedResolution) {
+			//Try to use an output resolution that matches the core's output (instead of forcing 4x scale)
+			constexpr uint32_t clockDividerOffset = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
+
+			OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
+			uint32_t rowCount = PceConstants::ScreenHeight - overscan.Top - overscan.Bottom;
+
+			uint8_t frameDivider = 0;
+			for(uint32_t i = 0; i < rowCount; i++) {
+				uint8_t rowDivider = (uint8_t)_ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
+				if(frameDivider == 0) {
+					frameDivider = rowDivider;
+				} else if(frameDivider != rowDivider) {
+					//Picture has multiple resolutions at once, use 4x scale
+					frameDivider = 0;
+					break;
+				}
+			}
+
+			_frameDivider = frameDivider;
+			
+			//Refresh overscan left/right values after _frameDivider is updated
+			overscan = BaseVideoFilter::GetOverscan();
+
+			if(frameDivider) {
+				FrameInfo size = {};
+				size.Width = PceConstants::GetRowWidth(frameDivider) - (overscan.Left + overscan.Right) * 4 / frameDivider;
+				size.Height = PceConstants::ScreenHeight - (overscan.Top + overscan.Bottom);
+				_pceFrameSize = size;
+			} else {
+				_pceFrameSize = BaseVideoFilter::GetFrameInfo();
+			}
+		} else {
+			//Always output at 4x scale (allows recording movies properly, etc.)
+			_frameDivider = 0;
+			_pceFrameSize = BaseVideoFilter::GetFrameInfo();
 		}
 	}
 
@@ -115,40 +156,6 @@ public:
 	PceDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(emu)
 	{
 		InitLookupTable();
-	}
-
-	static void GetPceFrameSize(PcEngineConfig& cfg, FrameInfo baseFrameInfo, uint16_t* ppuOutputBuffer, OverscanDimensions overscan, FrameInfo& outPceFrameSize, uint8_t& outFrameDivider)
-	{
-		if(!cfg.ForceFixedResolution) {
-			//Try to use an output resolution that matches the core's output (instead of forcing 4x scale)
-			constexpr uint32_t clockDividerOffset = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
-			uint32_t rowCount = PceConstants::ScreenHeight - overscan.Top - overscan.Bottom;
-
-			uint8_t frameDivider = 0;
-			for(uint32_t i = 0; i < rowCount; i++) {
-				uint8_t rowDivider = (uint8_t)ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
-				if(frameDivider == 0) {
-					frameDivider = rowDivider;
-				} else if(frameDivider != rowDivider) {
-					//Picture has multiple resolutions at once, use 4x scale
-					frameDivider = 0;
-					break;
-				}
-			}
-
-			outFrameDivider = frameDivider;
-
-			if(outFrameDivider) {
-				outPceFrameSize.Width = PceConstants::GetRowWidth(frameDivider) - (overscan.Left + overscan.Right) * 4 / frameDivider;
-				outPceFrameSize.Height = PceConstants::ScreenHeight - (overscan.Top + overscan.Bottom);
-			} else {
-				outPceFrameSize = baseFrameInfo;
-			}
-		} else {
-			//Always output at 4x scale (allows recording movies properly, etc.)
-			outFrameDivider = 0;
-			outPceFrameSize = baseFrameInfo;
-		}
 	}
 
 	void ApplyFilter(uint16_t* ppuOutputBuffer) override
