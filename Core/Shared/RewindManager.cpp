@@ -188,6 +188,11 @@ void RewindManager::Start(bool forDebugger)
 
 void RewindManager::InternalStart(bool forDebugger)
 {
+	if(_history.empty() && _currentHistory.FrameCount <= 0 && !forDebugger) {
+		//No data in history, can't rewind
+		return;
+	}
+
 	_rewindState = forDebugger ? RewindState::Debugging : RewindState::Starting;
 	_videoHistoryBuilder.clear();
 	_videoHistory.clear();
