@@ -85,8 +85,8 @@ public class SnesRegisterViewer
 			new RegEntry("$2202.7", "IRQ Flag", sa1.CpuIrqRequested),
 
 			new RegEntry("$2203/4", "SA-1 Reset Vector", sa1.Sa1ResetVector, Format.X16),
-			new RegEntry("$2205/6", "SA-1 NMI Vector", sa1.Sa1ResetVector, Format.X16),
-			new RegEntry("$2207/8", "SA-1 IRQ Vector", sa1.Sa1ResetVector, Format.X16),
+			new RegEntry("$2205/6", "SA-1 NMI Vector", sa1.Sa1NmiVector, Format.X16),
+			new RegEntry("$2207/8", "SA-1 IRQ Vector", sa1.Sa1IrqVector, Format.X16),
 
 			new RegEntry("$2209", "S-CPU Control"),
 			new RegEntry("$2209.0-3", "Message", sa1.CpuMessageReceived, Format.X8),
