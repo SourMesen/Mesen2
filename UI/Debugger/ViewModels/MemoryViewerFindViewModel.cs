@@ -50,6 +50,12 @@ public class MemoryViewerFindViewModel : ViewModelBase
 			IsString = DataType == SearchDataType.String;
 		});
 
+		this.WhenAnyValue(x => x.SearchString).Subscribe(x => {
+			if(SearchString.Contains(Environment.NewLine)) {
+				SearchString = SearchString.Replace(Environment.NewLine, " ");
+			}
+		});
+		
 		this.WhenAnyValue(x => x.DataType, x => x.IntType, x => x.SearchString).Subscribe(x => {
 			SearchData? searchData = GetSearchData();
 			IsValid = searchData != null && searchData.Data.Length > 0;

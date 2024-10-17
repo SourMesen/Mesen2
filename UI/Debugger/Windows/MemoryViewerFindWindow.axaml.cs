@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.Config;
@@ -30,6 +31,8 @@ namespace Mesen.Debugger.Windows
 
 			Activated += MemorySearchWindow_Activated;
 
+			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
+
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
@@ -39,6 +42,14 @@ namespace Mesen.Debugger.Windows
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.Enter) {
+				_viewerModel.Find(SearchDirection.Forward);
+				e.Handled = true;
+			}
 		}
 
 		protected override void OnOpened(EventArgs e)

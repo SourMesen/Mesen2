@@ -69,6 +69,12 @@
 				Grid.Column="1"
 				Name="txtValue"
 				HorizontalAlignment="Stretch"
+				AcceptsReturn="True"
+				VerticalContentAlignment="Center"
+				ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+				ScrollViewer.VerticalScrollBarVisibility="Disabled"
+				Height="21"
+				MinHeight="21"
 				Text="{Binding SearchString}"
 				MaxLength="300"
 			/>
