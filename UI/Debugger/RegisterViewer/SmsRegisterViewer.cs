@@ -55,7 +55,7 @@ public class SmsRegisterViewer
 			new RegEntry("$01.4", "M1 - 224-line output", vdp.M1_Use224LineMode),
 			new RegEntry("$01.5", "Vertical blank IRQ enabled", vdp.EnableVerticalBlankIrq),
 			new RegEntry("$01.6", "Rendering enabled", vdp.RenderingEnabled),
-			new RegEntry("$01.7", "SG-1000 - 16K VRAM Mode", vdp.RenderingEnabled),
+			new RegEntry("$01.7", "SG-1000 - 16K VRAM Mode", vdp.Sg16KVramMode),
 
 			new RegEntry("$02.0-3", "Nametable address", vdp.NametableAddress),
 			new RegEntry("$03", "Color table address", vdp.ColorTableAddress),

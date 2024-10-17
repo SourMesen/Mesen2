@@ -281,9 +281,9 @@ public class WsRegisterViewer
 		WsTimerState timer = ws.Timer;
 		entries.AddRange(new List<RegEntry>() {
 			new RegEntry("$A2.0", "Horizontal Timer Enabled", timer.HBlankEnabled),
-			new RegEntry("$A2.1", "Horizontal Timer Auto-Reload", timer.HBlankEnabled),
-			new RegEntry("$A2.2", "Vertical Timer Enabled", timer.HBlankEnabled),
-			new RegEntry("$A2.3", "Vertital Timer Auto-Reload", timer.HBlankEnabled),
+			new RegEntry("$A2.1", "Horizontal Timer Auto-Reload", timer.HBlankAutoReload),
+			new RegEntry("$A2.2", "Vertical Timer Enabled", timer.VBlankEnabled),
+			new RegEntry("$A2.3", "Vertital Timer Auto-Reload", timer.VBlankAutoReload),
 			new RegEntry("$A4/5", "Horizontal Reload Value", timer.HReloadValue, Format.X16),
 			new RegEntry("$A6/7", "Vertical Reload Value", timer.VReloadValue, Format.X16),
 			new RegEntry("$A8/9", "Horizontal Timer", timer.HTimer, Format.X16),
