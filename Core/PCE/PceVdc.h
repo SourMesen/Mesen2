@@ -80,6 +80,7 @@ private:
 
 	uint16_t _screenOffsetX = 0;
 	bool _needRcrIncrement = false;
+	bool _needVCounterClock = false;
 	bool _needVertBlankIrq = false;
 	bool _verticalBlankDone = false;
 
@@ -156,6 +157,7 @@ private:
 	__noinline void ProcessVramDmaTransfer();
 	__noinline void SetVertMode(PceVdcModeV vMode);
 	__noinline void SetHorizontalMode(PceVdcModeH hMode);
+	void ClockVCounter();
 
 	__noinline void ProcessVdcEvents();
 	__noinline void ProcessEvent();

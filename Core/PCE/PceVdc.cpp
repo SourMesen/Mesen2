@@ -138,7 +138,7 @@ void PceVdc::ProcessEvent()
 
 	switch(_nextEvent) {
 		case PceVdcEvent::LatchScrollY:
-			_needRcrIncrement = true;
+			_needVCounterClock = true;
 			_latchClockY = _state.HClock;
 			IncScrollY();
 			if(!_state.BurstModeEnabled) {
@@ -157,7 +157,6 @@ void PceVdc::ProcessEvent()
 			break;
 
 		case PceVdcEvent::HdsIrqTrigger:
-			_needRcrIncrement = true;
 			if(_evalStartCycle >= 1365) {
 				//New row was about to start, but no time to start sprite eval, next row will have no sprites
 				_spriteCount = 0;
@@ -185,6 +184,7 @@ void PceVdc::SetHorizontalMode(PceVdcModeH hMode)
 			break;
 
 		case PceVdcModeH::Hdw:
+			_needVCounterClock = true;
 			_needRcrIncrement = true;
 			_nextEvent = PceVdcEvent::IncRcrCounter;
 			_nextEventCounter = DotsToClocks((_state.HvLatch.HorizDisplayWidth - 1) * 8) + 2;
@@ -664,16 +664,21 @@ void PceVdc::SetVertMode(PceVdcModeV vMode)
 	}
 }
 
+void PceVdc::ClockVCounter()
+{
+	_vModeCounter--;
+	if(_vModeCounter == 0) {
+		SetVertMode((PceVdcModeV)(((int)_vMode + 1) % 4));
+	}
+	_needVCounterClock = false;
+}
+
 void PceVdc::IncrementRcrCounter()
 {
 	_state.RcrCounter++;
 
 	_needRcrIncrement = false;
-
-	_vModeCounter--;
-	if(_vModeCounter == 0) {
-		SetVertMode((PceVdcModeV)(((int)_vMode + 1) % 4));
-	}
+	ClockVCounter();
 
 	if(_vMode == PceVdcModeV::Vde && _state.RcrCounter == _state.HvLatch.VertDisplayWidth + 1) {
 		_needVertBlankIrq = true;
@@ -732,6 +737,8 @@ void PceVdc::ProcessEndOfScanline()
 
 	if(_needRcrIncrement) {
 		IncrementRcrCounter();
+	} else if(_needVCounterClock) {
+		ClockVCounter();
 	}
 
 	if(_hMode == PceVdcModeH::Hdw) {
@@ -1385,6 +1392,7 @@ void PceVdc::Serialize(Serializer& s)
 
 		SV(_screenOffsetX);
 		SV(_needRcrIncrement);
+		SV(_needVCounterClock);
 		SV(_needVertBlankIrq);
 		SV(_verticalBlankDone);
 
