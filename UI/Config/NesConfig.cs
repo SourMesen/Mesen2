@@ -63,6 +63,7 @@ namespace Mesen.Config
 		//Emulation
 		[Reactive] public bool EnableOamDecay { get; set; } = false;
 		[Reactive] public bool EnablePpuOamRowCorruption { get; set; } = false;
+		[Reactive] public bool EnablePpuSpriteEvalBug { get; set; } = false;
 		[Reactive] public bool DisableOamAddrBug { get; set; } = false;
 		[Reactive] public bool DisablePaletteRead { get; set; } = false;
 		[Reactive] public bool DisablePpu2004Reads { get; set; } = false;
@@ -186,6 +187,7 @@ namespace Mesen.Config
 
 				EnableOamDecay = EnableOamDecay,
 				EnablePpuOamRowCorruption = EnablePpuOamRowCorruption,
+				EnablePpuSpriteEvalBug = EnablePpuSpriteEvalBug,
 				DisableOamAddrBug = DisableOamAddrBug,
 				DisablePaletteRead = DisablePaletteRead,
 				DisablePpu2004Reads = DisablePpu2004Reads,
@@ -317,9 +319,10 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableGameGenieBusConflicts;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableFlashSaves;
-		
+
 		[MarshalAs(UnmanagedType.I1)] public bool EnableOamDecay;
 		[MarshalAs(UnmanagedType.I1)] public bool EnablePpuOamRowCorruption;
+		[MarshalAs(UnmanagedType.I1)] public bool EnablePpuSpriteEvalBug;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableOamAddrBug;
 		[MarshalAs(UnmanagedType.I1)] public bool DisablePaletteRead;
 		[MarshalAs(UnmanagedType.I1)] public bool DisablePpu2004Reads;

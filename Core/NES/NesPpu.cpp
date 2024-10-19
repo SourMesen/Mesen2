@@ -950,6 +950,47 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 	}
 }
 
+template<class T> void NesPpu<T>::ProcessSpriteEvaluationStart()
+{
+	_sprite0Added = false;
+	_spriteInRange = false;
+	_secondaryOamAddr = 0;
+
+	_overflowBugCounter = 0;
+
+	_oamCopyDone = false;
+
+	//Sprite evaluation does not necessarily start on the first byte of OAM
+	//it can start on any byte (based on the OAM address in 2003), and interprets
+	//that byte as the "sprite 0" Y coordinate.
+	_spriteAddrH = (_spriteRamAddr >> 2) & 0x3F;
+	_spriteAddrL = _spriteRamAddr & 0x03;
+
+	_firstVisibleSpriteAddr = _spriteAddrH * 4;
+	_lastVisibleSpriteAddr = _firstVisibleSpriteAddr;
+}
+
+template<class T> void NesPpu<T>::ProcessSpriteEvaluationEnd()
+{
+	_sprite0Visible = _sprite0Added;
+	_spriteCount = (_secondaryOamAddr >> 2);
+
+	if(_settings->GetNesConfig().EnablePpuSpriteEvalBug) {
+		//(Not entirely confirmed - but matches observed behavior)
+		//For early PPUs (2C02B and earlier), after sprite eval wraps back to the start of OAM,
+		//all subsequent sprites appear to be considered as "out of range", causing only their
+		//Y coordinate to be copied to secondary OAM, and then skipping to the next sprite.
+		//However, if the last Y position copied to secondary OAM by this process happens to be 
+		//"in range", it will be end up being shown as a sprite. The sprite's remaining 3 bytes
+		//will be $FF (because secondary OAM was cleared at the start of the scanline), causing
+		//it to display pixels from sprite tile $FF at X=255, with h+v mirroring and sprite palette 3.
+		bool inRange = (_scanline >= _oamCopybuffer && _scanline < _oamCopybuffer + (_control.LargeSprites ? 16 : 8));
+		if(inRange && _spriteCount < 8) {
+			_spriteCount++;
+		}
+	}
+}
+
 template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 {
 	if(IsRenderingEnabled() || (_region == ConsoleRegion::Pal && _scanline >= _palSpriteEvalScanline)) {
@@ -958,33 +999,19 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 			_oamCopybuffer = 0xFF;
 			_secondarySpriteRam[(_cycle - 1) >> 1] = 0xFF;
 		} else {
-			if(_cycle == 65) {
-				_sprite0Added = false;
-				_spriteInRange = false;
-				_secondaryOamAddr = 0;
-				
-				_overflowBugCounter = 0;
-
-				_oamCopyDone = false;
-
-				//Sprite evaluation does not necessarily start on the first byte of OAM
-				//it can start on any byte (based on the OAM address in 2003), and interprets
-				//that byte as the "sprite 0" Y coordinate.
-				_spriteAddrH = (_spriteRamAddr >> 2) & 0x3F;
-				_spriteAddrL = _spriteRamAddr & 0x03;
-
-				_firstVisibleSpriteAddr = _spriteAddrH * 4;
-				_lastVisibleSpriteAddr = _firstVisibleSpriteAddr;
-			} else if(_cycle == 256) {
-				_sprite0Visible = _sprite0Added;
-				_spriteCount = (_secondaryOamAddr >> 2);
-			}
-
 			if(_cycle & 0x01) {
+				if(_cycle == 65) {
+					ProcessSpriteEvaluationStart();
+				}
+
 				//Read a byte from the primary OAM on odd cycles
 				_oamCopybuffer = ReadSpriteRam(_spriteRamAddr);
 			} else {
-				if(_oamCopyDone) {
+				if(_cycle == 256) {
+					ProcessSpriteEvaluationEnd();
+				}
+
+				if(_oamCopyDone && !_settings->GetNesConfig().EnablePpuSpriteEvalBug) {
 					_spriteAddrH = (_spriteAddrH + 1) & 0x3F;
 					if(_secondaryOamAddr >= 0x20) {
 						//"As seen above, a side effect of the OAM write disable signal is to turn writes to the secondary OAM into reads from it."
@@ -992,7 +1019,7 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 					}
 				} else {
 					if(!_spriteInRange && _scanline >= _oamCopybuffer && _scanline < _oamCopybuffer + (_control.LargeSprites ? 16 : 8)) {
-						_spriteInRange = true;
+						_spriteInRange = !_oamCopyDone;
 					}
 
 					if(_secondaryOamAddr < 0x20) {
@@ -1013,6 +1040,10 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 							if(_spriteAddrL >= 4) {
 								_spriteAddrH = (_spriteAddrH + 1) & 0x3F;
 								_spriteAddrL = 0;
+
+								if(_spriteAddrH == 0) {
+									_oamCopyDone = true;
+								}
 							}
 
 							//Note: Using "(_secondaryOamAddr & 0x03) == 0" instead of "_spriteAddrL == 0" is required
@@ -1021,6 +1052,7 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 							if((_secondaryOamAddr & 0x03) == 0) {
 								//Done copying all 4 bytes
 								_spriteInRange = false;
+								_lastVisibleSpriteAddr = _spriteAddrH * 4;
 
 								if(_spriteAddrL != 0) {
 									//Normally, if the sprite eval started on a non-multiple-of-4 address, it would
@@ -1032,11 +1064,6 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 									if(!inRange) {
 										_spriteAddrL = 0;
 									}
-								}
-
-								_lastVisibleSpriteAddr = _spriteAddrH * 4;
-								if(_spriteAddrH == 0) {
-									_oamCopyDone = true;
 								}
 							}
 						} else {

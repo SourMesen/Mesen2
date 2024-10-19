@@ -58,6 +58,7 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_nes.RestrictPpuAccessOnFirstFrame);
 			SV(_nes.EnableCpuTestMode);
 			SV(_nes.EnableDmcSampleDuplicationGlitch);
+			SV(_nes.EnablePpuSpriteEvalBug);
 			SV(_nes.PpuExtraScanlinesAfterNmi); SV(_nes.PpuExtraScanlinesBeforeNmi);
 			SV(_nes.Region);
 			SV(_nes.LightDetectionRadius);

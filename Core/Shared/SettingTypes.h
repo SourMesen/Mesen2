@@ -635,6 +635,7 @@ struct NesConfig
 
 	bool EnableOamDecay = false;
 	bool EnablePpuOamRowCorruption = false;
+	bool EnablePpuSpriteEvalBug = false;
 	bool DisableOamAddrBug = false;
 	bool DisablePaletteRead = false;
 	bool DisablePpu2004Reads = false;

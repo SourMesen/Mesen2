@@ -58,6 +58,8 @@ protected:
 	void ProcessScanlineFirstCycle();
 	__forceinline void ProcessScanlineImpl();
 	__forceinline void ProcessSpriteEvaluation();
+	__noinline void ProcessSpriteEvaluationStart();
+	__noinline void ProcessSpriteEvaluationEnd();
 
 	void BeginVBlank();
 	void TriggerNmi();
