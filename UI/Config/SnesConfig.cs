@@ -118,7 +118,7 @@ namespace Mesen.Config
 				GsuClockSpeed = this.GsuClockSpeed,
 				RamPowerOnState = this.RamPowerOnState,
 				SpcClockSpeedAdjustment = this.SpcClockSpeedAdjustment,
-				BsxCustomDate = this.BsxCustomDate.Ticks + this.BsxCustomTime.Ticks
+				BsxCustomDate = BsxUseCustomTime ? (this.BsxCustomDate.ToUnixTimeSeconds() + (long)this.BsxCustomTime.TotalSeconds) : -1
 			});
 		}
 
