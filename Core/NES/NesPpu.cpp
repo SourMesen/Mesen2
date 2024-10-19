@@ -973,7 +973,11 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluationStart()
 template<class T> void NesPpu<T>::ProcessSpriteEvaluationEnd()
 {
 	_sprite0Visible = _sprite0Added;
-	_spriteCount = (_secondaryOamAddr >> 2);
+
+	//Add 3 to address to count any partially-copied sprite.
+	//If eval is misaligned and wraps back to the start of OAM, the copy can
+	//be stopped mid-sprite (e.g only 1 to 3 bytes are copied to secondary OAM)
+	_spriteCount = ((_secondaryOamAddr + 3) >> 2);
 
 	if(_settings->GetNesConfig().EnablePpuSpriteEvalBug) {
 		//(Not entirely confirmed - but matches observed behavior)
