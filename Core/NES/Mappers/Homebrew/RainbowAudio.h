@@ -39,7 +39,7 @@ protected:
 
 		uint8_t outputLevel = _pulse1.GetVolume() + _pulse2.GetVolume() + _saw.GetVolume();
 		if(_outputExpPin6 || _outputExpPin9) {
-			_console->GetApu()->AddExpansionAudioDelta(AudioChannel::VRC6, (int16_t)outputLevel - (int16_t)_lastOutput);
+			_console->GetApu()->AddExpansionAudioDelta(AudioChannel::VRC6, ((int16_t)outputLevel - (int16_t)_lastOutput) * 15 * _volume / 15);
 		}
 		_lastOutput = outputLevel;
 	}
