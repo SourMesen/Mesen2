@@ -1083,7 +1083,11 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 						_oamCopybuffer = _secondarySpriteRam[_secondaryOamAddr & 0x1F];
 
 						//8 sprites have been found, check next sprite for overflow + emulate PPU bug
-						if(_spriteInRange) {
+						if(_oamCopyDone) {
+							//Skip to next sprite (this scenario only happens when the X=255 sprite bug emulation is enabled)
+							_spriteAddrH = (_spriteAddrH + 1) & 0x3F;
+							_spriteAddrL = 0;
+						} else if(_spriteInRange) {
 							//Sprite is visible, consider this to be an overflow
 							_statusFlags.SpriteOverflow = true;
 							_spriteAddrL = (_spriteAddrL + 1);
