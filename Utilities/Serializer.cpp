@@ -178,7 +178,7 @@ bool Serializer::LoadFromTextFormat(istream& file)
 		}
 
 		i += (uint32_t)key.size() + 1;
-		if(i >= size - 4) {
+		if(i >= size) {
 			//invalid
 			return false;
 		}
@@ -191,7 +191,7 @@ bool Serializer::LoadFromTextFormat(istream& file)
 			}
 		}
 
-		if(i + valueSize > size) {
+		if(i + valueSize > size || valueSize == 0) {
 			//invalid
 			return false;
 		}
