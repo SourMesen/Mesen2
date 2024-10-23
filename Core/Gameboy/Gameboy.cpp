@@ -466,23 +466,30 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 
 GameboyHeader Gameboy::GetHeader(uint8_t* romData, uint32_t romSize)
 {
-	int offset = Gameboy::HeaderOffset;
+	GameboyHeader header = {};
+	memcpy(&header, romData + Gameboy::HeaderOffset, sizeof(GameboyHeader));
+
 	if(romSize > 0x8000) {
 		uint32_t logoPosition = (uint32_t)(romSize - 0x8000 + 0x104);
 		if(CRC32::GetCRC(&romData[logoPosition], 0x30) == 0x46195417) {
 			//Found logo at the end of the rom, use this header instead
 			//MMM01 games have the header here because of their default mappings at power on
-			offset = (int)(romSize - 0x8000 + Gameboy::HeaderOffset);
-		}
-	}
+			int offset = (int)(romSize - 0x8000 + Gameboy::HeaderOffset);
+			memcpy(&header, romData + offset, sizeof(GameboyHeader));
 
-	GameboyHeader header;
-	memcpy(&header, romData + offset, sizeof(GameboyHeader));
+			uint8_t headerChecksum = 0;
+			for(int i = 0; i < sizeof(GameboyHeader) - 3; i++) {
+				headerChecksum = headerChecksum - romData[offset + i] - 1;
+			}
+			if(header.CartType == 0x11) {
+				//Mani 4-in-1 has carttype set as $11, but is actually a MMM01 cart
+				header.CartType = 0x0B;
+			}
 
-	if(offset != Gameboy::HeaderOffset) {
-		if(header.CartType == 0x11) {
-			//Mani 4-in-1 has carttype set as $11, but is actually a MMM01 cart
-			header.CartType = 0x0B;
+			if(headerChecksum != header.HeaderChecksum) {
+				//Invalid header, ignore it and use the default header location instead
+				memcpy(&header, romData + Gameboy::HeaderOffset, sizeof(GameboyHeader));
+			}
 		}
 	}
 
