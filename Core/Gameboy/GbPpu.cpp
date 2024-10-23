@@ -976,7 +976,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 0xFF47:
-			if(_state.Mode == PpuMode::Drawing && _drawnPixels > 0 && _lastPixelType == GbPixelType::Background) {
+			if(!_state.CgbEnabled && _state.Mode == PpuMode::Drawing && _drawnPixels > 0 && _lastPixelType == GbPixelType::Background) {
 				//When BGP is changed during rendering, the current pixel is affected.
 				//Re-draw the last pixel with the correct color.
 				
@@ -989,6 +989,10 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 
 				_drawnPixels--;
 				WriteBgPixel((bgpValue >> (_lastBgColor * 2)) & 0x03);
+				if(_emu->IsDebugging()) {
+					//Update the event viewer data, if the debugger is running
+					_currentEventViewerBuffer[456 * _state.Scanline + _state.Cycle] = _currentBuffer[_state.Scanline * GbConstants::ScreenWidth + _drawnPixels];
+				}
 				_drawnPixels++;
 			}
 			_state.BgPalette = value;
