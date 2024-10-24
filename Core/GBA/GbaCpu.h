@@ -115,6 +115,7 @@ private:
 	uint32_t Read(GbaAccessModeVal mode, uint32_t addr);
 	void Write(GbaAccessModeVal mode, uint32_t addr, uint32_t value);
 	void Idle();
+	void Idle(uint8_t cycleCount);
 
 	void ProcessException(GbaCpuMode mode, GbaCpuVector vector);
 	void CheckForIrqs();

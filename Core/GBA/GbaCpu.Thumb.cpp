@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GBA/GbaCpu.h"
 #include "GBA/GbaMemoryManager.h"
+#include "GBA/GbaCpuMultiply.h"
 
 GbaThumbOpCategory GbaCpu::_thumbCategory[0x100];
 GbaCpu::Func GbaCpu::_thumbTable[0x100];
@@ -104,17 +105,11 @@ void GbaCpu::ThumbAluOperation()
 		case 12: SetR(rd, LogicalOp(op1 | op2, carry, true)); break;
 		case 13: 
 			//MUL
-			Idle();
-			if((op1 & 0xFFFFFF00) && (op1 & 0xFFFFFF00) != 0xFFFFFF00) {
-				Idle();
-			}
-			if((op1 & 0xFFFF0000) && (op1 & 0xFFFF0000) != 0xFFFF0000) {
-				Idle();
-			}
-			if((op1 & 0xFF000000) && (op1 & 0xFF000000) != 0xFF000000) {
-				Idle();
-			}
-			SetR(rd, op1 * op2);
+			MultiplicationOutput output = GbaCpuMultiply::mul(op2, op1);
+			Idle(output.CycleCount);
+
+			SetR(rd, output.Output);
+			_state.CPSR.Carry = output.Carry;
 			_state.CPSR.Zero = _state.R[rd] == 0;
 			_state.CPSR.Negative = (_state.R[rd] & (1 << 31));
 			break;

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GBA/GbaCpu.h"
 #include "GBA/GbaMemoryManager.h"
+#include "GBA/GbaCpuMultiply.h"
 #include "Shared/Emulator.h"
 
 GbaArmOpCategory GbaCpu::_armCategory[0x1000];
@@ -182,28 +183,23 @@ void GbaCpu::ArmMultiply()
 	bool updateFlags = (_opCode & (1 << 20)) != 0;
 	bool multAndAcc = (_opCode & (1 << 21)) != 0;
 
-	uint32_t rsValue = R(rs);
-	Idle();
-	if((rsValue & 0xFFFFFF00) && (rsValue & 0xFFFFFF00) != 0xFFFFFF00) {
-		Idle();
-	}
-	if((rsValue & 0xFFFF0000) && (rsValue & 0xFFFF0000) != 0xFFFF0000) {
-		Idle();
-	}
-	if((rsValue & 0xFF000000) && (rsValue & 0xFF000000) != 0xFF000000) {
-		Idle();
+	MultiplicationOutput output;
+	if(multAndAcc) {
+		output = GbaCpuMultiply::mla(R(rm), R(rs), R(rn));
+	} else {
+		output = GbaCpuMultiply::mul(R(rm), R(rs));
 	}
 
-	uint32_t result = R(rm) * R(rs);
-
+	Idle(output.CycleCount);
 	if(multAndAcc) {
 		Idle();
-		result += R(rn);
 	}
 
+	uint32_t result = output.Output;
 	SetR(rd, result);
-
+	
 	if(updateFlags) {
+		_state.CPSR.Carry = output.Carry;
 		_state.CPSR.Zero = result == 0;
 		_state.CPSR.Negative = (result & (1 << 31));
 	}
@@ -223,45 +219,34 @@ void GbaCpu::ArmMultiplyLong()
 	bool sign = (_opCode & (1 << 22)) != 0;
 
 	Idle();
-	Idle();
+
+	MultiplicationOutput output;
+	if(sign) {
+		if(multAndAcc) {
+			output = GbaCpuMultiply::smlal(R(rl), R(rh), R(rm), R(rs));
+		} else {
+			output = GbaCpuMultiply::smull(R(rm), R(rs));
+		}
+	} else {
+		if(multAndAcc) {
+			output = GbaCpuMultiply::umlal(R(rl), R(rh), R(rm), R(rs));
+		} else {
+			output = GbaCpuMultiply::umull(R(rm), R(rs));
+		}
+	}
+
+	Idle(output.CycleCount);
 	if(multAndAcc) {
 		Idle();
 	}
 
-	uint64_t result;
-	uint32_t rsValue = R(rs);
-	if(sign) {
-		if((rsValue & 0xFFFFFF00) && (rsValue & 0xFFFFFF00) != 0xFFFFFF00) {
-			Idle();
-		}
-		if((rsValue & 0xFFFF0000) && (rsValue & 0xFFFF0000) != 0xFFFF0000) {
-			Idle();
-		}
-		if((rsValue & 0xFF000000) && (rsValue & 0xFF000000) != 0xFF000000) {
-			Idle();
-		}
-		result = (int64_t)(int32_t)R(rm) * (int64_t)(int32_t)rsValue;
-	} else {
-		if(rsValue & 0xFFFFFF00) {
-			Idle();
-		}
-		if(rsValue & 0xFFFF0000) {
-			Idle();
-		}
-		if(rsValue & 0xFF000000) {
-			Idle();
-		}
-		result = (uint64_t)R(rm) * (uint64_t)rsValue;
-	}
-
-	if(multAndAcc) {
-		result += (uint64_t)R(rl) | ((uint64_t)R(rh) << 32);
-	}
+	uint64_t result = output.Output;
 
 	SetR(rl, (uint32_t)result);
 	SetR(rh, (uint32_t)(result >> 32));
 
 	if(updateFlags) {
+		_state.CPSR.Carry = output.Carry;
 		_state.CPSR.Zero = result == 0;
 		_state.CPSR.Negative = (result & ((uint64_t)1 << 63));
 	}

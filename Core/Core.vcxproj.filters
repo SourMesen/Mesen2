@@ -2940,6 +2940,9 @@
     <ClInclude Include="NES\Mappers\Homebrew\FlashS29.h">
       <Filter>NES\Mappers\Homebrew</Filter>
     </ClInclude>
+    <ClInclude Include="GBA\GbaCpuMultiply.h">
+      <Filter>GBA</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

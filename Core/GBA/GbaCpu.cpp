@@ -183,6 +183,16 @@ void GbaCpu::Idle()
 #endif
 }
 
+void GbaCpu::Idle(uint8_t cycleCount)
+{
+	switch(cycleCount) {
+		case 4: Idle(); [[fallthrough]];
+		case 3: Idle(); [[fallthrough]];
+		case 2: Idle(); [[fallthrough]];
+		case 1: Idle(); break;
+	}
+}
+
 uint32_t GbaCpu::R(uint8_t reg)
 {
 	return _state.R[reg];
