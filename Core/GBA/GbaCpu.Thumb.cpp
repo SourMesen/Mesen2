@@ -103,7 +103,8 @@ void GbaCpu::ThumbAluOperation()
 		case 10: Sub(op1, op2, true, true); break;
 		case 11: Add(op1, op2, false, true); break;
 		case 12: SetR(rd, LogicalOp(op1 | op2, carry, true)); break;
-		case 13: 
+		
+		case 13: {
 			//MUL
 			MultiplicationOutput output = GbaCpuMultiply::mul(op2, op1);
 			Idle(output.CycleCount);
@@ -113,6 +114,7 @@ void GbaCpu::ThumbAluOperation()
 			_state.CPSR.Zero = _state.R[rd] == 0;
 			_state.CPSR.Negative = (_state.R[rd] & (1 << 31));
 			break;
+		}
 
 		case 14: SetR(rd, LogicalOp(op1 & ~op2, carry, true)); break;
 		case 15: SetR(rd, LogicalOp(~op2, carry, true)); break;
