@@ -477,9 +477,11 @@ void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 		mm.RegisterHandler(0x00, 0x3F, 0x8000, 0xFFFF, _prgRomHandlers, 8, 0x400); //mirror
 
 		//Save RAM
-		mm.RegisterHandler(0x20, 0x3F, 0x6000, 0x7FFF, _saveRamHandlers);
-		mm.RegisterHandler(0x70, 0x7D, 0x0000, 0x7FFF, _saveRamHandlers);
-		mm.RegisterHandler(0xA0, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
+		if(!_emu->GetSettings()->GetSnesConfig().EnableStrictBoardMappings) {
+			//This shouldn't be mapped on ExHiROM boards, but some old romhacks seem to depend on this
+			mm.RegisterHandler(0x20, 0x3F, 0x6000, 0x7FFF, _saveRamHandlers);
+		}
+		mm.RegisterHandler(0x80, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
 	}
 
 	MapBsxMemoryPack(mm);
