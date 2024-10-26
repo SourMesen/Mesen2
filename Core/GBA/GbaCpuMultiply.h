@@ -173,8 +173,8 @@ private:
 	static AdderOutput adder(uint32_t a, uint32_t b, bool carry)
 	{
 		uint32_t output = a + b + carry;
-		bool overflow = output < a || output < b;
-		return { output, overflow };
+		uint64_t real_output = (uint64_t)a + (uint64_t)b + (uint64_t)carry;
+		return { output, output != real_output };
 	}
 
 	static u128 u128_ror(u128 input, int shift)
