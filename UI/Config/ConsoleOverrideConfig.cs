@@ -20,6 +20,10 @@ public class ConsoleOverrideConfig : BaseConfig<GameConfig>
 
 	public static ConsoleOverrideConfig? GetActiveOverride()
 	{
+		if(MainWindowViewModel.Instance == null) {
+			return null;
+		}
+
 		RomInfo romInfo = MainWindowViewModel.Instance.RomInfo;
 		if(romInfo.Format == RomFormat.Unknown) {
 			return null;
