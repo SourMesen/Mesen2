@@ -44,7 +44,12 @@ namespace Mesen.Debugger.ViewModels
 
 			HasDummyOperations = bp.CpuType.HasDummyOperations() && !bp.Forbid;
 			HelpTooltip = ExpressionTooltipHelper.GetHelpTooltip(bp.CpuType, false);
-			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => bp.CpuType.CanAccessMemoryType(t) && t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => {
+				if(bp.Forbid && !t.SupportsExecBreakpoints()) {
+					return false;
+				}
+				return bp.CpuType.CanAccessMemoryType(t) && t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0;
+			}).Cast<Enum>().ToArray();
 			if(!AvailableMemoryTypes.Contains(Breakpoint.MemoryType)) {
 				Breakpoint.MemoryType = (MemoryType)AvailableMemoryTypes[0];
 			}
