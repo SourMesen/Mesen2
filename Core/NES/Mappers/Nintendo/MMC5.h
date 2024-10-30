@@ -367,7 +367,7 @@ protected:
 		if(HasBattery() && _saveRamSize > 0) {
 			//Load EXRAM and save ram from the same file
 			vector<uint8_t> data(_saveRamSize + _mapperRamSize);
-			_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize + _mapperRamSize);
+			_emu->GetBatteryManager()->LoadBattery(".sav", data.data(), _saveRamSize + _mapperRamSize);
 			memcpy(_saveRam, data.data(), _saveRamSize);
 			memcpy(_mapperRam, data.data()+_saveRamSize, _mapperRamSize);
 		}
