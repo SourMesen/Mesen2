@@ -28,47 +28,15 @@ bool HdPackLoader::InitializeLoader(VirtualFile &romFile, HdPackData *data)
 
 	string romName = FolderUtilities::GetFilename(romFile.GetFileName(), false);
 	string hdPackFolder = FolderUtilities::GetHdPackFolder();
-	string zipName = romName + ".hdn";
 	string definitionPath = FolderUtilities::CombinePath(romName, "hires.txt");
 
-	string legacyPath = FolderUtilities::CombinePath(hdPackFolder, definitionPath);
-	if(ifstream(legacyPath)) {
+	string hdPackPath = FolderUtilities::CombinePath(hdPackFolder, definitionPath);
+	if(ifstream(hdPackPath)) {
 		_loadFromZip = false;
-		_hdPackFolder = FolderUtilities::GetFolderName(legacyPath);
+		_hdPackFolder = FolderUtilities::GetFolderName(hdPackPath);
 		return true;
-	} else {
-		vector<string> hdnPackages = FolderUtilities::GetFilesInFolder(romFile.GetFolderPath(), { ".hdn" }, false);
-		vector<string> more = FolderUtilities::GetFilesInFolder(hdPackFolder, { ".hdn", ".zip" }, false);
-		hdnPackages.insert(hdnPackages.end(), more.begin(), more.end());
-
-		if(hdnPackages.size() == 0) {
-			//Prevent calculating rom SHA-1 when no potential HD pack file exists
-			return false;
-		}
-
-		string sha1Hash = romFile.GetSha1Hash();
-		for(string path : hdnPackages) {
-			_reader.LoadArchive(path);
-
-			vector<uint8_t> hdDefinition;
-			if(_reader.ExtractFile("hires.txt", hdDefinition)) {
-				if(FolderUtilities::GetFilename(path, false) == romName) {
-					_loadFromZip = true;
-					_hdPackFolder = path;
-					return true;
-				} else {
-					for(string line : StringUtilities::Split(string(hdDefinition.data(), hdDefinition.data() + hdDefinition.size()), '\n')) {
-						std::transform(line.begin(), line.end(), line.begin(), ::tolower);
-						if(line.find("<supportedrom>") != string::npos && line.find(sha1Hash) != string::npos) {
-							_loadFromZip = true;
-							_hdPackFolder = path;
-							return true;
-						}
-					}
-				}
-			}
-		}
 	}
+
 	return false;
 }
 
