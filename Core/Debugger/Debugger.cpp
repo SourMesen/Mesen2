@@ -368,7 +368,7 @@ void Debugger::ProcessHaltedCpu()
 	//Process cpu step requests as if each call to ProcessHaltedCpu is an instruction
 	StepRequest* req = dbg->GetStepRequest();
 	req->ProcessCpuExec();
-	if(req->BreakNeeded) {
+	if((int)req->BreakNeeded) {
 		SleepUntilResume(type, req->GetBreakSource());
 	} else {
 		//Also check if a debugger break request is pending
@@ -457,7 +457,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 		//If SleepUntilResume was called outside of ProcessInstruction, keep running
 		return;
 	} else if(IsBreakpointForbidden(source, sourceCpu, operation)) {
-		ClearPendingBreakRequests();
+		ClearPendingBreakExceptions();
 		return;
 	}
 
@@ -503,7 +503,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 
 bool Debugger::IsBreakpointForbidden(BreakSource source, CpuType sourceCpu, MemoryOperationInfo* operation)
 {
-	if(source != BreakSource::Unspecified && source != BreakSource::CpuStep && source != BreakSource::PpuStep && source != BreakSource::Pause && _breakRequestCount == 0) {
+	if((source > BreakSource::InternalOperation || source == BreakSource::Breakpoint) && _breakRequestCount == 0) {
 		BreakpointManager* bp = _debuggers[(int)sourceCpu].Debugger->GetBreakpointManager();
 		uint32_t pc = GetProgramCounter(sourceCpu, true);
 		AddressInfo relAddr = { (int32_t)pc, DebugUtilities::GetCpuMemoryType(sourceCpu) };
@@ -518,8 +518,8 @@ template<uint8_t accessWidth>
 void Debugger::ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 {
 	int breakpointId = bpManager->CheckBreakpoint<accessWidth>(operation, addressInfo, true);
-	if(_breakRequestCount || _waitForBreakResume || (step.BreakNeeded && (!_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints || step.Type == StepType::CpuCycleStep))) {
-		SleepUntilResume(sourceCpu, step.Source);
+	if(_breakRequestCount || _waitForBreakResume || ((int)step.BreakNeeded && (!_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints || step.Type == StepType::CpuCycleStep))) {
+		SleepUntilResume(sourceCpu, step.GetBreakSource());
 	} else {
 		if(breakpointId >= 0 && !_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints) {
 			SleepUntilResume(sourceCpu, BreakSource::Breakpoint, &operation, breakpointId);
@@ -656,11 +656,11 @@ void Debugger::Run()
 	_waitForBreakResume = false;
 }
 
-void Debugger::ClearPendingBreakRequests()
+void Debugger::ClearPendingBreakExceptions()
 {
 	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
 		if(_debuggers[i].Debugger) {
-			_debuggers[i].Debugger->Run();
+			_debuggers[i].Debugger->GetStepRequest()->ClearException();
 		}
 	}
 }
@@ -692,7 +692,7 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type, BreakSour
 		}
 
 		debugger->Step(stepCount, type);
-		debugger->GetStepRequest()->SetBreakSource(source);
+		debugger->GetStepRequest()->SetBreakSource(source, false);
 	}
 
 	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {

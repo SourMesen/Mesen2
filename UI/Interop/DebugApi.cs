@@ -1529,6 +1529,8 @@ namespace Mesen.Interop
 		Pause,
 		CpuStep,
 		PpuStep,
+		Irq,
+		Nmi,
 		InternalOperation,
 
 		BreakOnBrk,
@@ -1536,9 +1538,6 @@ namespace Mesen.Interop
 		BreakOnWdm,
 		BreakOnStp,
 		BreakOnUninitMemoryRead,
-
-		Irq,
-		Nmi,
 
 		GbInvalidOamAccess,
 		GbInvalidVramAccess,

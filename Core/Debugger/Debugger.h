@@ -99,7 +99,7 @@ private:
 	bool IsBreakOptionEnabled(BreakSource src);
 	template<CpuType type> void SleepOnBreakRequest();
 
-	void ClearPendingBreakRequests();
+	void ClearPendingBreakExceptions();
 
 	bool IsBreakpointForbidden(BreakSource source, CpuType sourceCpu, MemoryOperationInfo* operation);
 
