@@ -146,6 +146,13 @@ void Debugger::Reset()
 		if(_debuggers[i].Debugger) {
 			_debuggers[i].Debugger->Reset();
 		}
+		
+		BaseEventManager* evtMgr = GetEventManager((CpuType)i);
+		if(evtMgr) {
+			//Call twice to clear both current and previous frame
+			evtMgr->ClearFrameEvents();
+			evtMgr->ClearFrameEvents();
+		}
 	}
 }
 
