@@ -1373,7 +1373,7 @@ uint8_t GbaPpu::ReadRegister(uint32_t addr)
 		case 0x04:
 			return (
 				(_state.Scanline >= 160 && _state.Scanline != 227 ? 0x01 : 0) |
-				(_state.Cycle > 1007 ? 0x02 : 0) |
+				((_state.Cycle > 1007 || _state.Cycle == 0) ? 0x02 : 0) |
 				(_state.Scanline == _state.Lyc ? 0x04 : 0) |
 				_state.DispStat
 			);
