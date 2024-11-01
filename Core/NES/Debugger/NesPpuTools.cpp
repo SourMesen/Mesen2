@@ -234,7 +234,7 @@ void NesPpuTools::ApplyHighlights(GetTilemapOptions options, uint8_t nametableIn
 			bool attrHighlighted = isHighlighted(attributeAddress, options.AttributeHighlightMode);
 
 			if(!tileHighlighted && !attrHighlighted) {
-				break;
+				continue;
 			}
 
 			for(uint8_t y = 0; y < 8; y++) {
