@@ -37,6 +37,8 @@ LoadRomResult SmsConsole::LoadRom(VirtualFile& romFile)
 			romData.erase(romData.begin(), romData.begin() + 0x200);
 		}
 
+		_filename = romFile.GetFileName();
+
 		string ext = romFile.GetFileExtension();
 		bool isGameGear = ext == ".gg";
 		if(isGameGear) {
@@ -169,7 +171,7 @@ void SmsConsole::UpdateRegion(bool forceUpdate)
 	}
 
 	if(region == ConsoleRegion::Auto) {
-		string filename = StringUtilities::ToLower(_emu->GetRomInfo().RomFile.GetFileName());
+		string filename = StringUtilities::ToLower(_filename);
 		if(filename.find("(europe)") != string::npos || filename.find("(e)") != string::npos) {
 			region = ConsoleRegion::Pal;
 		} else {

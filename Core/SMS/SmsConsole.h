@@ -30,6 +30,7 @@ private:
 	RomFormat _romFormat = RomFormat::Sms;
 	SmsModel _model = SmsModel::Sms;
 	ConsoleRegion _region = ConsoleRegion::Ntsc;
+	string _filename;
 	
 	void UpdateRegion(bool forceUpdate);
 
