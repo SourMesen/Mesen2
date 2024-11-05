@@ -584,7 +584,7 @@ namespace Mesen.ViewModels
 
 						case ConsoleType.Sms:
 							switch(MainWindow.RomInfo.Format) {
-								default: case RomFormat.Sms: ConfigManager.Config.Sms.GameGearRegion = region; break;
+								default: case RomFormat.Sms: ConfigManager.Config.Sms.Region = region; break;
 								case RomFormat.GameGear: ConfigManager.Config.Sms.GameGearRegion = region; break;
 								case RomFormat.ColecoVision: ConfigManager.Config.Cv.Region = region; break;
 							}
