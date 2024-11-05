@@ -119,7 +119,7 @@ void SmsVdp::UpdateDisplayMode()
 			_state.NametableAddressMask = (_state.NametableAddress & 0x400) ? ~0 : ~0x400;
 		}
 
-		if(_revision != SmsRevision::Sms1 && (_state.M3_Use240LineMode || _state.M1_Use224LineMode)) {
+		if(_revision != SmsRevision::Sms1 && _state.M2_AllowHeightChange && (_state.M3_Use240LineMode || _state.M1_Use224LineMode)) {
 			_state.VisibleScanlineCount = _state.M3_Use240LineMode ? 240 : 224;
 			_state.NametableHeight = 256;
 			_state.EffectiveNametableAddress = (_state.NametableAddress & 0x3000) | 0x700;
@@ -137,10 +137,12 @@ void SmsVdp::UpdateDisplayMode()
 uint8_t SmsVdp::ReadVerticalCounter()
 {
 	uint16_t rollOverlimit;
+	bool mode224 = _state.M1_Use224LineMode && _state.M2_AllowHeightChange;
+	bool mode240 = _state.M3_Use240LineMode && _state.M2_AllowHeightChange;
 	if(_region == ConsoleRegion::Pal) {
-		rollOverlimit = _state.M3_Use240LineMode ? 266 : (_state.M1_Use224LineMode ? 258 : 242);
+		rollOverlimit = mode240 ? 266 : (mode224 ? 258 : 242);
 	} else {
-		rollOverlimit = _state.M3_Use240LineMode ? 0xFFFF : (_state.M1_Use224LineMode ? 234 : 218);
+		rollOverlimit = mode240 ? 0xFFFF : (mode224 ? 234 : 218);
 	}
 
 	if(_state.VCounter <= rollOverlimit) {
