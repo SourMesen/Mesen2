@@ -35,6 +35,8 @@ public:
 
 	SmsPsgState& GetState() { return _state; }
 
+	void SetRegion(ConsoleRegion region);
+
 	void Run();
 	void PlayQueuedAudio();
 
