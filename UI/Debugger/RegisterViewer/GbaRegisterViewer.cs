@@ -25,6 +25,14 @@ public class GbaRegisterViewer
 
 		GbaMemoryManagerState memManager = gbaState.MemoryManager;
 		entries.AddRange(new List<RegEntry>() {
+			/*new RegEntry("", "Prefetch"),
+			new RegEntry("", "Read Address", gbaState.Prefetch.ReadAddr, Format.X32),
+			new RegEntry("", "Prefetch Address", gbaState.Prefetch.PrefetchAddr, Format.X32),
+			new RegEntry("", "Length", (gbaState.Prefetch.PrefetchAddr - gbaState.Prefetch.ReadAddr) / 2, Format.X8),
+			new RegEntry("", "Clock Counter", gbaState.Prefetch.ClockCounter),
+			new RegEntry("", "Filled", (gbaState.Prefetch.PrefetchAddr - gbaState.Prefetch.ReadAddr) >= 16),
+			new RegEntry("", "Was Filled", gbaState.Prefetch.WasFilled),*/
+
 			new RegEntry("", "Input IRQ Control"),
 			new RegEntry("$4000132-3", "Register Value", gbaState.ControlManager.KeyControl, Format.X16),
 			new RegEntry("$4000132.0", "A", (gbaState.ControlManager.KeyControl & 0x01) != 0),
@@ -85,8 +93,8 @@ public class GbaRegisterViewer
 			new RegEntry("$4000204.5-6", "Bank $A/B", memManager.PrgWaitStates1[0] + " clocks", null),
 			new RegEntry("$4000204.7", "Bank $A/B - Sequential", memManager.PrgWaitStates1[1] + " clocks", null),
 			new RegEntry("$4000205.0-1", "Bank $C/D", memManager.PrgWaitStates2[0] + " clocks", null),
-			new RegEntry("$4000204.2", "Bank $C/D - Sequential", memManager.PrgWaitStates2[1] + " clocks", null),
-			new RegEntry("$4000204.3", "Prefetch Enabled", memManager.PrefetchEnabled),
+			new RegEntry("$4000205.2", "Bank $C/D - Sequential", memManager.PrgWaitStates2[1] + " clocks", null),
+			new RegEntry("$4000205.6", "Prefetch Enabled", memManager.PrefetchEnabled),
 		});
 
 		return new RegisterViewerTab("Misc", entries, CpuType.Gba, MemoryType.GbaMemory);

@@ -61,7 +61,7 @@ GbaDebugger::GbaDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 	_assembler.reset(new GbaAssembler(debugger->GetLabelManager()));
 	
 	_dummyCpu.reset(new DummyGbaCpu());
-	_dummyCpu->Init(_emu, _memoryManager);
+	_dummyCpu->Init(_emu, _memoryManager, nullptr);
 }
 
 GbaDebugger::~GbaDebugger()

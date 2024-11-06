@@ -8,6 +8,7 @@
 #include "pch.h"
 #include "GBA/GbaTypes.h"
 #include "GBA/GbaMemoryManager.h"
+#include "GBA/GbaRomPrefetch.h"
 #include "Shared/Emulator.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/ISerializable.h"
@@ -22,6 +23,7 @@ private:
 	GbaCpuState _state = {};
 
 	GbaMemoryManager* _memoryManager = nullptr;
+	GbaRomPrefetch* _prefetch = nullptr;
 	Emulator* _emu = nullptr;
 
 	typedef void(GbaCpu::* Func)();
@@ -125,7 +127,7 @@ public:
 
 	static void StaticInit();
 
-	void Init(Emulator* emu, GbaMemoryManager* memoryManager);
+	void Init(Emulator* emu, GbaMemoryManager* memoryManager, GbaRomPrefetch* prefetch);
 
 	static GbaArmOpCategory GetArmOpCategory(uint32_t opCode);
 	static GbaThumbOpCategory GetThumbOpCategory(uint16_t opCode);

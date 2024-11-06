@@ -76,16 +76,19 @@ void GbaCpu::ThumbAluOperation()
 		case 1: SetR(rd, LogicalOp(op1 ^ op2, carry, true)); break;
 		
 		case 2:
+			Idle();
 			SetR(rd, ShiftLsl(op1, op2, carry));
 			LogicalOp(_state.R[rd], carry, true);
 			break;
 
 		case 3:
+			Idle();
 			SetR(rd, ShiftLsr(op1, op2, carry));
 			LogicalOp(_state.R[rd], carry, true);
 			break;
 
 		case 4:
+			Idle();
 			SetR(rd, ShiftAsr(op1, op2, carry));
 			LogicalOp(_state.R[rd], carry, true);
 			break;
@@ -94,6 +97,7 @@ void GbaCpu::ThumbAluOperation()
 		case 6: SetR(rd, Sub(op1, op2, carry, true)); break;
 		
 		case 7:
+			Idle();
 			SetR(rd, ShiftRor(op1, op2, carry));
 			LogicalOp(_state.R[rd], carry, true);
 			break;
@@ -177,14 +181,14 @@ void GbaCpu::ThumbLoadStoreSignExtended()
 	bool sign = _opCode & (1 << 10);
 	bool half = _opCode & (1 << 11);
 
-	GbaAccessModeVal mode = half ? GbaAccessMode::HalfWord : GbaAccessMode::Byte;
-	if(sign) {
-		mode |= GbaAccessMode::Signed;
-	}
-
 	if(!sign && !half) {
 		Write(GbaAccessMode::HalfWord, R(rb) + R(ro), R(rd));
 	} else {
+		GbaAccessModeVal mode = half ? GbaAccessMode::HalfWord : GbaAccessMode::Byte;
+		if(sign) {
+			mode |= GbaAccessMode::Signed;
+		}
+
 		SetR(rd, Read(mode, R(rb) + R(ro)));
 		Idle();
 	}

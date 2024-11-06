@@ -116,7 +116,7 @@ LoadRomResult GbaConsole::LoadRom(VirtualFile& romFile)
 	_apu->Init(_emu, this, _dmaController.get(), _memoryManager.get());
 	_timer->Init(_memoryManager.get(), _apu.get());
 	_dmaController->Init(_cpu.get(), _memoryManager.get(), _prefetch.get());
-	_cpu->Init(_emu, _memoryManager.get());
+	_cpu->Init(_emu, _memoryManager.get(), _prefetch.get());
 	_serial->Init(_emu, _memoryManager.get());
 	_controlManager->Init(_memoryManager.get());
 	

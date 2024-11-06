@@ -969,7 +969,7 @@ EffectiveAddressInfo GbaDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Gba
 	}
 
 	DummyGbaCpu dummyCpu;
-	dummyCpu.Init(console->GetEmulator(), console->GetMemoryManager());
+	dummyCpu.Init(console->GetEmulator(), console->GetMemoryManager(), nullptr);
 	dummyCpu.SetDummyState(state);
 	dummyCpu.Exec<false, false>();
 

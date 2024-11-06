@@ -20,21 +20,50 @@ private:
 		return _state.PrefetchAddr - _state.ReadAddr >= 16;
 	}
 
+	__forceinline bool IsRomBoundary()
+	{
+		//When the prefetcher hits an address that's a multiple of 128kb,
+		//it behaves as if it was filled (blocking any more fetches until
+		//it gets emptied)
+		bool result = (_state.PrefetchAddr & 0x1FFFE) == 0;
+		_state.BoundaryCyclePenalty = (uint8_t)result;
+		return result;
+	}
+
 	__forceinline uint8_t WaitForPendingRead()
 	{
+		if(_state.ClockCounter == 0) {
+			_state.ClockCounter = GetAccessClockCount();
+		}
+
 		uint8_t counter = _state.ClockCounter;
-		Exec(counter);
-		_state.ReadAddr += 2;
+		ProcessRead();
 		return counter;
 	}
 
-	__forceinline uint8_t ReadHalfWord(GbaAccessModeVal mode)
+	__forceinline uint8_t ReadHalfWord()
 	{
-		uint8_t counter = _memoryManager->GetWaitStates(GbaAccessMode::HalfWord | mode, _state.PrefetchAddr);
-		_state.ClockCounter = counter;
-		Exec(counter);
-		_state.ReadAddr += 2;
+		uint8_t counter = GetAccessClockCount();
+		ProcessRead();
 		return counter;
+	}
+
+	__forceinline void ProcessRead()
+	{
+		_state.ReadAddr += 2;
+		_state.PrefetchAddr += 2;
+		if(IsRomBoundary()) {
+			_state.WasFilled = true;
+		}
+		_state.ClockCounter = 0;
+		_state.Sequential = true;
+	}
+
+	__forceinline uint8_t GetAccessClockCount()
+	{
+		uint8_t count = _memoryManager->GetWaitStates(GbaAccessMode::HalfWord | (_state.Sequential ? GbaAccessMode::Sequential : 0), _state.PrefetchAddr) + _state.BoundaryCyclePenalty;
+		_state.BoundaryCyclePenalty = 0;
+		return count;
 	}
 
 public:
@@ -51,10 +80,23 @@ public:
 	bool Reset()
 	{
 		bool delay = _state.ClockCounter == 1;
+		_state.Started = false;
+		_state.Sequential = false;
+		_state.WasFilled = false;
 		_state.ReadAddr = 0;
 		_state.PrefetchAddr = 0;
 		_state.ClockCounter = 0;
 		return delay;
+	}
+
+	void ForceNonSequential(uint32_t addr)
+	{
+		if(addr == _state.ReadAddr && _state.ClockCounter == 0 && !_state.Started) {
+			//When the CPU jumps to the address the prefetch was about to read/fetch
+			//and the prefetcher has been empty since its last reset (always ReadAddr==PrefetchAddr),
+			//then the fetch counts as a non-sequential read
+			_state.Sequential = false;
+		}
 	}
 
 	__forceinline void SetSuspendState(bool suspended)
@@ -65,27 +107,52 @@ public:
 
 	void Exec(uint8_t clocks)
 	{
-		if(_state.Suspended || IsFull()) {
+		if(_state.Suspended || _state.ReadAddr == 0 || IsFull()) {
+			return;
+		}
+
+		_state.Started = true;
+
+		if(_state.WasFilled) {
+			//Once the prefetch buffer is filled, it needs to be emptied completely
+			//before any further prefetching is allowed
 			return;
 		}
 
 		do {
+			if(_state.ClockCounter == 0) {
+				_state.ClockCounter = GetAccessClockCount();
+				_state.Sequential = true;
+			}
+
 			if(--_state.ClockCounter == 0) {
 				_state.PrefetchAddr += 2;
-				_state.ClockCounter = _memoryManager->GetWaitStates(GbaAccessMode::HalfWord | GbaAccessMode::Sequential, _state.PrefetchAddr);
+				if(IsFull() || IsRomBoundary()) {
+					_state.WasFilled = true;
+					break;
+				}
 			}
 		} while(--clocks);
 	}
 
 	__forceinline uint8_t Read(GbaAccessModeVal mode, uint32_t addr)
 	{
+		if(_state.WasFilled && IsEmpty()) {
+			//Prefetch was paused because it was filled,
+			//and it can resume because it's empty
+			_state.WasFilled = false;
+			_state.Sequential = false;
+			_state.Started = false;
+		}
+
 		if(addr != _state.ReadAddr) {
 			//Restart prefetch, need to read an entire opcode
+			uint8_t totalTime = Reset();
 			_state.PrefetchAddr = addr;
 			_state.ReadAddr = addr;
-			uint8_t totalTime = ReadHalfWord(GbaAccessMode::HalfWord);
+			totalTime += ReadHalfWord();
 			if(mode & GbaAccessMode::Word) {
-				totalTime += ReadHalfWord(GbaAccessMode::HalfWord | GbaAccessMode::Sequential);
+				totalTime += ReadHalfWord();
 			}
 			return totalTime;
 		} else if(IsEmpty()) {
@@ -93,7 +160,7 @@ public:
 			uint8_t totalTime = WaitForPendingRead();
 			if(mode & GbaAccessMode::Word) {
 				//Need to fetch the next half-word, too
-				totalTime += ReadHalfWord(GbaAccessMode::HalfWord | GbaAccessMode::Sequential);
+				totalTime += ReadHalfWord();
 			}
 			return totalTime;
 		}
@@ -121,6 +188,10 @@ public:
 		SV(_state.ClockCounter);
 		SV(_state.ReadAddr);
 		SV(_state.PrefetchAddr);
+		SV(_state.BoundaryCyclePenalty);
 		SV(_state.Suspended);
+		SV(_state.WasFilled);
+		SV(_state.Sequential);
+		SV(_state.Started);
 	}
 };

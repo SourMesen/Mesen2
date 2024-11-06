@@ -5,10 +5,11 @@
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
 
-void GbaCpu::Init(Emulator* emu, GbaMemoryManager* memoryManager)
+void GbaCpu::Init(Emulator* emu, GbaMemoryManager* memoryManager, GbaRomPrefetch* prefetch)
 {
 	_emu = emu;
 	_memoryManager = memoryManager;
+	_prefetch = prefetch;
 	
 	_state = {};
 	_state.Pipeline.ReloadRequested = true;
@@ -104,6 +105,8 @@ void GbaCpu::ReloadPipeline()
 
 	pipe.ReloadRequested = false;
 	pipe.Fetch.Address = _state.R[15] = _state.R[15] & (_state.CPSR.Thumb ? ~0x01 : ~0x03);
+	_prefetch->ForceNonSequential(_state.R[15]);
+
 	pipe.Fetch.OpCode = ReadCode(pipe.Mode, pipe.Fetch.Address);
 	pipe.Execute = pipe.Decode;
 	pipe.Decode = pipe.Fetch;
