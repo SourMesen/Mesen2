@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "GBA/GbaMemoryManager.h"
+#include "GBA/GbaCpu.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
@@ -9,6 +10,7 @@ class GbaRomPrefetch final : ISerializable
 private:
 	GbaRomPrefetchState _state = {};
 	GbaMemoryManager* _memoryManager = nullptr;
+	GbaCpu* _cpu = nullptr;
 
 	__forceinline bool IsEmpty()
 	{
@@ -67,9 +69,10 @@ private:
 	}
 
 public:
-	void Init(GbaMemoryManager* memoryManager)
+	void Init(GbaMemoryManager* memoryManager, GbaCpu* cpu)
 	{
 		_memoryManager = memoryManager;
+		_cpu = cpu;
 	}
 
 	GbaRomPrefetchState& GetState()
@@ -105,9 +108,9 @@ public:
 		_state.Suspended = suspended;
 	}
 
-	void Exec(uint8_t clocks)
+	void Exec(uint8_t clocks, bool prefetchEnabled)
 	{
-		if(_state.Suspended || _state.ReadAddr == 0 || IsFull()) {
+		if(_state.Suspended || _state.ReadAddr == 0 || IsFull() || (!prefetchEnabled && _state.ClockCounter == 0)) {
 			return;
 		}
 
@@ -127,14 +130,21 @@ public:
 
 			if(--_state.ClockCounter == 0) {
 				_state.PrefetchAddr += 2;
+				//Any cpu access after the prefetch stops should be non-sequential
+				_cpu->ClearSequentialFlag();
 				if(IsFull() || IsRomBoundary()) {
 					_state.WasFilled = true;
+					break;
+				}
+
+				if(!prefetchEnabled) {
 					break;
 				}
 			}
 		} while(--clocks);
 	}
 
+	template<bool prefetchEnabled>
 	__forceinline uint8_t Read(GbaAccessModeVal mode, uint32_t addr)
 	{
 		if(_state.WasFilled && IsEmpty()) {
@@ -145,24 +155,46 @@ public:
 			_state.Started = false;
 		}
 
-		if(addr != _state.ReadAddr) {
-			//Restart prefetch, need to read an entire opcode
-			uint8_t totalTime = Reset();
-			_state.PrefetchAddr = addr;
-			_state.ReadAddr = addr;
-			totalTime += ReadHalfWord();
-			if(mode & GbaAccessMode::Word) {
-				totalTime += ReadHalfWord();
+		if constexpr(!prefetchEnabled) {
+			if(IsEmpty()) {
+				//Prefetcher is disabled & empty (but a prefetch read might be in-progress)
+				if(_state.ClockCounter == 0) {
+					//No prefetch is in progress - read normally
+					return _memoryManager->GetWaitStates(mode, addr);
+				} else {
+					//Finish the current prefetch read
+					uint8_t totalTime = WaitForPendingRead();
+					_cpu->ClearSequentialFlag();
+					if(mode & GbaAccessMode::Word) {
+						//If fetching a 32-bit value, add the time it'll take to read the next half-word (non sequential)
+						totalTime += _memoryManager->GetWaitStates(GbaAccessMode::HalfWord, addr);
+						
+						//The previous read counts as the first non-sequential read, next one should be sequential
+						_cpu->SetSequentialFlag();
+					}
+					return totalTime;
+				}
 			}
-			return totalTime;
-		} else if(IsEmpty()) {
-			//Prefetch in progress, wait until it ends
-			uint8_t totalTime = WaitForPendingRead();
-			if(mode & GbaAccessMode::Word) {
-				//Need to fetch the next half-word, too
+		} else {
+			if(addr != _state.ReadAddr) {
+				//Restart prefetch, need to read an entire opcode
+				uint8_t totalTime = Reset();
+				_state.PrefetchAddr = addr;
+				_state.ReadAddr = addr;
 				totalTime += ReadHalfWord();
+				if(mode & GbaAccessMode::Word) {
+					totalTime += ReadHalfWord();
+				}
+				return totalTime;
+			} else if(IsEmpty()) {
+				//Prefetch in progress, wait until it ends
+				uint8_t totalTime = WaitForPendingRead();
+				if(mode & GbaAccessMode::Word) {
+					//Need to fetch the next half-word, too
+					totalTime += ReadHalfWord();
+				}
+				return totalTime;
 			}
-			return totalTime;
 		}
 		
 		_state.ReadAddr += 2;
@@ -171,14 +203,23 @@ public:
 			if(!IsEmpty()) {
 				//Data is already available, return it without any additional delay
 				_state.ReadAddr += 2;
-				Exec(1);
+				Exec(1, prefetchEnabled);
 				return 1;
 			} else {
 				//Prefetch in progress, wait until it ends
+				if constexpr(!prefetchEnabled) {
+					if(_state.ClockCounter == 0) {
+						//Prefetch is disabled and no pending read is in progress, but the CPU needs to read an extra half-word (ARM mode)
+						uint8_t totalTime = _memoryManager->GetWaitStates(GbaAccessMode::HalfWord, addr);
+						//The previous read counts as the first non-sequential read, next one should be sequential
+						_cpu->SetSequentialFlag();
+						return totalTime;
+					}
+				}
 				return WaitForPendingRead();
 			}
 		} else {
-			Exec(1);
+			Exec(1, prefetchEnabled);
 			return 1;
 		}
 	}

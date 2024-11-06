@@ -110,7 +110,7 @@ LoadRomResult GbaConsole::LoadRom(VirtualFile& romFile)
 
 	_memoryManager.reset(new GbaMemoryManager(_emu, this, _ppu.get(), _dmaController.get(), _controlManager.get(), _timer.get(), _apu.get(), _cart.get(), _serial.get(), _prefetch.get()));
 
-	_prefetch->Init(_memoryManager.get());
+	_prefetch->Init(_memoryManager.get(), _cpu.get());
 	_cart->Init(_emu, this, _memoryManager.get(), _saveType, _rtcType, _cartType);
 	_ppu->Init(_emu, this, _memoryManager.get());
 	_apu->Init(_emu, this, _dmaController.get(), _memoryManager.get());

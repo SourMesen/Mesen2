@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GBA/GbaCpu.h"
 #include "GBA/GbaMemoryManager.h"
+#include "GBA/GbaRomPrefetch.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"

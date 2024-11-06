@@ -8,12 +8,12 @@
 #include "pch.h"
 #include "GBA/GbaTypes.h"
 #include "GBA/GbaMemoryManager.h"
-#include "GBA/GbaRomPrefetch.h"
 #include "Shared/Emulator.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/ISerializable.h"
 
 class GbaMemoryManager;
+class GbaRomPrefetch;
 class Emulator;
 
 class GbaCpu : public ISerializable
@@ -214,6 +214,7 @@ public:
 
 	void SetStopFlag() { _state.Stopped = true; }
 	void ClearSequentialFlag() { _state.Pipeline.Mode &= ~GbaAccessMode::Sequential; }
+	void SetSequentialFlag() { _state.Pipeline.Mode |= GbaAccessMode::Sequential; }
 
 	void PowerOn();
 
