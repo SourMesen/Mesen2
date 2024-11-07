@@ -23,7 +23,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.Views
 {
-	public class SourceViewView : UserControl
+	public class SourceViewView : MesenUserControl
 	{
 		private SourceViewViewModel Model => (SourceViewViewModel)DataContext!;
 		private LocationInfo ActionLocation => _selectionHandler?.ActionLocation ?? new LocationInfo();
@@ -219,7 +219,7 @@ namespace Mesen.Debugger.Views
 			};
 
 			actions.AddRange(GetBreakpointContextMenu());
-			DebugShortcutManager.CreateContextMenu(_viewer, actions);
+			AddDisposables(DebugShortcutManager.CreateContextMenu(_viewer, actions));
 		}
 
 		private void GoToLocation(LocationInfo loc)

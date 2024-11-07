@@ -41,11 +41,11 @@ namespace Mesen.Debugger.ViewModels
 
 			UpdateAvailableTabs();
 
-			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => {
 				if(SelectedTab != null && EmuApi.IsPaused()) {
 					RefreshData();
 				}
-			});
+			}));
 
 			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {

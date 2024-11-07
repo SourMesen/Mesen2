@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class LabelListViewModel : ViewModelBase
+	public class LabelListViewModel : DisposableViewModel
 	{
 		[Reactive] public MesenList<LabelViewModel> Labels { get; private set; } = new();
 		[Reactive] public SelectionModel<LabelViewModel?> Selection { get; set; } = new() { SingleSelect = false };
@@ -75,7 +75,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void InitContextMenu(Control parent)
 		{
-			DebugShortcutManager.CreateContextMenu(parent, new object[] {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(parent, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.Add,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Add),
@@ -174,7 +174,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				},
-			});
+			}));
 		}
 	}
 

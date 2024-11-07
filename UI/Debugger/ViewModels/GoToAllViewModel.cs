@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Mesen.Debugger.ViewModels;
 
-public class GoToAllViewModel : ViewModelBase
+public class GoToAllViewModel : DisposableViewModel
 {
 	[Reactive] public string SearchString { get; set; } = "";
 	[Reactive] public List<SearchResultInfo> SearchResults { get; set; } = new();
@@ -25,15 +25,15 @@ public class GoToAllViewModel : ViewModelBase
 
 	public GoToAllViewModel(CpuType cpuType, GoToAllOptions options, ISymbolProvider? symbolProvider = null)
 	{
-		this.WhenAnyValue(x => x.SearchString).Subscribe(x => {
+		AddDisposable(this.WhenAnyValue(x => x.SearchString).Subscribe(x => {
 			SearchResults = SearchHelper.GetGoToAllResults(cpuType, SearchString, options, symbolProvider);
 			if(SearchResults.Count > 0) {
 				SelectionModel.SelectedIndex = 0;
 			}
-		});
+		}));
 
-		this.WhenAnyValue(x => x.SelectionModel.SelectedItem).Subscribe(item => {
+		AddDisposable(this.WhenAnyValue(x => x.SelectionModel.SelectedItem).Subscribe(item => {
 			CanSelect = item?.Disabled == false;
-		});
+		}));
 	}
 }

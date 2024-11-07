@@ -137,7 +137,7 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 
-			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
 				new ContextMenuAction() {
 					ActionType = ActionType.EditTile,
 					HintText = () => $"{GridSizeX}px x {GridSizeY}px",
@@ -198,7 +198,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				}
-			});
+			}));
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
@@ -466,6 +466,10 @@ namespace Mesen.Debugger.ViewModels
 		private void RefreshTab()
 		{
 			Dispatcher.UIThread.Post(() => {
+				if(Disposed) {
+					return;
+				}
+
 				InitBitmap();
 				
 				lock(_updateLock) {

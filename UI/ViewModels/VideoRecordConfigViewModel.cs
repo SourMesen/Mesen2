@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 
 namespace Mesen.ViewModels
 {
-	public class VideoRecordConfigViewModel : ViewModelBase
+	public class VideoRecordConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public string SavePath { get; set; }
 		[Reactive] public VideoRecordConfig Config { get; set; }
@@ -21,14 +21,14 @@ namespace Mesen.ViewModels
 
 			SavePath = Path.Join(ConfigManager.AviFolder, EmuApi.GetRomInfo().GetRomName() + (Config.Codec == VideoCodec.GIF ? ".gif" : ".avi"));
 
-			this.WhenAnyValue(x => x.Config.Codec).Select(x => x == VideoCodec.ZMBV || x == VideoCodec.CSCD).ToPropertyEx(this, x => x.CompressionAvailable);
-			this.WhenAnyValue(x => x.Config.Codec).Subscribe((codec) => {
+			AddDisposable(this.WhenAnyValue(x => x.Config.Codec).Select(x => x == VideoCodec.ZMBV || x == VideoCodec.CSCD).ToPropertyEx(this, x => x.CompressionAvailable));
+			AddDisposable(this.WhenAnyValue(x => x.Config.Codec).Subscribe((codec) => {
 				if(codec == VideoCodec.GIF && Path.GetExtension(SavePath).ToLowerInvariant() != ".gif") {
 					SavePath = Path.ChangeExtension(SavePath, ".gif");
 				} else if(codec != VideoCodec.GIF && Path.GetExtension(SavePath).ToLowerInvariant() == ".gif") {
 					SavePath = Path.ChangeExtension(SavePath, ".avi");
 				}
-			});
+			}));
 		}
 
 		public void SaveConfig()

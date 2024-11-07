@@ -13,10 +13,11 @@ using System.Collections.Generic;
 using AvaloniaEdit.Editing;
 using Mesen.Interop;
 using Mesen.Config;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Views
 {
-	public class RegisterTabView : UserControl
+	public class RegisterTabView : MesenUserControl
 	{
 		public RegisterViewerTab Model => (RegisterViewerTab)DataContext!;
 
@@ -25,7 +26,7 @@ namespace Mesen.Debugger.Views
 			InitializeComponent();
 
 			DataBox dataBox = this.GetControl<DataBox>("lstRegisterTab");
-			DebugShortcutManager.CreateContextMenu(dataBox, new List<ContextMenuAction>() {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(dataBox, new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.EditBreakpoint,
 					IsEnabled = () => Model.CpuType.HasValue && Model.MemoryType.HasValue && Model.Selection.SelectedItem is RegEntry entry && entry.StartAddress >= 0,
@@ -64,7 +65,7 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				}
-			});
+			}));
 		}
 
 		private void InitializeComponent()

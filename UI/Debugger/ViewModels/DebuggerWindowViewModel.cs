@@ -105,15 +105,15 @@ namespace Mesen.Debugger.ViewModels
 			Config = ConfigManager.Config.Debug.Debugger;
 
 			Options = new DebuggerOptionsViewModel(Config, CpuType);
-			Disassembly = new DisassemblyViewModel(this, ConfigManager.Config.Debug, CpuType);
-			BreakpointList = new BreakpointListViewModel(CpuType, this);
-			LabelList = new LabelListViewModel(CpuType, this);
-			FindResultList = new FindResultListViewModel(this);
+			Disassembly = AddDisposable(new DisassemblyViewModel(this, ConfigManager.Config.Debug, CpuType));
+			BreakpointList = AddDisposable(new BreakpointListViewModel(CpuType, this));
+			LabelList = AddDisposable(new LabelListViewModel(CpuType, this));
+			FindResultList = AddDisposable(new FindResultListViewModel(this));
 			ControllerList = new ControllerListViewModel(consoleType);
 			if(CpuType.SupportsFunctionList()) {
-				FunctionList = new FunctionListViewModel(CpuType, this);
+				FunctionList = AddDisposable(new FunctionListViewModel(CpuType, this));
 			}
-			CallStack = new CallStackViewModel(CpuType, this);
+			CallStack = AddDisposable(new CallStackViewModel(CpuType, this));
 			WatchList = AddDisposable(new WatchListViewModel(CpuType));
 			ConsoleStatus = CpuType switch {
 				CpuType.Snes => new SnesStatusViewModel(CpuType.Snes),

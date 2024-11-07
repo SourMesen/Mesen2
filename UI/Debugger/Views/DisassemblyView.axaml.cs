@@ -21,7 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.Views
 {
-	public class DisassemblyView : UserControl
+	public class DisassemblyView : MesenUserControl
 	{
 		private DisassemblyViewModel Model => _model!;
 		private CpuType CpuType => Model.CpuType;
@@ -266,7 +266,7 @@ namespace Mesen.Debugger.Views
 			};
 
 			actions.AddRange(GetBreakpointContextMenu());
-			DebugShortcutManager.CreateContextMenu(_viewer, actions);
+			AddDisposables(DebugShortcutManager.CreateContextMenu(_viewer, actions));
 		}
 
 		private string? GetSearchString()

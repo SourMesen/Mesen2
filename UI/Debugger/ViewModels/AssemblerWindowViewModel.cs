@@ -61,9 +61,9 @@ namespace Mesen.Debugger.ViewModels
 
 			MaxAddress = DebugApi.GetMemorySize(CpuType.ToMemoryType()) - 1;
 
-			this.WhenAnyValue(x => x.Code, x => x.StartAddress).Subscribe(_ => {
+			AddDisposable(this.WhenAnyValue(x => x.Code, x => x.StartAddress).Subscribe(_ => {
 				UpdateAssembly(Code);
-			});
+			}));
 		}
 
 		public void InitMenu(Window wnd)

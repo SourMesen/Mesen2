@@ -19,7 +19,7 @@ using Tmds.DBus.Protocol;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class DisassemblyViewModel : ViewModelBase, ISelectableModel
+	public class DisassemblyViewModel : DisposableViewModel, ISelectableModel
 	{
 		public ICodeDataProvider DataProvider { get; }
 		public CpuType CpuType { get; }
@@ -67,16 +67,16 @@ namespace Mesen.Debugger.ViewModels
 
 			QuickSearch.OnFind += QuickSearch_OnFind;
 
-			this.WhenAnyValue(x => x.TopAddress).Subscribe(x => Refresh());
+			AddDisposable(this.WhenAnyValue(x => x.TopAddress).Subscribe(x => Refresh()));
 
-			this.WhenAnyValue(x => x.QuickSearch.IsSearchBoxVisible).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.QuickSearch.IsSearchBoxVisible).Subscribe(x => {
 				if(!QuickSearch.IsSearchBoxVisible) {
 					_viewer?.Focus();
 				}
-			});
+			}));
 
 			int lastValue = ScrollPosition;
-			this.WhenAnyValue(x => x.ScrollPosition).Subscribe(scrollPos => {
+			AddDisposable(this.WhenAnyValue(x => x.ScrollPosition).Subscribe(scrollPos => {
 				if(_viewer == null) {
 					ScrollPosition = lastValue;
 					return;
@@ -96,7 +96,7 @@ namespace Mesen.Debugger.ViewModels
 						TopAddress = Math.Max(0, Math.Min(lineCount - 1, (int)((double)lineCount / MaxScrollPosition * ScrollPosition)));
 					}
 				}
-			});
+			}));
 		}
 
 		private void QuickSearch_OnFind(OnFindEventArgs e)

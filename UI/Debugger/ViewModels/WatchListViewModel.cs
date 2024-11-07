@@ -166,7 +166,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void InitContextMenu(Control ctrl)
 		{
-			DebugShortcutManager.CreateContextMenu(ctrl, new object[] {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(ctrl, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Delete),
@@ -308,7 +308,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				}
-			});
+			}));
 		}
 
 		private string GetLocationHint()

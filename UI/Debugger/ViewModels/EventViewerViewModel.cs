@@ -129,8 +129,8 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			DebugShortcutManager.CreateContextMenu(_picViewer, GetContextMenuActions());
-			DebugShortcutManager.CreateContextMenu(listView, GetContextMenuActions());
+			AddDisposables(DebugShortcutManager.CreateContextMenu(_picViewer, GetContextMenuActions()));
+			AddDisposables(DebugShortcutManager.CreateContextMenu(listView, GetContextMenuActions()));
 
 			UpdateConfig();
 			RefreshData();
@@ -270,6 +270,10 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshUi(bool forAutoRefresh)
 		{
 			Dispatcher.UIThread.Post(() => {
+				if(Disposed) {
+					return;
+				}
+
 				InitBitmap();
 				using(var bitmapLock = ViewerBitmap.Lock()) {
 					DebugApi.GetEventViewerOutput(CpuType, bitmapLock.FrameBuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));

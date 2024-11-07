@@ -17,7 +17,7 @@ using System.Collections.ObjectModel;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class CallStackViewModel : ViewModelBase
+	public class CallStackViewModel : DisposableViewModel
 	{
 		public CpuType CpuType { get; }
 		public DebuggerWindowViewModel Debugger { get; }
@@ -111,7 +111,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void InitContextMenu(Control parent)
 		{
-			DebugShortcutManager.CreateContextMenu(parent, new object[] {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(parent, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.EditLabel,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CallStack_EditLabel),
@@ -141,7 +141,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				},
-			});
+			}));
 		}
 	}
 

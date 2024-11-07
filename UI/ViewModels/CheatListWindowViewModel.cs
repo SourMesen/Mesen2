@@ -19,7 +19,7 @@ using Mesen.Debugger;
 
 namespace Mesen.ViewModels
 {
-	public class CheatListWindowViewModel : ViewModelBase
+	public class CheatListWindowViewModel : DisposableViewModel
 	{
 		[Reactive] public MesenList<CheatCode> Cheats { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> ToolbarActions { get; private set; } = new();
@@ -114,7 +114,7 @@ namespace Mesen.ViewModels
 			});
 			ToolbarActions = toolbarActions;
 
-			DebugShortcutManager.CreateContextMenu(parent, GetActions(parent));
+			AddDisposables(DebugShortcutManager.CreateContextMenu(parent, GetActions(parent)));
 		}
 
 		private CheatType GetCheatType(ConsoleType consoleType, string code)

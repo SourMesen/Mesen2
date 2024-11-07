@@ -162,7 +162,7 @@ namespace Mesen.Debugger.Windows
 		{
 			DebugConfig cfg = ConfigManager.Config.Debug;
 
-			DebugShortcutManager.CreateContextMenu(_editor, new ContextMenuAction[] {
+			_model.AddDisposables(DebugShortcutManager.CreateContextMenu(_editor, new ContextMenuAction[] {
 				GetMarkSelectionAction(),
 				new ContextMenuSeparator(),
 				GetAddWatchAction(),
@@ -204,7 +204,7 @@ namespace Mesen.Debugger.Windows
 					OnClick = () => _editor.SelectAll(),
 					Shortcut = () => cfg.Shortcuts.Get(DebuggerShortcut.SelectAll)
 				},
-			});
+			}));
 
 			_model.FileMenuItems = _model.AddDisposables(new List<ContextMenuAction>() {
 				GetImportAction(),

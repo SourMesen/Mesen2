@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class FunctionListViewModel : ViewModelBase
+	public class FunctionListViewModel : DisposableViewModel
 	{
 		[Reactive] public MesenList<FunctionViewModel> Functions { get; private set; } = new();
 		[Reactive] public SelectionModel<FunctionViewModel?> Selection { get; set; } = new() { SingleSelect = false };
@@ -68,7 +68,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void InitContextMenu(Control parent)
 		{
-			DebugShortcutManager.CreateContextMenu(parent, new object[] {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(parent, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.EditLabel,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FunctionList_EditLabel),
@@ -134,7 +134,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				},
-			});
+			}));
 		}
 	}
 

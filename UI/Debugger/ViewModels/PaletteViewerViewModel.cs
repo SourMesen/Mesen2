@@ -106,7 +106,7 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 
-			DebugShortcutManager.CreateContextMenu(palSelector, new List<object> {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(palSelector, new List<object> {
 				new ContextMenuAction() {
 					ActionType = ActionType.EditColor,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.PaletteViewer_EditColor),
@@ -134,7 +134,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				},
-			});
+			}));
 		}
 
 		private async void EditColor(Window wnd, int selectedPalette)

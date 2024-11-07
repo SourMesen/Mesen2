@@ -70,12 +70,12 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			QuickSearch.OnFind += QuickSearch_OnFind;
-			
-			this.WhenAnyValue(x => x.QuickSearch.IsSearchBoxVisible).Subscribe(x => {
+
+			AddDisposable(this.WhenAnyValue(x => x.QuickSearch.IsSearchBoxVisible).Subscribe(x => {
 				if(!QuickSearch.IsSearchBoxVisible) {
 					_viewer?.Focus();
 				}
-			});
+			}));
 
 			UpdateAvailableTabs();
 

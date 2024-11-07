@@ -207,6 +207,14 @@ namespace Mesen.Debugger.Controls
 			InvalidateVisual();
 		}
 
+		protected override void OnUnloaded(RoutedEventArgs e)
+		{
+			if(Source is IDynamicBitmap src) {
+				src.Invalidated -= OnSourceInvalidated;
+			}
+			base.OnUnloaded(e);
+		}
+
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
 		{
 			base.OnAttachedToVisualTree(e);

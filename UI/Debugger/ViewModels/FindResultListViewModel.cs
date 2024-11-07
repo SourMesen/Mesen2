@@ -24,7 +24,7 @@ using Avalonia.Threading;
 
 namespace Mesen.Debugger.ViewModels;
 
-public class FindResultListViewModel : ViewModelBase
+public class FindResultListViewModel : DisposableViewModel
 {
 	[Reactive] public MesenList<FindResultViewModel> FindResults { get; private set; } = new();
 	[Reactive] public SelectionModel<FindResultViewModel?> Selection { get; set; } = new() { SingleSelect = false };
@@ -90,7 +90,7 @@ public class FindResultListViewModel : ViewModelBase
 
 	public void InitContextMenu(Control parent)
 	{
-		DebugShortcutManager.CreateContextMenu(parent, new object[] {
+		AddDisposables(DebugShortcutManager.CreateContextMenu(parent, new object[] {
 			new ContextMenuAction() {
 				ActionType = ActionType.AddWatch,
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindResultList_AddWatch),
@@ -132,7 +132,7 @@ public class FindResultListViewModel : ViewModelBase
 					}
 				}
 			}
-		});
+		}));
 	}
 }
 

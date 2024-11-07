@@ -4,13 +4,14 @@ using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Mesen.Config;
 using Mesen.Debugger.ViewModels;
+using Mesen.Utilities;
 using ReactiveUI;
 using System;
 using System.Reactive.Linq;
 
 namespace Mesen.Debugger.Controls
 {
-	public class SpritePreviewPanel : UserControl
+	public class SpritePreviewPanel : MesenUserControl
 	{
 		public static readonly StyledProperty<double> InnerHeightProperty = AvaloniaProperty.Register<SpritePreviewPanel, double>(nameof(InnerHeight), 0);
 		public static readonly StyledProperty<double> InnerWidthProperty = AvaloniaProperty.Register<SpritePreviewPanel, double>(nameof(InnerWidth), 0);
@@ -54,9 +55,9 @@ namespace Mesen.Debugger.Controls
 			Model = model;
 			Config = config;
 
-			this.WhenAnyValue(x => x.Model.FadePreview, x => x.Config.DimOffscreenSprites).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.Model.FadePreview, x => x.Config.DimOffscreenSprites).Subscribe(x => {
 				FadePreview = Model.FadePreview == true && Config.DimOffscreenSprites == true;
-			});
+			}));
 		}
 
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

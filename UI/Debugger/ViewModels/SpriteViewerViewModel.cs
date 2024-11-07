@@ -146,29 +146,29 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
 				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
 				GetViewInTileViewerAction(),
 				GetCopyHdPackFormatActionSeparator(),
 				GetCopyHdPackFormatAction()
-			});
+			}));
 
-			DebugShortcutManager.CreateContextMenu(_spriteGrid, new List<object> {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(_spriteGrid, new List<object> {
 				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
 				GetViewInTileViewerAction(),
 				GetCopyHdPackFormatActionSeparator(),
 				GetCopyHdPackFormatAction()
-			});
+			}));
 
-			DebugShortcutManager.CreateContextMenu(listView, new List<object> {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(listView, new List<object> {
 				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
 				GetViewInTileViewerAction(),
 				GetCopyHdPackFormatActionSeparator(),
 				GetCopyHdPackFormatAction()
-			});
+			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => {
 				UpdateSelectionPreview();
@@ -531,6 +531,10 @@ namespace Mesen.Debugger.ViewModels
 		private void RefreshTab()
 		{
 			Dispatcher.UIThread.Post(() => {
+				if(Disposed) {
+					return;
+				}
+
 				lock(_updateLock) {
 					_coreData.CopyTo(_data);
 				}

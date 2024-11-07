@@ -72,7 +72,7 @@ namespace Mesen.Debugger.Windows
 
 		private void InitContextMenu(DisassemblyViewer viewer)
 		{
-			DebugShortcutManager.CreateContextMenu(viewer, new List<ContextMenuAction> {
+			_model.AddDisposables(DebugShortcutManager.CreateContextMenu(viewer, new List<ContextMenuAction> {
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Copy),
@@ -143,7 +143,7 @@ namespace Mesen.Debugger.Windows
 						}
 					}
 				}
-			});
+			}));
 		}
 
 		private string GetFormatString()

@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace Mesen.Debugger.ViewModels;
 
-public class MemoryViewerFindViewModel : ViewModelBase
+public class MemoryViewerFindViewModel : DisposableViewModel
 {
 	[Reactive] public SearchDataType DataType { get; set; }
 	[Reactive] public SearchIntType IntType { get; set; }
@@ -45,21 +45,21 @@ public class MemoryViewerFindViewModel : ViewModelBase
 	{
 		_memToolsModel = memToolsModel;
 
-		this.WhenAnyValue(x => x.DataType).Subscribe(x => {
+		AddDisposable(this.WhenAnyValue(x => x.DataType).Subscribe(x => {
 			IsInteger = DataType == SearchDataType.Integer;
 			IsString = DataType == SearchDataType.String;
-		});
+		}));
 
-		this.WhenAnyValue(x => x.SearchString).Subscribe(x => {
+		AddDisposable(this.WhenAnyValue(x => x.SearchString).Subscribe(x => {
 			if(SearchString.Contains(Environment.NewLine)) {
 				SearchString = SearchString.Replace(Environment.NewLine, " ");
 			}
-		});
-		
-		this.WhenAnyValue(x => x.DataType, x => x.IntType, x => x.SearchString).Subscribe(x => {
+		}));
+
+		AddDisposable(this.WhenAnyValue(x => x.DataType, x => x.IntType, x => x.SearchString).Subscribe(x => {
 			SearchData? searchData = GetSearchData();
 			IsValid = searchData != null && searchData.Data.Length > 0;
-		});
+		}));
 	}
 
 	public SearchData? GetSearchData()

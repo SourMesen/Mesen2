@@ -19,7 +19,7 @@ using Avalonia.Controls.Selection;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class BreakpointListViewModel : ViewModelBase
+	public class BreakpointListViewModel : DisposableViewModel
 	{
 		[Reactive] public MesenList<BreakpointViewModel> Breakpoints { get; private set; } = new();
 		[Reactive] public SelectionModel<BreakpointViewModel?> Selection { get; set; } = new() { SingleSelect = false };
@@ -74,7 +74,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void InitContextMenu(Control parent)
 		{
-			DebugShortcutManager.CreateContextMenu(parent, new object[] {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(parent, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.AddBreakpoint,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Add),
@@ -170,7 +170,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				}
-			});
+			}));
 		}
 	}
 

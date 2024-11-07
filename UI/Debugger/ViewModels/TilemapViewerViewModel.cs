@@ -133,7 +133,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
 					HintText = () => {
@@ -231,7 +231,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				}
-			});
+			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Tabs).Subscribe(x => ShowTabs = x.Count > 1));
 			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => {
@@ -480,6 +480,10 @@ namespace Mesen.Debugger.ViewModels
 		private void RefreshTab()
 		{
 			Dispatcher.UIThread.Post(() => {
+				if(Disposed) {
+					return;
+				}
+
 				lock(_updateLock) {
 					_coreData.CopyTo(_data);
 				}

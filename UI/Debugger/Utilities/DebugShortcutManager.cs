@@ -14,7 +14,7 @@ namespace Mesen.Debugger.Utilities
 {
 	internal static class DebugShortcutManager
 	{
-		public static ContextMenu CreateContextMenu(Control ctrl, IEnumerable actions)
+		public static IEnumerable CreateContextMenu(Control ctrl, IEnumerable actions)
 		{
 			if(!(ctrl is IInputElement)) {
 				throw new Exception("Invalid control");
@@ -25,7 +25,7 @@ namespace Mesen.Debugger.Utilities
 			ctrl.ContextMenu.ItemsSource = actions;
 			RegisterActions(ctrl, actions);
 
-			return ctrl.ContextMenu;
+			return actions;
 		}
 
 		public static void RegisterActions(IInputElement focusParent, IEnumerable actions)
