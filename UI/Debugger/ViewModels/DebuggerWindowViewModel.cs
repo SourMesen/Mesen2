@@ -381,7 +381,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			UpdateActiveAddress(scrollToActiveAddress);
 			Disassembly.Refresh();
-			SourceView?.InvalidateVisual();
+			SourceView?.Refresh();
 		}
 
 		public void ProcessResumeEvent(Window wnd)
