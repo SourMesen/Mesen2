@@ -189,7 +189,7 @@ IAssembler* NecDspDebugger::GetAssembler()
 
 BaseEventManager* NecDspDebugger::GetEventManager()
 {
-	throw std::runtime_error("Event manager not supported for NEC DSP");
+	return nullptr;
 }
 
 BaseState& NecDspDebugger::GetState()

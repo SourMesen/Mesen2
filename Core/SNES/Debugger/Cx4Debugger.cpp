@@ -217,7 +217,7 @@ IAssembler* Cx4Debugger::GetAssembler()
 
 BaseEventManager* Cx4Debugger::GetEventManager()
 {
-	throw std::runtime_error("Event manager not supported for CX4");
+	return nullptr;
 }
 
 BaseState& Cx4Debugger::GetState()

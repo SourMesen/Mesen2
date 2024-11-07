@@ -254,7 +254,7 @@ IAssembler* SpcDebugger::GetAssembler()
 
 BaseEventManager* SpcDebugger::GetEventManager()
 {
-	throw std::runtime_error("Event manager not supported for SPC");
+	return nullptr;
 }
 
 BaseState& SpcDebugger::GetState()

@@ -181,7 +181,7 @@ IAssembler* GsuDebugger::GetAssembler()
 
 BaseEventManager* GsuDebugger::GetEventManager()
 {
-	throw std::runtime_error("Event manager not supported for GSU");
+	return nullptr;
 }
 
 BaseState& GsuDebugger::GetState()
