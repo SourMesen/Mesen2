@@ -75,7 +75,7 @@
 				ScrollViewer.VerticalScrollBarVisibility="Disabled"
 				Height="21"
 				MinHeight="21"
-				Text="{Binding SearchString}"
+				Text="{Binding SearchString, Converter={StaticResource NullTextConverter}}"
 				MaxLength="300"
 			/>
 			<Image

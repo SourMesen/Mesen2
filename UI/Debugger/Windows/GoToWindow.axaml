@@ -41,7 +41,7 @@
 			<TextBox
 				Name="txtAddress"
 				HorizontalAlignment="Stretch"
-				Text="{Binding Address, ElementName=root}"
+				Text="{Binding Address, ElementName=root, Converter={StaticResource NullTextConverter}}"
 			/>
 		</DockPanel>
 	</DockPanel>

@@ -36,7 +36,7 @@
 			<TextBox
 				Name="txtSearch"
 				Width="120"
-				Text="{Binding SearchString}"
+				Text="{Binding SearchString, Converter={StaticResource NullTextConverter}}"
 				Classes.highlight="{Binding IsErrorVisible}"
 		  />
 			<c:IconButton Icon="Assets/PreviousArrow.png" Command="{Binding FindPrev}" />

@@ -41,7 +41,7 @@
 				Margin="0 14 0 3"
 			/>
 			<TextBlock Grid.Row="3" Text="{l:Translate lblAuthor}" />
-			<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Config.Author}" />
+			<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Config.Author, Converter={StaticResource NullTextConverter}}" />
 
 			<TextBlock Grid.Row="4" Text="{l:Translate lblDescription}" />
 			<TextBox
@@ -53,7 +53,7 @@
 				VerticalContentAlignment="Top"
 				ScrollViewer.HorizontalScrollBarVisibility="Auto"
 				ScrollViewer.VerticalScrollBarVisibility="Auto"
-				Text="{Binding Config.Description}"
+				Text="{Binding Config.Description, Converter={StaticResource NullTextConverter}}"
 			/>
 		</Grid>
 	</DockPanel>

@@ -42,5 +42,7 @@
 
 		<Setter Property="Height" Value="16" />
 		<Setter Property="MinHeight" Value="16" />
+
+		<Setter Property="IsUndoEnabled" Value="False" />
 	</Style>
 </Styles>

@@ -15,7 +15,7 @@
 	<DockPanel HorizontalAlignment="Stretch">
 		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto" DockPanel.Dock="Top">
 			<TextBlock Text="{l:Translate lblSearch}" />
-			<TextBox Grid.Column="1" Text="{Binding SearchString}" Name="Search" />
+			<TextBox Grid.Column="1" Text="{Binding SearchString, Converter={StaticResource NullTextConverter}}" Name="Search" />
 		</Grid>
 
 		<StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom">

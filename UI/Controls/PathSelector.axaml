@@ -17,7 +17,7 @@
 		/>
 		<DockPanel IsVisible="{Binding Editable}">
 			<Button MinWidth="30" DockPanel.Dock="Right" Content="..." Click="btnBrowse_OnClick" />
-			<TextBox Text="{Binding Path}" />
+			<TextBox Text="{Binding Path, Converter={StaticResource NullTextConverter}}" />
 		</DockPanel>
 	</Panel>
 </UserControl>

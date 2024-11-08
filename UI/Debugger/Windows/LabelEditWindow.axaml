@@ -57,7 +57,7 @@
 			<TextBox
 				Grid.Column="1" Grid.Row="2"
 				Name="txtLabel"
-				Text="{Binding Label.Label}"
+				Text="{Binding Label.Label, Converter={StaticResource NullTextConverter}}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblComment}" />
@@ -68,7 +68,7 @@
 				Height="NaN"
 				MinHeight="100"
 				VerticalContentAlignment="Top"
-				Text="{Binding Label.Comment}"
+				Text="{Binding Label.Comment, Converter={StaticResource NullTextConverter}}"
 				FontFamily="{DynamicResource MesenMonospaceFont}"
 				FontSize="{DynamicResource MesenMonospaceFontSize}"
 			/>

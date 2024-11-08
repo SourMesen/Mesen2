@@ -86,7 +86,7 @@
 					AcceptsReturn="True"
 					TextWrapping="Wrap"
 					Height="NaN"
-					Text="{Binding Breakpoint.Condition}"
+					Text="{Binding Breakpoint.Condition, Converter={StaticResource NullTextConverter}}"
 				/>
 
 				<Image Grid.Column="1" Stretch="None" Source="/Assets/Warning.png" ToolTip.Tip="{l:Translate lblConditionError}" IsVisible="{Binding !IsConditionValid}" />

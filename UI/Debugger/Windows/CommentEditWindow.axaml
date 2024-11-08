@@ -36,7 +36,7 @@
 			MinHeight="21"
 			MaxHeight="200"
 			VerticalContentAlignment="Top"
-			Text="{Binding Label.Comment}"
+			Text="{Binding Label.Comment, Converter={StaticResource NullTextConverter}}"
 		/>
 	</DockPanel>
 </Window>

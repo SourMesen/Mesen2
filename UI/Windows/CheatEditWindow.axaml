@@ -20,7 +20,7 @@
 
 	<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,*,Auto">
 		<TextBlock Text="{l:Translate lblDescription}" VerticalAlignment="Center" />
-		<TextBox Grid.Column="1" Text="{Binding Cheat.Description}" />
+		<TextBox Grid.Column="1" Text="{Binding Cheat.Description, Converter={StaticResource NullTextConverter}}" />
 	
 		<CheckBox
 			Grid.Row="1"
@@ -47,7 +47,7 @@
 					AcceptsReturn="True"
 					ScrollViewer.HorizontalScrollBarVisibility="Auto"
 					Height="NaN"
-					Text="{Binding Cheat.Codes}"
+					Text="{Binding Cheat.Codes, Converter={StaticResource NullTextConverter}}"
 				/>
 
 				<TextBox
