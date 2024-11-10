@@ -94,6 +94,11 @@ public abstract class WlaDxImporter : ISymbolProvider
 		return 1;
 	}
 
+	protected virtual string[] ProcessSourceFile(string filename, string[] data)
+	{
+		return data;
+	}
+
 	public void Import(string path, bool showResult)
 	{
 		SymbolFileStamp = File.GetLastWriteTime(path);
@@ -126,9 +131,8 @@ public abstract class WlaDxImporter : ISymbolProvider
 						if(m.Success) {
 							int bank = Int32.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
 							int addr = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
-							string label = m.Groups[3].Value;
-
-							label = LabelManager.InvalidLabelRegex.Replace(label, "_");
+							string originalLabel = m.Groups[3].Value;
+							string label = LabelManager.InvalidLabelRegex.Replace(originalLabel, "_");
 
 							if(!LabelManager.LabelRegex.IsMatch(label)) {
 								//ignore labels that don't respect the label naming restrictions
@@ -143,7 +147,7 @@ public abstract class WlaDxImporter : ISymbolProvider
 								continue;
 							}
 
-							SymbolInfo symbol = new(label, absAddr);
+							SymbolInfo symbol = new(originalLabel, absAddr);
 							_symbols.Add(symbol);
 
 							string orgLabel = label;
@@ -186,10 +190,11 @@ public abstract class WlaDxImporter : ISymbolProvider
 						if(m.Success) {
 							int fileId = Int32.Parse(m.Groups[file_idx].Value, System.Globalization.NumberStyles.HexNumber);
 							//int fileCrc = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
-							string filePath = m.Groups[path_idx].Value;
+							string filePath = m.Groups[path_idx].Value.Trim('"');
 
 							string fullPath = Path.Combine(basePath, filePath);
-							_sourceFiles[fileId] = new SourceFileInfo(filePath, true, new WlaDxFile() { Data = File.Exists(fullPath) ? File.ReadAllLines(fullPath) : new string[0] });
+							string[] fileData = this.ProcessSourceFile(filePath, File.Exists(fullPath) ? File.ReadAllLines(fullPath) : Array.Empty<string>());
+							_sourceFiles[fileId] = new SourceFileInfo(filePath, true, new WlaDxFile() { Data = fileData });
 						}
 					} else {
 						break;
@@ -307,10 +312,65 @@ public class GbWlaDxImporter : WlaDxImporter
 
 public class PceWlaDxImporter : WlaDxImporter
 {
+	private RomFormat _format;
+
+	public PceWlaDxImporter()
+	{
+		_format = EmuApi.GetRomInfo().Format;
+	}
+
+	protected override string[] ProcessSourceFile(string filename, string[] data)
+	{
+		if(Path.GetExtension(filename).ToLower() == ".lst") {
+			return data.Select(line => {
+				if(line.StartsWith('#')) {
+					//Columns that start with # in listing are converted to comments
+					return ";" + line;
+				} else if(line.Length >= 30) {
+					//Ignore first 30 columns (contains address, byte code, etc.)
+					return line.Substring(30);
+				}
+				return line;
+			}).ToArray();
+		} else {
+			return data;
+		}
+	}
+
 	protected override AddressInfo GetLabelAddress(int bank, int addr)
 	{
-		//TODOv2 RAM labels seem to be missing from .sym file?
-		return new AddressInfo() { Address = bank * 0x2000 + (addr & 0x1FFF), Type = MemoryType.PcePrgRom };
+		if(bank == 0xF8 && bank <= 0xFB) {
+			return new AddressInfo() {
+				Address = (bank - 0xF8) * 0x2000 + (addr & 0x1FFF),
+				Type = MemoryType.PceWorkRam
+			};
+		} else if(bank == 0xF7) {
+			return new AddressInfo() {
+				Address = (addr & 0x1FFF),
+				Type = MemoryType.PceSaveRam
+			};
+		} else if(bank == 0xFF) {
+			return new AddressInfo() {
+				Address = (addr & 0x1FFF),
+				Type = MemoryType.PceMemory
+			};
+		} else if(_format == RomFormat.PceCdRom && (bank >= 0x68 && bank <= 0x7F)) {
+			return new AddressInfo() {
+				Address = (bank - 0x68) * 0x2000 + (addr & 0x1FFF),
+				Type = MemoryType.PceCardRam
+			};
+		} else if(bank > 0xFF) {
+			return new AddressInfo() {
+				Address = (bank - 0x80) * 0x2000 + (addr & 0x1FFF),
+				Type = MemoryType.PcePrgRom
+			};
+		} else if(bank < 0x80) {
+			return new AddressInfo() {
+				Address = bank * 0x2000 + (addr & 0x1FFF),
+				Type = MemoryType.PcePrgRom
+			};
+		}
+		return default;
 	}
 }
 

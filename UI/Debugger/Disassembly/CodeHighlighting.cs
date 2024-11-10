@@ -12,7 +12,9 @@ namespace Mesen.Debugger.Disassembly
 {
 	class CodeHighlighting
 	{
-		private static Regex _labelDef = new Regex("^([a-z0-9_@]+)\\s*[:=]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		//Allow . prefix for label definitions because some assemblers allow this
+		private static Regex _labelDef = new Regex("^([.]{0,1}[a-z0-9_@]+)\\s*[:=]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
 		private static Regex _space = new Regex("^[ \t]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _comment = new Regex("^;.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _directive = new Regex("^([.][a-z0-9]+)([\\s]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);

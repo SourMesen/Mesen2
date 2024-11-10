@@ -123,7 +123,9 @@ public static class OpCodeHelper
 		InitDocumentation(CpuType.Pce, ReadDocumentationFile("PceDocumentation.json"), baseDesc);
 		_data[CpuType.Pce].OpDescGetter = (dict, opName, _) => {
 			OpCodeDesc? desc = null;
-			dict.TryGetValue(opName.Substring(0, 3), out desc);
+			int index = opName.IndexOf("."); //ignore anything after a dot (e.g lda.h, etc.)
+			opName = index >= 0 ? opName.Substring(0, index) : opName;
+			dict.TryGetValue(opName.Substring(0, Math.Min(opName.Length, 3)), out desc);
 			return desc;
 		};
 	}
