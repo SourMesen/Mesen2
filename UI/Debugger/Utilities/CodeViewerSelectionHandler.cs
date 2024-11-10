@@ -9,7 +9,7 @@ using System;
 
 namespace Mesen.Debugger.Utilities
 {
-	public class CodeViewerSelectionHandler
+	public class CodeViewerSelectionHandler : IDisposable
 	{
 		private DisassemblyViewer _viewer;
 		private ISelectableModel _model;
@@ -36,6 +36,15 @@ namespace Mesen.Debugger.Utilities
 			_viewer.CodePointerMoved += Viewer_CodePointerMoved;
 			_viewer.PointerWheelChanged += Viewer_PointerWheelChanged;
 			_viewer.KeyDown += Viewer_KeyDown;
+		}
+
+		public void Dispose()
+		{
+			_viewer.PointerExited -= Viewer_PointerExited;
+			_viewer.RowClicked -= Viewer_RowClicked;
+			_viewer.CodePointerMoved -= Viewer_CodePointerMoved;
+			_viewer.PointerWheelChanged -= Viewer_PointerWheelChanged;
+			_viewer.KeyDown -= Viewer_KeyDown;
 		}
 
 		private void Viewer_PointerExited(object? sender, PointerEventArgs e)

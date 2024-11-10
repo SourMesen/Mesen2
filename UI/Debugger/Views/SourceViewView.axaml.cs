@@ -65,7 +65,10 @@ namespace Mesen.Debugger.Views
 					model.VisibleRowCount = _model.VisibleRowCount;
 				}
 				_model = model;
-				_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, (rowIndex, rowAddress) => rowIndex + _model.ScrollPosition, true);
+				_selectionHandler?.Dispose();
+				if(model != null) {
+					_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, (rowIndex, rowAddress) => rowIndex + _model.ScrollPosition, true);
+				}
 			}
 			base.OnDataContextChanged(e);
 		}
