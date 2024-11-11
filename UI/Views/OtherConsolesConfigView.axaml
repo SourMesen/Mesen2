@@ -24,7 +24,7 @@
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
-						<v:CvConfigView DataContext="{Binding}" />
+						<v:CvConfigView />
 					</Grid>
 				</StackPanel>
 			</ScrollViewer>
