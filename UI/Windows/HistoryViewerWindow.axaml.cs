@@ -147,21 +147,20 @@ namespace Mesen.Windows
 		private void InternalSetScale(double scale)
 		{
 			double dpiScale = LayoutHelper.GetLayoutScale(this);
-			scale /= dpiScale;
+			double aspectRatio = EmuApi.GetAspectRatio();
 
 			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
 			if(WindowState == WindowState.Normal) {
 				_rendererSize = new Size();
 
-				double aspectRatio = EmuApi.GetAspectRatio();
 				double menuHeight = _mainMenu.Bounds.Height;
 
-				double width = Math.Max(MinWidth, Math.Round(screenSize.Height * aspectRatio) * scale);
-				double height = Math.Max(MinHeight, screenSize.Height * scale);
+				double width = Math.Max(MinWidth, Math.Round(screenSize.Height * aspectRatio * scale) / dpiScale);
+				double height = Math.Max(MinHeight, screenSize.Height * scale / dpiScale);
 				ClientSize = new Size(width, height + menuHeight + _controlBar.Bounds.Height);
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
-				_rendererSize = new Size(Math.Floor(screenSize.Width * scale), Math.Floor(screenSize.Height * scale));
+				_rendererSize = new Size(Math.Floor(screenSize.Width * scale * aspectRatio) / dpiScale, Math.Floor(screenSize.Height * scale) / dpiScale);
 				ResizeRenderer();
 			}
 		}
@@ -175,27 +174,24 @@ namespace Mesen.Windows
 		private void RendererPanel_LayoutUpdated(object? sender, EventArgs e)
 		{
 			double aspectRatio = EmuApi.GetAspectRatio();
+			double dpiScale = LayoutHelper.GetLayoutScale(this);
 
 			Size finalSize = _rendererSize == default ? _rendererPanel.Bounds.Size : _rendererSize;
 			double height = finalSize.Height;
 			double width = finalSize.Height * aspectRatio;
-			if(width > finalSize.Width) {
-				width = finalSize.Width;
-				height = width / aspectRatio;
-			}
-
+			
 			if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && (wnd.WindowState == WindowState.FullScreen || wnd.WindowState == WindowState.Maximized)) {
 				FrameInfo baseSize = EmuApi.GetBaseScreenSize();
-				double scale = height * LayoutHelper.GetLayoutScale(this) / baseSize.Height;
+				double scale = height * dpiScale / baseSize.Height;
 				if(scale != Math.Floor(scale)) {
-					height = baseSize.Height * Math.Max(1, Math.Floor(scale / LayoutHelper.GetLayoutScale(this)));
+					height = baseSize.Height * Math.Max(1, Math.Floor(scale / dpiScale));
 					width = height * aspectRatio;
 				}
 			}
 
 			_model.RendererSize = new Size(
-				Math.Round(width * LayoutHelper.GetLayoutScale(this)),
-				Math.Round(height * LayoutHelper.GetLayoutScale(this))
+				Math.Round(width * dpiScale),
+				Math.Round(height * dpiScale)
 			);
 
 			_renderer.Width = width;
