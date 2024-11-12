@@ -44,6 +44,14 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		protected override void OnClosed(EventArgs e)
+		{
+			//Prevent MesenWindow logic from disposing the model
+			DataContext = null;
+
+			base.OnClosed(e);
+		}
+
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
 			if(e.Key == Key.Enter) {

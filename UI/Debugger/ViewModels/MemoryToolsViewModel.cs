@@ -52,7 +52,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Config = ConfigManager.Config.Debug.HexEditor.Clone();
 
-			Search = new(this);
+			Search = AddDisposable(new MemoryViewerFindViewModel(this));
 			_editor = editor;
 
 			Options = AddDisposable(new MemoryToolsDisplayOptionsViewModel(this));

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Utilities;
 using Mesen.ViewModels;
@@ -52,7 +53,10 @@ public class MemoryViewerFindViewModel : DisposableViewModel
 
 		AddDisposable(this.WhenAnyValue(x => x.SearchString).Subscribe(x => {
 			if(SearchString.Contains(Environment.NewLine)) {
-				SearchString = SearchString.Replace(Environment.NewLine, " ");
+				//Run asynchronously to allow the textbox to update its content correctly
+				Dispatcher.UIThread.Post(() => {
+					SearchString = SearchString.Replace(Environment.NewLine, " ");
+				});
 			}
 		}));
 
