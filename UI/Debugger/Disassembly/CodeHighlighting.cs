@@ -12,7 +12,7 @@ namespace Mesen.Debugger.Disassembly
 {
 	class CodeHighlighting
 	{
-		private static Regex _labelDef = new Regex("^(.+)\\s*[:=]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _labelDef = new Regex("^([^\\s]+)\\s*[:=]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		private static Regex _space = new Regex("^[ \t]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _comment = new Regex("^;.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
