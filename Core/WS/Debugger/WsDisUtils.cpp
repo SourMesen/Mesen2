@@ -399,9 +399,14 @@ EffectiveAddressInfo WsDisUtils::GetEffectiveAddress(DisassemblyInfo& info, WsCo
 			result.ShowAddress = true;
 			
 			if(dummyCpu.IsWordAccess(i)) {
-				result.Address = opInfo.Address;
-				result.Type = opInfo.MemType;
 				result.ValueSize = 2;
+				if(dummyCpu.IsWordAccess(i - 1) && prevOpInfo.Type == opInfo.Type && prevOpInfo.Address == opInfo.Address - 2) {
+					result.Address = prevOpInfo.Address;
+					result.Type = prevOpInfo.MemType;
+				} else {
+					result.Address = opInfo.Address;
+					result.Type = opInfo.MemType;
+				}
 			} else {
 				if(prevOpInfo.Type == opInfo.Type && prevOpInfo.Address == opInfo.Address - 1) {
 					//For 16-bit read/writes that were split into 2 8-bit accesses, return the first address
