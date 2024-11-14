@@ -252,7 +252,12 @@
 							Margin="0 5 0 0"
 						/>
 					</c:OptionSection>
-
+					<c:OptionSection Header="{l:Translate lblSourceView}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock VerticalAlignment="Center" Text="{l:Translate lblTabSize}" />
+							<NumericUpDown Value="{Binding Integration.TabSize}" Minimum="1" Maximum="16" />
+						</StackPanel>
+					</c:OptionSection>
 				</StackPanel>
 			</TabItem>
 

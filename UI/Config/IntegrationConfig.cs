@@ -25,6 +25,8 @@ namespace Mesen.Config
 		[Reactive] public bool ImportSaveRamLabels { get; set; } = true;
 		[Reactive] public bool ImportOtherLabels { get; set; } = true;
 		[Reactive] public bool ImportComments { get; set; } = true;
+		
+		[Reactive] public int TabSize { get; set; } = 4;
 
 		public bool IsMemoryTypeImportEnabled(MemoryType memType)
 		{
