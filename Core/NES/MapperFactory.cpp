@@ -488,7 +488,6 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 217: return new MMC3_217();
 		case 218: return new MagicFloor218();
 		case 219: return new MMC3_219();
-		case 220: return new Kaiser7057();
 		case 221: return new Mapper221();
 		case 222: return new Mapper222();
 		case 224: return new MMC3_224();
