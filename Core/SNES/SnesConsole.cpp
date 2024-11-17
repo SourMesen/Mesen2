@@ -74,6 +74,11 @@ void SnesConsole::ProcessEndOfFrame()
 	if(_cart->GetCoprocessor()) {
 		_cart->GetCoprocessor()->ProcessEndOfFrame();
 	}
+	
+	//Run the SPC at least once per frame to prevent issues (buffer overflow)
+	//when a very long DMA transfer is running across multiple frames.
+	//(RunFrame above can run more than one frame in this scenario, which could cause crashes)
+	_spc->ProcessEndFrame();
 
 	_emu->ProcessEndOfFrame();
 
