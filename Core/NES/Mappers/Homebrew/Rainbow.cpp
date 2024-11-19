@@ -58,6 +58,8 @@ void Rainbow::ApplySaveData()
 
 void Rainbow::SaveBattery()
 {
+	BaseMapper::SaveBattery();
+
 	if(_console->GetNesConfig().DisableFlashSaves) {
 		return;
 	}
