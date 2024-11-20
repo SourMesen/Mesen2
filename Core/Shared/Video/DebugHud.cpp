@@ -89,7 +89,7 @@ void DebugHud::DrawRectangle(int x, int y, int width, int height, int color, boo
 	AddCommand(unique_ptr<DrawCommand>(new DrawRectangleCommand(x, y, width, height, color, fill, frameCount, startFrame)));
 }
 
-void DebugHud::DrawString(int x, int y, string text, int color, int backColor, int frameCount, int startFrame, int maxWidth)
+void DebugHud::DrawString(int x, int y, string text, int color, int backColor, int frameCount, int startFrame, int maxWidth, bool overwritePixels)
 {
-	AddCommand(unique_ptr<DrawCommand>(new DrawStringCommand(x, y, text, color, backColor, frameCount, startFrame, maxWidth)));
+	AddCommand(unique_ptr<DrawCommand>(new DrawStringCommand(x, y, text, color, backColor, frameCount, startFrame, maxWidth, overwritePixels)));
 }

@@ -87,8 +87,8 @@ public:
 	float GetOpacity()
 	{
 		uint64_t currentTime = GetCurrentTime();
-		if(currentTime - _startTime < 200) {
-			return (currentTime - _startTime) * 5.0f / 1000.0f;
+		if(currentTime - _startTime < 100) {
+			return (currentTime - _startTime) * 10.0f / 1000.0f;
 		} else if(_endTime - currentTime < 200) {
 			return (_endTime - currentTime) * 5.0f / 1000.0f;
 		} else if(currentTime >= _endTime) {

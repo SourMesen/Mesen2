@@ -14,6 +14,7 @@ protected:
 	FrameInfo _frameInfo = {};
 	OverscanDimensions _overscan = {};
 	bool _useIntegerScaling = false;
+	bool _overwritePixels = false;
 	float _xScale = 1;
 	int _yScale = 1;
 
@@ -24,10 +25,10 @@ protected:
 		if(_drawnPixels) {
 			//Log modified pixels
 			if(alpha != 0xFF000000) {
-				if(_drawnPixels->find(offset) == _drawnPixels->end()) {
+				if(_drawnPixels->find(offset) == _drawnPixels->end() || _overwritePixels) {
 					//When drawing on an empty background, premultiply channels & preserve alpha value
 					//This is needed for hardware blending between the HUD and the game screen
-					(*_drawnPixels)[offset] = color;
+					(*_drawnPixels)[offset] = 0;
 					BlendColors((uint8_t*)&(*_drawnPixels)[offset], (uint8_t*)&color, true);
 				} else {
 					BlendColors((uint8_t*)&(*_drawnPixels)[offset], (uint8_t*)&color);
@@ -38,6 +39,10 @@ protected:
 		} else {
 			//Draw pixels directly to the buffer
 			if(alpha != 0xFF000000) {
+				if(_overwritePixels) {
+					_argbBuffer[offset] = 0;
+				}
+				
 				if(_argbBuffer[offset] == 0) {
 					//When drawing on an empty background, premultiply channels & preserve alpha value
 					//This is needed for hardware blending between the HUD and the game screen
