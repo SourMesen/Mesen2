@@ -206,7 +206,10 @@ namespace Mesen.Windows
 			_timerBackgroundFlag.Interval = TimeSpan.FromMilliseconds(100);
 			_timerBackgroundFlag.Tick += timerUpdateBackgroundFlag;
 			_timerBackgroundFlag.Start();
-			
+
+			//Force focus on window itself, to avoid menu being given focus by default
+			Focus();
+
 			Task.Run(() => {
 				CommandLineHelper cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
 				_cmdLine = cmdLine;
