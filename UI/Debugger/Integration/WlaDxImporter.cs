@@ -21,6 +21,7 @@ public abstract class WlaDxImporter : ISymbolProvider
 	private static Regex _fileV2Regex = new Regex(@"^([0-9a-fA-F]{4}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) (.*)", RegexOptions.Compiled);
 	private static Regex _addrV2Regex = new Regex(@"^([0-9a-fA-F]{8}) ([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
 	private static Regex _filePathRegex = new Regex(@"^(""([^;""]*)""\s*;{0,1}\s*(.*))|(.*)", RegexOptions.Compiled);
+	private static Regex _pceasSourceRegex = new Regex(@"^([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
 
 	private Dictionary<int, SourceFileInfo> _sourceFiles = new();
 	private Dictionary<string, AddressInfo> _addressByLine = new();
@@ -199,7 +200,22 @@ public abstract class WlaDxImporter : ISymbolProvider
 							if(fileMatch.Success) {
 								string filePath = fileMatch.Groups[2].Success ? fileMatch.Groups[2].Value : fileMatch.Groups[4].Value;
 								string comment = fileMatch.Groups[3].Value;
-								string fullPath = Path.Combine(basePath, filePath);
+								string fullPath;
+								if(Path.IsPathFullyQualified(filePath)) {
+									fullPath = filePath;
+								} else {
+									string? srcBasePath = basePath;
+									fullPath = Path.Combine(srcBasePath, filePath);
+									while(!File.Exists(fullPath)) {
+										//Go back up folder structure to attempt to find the file
+										string oldPath = srcBasePath;
+										srcBasePath = Path.GetDirectoryName(srcBasePath);
+										if(srcBasePath == null || srcBasePath == oldPath) {
+											break;
+										}
+										fullPath = Path.Combine(srcBasePath, filePath);
+									}
+								}
 								string[] fileData = this.ProcessSourceFile(filePath, comment, File.Exists(fullPath) ? File.ReadAllLines(fullPath) : Array.Empty<string>());
 								_sourceFiles[fileId] = new SourceFileInfo(filePath, true, new WlaDxFile() { Data = fileData });
 							}
@@ -251,12 +267,39 @@ public abstract class WlaDxImporter : ISymbolProvider
 
 							AddressInfo absAddr = GetLabelAddress(bank, addr);
 							if(absAddr.Address >= 0) {
-								if(isPceas && absAddr.Type == MemoryType.PcePrgRom) {
-									//For PCEAS only, build CDL data based on the extra flags present in the mappings
-									long flags = long.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
-									cdlData[absAddr.Address] |= (flags & 0x80000000) != 0 ? (byte)CdlFlags.Code : (byte)CdlFlags.Data;
-									if((flags & 0x40000000) != 0) {
+								_addressByLine[_sourceFiles[fileId].Name + "_" + lineNumber.ToString()] = absAddr;
+								_linesByAddress[absAddr.Type.ToString() + absAddr.Address.ToString()] = new SourceCodeLocation(_sourceFiles[fileId], lineNumber);
+							}
+						}
+					} else {
+						break;
+					}
+				}
+			} else if(isPceas && str == "[bank-to-source]") {
+				for(; i < lines.Length; i++) {
+					if(lines[i].Length > 0) {
+						Match m = _pceasSourceRegex.Match(lines[i]);
+						if(m.Success) {
+							int bank = Int32.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
+							int addr = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
+
+							int fileId = Int32.Parse(m.Groups[4].Value, System.Globalization.NumberStyles.HexNumber);
+							int lineNumber = Int32.Parse(m.Groups[5].Value, System.Globalization.NumberStyles.HexNumber);
+
+							AddressInfo absAddr = GetLabelAddress(bank, addr);
+							if(absAddr.Address >= 0) {
+								if(absAddr.Type == MemoryType.PcePrgRom) {
+									//Build CDL data based on the extra flags present in the mappings
+									long lengthFlags = long.Parse(m.Groups[3].Value, System.Globalization.NumberStyles.HexNumber);
+									if((lengthFlags & 0x40000000) != 0) {
 										cdlData[absAddr.Address] |= (byte)CdlFlags.SubEntryPoint;
+									}
+
+									byte cdlFlags = (lengthFlags & 0x80000000) != 0 ? (byte)CdlFlags.Code : (byte)CdlFlags.Data;
+									for(long j = 0, len = (lengthFlags & ~0xC0000000); j < len; j++) {
+										if(absAddr.Address + j < cdlData.Length) {
+											cdlData[absAddr.Address + j] |= cdlFlags;
+										}
 									}
 								}
 
