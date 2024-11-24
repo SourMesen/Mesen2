@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Mesen.Debugger.Integration;
 
-public class PceasSymbolFile
+public class LegacyPceasSymbolFile
 {
 	public static bool IsValidFile(string content)
 	{
