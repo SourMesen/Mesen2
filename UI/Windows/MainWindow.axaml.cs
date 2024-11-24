@@ -464,6 +464,13 @@ namespace Mesen.Windows
 			Size finalSize = _rendererSize == default ? _rendererPanel.Bounds.Size : _rendererSize;
 			double height = finalSize.Height;
 			double width = finalSize.Height * aspectRatio;
+			if(Math.Round(width) > Math.Round(finalSize.Width)) {
+				//Use renderer width to calculate the height instead of the opposite
+				//when current window dimensions would cause cropping horizontally
+				//if the screen width was calculated based on the height.
+				width = finalSize.Width;
+				height = width / aspectRatio;
+			}
 
 			if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && (wnd.WindowState == WindowState.FullScreen || wnd.WindowState == WindowState.Maximized)) {
 				FrameInfo baseSize = EmuApi.GetBaseScreenSize();
