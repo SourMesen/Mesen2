@@ -353,8 +353,8 @@ public class PceasSymbolImporter : ISymbolProvider
 	private readonly struct SymbolInfo
 	{
 		public string Name { get; }
-		public int? Value { get; }
-		public AddressInfo? Address { get; }
+		public int? Value { get; } = null;
+		public AddressInfo? Address { get; } = null;
 		public SourceSymbol SourceSymbol { get => new SourceSymbol(Name, Address?.Address ?? Value, this); }
 
 		public SymbolInfo(string name, AddressInfo address)
