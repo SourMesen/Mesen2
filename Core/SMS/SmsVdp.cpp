@@ -732,7 +732,7 @@ bool SmsVdp::IsZoomedSpriteAllowed(int spriteIndex)
 
 uint16_t SmsVdp::GetPixelColor()
 {
-	if(_state.Cycle < _minDrawCycle) {
+	if(!_state.RenderingEnabled || _state.Cycle < SmsVdp::SmsVdpLeftBorder) {
 		return _internalPaletteRam[0x10 | _state.BackgroundColorIndex];
 	}
 
@@ -785,6 +785,10 @@ uint16_t SmsVdp::GetPixelColor()
 				}
 			}
 		}
+	}
+
+	if(_state.Cycle < _minDrawCycle) {
+		return _internalPaletteRam[0x10 | _state.BackgroundColorIndex];
 	}
 
 	uint8_t color = (
