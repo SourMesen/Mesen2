@@ -16,10 +16,10 @@ namespace Mesen.Debugger.Integration;
 public class PceasSymbolImporter : ISymbolProvider
 {
 	private static Regex _definitionRegex = new Regex(@"^([0-9a-fA-F]{8}) ([^\s]*)", RegexOptions.Compiled);
-	private static Regex _symbolRegex = new Regex(@"^([0-9a-fA-F]{2,4})[:]{0,1}([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8}) ([^\s]*)", RegexOptions.Compiled);
-	private static Regex _fileRegex = new Regex(@"^([0-9a-fA-F]{4}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) (.*)", RegexOptions.Compiled);
+	private static Regex _symbolRegex = new Regex(@"^([0-9a-fA-F]{2,4})[:]{0,1}([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8}):([0-9a-fA-F]{2}) ([^\s]*)", RegexOptions.Compiled);
+	private static Regex _fileRegex = new Regex(@"^([0-9a-fA-F]{4}) (.*)", RegexOptions.Compiled);
 	private static Regex _filePathRegex = new Regex(@"^(""([^;""]*)""\s*;{0,1}\s*(.*))|(.*)", RegexOptions.Compiled);
-	private static Regex _srcMappingRegex = new Regex(@"^([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
+	private static Regex _srcMappingRegex = new Regex(@"^([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8}):([0-9a-fA-F]{2})", RegexOptions.Compiled);
 
 	private Dictionary<int, SourceFileInfo> _sourceFiles = new();
 	private Dictionary<string, AddressInfo> _addressByLine = new();
@@ -201,7 +201,7 @@ public class PceasSymbolImporter : ISymbolProvider
 								length = 1;
 							}
 
-							string originalLabel = m.Groups[6].Value;
+							string originalLabel = m.Groups[7].Value;
 							string label = LabelManager.InvalidLabelRegex.Replace(originalLabel, "_");
 
 							if(!LabelManager.LabelRegex.IsMatch(label)) {
@@ -234,7 +234,7 @@ public class PceasSymbolImporter : ISymbolProvider
 									MemoryType = absAddr.Type,
 									Comment = "",
 									Flags = CodeLabelFlags.None,
-									Length = length
+									Length = length <= 0 ? 1 : length
 								};
 							}
 						}
@@ -258,15 +258,13 @@ public class PceasSymbolImporter : ISymbolProvider
 						break;
 					}
 				}
-			} else if(str == "[source files v2]") {
+			} else if(str == "[source-files]") {
 				for(; i < lines.Length; i++) {
 					if(lines[i].Length > 0) {
 						Match m = _fileRegex.Match(lines[i]);
 						if(m.Success) {
-							int fileId = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
-							//int fileCrc = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
-
-							Match fileMatch = _filePathRegex.Match(m.Groups[4].Value);
+							int fileId = Int32.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
+							Match fileMatch = _filePathRegex.Match(m.Groups[2].Value);
 							if(fileMatch.Success) {
 								string filePath = fileMatch.Groups[2].Success ? fileMatch.Groups[2].Value : fileMatch.Groups[4].Value;
 								string comment = fileMatch.Groups[3].Value;
@@ -304,6 +302,11 @@ public class PceasSymbolImporter : ISymbolProvider
 
 							int fileId = Int32.Parse(m.Groups[4].Value, System.Globalization.NumberStyles.HexNumber);
 							int lineNumber = Int32.Parse(m.Groups[5].Value, System.Globalization.NumberStyles.HexNumber);
+							if(lineNumber > 0) {
+								lineNumber--;
+							}
+
+							int columnNumber = Int32.Parse(m.Groups[6].Value, System.Globalization.NumberStyles.HexNumber);
 
 							AddressInfo absAddr = GetLabelAddress(bank, addr);
 							if(absAddr.Address >= 0) {
