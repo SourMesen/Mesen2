@@ -161,8 +161,9 @@ namespace Mesen.Debugger.Disassembly
 
 			if(!showSymbolOnly) {
 				props.TextBgColor = bgColor;
+				props.OutlineColor = outlineColor;
 			}
-			props.OutlineColor = outlineColor;
+			props.SymbolColor = outlineColor;
 			props.Symbol = symbol;
 		}
 
