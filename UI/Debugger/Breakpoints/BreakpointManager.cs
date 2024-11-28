@@ -232,12 +232,14 @@ namespace Mesen.Debugger
 		{
 			List<InteropBreakpoint> breakpoints = new List<InteropBreakpoint>();
 
+			int id = 0;
 			void toInteropBreakpoints(IEnumerable<Breakpoint> bpList)
 			{
 				foreach(Breakpoint bp in bpList) {
 					if(_activeCpuTypes.Contains(bp.CpuType)) {
-						breakpoints.Add(bp.ToInteropBreakpoint(breakpoints.Count));
+						breakpoints.Add(bp.ToInteropBreakpoint(id));
 					}
+					id++;
 				}
 			}
 
@@ -256,6 +258,8 @@ namespace Mesen.Debugger
 				return _breakpoints[breakpointId];
 			} else if(breakpointId < _breakpoints.Count + Asserts.Count) {
 				return Asserts[breakpointId - _breakpoints.Count];
+			} else if(breakpointId < _breakpoints.Count + Asserts.Count + _temporaryBreakpoints.Count) {
+				return _temporaryBreakpoints[breakpointId - _breakpoints.Count - Asserts.Count];
 			}
 			return null;
 		}

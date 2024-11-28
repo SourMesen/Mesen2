@@ -431,9 +431,8 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			if(evt.Type == DebugEventType.Breakpoint && evt.BreakpointId >= 0) {
-				var breakpoints = BreakpointManager.Breakpoints;
-				if(evt.BreakpointId < breakpoints.Count) {
-					Breakpoint bp = breakpoints[evt.BreakpointId];
+				Breakpoint? bp = BreakpointManager.GetBreakpointById(evt.BreakpointId);
+				if(bp != null) {
 					string bpInfo = "Breakpoint - ";
 					bpInfo += "CPU: " + ResourceHelper.GetEnumText(bp.CpuType);
 					bpInfo += singleLine ? " - " : Environment.NewLine;
