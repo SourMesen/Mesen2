@@ -10,6 +10,7 @@ using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reactive.Disposables;
 
 namespace Mesen.Debugger.Controls
@@ -104,6 +105,7 @@ namespace Mesen.Debugger.Controls
 		private Size LetterSize { get; set; }
 		private double RowHeight => this.LetterSize.Height;
 		private List<CodeSegmentInfo> _visibleCodeSegments = new();
+		private Dictionary<CodeLineData, List<TextFragment>> _textFragments = new();
 		private Point _previousPointerPos;
 		private CodeSegmentInfo? _prevPointerOverSegment = null;
 		private CompositeDisposable _disposables = new();
@@ -175,7 +177,15 @@ namespace Mesen.Debugger.Controls
 				if(codeSegment.Bounds.Contains(p)) {
 					//Don't trigger an event if this is the same segment
 					if(_prevPointerOverSegment != codeSegment) {
-						CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(rowNumber, e, lineData, codeSegment));
+						List<TextFragment>? fragments = null;
+						TextFragment? fragment = null;
+						if(lineData != null) {
+							_textFragments.TryGetValue(lineData, out fragments);
+							if(fragments != null) {
+								fragment = fragments.Where(frag => p.X >= frag.XPosition && p.X < frag.XPosition + frag.Width).FirstOrDefault();
+							}
+						}
+						CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(rowNumber, e, lineData, codeSegment, fragments, fragment));
 						_prevPointerOverSegment = codeSegment;
 					}
 					return;
@@ -261,6 +271,7 @@ namespace Mesen.Debugger.Controls
 			}
 
 			_visibleCodeSegments.Clear();
+			_textFragments.Clear();
 
 			bool useLowerCase = ConfigManager.Config.Debug.Debugger.UseLowerCaseDisassembly;
 			string baseFormat = useLowerCase ? "x" : "X";
@@ -271,6 +282,8 @@ namespace Mesen.Debugger.Controls
 
 			for(int i = 0; i < lineCount; i++) {
 				CodeLineData line = lines[i];
+				_textFragments[line] = new();
+
 				string addrFormat = baseFormat + line.CpuType.GetAddressSize();
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, i);
 				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.TextBgColor != null ? ColorHelper.GetContrastTextColor(lineStyle.TextBgColor.Value) : null, true);
@@ -359,6 +372,7 @@ namespace Mesen.Debugger.Controls
 								text = FormatText(part.Text, brush);
 								context.DrawText(text, pos);
 								_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, new Rect(pos, new Size(text.WidthIncludingTrailingWhitespace, text.Height)), line, part.OriginalIndex));
+								GenerateTextFragments(line, part, x, indent);
 								x += text.WidthIncludingTrailingWhitespace;
 							}
 
@@ -394,6 +408,35 @@ namespace Mesen.Debugger.Controls
 			});
 		}
 
+		private void GenerateTextFragments(CodeLineData line, CodeColor part, double x, double indent)
+		{
+			//Calculate x-axis start/end offsets for all text fragments (each invididual word, etc.)
+			for(int j = 0; j < part.Text.Length; j++) {
+				int start = j;
+
+				char c = part.Text[j];
+				int startCharType = (char.IsLetterOrDigit(c) || c == '_' || c == '@' || c == '.') ? 1 : (char.IsWhiteSpace(c) ? 2 : 3);
+				int charType;
+				do {
+					j++;
+					if(j >= part.Text.Length) {
+						break;
+					}
+
+					c = part.Text[j];
+					charType = (char.IsLetterOrDigit(c) || c == '_' || c == '@' || c == '.') ? 1 : (char.IsWhiteSpace(c) ? 2 : 3);
+				} while(charType == startCharType);
+				j--;
+
+				int len = j - start + 1;
+				string fragment = part.Text.Substring(start, len);
+				FormattedText text = FormatText(fragment);
+				double width = text.WidthIncludingTrailingWhitespace;
+				_textFragments[line].Add(new TextFragment { Text = fragment, StartIndex = start, TextLength = len, XPosition = x + indent, Width = width });
+				x += width;
+			}
+		}
+
 		private string GetHighlightedText(CodeLineData line, List<CodeColor> lineParts, out double leftMargin)
 		{
 			leftMargin = 0;
@@ -403,19 +446,24 @@ namespace Mesen.Debugger.Controls
 
 			int skipCharCount = 0;
 			int highlightCharCount = 0;
-			bool foundOpCode = false;
+			bool foundCodeStart = false;
+			CodeSegmentType prevType = CodeSegmentType.None;
 			foreach(CodeColor part in lineParts) {
-				if(!foundOpCode && (part.Type != CodeSegmentType.OpCode && part.Type != CodeSegmentType.Directive)) {
+				CodeSegmentType type = part.Type;
+				//Find the first part that's not a whitespace or label definition (or the : after the label def)
+				if(!foundCodeStart && (type == CodeSegmentType.None || type == CodeSegmentType.LabelDefinition || (type == CodeSegmentType.Syntax && prevType == CodeSegmentType.LabelDefinition))) {
 					FormattedText text = FormatText(part.Text);
 					leftMargin += text.WidthIncludingTrailingWhitespace;
 					skipCharCount += part.Text.Length;
 				} else {
-					foundOpCode = true;
-					if(part.OriginalIndex < 0 || part.Type == CodeSegmentType.Comment) {
+					foundCodeStart = true;
+					if(part.OriginalIndex < 0 || type == CodeSegmentType.Comment) {
 						break;
 					}
 					highlightCharCount += part.Text.Length;
 				}
+
+				prevType = type;
 			}
 
 			if(skipCharCount + highlightCharCount > line.Text.Length) {
@@ -507,19 +555,32 @@ namespace Mesen.Debugger.Controls
 		}
 	}
 
+	public class TextFragment
+	{
+		public string Text { get; set; } = "";
+		public int StartIndex { get; set; }
+		public int TextLength { get; set; }
+		public double XPosition { get; set; }
+		public double Width { get; set; }
+	}
+
 	public class CodePointerMovedEventArgs : EventArgs
 	{
-		public CodePointerMovedEventArgs(int rowNumber, PointerEventArgs pointerEvent, CodeLineData? lineData, CodeSegmentInfo? codeSegment)
+		public CodePointerMovedEventArgs(int rowNumber, PointerEventArgs pointerEvent, CodeLineData? lineData, CodeSegmentInfo? codeSegment, List<TextFragment>? fragments = null, TextFragment? fragment = null)
 		{
-			this.RowNumber = rowNumber;
-			this.Data = lineData;
-			this.CodeSegment = codeSegment;
-			this.PointerEvent = pointerEvent;
+			RowNumber = rowNumber;
+			Data = lineData;
+			CodeSegment = codeSegment;
+			Fragments = fragments;
+			Fragment = fragment;
+			PointerEvent = pointerEvent;
 		}
 
 		public PointerEventArgs PointerEvent { get; }
 		public CodeLineData? Data { get; }
 		public CodeSegmentInfo? CodeSegment { get; }
+		public List<TextFragment>? Fragments { get; }
+		public TextFragment? Fragment { get; }
 		public int RowNumber { get; }
 	}
 
@@ -622,6 +683,7 @@ namespace Mesen.Debugger.Controls
 	public enum CodeSegmentType
 	{
 		OpCode,
+		Token,
 		ImmediateValue,
 		Address,
 		Label,

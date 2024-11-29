@@ -73,12 +73,23 @@ public class PceasSymbolImporter : ISymbolProvider
 
 	public SourceSymbol? GetSymbol(string word, int scopeStart, int scopeEnd)
 	{
+		return InternalGetSymbol(word, scopeStart, scopeEnd, true);
+	}
+
+	private SourceSymbol? InternalGetSymbol(string word, int scopeStart, int scopeEnd, bool retry)
+	{
 		foreach(SymbolInfo symbol in _symbols) {
 			if(symbol.Name == word) {
 				//TODOv2 SCOPE
 				return symbol.SourceSymbol;
 			}
 		}
+
+		if(retry) {
+			//Try again with an underscore prefix (because C symbols are usually exported with one)
+			return InternalGetSymbol("_" + word, scopeStart, scopeEnd, false);
+		}
+
 		return null;
 	}
 
@@ -219,7 +230,7 @@ public class PceasSymbolImporter : ISymbolProvider
 
 							SymbolInfo symbol = new(originalLabel, absAddr);
 							_symbols.Add(symbol);
-
+							
 							string orgLabel = label;
 							int j = 1;
 							while(labels.ContainsKey(label)) {
@@ -285,7 +296,9 @@ public class PceasSymbolImporter : ISymbolProvider
 									}
 								}
 								string[] fileData = this.ProcessSourceFile(filePath, comment, File.Exists(fullPath) ? File.ReadAllLines(fullPath) : Array.Empty<string>());
-								_sourceFiles[fileId] = new SourceFileInfo(filePath, true, new PceasSourceFile() { Data = fileData });
+								string ext = Path.GetExtension(filePath).ToLower();
+								bool isAsm = ext != ".c" && ext != ".h";
+								_sourceFiles[fileId] = new SourceFileInfo(filePath, isAsm, new PceasSourceFile() { Data = fileData });
 							}
 						}
 					} else {

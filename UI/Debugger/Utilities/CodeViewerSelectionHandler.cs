@@ -114,6 +114,16 @@ namespace Mesen.Debugger.Utilities
 			if(e.CodeSegment != null && e.Data != null) {
 				_mouseOverCodeLocation = CodeTooltipHelper.GetLocation(e.Data.CpuType, e.CodeSegment);
 				tooltip = CodeTooltipHelper.GetTooltip(e.Data.CpuType, e.CodeSegment);
+				if(tooltip == null && e.Fragment != null && !string.IsNullOrWhiteSpace(e.Fragment.Text)) {
+					//No tooltip was found, try again using the word under the mouse cursor
+					//This is only useful for source view, since the syntax doesn't always
+					//match the format expected by the color highlighting logic, etc.
+					LocationInfo? codeLoc = CodeTooltipHelper.GetLocation(e.Data.CpuType, new CodeSegmentInfo(e.Fragment.Text, CodeSegmentType.Label, default, e.Data));
+					if(codeLoc != null && (codeLoc.RelAddress?.Address >= 0 || codeLoc.AbsAddress?.Address >= 0 || codeLoc.Label != null || codeLoc.Symbol != null)) {
+						tooltip = CodeTooltipHelper.GetCodeAddressTooltip(e.Data.CpuType, codeLoc, !codeLoc.RelAddress.HasValue || codeLoc.RelAddress?.Address < 0);
+					}
+				}
+
 				if(tooltip != null) {
 					TooltipHelper.ShowTooltip(_viewer, tooltip, 15);
 				}

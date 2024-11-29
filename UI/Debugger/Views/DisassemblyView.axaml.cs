@@ -17,7 +17,6 @@ using Mesen.Interop;
 using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.Views
 {
@@ -56,6 +55,7 @@ namespace Mesen.Debugger.Views
 		{
 			if(DataContext is DisassemblyViewModel model && _model != model) {
 				_model = model;
+				_model.SetViewer(_viewer);
 				_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, (rowIndex, rowAddress) => rowAddress, true);
 			}
 			base.OnDataContextChanged(e);
@@ -291,6 +291,7 @@ namespace Mesen.Debugger.Views
 
 			switch(type) {
 				case CodeSegmentType.OpCode:
+				case CodeSegmentType.Token:
 				case CodeSegmentType.Address:
 				case CodeSegmentType.Label:
 				case CodeSegmentType.ImmediateValue:

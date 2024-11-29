@@ -51,7 +51,7 @@ namespace Mesen.Debugger.Utilities
 						};
 					}
 				}
-			} else if(seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
+			} else if(seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition || seg.Type == CodeSegmentType.Token) {
 				string labelText = seg.Text.Trim(' ', ',', ':', ']', '[');
 				int addressOffset = GetAddressOffset(seg);
 				int plusIndex = labelText.IndexOf("+");

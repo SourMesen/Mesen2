@@ -65,6 +65,7 @@ namespace Mesen.Debugger.Views
 					model.VisibleRowCount = _model.VisibleRowCount;
 				}
 				_model = model;
+				_model.SetViewer(_viewer);
 				_selectionHandler?.Dispose();
 				if(model != null) {
 					_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, (rowIndex, rowAddress) => rowIndex + _model.ScrollPosition, true);
@@ -262,6 +263,7 @@ namespace Mesen.Debugger.Views
 
 			switch(type) {
 				case CodeSegmentType.OpCode:
+				case CodeSegmentType.Token:
 				case CodeSegmentType.Address:
 				case CodeSegmentType.Label:
 				case CodeSegmentType.ImmediateValue:
