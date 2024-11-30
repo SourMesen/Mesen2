@@ -49,11 +49,12 @@
 #include "Shared/BaseState.h"
 #include "Shared/Emulator.h"
 #include "Shared/Interfaces/IConsole.h"
+#include "Shared/MemoryOperationType.h"
+#include "Shared/EventType.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
-#include "Shared/MemoryOperationType.h"
-#include "Shared/EventType.h"
+#include "Utilities/PlatformUtilities.h"
 
 uint64_t ITraceLogger::NextRowId = 0;
 
@@ -495,6 +496,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak, &evt);
 		ProcessEvent(EventType::CodeBreak, sourceCpu);
 		notificationSent = true;
+		PlatformUtilities::EnableScreensaver();
 	}
 
 	while((_waitForBreakResume && !_suspendRequestCount) || _breakRequestCount) {
@@ -502,6 +504,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 	}
 
 	if(notificationSent) {
+		PlatformUtilities::DisableScreensaver();
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::DebuggerResumed);
 	}
 
