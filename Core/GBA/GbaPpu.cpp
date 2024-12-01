@@ -133,6 +133,7 @@ void GbaPpu::ProcessEndOfScanline()
 
 	if(_state.Scanline == 160) {
 		_oamScanline = 0;
+		_state.ObjEnableTimer = 0;
 		SendFrame();
 		if(_state.VblankIrqEnabled) {
 			_console->GetMemoryManager()->SetIrqSource(GbaIrqSource::LcdVblank);
@@ -1210,7 +1211,7 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 				std::fill(_oamOutputBuffers[0], _oamOutputBuffers[0] + 240, GbaPixelData {});
 				std::fill(_oamOutputBuffers[1], _oamOutputBuffers[1] + 240, GbaPixelData {});
 			} else if(!_state.ObjLayerEnabled && objEnabled) {
-				_state.ObjEnableTimer = 3;
+				_state.ObjEnableTimer = _state.Scanline >= 160 ? 0 : 3;
 			}
 			_state.ObjLayerEnabled = objEnabled;
 			_state.Window0Enabled = value & 0x20;
