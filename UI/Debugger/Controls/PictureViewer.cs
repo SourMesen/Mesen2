@@ -286,8 +286,8 @@ namespace Mesen.Debugger.Controls
 				MinHeight = 0;
 			} else {
 				double dpiScale = LayoutHelper.GetLayoutScale(this);
-				MinWidth = (int)(Source.Size.Width - LeftClipSize - RightClipSize) * Zoom / dpiScale;
-				MinHeight = (int)(Source.Size.Height - TopClipSize - BottomClipSize) * Zoom / dpiScale;
+				MinWidth = Math.Max(0, (int)(Source.Size.Width - LeftClipSize - RightClipSize) * Zoom / dpiScale);
+				MinHeight = Math.Max(0, (int)(Source.Size.Height - TopClipSize - BottomClipSize) * Zoom / dpiScale);
 			}
 		}
 
