@@ -315,6 +315,7 @@ namespace Mesen.Debugger.Utilities
 	public enum DocEntrySubcategory
 	{
 		AccessCounters,
+		Cdl,
 		Cheats,
 		SaveStates,
 		Others

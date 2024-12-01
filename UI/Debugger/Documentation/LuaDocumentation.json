@@ -144,6 +144,16 @@
 	"returnValue": { "type": "Array", "description": "Array of ints" }
 },
 {
+	"name": "getCdlData",
+	"category": "Miscellaneous",
+	"subcategory": "Cdl",
+	"description": "Returns the current state of the CDL (code/data log) for the specified memory type. This can only be used for (some) ROM memory types.",
+	"parameters": [
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type" }
+	],
+	"returnValue": { "type": "Array", "description": "Array of bytes" }
+},
+{
 	"name": "getDrawSurfaceSize",
 	"category": "Drawing",
 	"description": "Returns a table containing the full size, visible size and overscan size for the selected draw surface.",

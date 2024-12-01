@@ -6,6 +6,7 @@
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/ScriptingContext.h"
 #include "Debugger/MemoryAccessCounter.h"
+#include "Debugger/CdlManager.h"
 #include "Debugger/LabelManager.h"
 #include "Shared/SystemActionManager.h"
 #include "Shared/Video/DebugHud.h"
@@ -140,6 +141,8 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 		{ "getAccessCounters", LuaApi::GetAccessCounters },
 		{ "resetAccessCounters", LuaApi::ResetAccessCounters },
+
+		{ "getCdlData", LuaApi::GetCdlData},
 
 		{ "addCheat", LuaApi::AddCheat },
 		{ "clearCheats", LuaApi::ClearCheats },
@@ -947,6 +950,31 @@ int LuaApi::ResetAccessCounters(lua_State *lua)
 	checkparams();
 	_debugger->GetMemoryAccessCounter()->ResetCounts();
 	return l.ReturnCount();
+}
+
+int LuaApi::GetCdlData(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	MemoryType memoryType = (MemoryType)l.ReadInteger();
+	checkEnum(MemoryType, memoryType, "Invalid memory type");
+	checkparams();
+
+	if(!_debugger->GetCdlManager()->GetCodeDataLogger(memoryType)) {
+		error("This memory type does not support CDL data (only some ROM memory types support it)");
+	}
+
+	uint32_t size = _memoryDumper->GetMemorySize(memoryType);
+	vector<uint8_t> cdlData;
+	cdlData.resize(size, {});
+	_debugger->GetCdlManager()->GetCdlData(0, size, memoryType, cdlData.data());
+
+	lua_newtable(lua);
+	for(uint32_t i = 0; i < size; i++) {
+		lua_pushinteger(lua, cdlData[i]);
+		lua_rawseti(lua, -2, i);
+	}
+
+	return 1;
 }
 
 int LuaApi::GetScriptDataFolder(lua_State *lua)
