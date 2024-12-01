@@ -293,6 +293,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			ConsoleStatus?.UpdateUiState(true);
 			MemoryMappings?.Refresh();
+			UpdateCdlStats();
 			if(refreshWatch) {
 				WatchList.UpdateWatch();
 			}
