@@ -485,7 +485,7 @@
 	"category": "Enums",
 	"description": "Used by several APIs to specify which CPU the API call applies to.",
 	"enumValues": [
-		{ "name": "snes", "description": "SNES - Main CPU - S-CPU 5A22 (65186)" },
+		{ "name": "snes", "description": "SNES - Main CPU - S-CPU 5A22 (65816)" },
 		{ "name": "spc", "description": "SNES - SPC" },
 		{ "name": "necDsp", "description": "SNES - DSP-n" },
 		{ "name": "sa1", "description": "SNES - SA-1" },
