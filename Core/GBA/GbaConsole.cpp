@@ -182,8 +182,8 @@ void GbaConsole::InitSaveRam(string& gameCode, vector<uint8_t>& romData)
 		if(gameCode == "A2YE") {
 			//Force no backup data for Top Gun, otherwise A button doesn't work in menu
 			_saveType = GbaSaveType::None;
-		} else if(gameCode == "AYGE") {
-			//Force 512-byte eeprom for Gauntlet (auto-detect logic doesn't work)
+		} else if(gameCode == "AYGE" || gameCode == "ALUE" || gameCode == "ALUP") {
+			//Force 512-byte eeprom for Gauntlet (AYGE) and Super Monkey Ball Jr. (ALUE & ALUP) (auto-detect logic doesn't work)
 			_saveType = GbaSaveType::Eeprom512;
 		} else if(gameCode == "AI2E") {
 			//Iridion II crashes if it has SRAM, force it to none
