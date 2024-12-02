@@ -75,6 +75,16 @@ void GbaPpu::ProcessHBlank()
 		_console->GetDmaController()->TriggerDma(GbaDmaTrigger::HBlank);
 	}
 
+	for(int i = 0; i < 4; i++) {
+		if(_state.BgLayers[i].EnableTimer && --_state.BgLayers[i].EnableTimer == 0) {
+			//Exact timing hasn't been verified
+			//The mGBA Suite test writes on H=1065 and expects the layer to be enabled 3 scanlines later (write on scanline 101, starts rendering on scanline 104, so just over 2 scanlines)
+			//Spyro - Season of Ice writes on H=30, and expects the layer to be enabled 2 scanlines later
+			//Doing this at the start of hblank allows both scenarios the work
+			_state.BgLayers[i].Enabled = true;
+		}
+	}
+
 	if(_state.HblankIrqEnabled) {
 		_console->GetMemoryManager()->SetDelayedIrqSource(GbaIrqSource::LcdHblank, 4);
 	}
@@ -115,10 +125,6 @@ void GbaPpu::ProcessEndOfScanline()
 	}
 
 	for(int i = 0; i < 4; i++) {
-		if(_state.BgLayers[i].EnableTimer && --_state.BgLayers[i].EnableTimer == 0) {
-			_state.BgLayers[i].Enabled = true;
-		}
-
 		//Unverified: Latch X scroll value at the start of each scanline
 		//This fixes display issues in the Fire Emblem Sacred Stones menu
 		_state.BgLayers[i].ScrollXLatch = _state.BgLayers[i].ScrollX;
@@ -1175,7 +1181,7 @@ void GbaPpu::SetLayerEnabled(int layer, bool enabled)
 		_state.BgLayers[layer].Enabled = enabled;
 		_state.BgLayers[layer].EnableTimer = 0;
 	} else if(_state.BgLayers[layer].EnableTimer == 0) {
-		_state.BgLayers[layer].EnableTimer = 3;
+		_state.BgLayers[layer].EnableTimer = 2;
 	}
 }
 
