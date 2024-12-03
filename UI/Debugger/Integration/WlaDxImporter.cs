@@ -359,6 +359,11 @@ public class PceWlaDxImporter : WlaDxImporter
 				Address = (bank - 0x68) * 0x2000 + (addr & 0x1FFF),
 				Type = MemoryType.PceCardRam
 			};	
+		} else if(_format == RomFormat.PceCdRom && (bank >= 0x80 && bank <= 0x87)) {
+			return new AddressInfo() {
+				Address = (bank - 0x80) * 0x2000 + (addr & 0x1FFF),
+				Type = MemoryType.PceCdromRam
+			};
 		} else if(bank > 0xFF) {
 			return new AddressInfo() {
 				Address = (bank - 0x80) * 0x2000 + (addr & 0x1FFF),
