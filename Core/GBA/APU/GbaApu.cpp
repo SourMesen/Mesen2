@@ -108,7 +108,7 @@ void GbaApu::InternalRun()
 				changed |= output != _wave->GetRawOutput();
 			}
 
-			if constexpr(sq2Enabled) {
+			if constexpr(noiseEnabled) {
 				uint8_t output = _noise->GetRawOutput();
 				_noise->Exec(minTimer);
 				changed |= output != _noise->GetRawOutput();
