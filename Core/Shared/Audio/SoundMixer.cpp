@@ -18,6 +18,7 @@ SoundMixer::SoundMixer(Emulator* emu)
 	_audioDevice = nullptr;
 	_resampler.reset(new SoundResampler(emu));
 	_sampleBuffer = new int16_t[0x10000];
+	_pitchAdjustBuffer = new int16_t[0x10000];
 	_reverbFilter.reset(new ReverbFilter());
 	_crossFeedFilter.reset(new CrossFeedFilter());
 }
@@ -25,6 +26,7 @@ SoundMixer::SoundMixer(Emulator* emu)
 SoundMixer::~SoundMixer()
 {
 	delete[] _sampleBuffer;
+	delete[] _pitchAdjustBuffer;
 }
 
 void SoundMixer::RegisterAudioDevice(IAudioDevice *audioDevice)
@@ -141,6 +143,14 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 		//(this is to prevent playing an audio blip when loading a save state)
 		if(!_emu->IsPaused() && _audioDevice) {
 			if(cfg.EnableAudio) {
+				uint32_t emulationSpeed = _emu->GetSettings()->GetEmulationSpeed();
+				if(emulationSpeed > 0 && emulationSpeed < 100) {
+					//Slow down playback when playing at less than 100% speed
+					_pitchAdjust.SetSampleRates(targetRate, targetRate * 100.0 / emulationSpeed);
+					count = _pitchAdjust.Resample<false>(_sampleBuffer, count, _pitchAdjustBuffer, 0x10000);
+					out = _pitchAdjustBuffer;
+				}
+
 				_audioDevice->PlayBuffer(out, count, cfg.SampleRate, true);
 				_audioDevice->ProcessEndOfFrame();
 			} else {

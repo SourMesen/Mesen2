@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Core/Shared/Interfaces/IAudioDevice.h"
 #include "Utilities/safe_ptr.h"
+#include "Utilities/Audio/HermiteResampler.h"
 
 class Emulator;
 class Equalizer;
@@ -21,6 +22,9 @@ private:
 	unique_ptr<SoundResampler> _resampler;
 	safe_ptr<WaveRecorder> _waveRecorder;
 	int16_t *_sampleBuffer = nullptr;
+
+	HermiteResampler _pitchAdjust;
+	int16_t* _pitchAdjustBuffer = nullptr;
 
 	int16_t _leftSample = 0;
 	int16_t _rightSample = 0;

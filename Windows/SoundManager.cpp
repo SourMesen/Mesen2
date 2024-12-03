@@ -274,12 +274,7 @@ void SoundManager::ProcessEndOfFrame()
 	ValidateWriteCursor(safeWriteCursor);
 
 	uint32_t emulationSpeed = _emu->GetSettings()->GetEmulationSpeed();
-	uint32_t targetRate = _sampleRate;
-	if(emulationSpeed > 0 && emulationSpeed < 100) {
-		//Slow down playback when playing at less than 100%
-		targetRate = (uint32_t)(targetRate * ((double)emulationSpeed / 100.0));
-	}
-	_secondaryBuffer->SetFrequency((DWORD)(targetRate));
+	_secondaryBuffer->SetFrequency((DWORD)(_sampleRate));
 
 	ProcessLatency(currentPlayCursor, _lastWriteOffset);
 
