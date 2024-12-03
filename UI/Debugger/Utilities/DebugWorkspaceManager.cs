@@ -205,13 +205,20 @@ namespace Mesen.Debugger.Utilities
 
 		public static void LoadSupportedFile(string filename, bool showResult)
 		{
+			ISymbolProvider? symbolProvider = SymbolProvider;
+			SymbolProvider = null;
+
 			switch(Path.GetExtension(filename).ToLower().Substring(1)) {
 				case FileDialogHelper.DbgFileExt: LoadDbgSymbolFile(filename, showResult); break;
 				case FileDialogHelper.SymFileExt: LoadSymFile(filename, showResult); break;
 				case FileDialogHelper.ElfFileExt: LoadElfFile(filename, showResult); break;
 				case FileDialogHelper.MesenLabelExt: LoadMesenLabelFile(filename, showResult); break;
 				case FileDialogHelper.NesAsmLabelExt: LoadNesAsmLabelFile(filename, showResult); break;
-				case FileDialogHelper.CdlExt: LoadCdlFile(filename); break;
+				case FileDialogHelper.CdlExt: LoadCdlFile(filename); SymbolProvider = symbolProvider; break;
+			}
+
+			if(SymbolProvider != symbolProvider) {
+				SymbolProviderChanged?.Invoke(null, EventArgs.Empty);
 			}
 		}
 
