@@ -157,7 +157,6 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 		}
 	}
 
-	int sectorsInPrevFiles = 0;
 	uint32_t totalPregapLbaLength = 0;
 	for(size_t i = 0; i < files.size(); i++) {
 		VirtualFile physicalFile = files[i].Filename;
@@ -167,7 +166,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 		}
 
 		disc.Files.push_back(files[i].Filename);
-		int sectorsInFile = 0;
+		int startSector = i == 0 ? 0 : (disc.Tracks[disc.Tracks.size() - 1].LastSector + 1);
 		for(size_t j = 0; j < files[i].Tracks.size(); j++) {
 			CueTrackEntry entry = files[i].Tracks[j];
 			TrackInfo trk = {};
@@ -180,13 +179,13 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 			for(CueIndexEntry& idx : entry.Indexes) {
 				if(idx.Number == 0) {
 					trk.HasLeadIn = true;
-					trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + sectorsInPrevFiles);
+					trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + startSector);
 				} else if(idx.Number == 1) {
 					if(entry.PreGap.HasGap) {
 						trk.HasLeadIn = true;
-						trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength - entry.PreGap.Length.ToLba() + sectorsInPrevFiles);
+						trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength - entry.PreGap.Length.ToLba() + startSector);
 					}
-					trk.StartPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength + sectorsInPrevFiles);
+					trk.StartPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength + startSector);
 					startPos = idx.Position;
 				} else {
 					MessageManager::Log("[CUE] Unsupported index number: " + std::to_string(idx.Number));
@@ -216,8 +215,6 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 					prvTrk.LastSector = prvTrk.EndPosition.ToLba();
 					prvTrk.SectorCount = prvTrk.LastSector - prvTrk.FirstSector + 1;
 					prvTrk.Size = prvTrk.SectorCount * trk.GetSectorSize();
-					sectorsInFile += prvTrk.SectorCount;
-
 					currentFileOffset = prvTrk.FileOffset + prvTrk.Size;
 				}
 			}
@@ -237,8 +234,6 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 		lastTrk.SectorCount = lastTrk.Size / lastTrk.GetSectorSize();
 		lastTrk.EndPosition = DiscPosition::FromLba(lastTrk.FirstSector + lastTrk.SectorCount - 1);
 		lastTrk.LastSector = lastTrk.EndPosition.ToLba();
-		sectorsInFile += lastTrk.SectorCount;
-		sectorsInPrevFiles += sectorsInFile;
 	}
 
 	TrackInfo& discLastTrk = disc.Tracks[disc.Tracks.size() - 1];
