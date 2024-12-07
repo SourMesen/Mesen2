@@ -15,7 +15,7 @@ CallstackManager::~CallstackManager()
 {
 }
 
-void CallstackManager::Push(AddressInfo &src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t returnAddress, StackFrameFlags flags)
+void CallstackManager::Push(AddressInfo &src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t returnAddress, uint32_t returnStackPointer, StackFrameFlags flags)
 {
 	if(_callstack.size() >= 511) {
 		//Ensure callstack stays below 512 entries - games can use various tricks that could keep making the callstack grow
@@ -28,6 +28,7 @@ void CallstackManager::Push(AddressInfo &src, uint32_t srcAddr, AddressInfo& des
 	stackFrame.Target = destAddr;
 	stackFrame.AbsTarget = dest;
 	stackFrame.Return = returnAddress;
+	stackFrame.ReturnStackPointer = returnStackPointer;
 	stackFrame.AbsReturn = ret;
 
 	stackFrame.Flags = flags;
@@ -36,7 +37,7 @@ void CallstackManager::Push(AddressInfo &src, uint32_t srcAddr, AddressInfo& des
 	_profiler->StackFunction(dest, flags);
 }
 
-void CallstackManager::Pop(AddressInfo& dest, uint32_t destAddress)
+void CallstackManager::Pop(AddressInfo& dest, uint32_t destAddress, uint32_t stackPointer)
 {
 	if(_callstack.empty()) {
 		return;
@@ -65,7 +66,7 @@ void CallstackManager::Pop(AddressInfo& dest, uint32_t destAddress)
 
 		if(!foundMatch) {
 			//Couldn't find a matching frame, replace the current one
-			Push(prevFrame.AbsReturn, returnAddr, dest, destAddress, prevFrame.AbsReturn, returnAddr, StackFrameFlags::None);
+			Push(prevFrame.AbsReturn, returnAddr, dest, destAddress, prevFrame.AbsReturn, returnAddr, stackPointer, StackFrameFlags::None);
 		}
 	}
 }
@@ -88,6 +89,15 @@ int32_t CallstackManager::GetReturnAddress()
 		return -1;
 	}
 	return _callstack.back().Return;
+}
+
+int64_t CallstackManager::GetReturnStackPointer()
+{
+	DebugBreakHelper helper(_debugger);
+	if(_callstack.empty()) {
+		return -1;
+	}
+	return _callstack.back().ReturnStackPointer;
 }
 
 Profiler* CallstackManager::GetProfiler()

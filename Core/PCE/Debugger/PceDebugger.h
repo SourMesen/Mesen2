@@ -52,13 +52,14 @@ class PceDebugger final : public IDebugger
 
 	uint8_t _prevOpCode = 0x01;
 	uint32_t _prevProgramCounter = 0;
+	uint8_t _prevStackPointer = 0;
 
 	unique_ptr<DummyPceCpu> _dummyCpu;
 
 	string _cdlFile;
 
 	bool IsRegister(MemoryOperationInfo& op);
-	__forceinline void ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc);
+	__forceinline void ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc, uint8_t sp);
 
 public:
 	PceDebugger(Debugger* debugger);

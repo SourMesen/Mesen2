@@ -31,6 +31,7 @@ class SpcDebugger final : public IDebugger
 	unique_ptr<DummySpc> _dummyCpu;
 
 	uint8_t _prevOpCode = 0xFF;
+	uint8_t _prevStackPointer = 0;
 	uint32_t _prevProgramCounter = 0;
 
 	bool _debuggerEnabled = false;

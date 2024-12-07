@@ -65,10 +65,10 @@ void Cx4Debugger::ProcessInstruction()
 		uint32_t returnPc = (_prevProgramCounter + Cx4DisUtils::GetOpSize()) & 0xFFFFFF;
 		AddressInfo srcAddress = mappings->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo retAddress = mappings->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
+		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, _prevStackPointer, StackFrameFlags::None);
 	} else if(Cx4DisUtils::IsReturnInstruction(_prevOpCode)) {
-		_callstackManager->Pop(addressInfo, pc);
-		if(_step->BreakAddress == (int32_t)pc) {
+		_callstackManager->Pop(addressInfo, pc, state.SP);
+		if(_step->BreakAddress == (int32_t)pc && _step->BreakStackPointer == state.SP) {
 			//RTS - if we're on the expected return address, break immediately (for step over/step out)
 			_step->Break(BreakSource::CpuStep);
 		}
@@ -79,6 +79,7 @@ void Cx4Debugger::ProcessInstruction()
 	}
 
 	_prevProgramCounter = pc;
+	_prevStackPointer = state.SP;
 	_prevOpCode = (opCode >> 8) & 0xFC;
 
 	if(_prevOpCode == 0xFC) {
@@ -143,11 +144,15 @@ void Cx4Debugger::Step(int32_t stepCount, StepType type)
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
 
-		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+		case StepType::StepOut:
+			step.BreakAddress = _callstackManager->GetReturnAddress();
+			step.BreakStackPointer = _callstackManager->GetReturnStackPointer();
+			break;
 
 		case StepType::StepOver:
 			if(Cx4DisUtils::IsJumpToSub(_prevOpCode)) {
 				step.BreakAddress = _prevProgramCounter + Cx4DisUtils::GetOpSize();
+				step.BreakStackPointer = _prevStackPointer;
 			} else {
 				//For any other instruction, step over is the same as step into
 				step.StepCount = 1;
@@ -170,6 +175,7 @@ void Cx4Debugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 		uint16_t opCode = mappings->PeekWord(addr);
 		_prevProgramCounter = addr;
 		_prevOpCode = (opCode >> 8) & 0xFC;
+		_prevStackPointer = _cx4->GetState().SP;
 
 		addr -= state.Cache.Base;
 		if(!updateDebuggerOnly) {

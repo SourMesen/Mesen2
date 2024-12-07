@@ -91,7 +91,7 @@ void SmsDebugger::ProcessInstruction()
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Sms);
 	}
 
-	ProcessCallStackUpdates(addressInfo, pc);
+	ProcessCallStackUpdates(addressInfo, pc, state.SP);
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::SmsDebuggerEnabled)) {
 		if(value == 0x40 && _settings->GetDebugConfig().SmsBreakOnNopLoad) {
@@ -106,6 +106,7 @@ void SmsDebugger::ProcessInstruction()
 		_prevOpCode = value;
 	}
 	_prevProgramCounter = pc;
+	_prevStackPointer = state.SP;
 
 	_step->ProcessCpuExec();
 
@@ -216,10 +217,15 @@ void SmsDebugger::Step(int32_t stepCount, StepType type)
 
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
-		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+		case StepType::StepOut:
+			step.BreakAddress = _callstackManager->GetReturnAddress();
+			step.BreakStackPointer = _callstackManager->GetReturnStackPointer();
+			break;
+
 		case StepType::StepOver:
 			if(SmsDisUtils::IsJumpToSub(_prevOpCode)) {
 				step.BreakAddress = _prevProgramCounter + GetPrevOpCodeSize();
+				step.BreakStackPointer = _prevStackPointer;
 			} else {
 				//For any other instruction, step over is the same as step into
 				step.StepCount = 1;
@@ -255,7 +261,7 @@ uint8_t SmsDebugger::GetPrevOpCodeSize()
 	return SmsDisUtils::GetOpSize(_prevOpCode, _prevProgramCounter, MemoryType::SmsMemory, _debugger->GetMemoryDumper());
 }
 
-void SmsDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc)
+void SmsDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc, uint16_t sp)
 {
 	if(SmsDisUtils::IsJumpToSub(_prevOpCode) && destPc != _prevProgramCounter + GetPrevOpCodeSize()) {
 		//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
@@ -263,14 +269,14 @@ void SmsDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc
 		uint16_t returnPc = _prevProgramCounter + opSize;
 		AddressInfo src = _console->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo ret = _console->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(src, _prevProgramCounter, destAddr, destPc, ret, returnPc, StackFrameFlags::None);
+		_callstackManager->Push(src, _prevProgramCounter, destAddr, destPc, ret, returnPc, _prevStackPointer, StackFrameFlags::None);
 	} else if(SmsDisUtils::IsReturnInstruction(_prevOpCode)) {
 		if(destPc != _prevProgramCounter + GetPrevOpCodeSize()) {
 			//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
-			_callstackManager->Pop(destAddr, destPc);
+			_callstackManager->Pop(destAddr, destPc, sp);
 		}
 
-		if(_step->BreakAddress == (int32_t)destPc) {
+		if(_step->BreakAddress == (int32_t)destPc && _step->BreakStackPointer == sp) {
 			//RET/RETI - if we're on the expected return address, break immediately (for step over/step out)
 			_step->Break(BreakSource::CpuStep);
 		}
@@ -279,7 +285,6 @@ void SmsDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc
 
 void SmsDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
-	AddressInfo src = _console->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _console->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _console->GetAbsoluteAddress(currentPc);
 
@@ -287,13 +292,16 @@ void SmsDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
 	}
 
+	uint16_t originalSp = _cpu->GetState().SP + 2;
+	_prevStackPointer = originalSp;
+
 	//If a call/return occurred just before IRQ, it needs to be processed now
-	ProcessCallStackUpdates(ret, originalPc);
+	ProcessCallStackUpdates(ret, originalPc, originalSp);
 	ResetPrevOpCode();
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Sms, *this, *_step.get(), 
-		src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi
+		ret, originalPc, dest, currentPc, ret, originalPc, originalSp, forNmi
 	);
 }
 
@@ -357,6 +365,7 @@ void SmsDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 	}
 	_prevOpCode = _memoryManager->DebugRead((uint16_t)addr);
 	_prevProgramCounter = (uint16_t)addr;
+	_prevStackPointer = _cpu->GetState().SP;
 }
 
 uint32_t SmsDebugger::GetProgramCounter(bool getInstPc)

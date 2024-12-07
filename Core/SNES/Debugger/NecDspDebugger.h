@@ -29,6 +29,7 @@ class NecDspDebugger final : public IDebugger
 	unique_ptr<CallstackManager> _callstackManager;
 
 	uint32_t _prevProgramCounter = 0;
+	uint8_t _prevStackPointer = 0;
 	uint32_t _prevOpCode = 0;
 
 public:

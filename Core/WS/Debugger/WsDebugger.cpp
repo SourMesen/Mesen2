@@ -99,9 +99,9 @@ void WsDebugger::ProcessInstruction()
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Ws);
 	}
 
-	ProcessCallStackUpdates(addressInfo, pc);
+	ProcessCallStackUpdates(addressInfo, pc, state.SP);
 
-	if(_step->BreakAddress == (int32_t)pc) {
+	if(_step->BreakAddress == (int32_t)pc && _step->BreakStackPointer == state.SP) {
 		//If we're on the expected return address, break immediately (for step over/step out)
 		if(WsDisUtils::IsReturnInstruction(_prevOpCode)) {
 			_step->Break(BreakSource::CpuStep);
@@ -116,6 +116,7 @@ void WsDebugger::ProcessInstruction()
 
 	_prevOpCode = WsDisUtils::GetFullOpCode(state.CS, state.IP, _memoryManager);
 	_prevProgramCounter = pc;
+	_prevStackPointer = state.SP;
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::WsDebuggerEnabled)) {
 		if(_settings->GetDebugConfig().WsBreakOnInvalidOpCode && WsDisUtils::IsUndefinedOpCode(_prevOpCode)) {
@@ -243,15 +244,20 @@ void WsDebugger::Step(int32_t stepCount, StepType type)
 
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
-		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+		case StepType::StepOut:
+			step.BreakAddress = _callstackManager->GetReturnAddress();
+			step.BreakStackPointer = _callstackManager->GetReturnStackPointer();
+			break;
 		case StepType::StepOver:
 			if(WsDisUtils::IsJumpToSub(_prevOpCode)) {
 				step.BreakAddress = _prevProgramCounter + GetPrevOpCodeSize();
+				step.BreakStackPointer = _prevStackPointer;
 			} else {
 				uint8_t prefix = _memoryManager->DebugRead(_prevProgramCounter);
 				if(prefix == 0xF2 || prefix == 0xF3) {
 					//REPZ/REPNZ prefixed instruction
 					step.BreakAddress = _prevProgramCounter + GetPrevOpCodeSize();
+					step.BreakStackPointer = _prevStackPointer;
 				} else {
 					//For any other instruction, step over is the same as step into
 					step.StepCount = 1;
@@ -288,7 +294,7 @@ uint8_t WsDebugger::GetPrevOpCodeSize()
 	return WsDisUtils::GetOpSize(_prevProgramCounter, MemoryType::WsMemory, _debugger->GetMemoryDumper());
 }
 
-void WsDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint32_t destPc)
+void WsDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint32_t destPc, uint16_t sp)
 {
 	if(WsDisUtils::IsJumpToSub(_prevOpCode) && destPc != _prevProgramCounter + GetPrevOpCodeSize()) {
 		//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
@@ -296,16 +302,15 @@ void WsDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint32_t destPc)
 		uint32_t returnPc = _prevProgramCounter + opSize;
 		AddressInfo src = _console->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo ret = _console->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(src, _prevProgramCounter, destAddr, destPc, ret, returnPc, StackFrameFlags::None);
+		_callstackManager->Push(src, _prevProgramCounter, destAddr, destPc, ret, returnPc, _prevStackPointer, StackFrameFlags::None);
 	} else if(WsDisUtils::IsReturnInstruction(_prevOpCode) && destPc != _prevProgramCounter + GetPrevOpCodeSize()) {
 		//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
-		_callstackManager->Pop(destAddr, destPc);
+		_callstackManager->Pop(destAddr, destPc, sp);
 	}
 }
 
 void WsDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
-	AddressInfo src = _console->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _console->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _console->GetAbsoluteAddress(currentPc);
 
@@ -313,13 +318,16 @@ void WsDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
 	}
 
+	uint16_t originalSp = _cpu->GetState().SP + 6;
+	_prevStackPointer = originalSp;
+
 	//If a call/return occurred just before IRQ, it needs to be processed now
-	ProcessCallStackUpdates(ret, originalPc);
+	ProcessCallStackUpdates(ret, originalPc, originalSp);
 	ResetPrevOpCode();
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Ws, *this, *_step.get(), 
-		src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi
+		ret, originalPc, dest, currentPc, ret, originalPc, originalSp, forNmi
 	);
 }
 
@@ -383,6 +391,7 @@ void WsDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 
 	_prevOpCode = WsDisUtils::GetFullOpCode(_cpu->GetState().CS, _cpu->GetState().IP, _memoryManager);
 	_prevProgramCounter = addr;
+	_prevStackPointer = _cpu->GetState().SP;
 }
 
 uint32_t WsDebugger::GetProgramCounter(bool getInstPc)

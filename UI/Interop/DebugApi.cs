@@ -1480,6 +1480,7 @@ namespace Mesen.Interop
 		public UInt32 Target;
 		public AddressInfo AbsTarget;
 		public UInt32 Return;
+		public UInt32 ReturnStackPointer;
 		public AddressInfo AbsReturn;
 		public StackFrameFlags Flags;
 	};

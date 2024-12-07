@@ -278,6 +278,7 @@ struct StackFrameInfo
 	uint32_t Target;
 	AddressInfo AbsTarget;
 	uint32_t Return;
+	uint32_t ReturnStackPointer;
 	AddressInfo AbsReturn;
 	StackFrameFlags Flags;
 };
@@ -376,6 +377,7 @@ enum class BreakType
 struct StepRequest
 {
 	int64_t BreakAddress = -1;
+	int64_t BreakStackPointer = -1;
 	int32_t StepCount = -1;
 	int32_t PpuStepCount = -1;
 	int32_t CpuCycleStepCount = -1;
@@ -404,6 +406,7 @@ struct StepRequest
 		PpuStepCount = obj.PpuStepCount;
 		CpuCycleStepCount = obj.CpuCycleStepCount;
 		BreakAddress = obj.BreakAddress;
+		BreakStackPointer = obj.BreakStackPointer;
 		BreakScanline = obj.BreakScanline;
 		HasRequest = (StepCount != -1 || PpuStepCount != -1 || BreakAddress != -1 || BreakScanline != INT32_MIN || CpuCycleStepCount != -1);
 	}

@@ -96,7 +96,7 @@ void GbDebugger::ProcessInstruction()
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
 	}
 
-	ProcessCallStackUpdates(addressInfo, pc);
+	ProcessCallStackUpdates(addressInfo, pc, state.SP);
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
 		switch(value) {
@@ -116,6 +116,7 @@ void GbDebugger::ProcessInstruction()
 	
 	_prevOpCode = value;
 	_prevProgramCounter = pc;
+	_prevStackPointer = state.SP;
 
 	_step->ProcessCpuExec();
 
@@ -220,10 +221,15 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
-		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+		case StepType::StepOut:
+			step.BreakAddress = _callstackManager->GetReturnAddress();
+			step.BreakStackPointer = _callstackManager->GetReturnStackPointer();
+			break;
+
 		case StepType::StepOver:
 			if(GameboyDisUtils::IsJumpToSub(_prevOpCode)) {
 				step.BreakAddress = _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode);
+				step.BreakStackPointer = _prevStackPointer;
 			} else {
 				//For any other instruction, step over is the same as step into
 				step.StepCount = 1;
@@ -253,7 +259,7 @@ void GbDebugger::DrawPartialFrame()
 	_ppu->DebugSendFrame();
 }
 
-void GbDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc)
+void GbDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc, uint16_t sp)
 {
 	if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && destPc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
 		//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
@@ -261,14 +267,14 @@ void GbDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc)
 		uint16_t returnPc = _prevProgramCounter + opSize;
 		AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo ret = _gameboy->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(src, _prevProgramCounter, destAddr, destPc, ret, returnPc, StackFrameFlags::None);
+		_callstackManager->Push(src, _prevProgramCounter, destAddr, destPc, ret, returnPc, _prevStackPointer, StackFrameFlags::None);
 	} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
 		if(destPc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
 			//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
-			_callstackManager->Pop(destAddr, destPc);
+			_callstackManager->Pop(destAddr, destPc, sp);
 		}
 
-		if(_step->BreakAddress == (int32_t)destPc) {
+		if(_step->BreakAddress == (int32_t)destPc && _step->BreakStackPointer == sp) {
 			//RET/RETI - if we're on the expected return address, break immediately (for step over/step out)
 			_step->Break(BreakSource::CpuStep);
 		}
@@ -277,7 +283,6 @@ void GbDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc)
 
 void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
-	AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _gameboy->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _gameboy->GetAbsoluteAddress(currentPc);
 
@@ -285,13 +290,16 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
 	}
 
+	uint16_t originalSp = _cpu->GetState().SP + 2;
+	_prevStackPointer = originalSp;
+
 	//If a call/return occurred just before IRQ, it needs to be processed now
-	ProcessCallStackUpdates(ret, originalPc);
+	ProcessCallStackUpdates(ret, originalPc, originalSp);
 	ResetPrevOpCode();
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Gameboy, *this, *_step.get(), 
-		src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi
+		ret, originalPc, dest, currentPc, ret, originalPc, originalSp, forNmi
 	);
 }
 
@@ -359,6 +367,7 @@ void GbDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 	}
 	_prevOpCode = _gameboy->GetMemoryManager()->DebugRead((uint16_t)addr);
 	_prevProgramCounter = (uint16_t)addr;
+	_prevStackPointer = _cpu->GetState().SP;
 }
 
 uint32_t GbDebugger::GetProgramCounter(bool getInstPc)

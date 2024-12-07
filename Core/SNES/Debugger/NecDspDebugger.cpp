@@ -58,11 +58,11 @@ void NecDspDebugger::ProcessInstruction()
 		uint32_t returnPc = _prevProgramCounter + NecDspDisUtils::GetOpSize();
 		AddressInfo src = { (int32_t)_prevProgramCounter, MemoryType::DspProgramRom };
 		AddressInfo ret = { (int32_t)returnPc, MemoryType::DspProgramRom };
-		_callstackManager->Push(src, _prevProgramCounter, addressInfo, pc, ret, returnPc, StackFrameFlags::None);
+		_callstackManager->Push(src, _prevProgramCounter, addressInfo, pc, ret, returnPc, _prevStackPointer, StackFrameFlags::None);
 	} else if(NecDspDisUtils::IsReturnInstruction(_prevOpCode)) {
-		_callstackManager->Pop(addressInfo, pc);
+		_callstackManager->Pop(addressInfo, pc, state.SP);
 
-		if(_step->BreakAddress == (int32_t)pc) {
+		if(_step->BreakAddress == (int32_t)pc && _step->BreakStackPointer == state.SP) {
 			//If we're on the expected return address, break immediately (for step over/step out)
 			_step->Break(BreakSource::CpuStep);
 		}
@@ -70,6 +70,7 @@ void NecDspDebugger::ProcessInstruction()
 
 	_prevProgramCounter = pc;
 	_prevOpCode = opCode;
+	_prevStackPointer = state.SP;
 
 	_step->ProcessCpuExec();
 	_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
@@ -126,11 +127,15 @@ void NecDspDebugger::Step(int32_t stepCount, StepType type)
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
 		
-		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+		case StepType::StepOut:
+			step.BreakAddress = _callstackManager->GetReturnAddress();
+			step.BreakStackPointer = _callstackManager->GetReturnStackPointer();
+			break;
 
 		case StepType::StepOver:
 			if(NecDspDisUtils::IsJumpToSub(_prevOpCode)) {
 				step.BreakAddress = _prevProgramCounter + NecDspDisUtils::GetOpSize();
+				step.BreakStackPointer = _prevStackPointer;
 			} else {
 				//For any other instruction, step over is the same as step into
 				step.StepCount = 1;
@@ -160,6 +165,7 @@ void NecDspDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 		_dsp->GetState().PC = addr / 3;
 	}
 	_prevProgramCounter = addr;
+	_prevStackPointer = _dsp->GetState().SP;
 }
 
 uint32_t NecDspDebugger::GetProgramCounter(bool getInstPc)

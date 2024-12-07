@@ -48,12 +48,13 @@ class WsDebugger final : public IDebugger
 	unique_ptr<DummyWsCpu> _dummyCpu;
 
 	uint16_t _prevOpCode = 0;
+	uint16_t _prevStackPointer = 0;
 	uint32_t _prevProgramCounter = 0;
 
 	string _cdlFile;
 
 	__forceinline uint8_t GetPrevOpCodeSize();
-	__forceinline void ProcessCallStackUpdates(AddressInfo& destAddr, uint32_t destPc);
+	__forceinline void ProcessCallStackUpdates(AddressInfo& destAddr, uint32_t destPc, uint16_t sp);
 
 public:
 	WsDebugger(Debugger* debugger);

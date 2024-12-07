@@ -49,6 +49,7 @@ class NesDebugger final : public IDebugger
 	unique_ptr<NesPpuTools> _ppuTools;
 
 	uint8_t _prevOpCode = 0xFF;
+	uint8_t _prevStackPointer = 0;
 	uint32_t _prevProgramCounter = 0;
 
 	unique_ptr<DummyNesCpu> _dummyCpu;
@@ -56,7 +57,7 @@ class NesDebugger final : public IDebugger
 	string _cdlFile;
 
 	bool IsRegister(MemoryOperationInfo& op);
-	__forceinline void ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc);
+	__forceinline void ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc, uint8_t sp);
 
 public:
 	NesDebugger(Debugger* debugger);

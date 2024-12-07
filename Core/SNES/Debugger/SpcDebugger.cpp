@@ -68,12 +68,12 @@ void SpcDebugger::ProcessInstruction()
 		uint16_t returnPc = _prevProgramCounter + opSize;
 		AddressInfo src = _spc->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo ret = _spc->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(src, _prevProgramCounter, addressInfo, addr, ret, returnPc, StackFrameFlags::None);
+		_callstackManager->Push(src, _prevProgramCounter, addressInfo, addr, ret, returnPc, _prevStackPointer, StackFrameFlags::None);
 	} else if(SpcDisUtils::IsReturnInstruction(_prevOpCode)) {
 		//RTS, RTI
-		_callstackManager->Pop(addressInfo, addr);
+		_callstackManager->Pop(addressInfo, addr, state.SP);
 
-		if(_step->BreakAddress == (int32_t)addr) {
+		if(_step->BreakAddress == (int32_t)addr && _step->BreakStackPointer == state.SP) {
 			//RTS/RTI - if we're on the expected return address, break immediately (for step over/step out)
 			_step->Break(BreakSource::CpuStep);
 		}
@@ -81,6 +81,7 @@ void SpcDebugger::ProcessInstruction()
 
 	_prevOpCode = value;
 	_prevProgramCounter = addr;
+	_prevStackPointer = state.SP;
 
 	_step->ProcessCpuExec();
 
@@ -187,11 +188,16 @@ void SpcDebugger::Step(int32_t stepCount, StepType type)
 
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
-		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+		case StepType::StepOut:
+			step.BreakAddress = _callstackManager->GetReturnAddress();
+			step.BreakStackPointer = _callstackManager->GetReturnStackPointer();
+			break;
+
 		case StepType::StepOver:
 			if(_prevOpCode == 0x3F || _prevOpCode == 0x0F || _prevOpCode == 0x4F || (_prevOpCode&0x0F) == 0x01) {
 				//JSR, BRK, PCALL, TCALL
 				step.BreakAddress = _prevProgramCounter + SpcDisUtils::GetOpSize(_prevOpCode);
+				step.BreakStackPointer = _prevStackPointer;
 			} else {
 				//For any other instruction, step over is the same as step into
 				step.StepCount = 1;
@@ -225,6 +231,7 @@ void SpcDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 	}
 	_prevOpCode = _spc->DebugRead(addr);
 	_prevProgramCounter = (uint16_t)addr;
+	_prevStackPointer = _spc->GetState().SP;
 }
 
 uint32_t SpcDebugger::GetProgramCounter(bool getInstPc)
