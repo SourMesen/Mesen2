@@ -69,6 +69,8 @@ namespace Mesen.Debugger.ViewModels
 		public CpuType CpuType { get; private set; }
 		private UInt64 _masterClock = 0;
 
+		private bool _autoSwitchToSourceView = false;
+
 		private List<object> _gotoSubActions = new();
 
 		[Obsolete("For designer only")]
@@ -370,7 +372,23 @@ namespace Mesen.Debugger.ViewModels
 				//Scroll to the active address and highlight it
 				int activeAddress = (int)DebugApi.GetProgramCounter(CpuType, true);
 				Disassembly.SetActiveAddress(activeAddress);
-				SourceView?.SetActiveAddress(activeAddress);
+
+				if(SourceView != null) {
+					bool sourceMappingFound = SourceView.SetActiveAddress(activeAddress);
+					if(!sourceMappingFound) {
+						//If location is not found in source mappings, swap to disassembly view
+						if(IsToolVisible(DockFactory.SourceViewTool) && IsToolActive(DockFactory.SourceViewTool)) {
+							_autoSwitchToSourceView = true;
+							OpenTool(DockFactory.DisassemblyTool);
+						}
+					} else if(_autoSwitchToSourceView) {
+						//If we previously auto-switched to disassembly view, go back to the
+						//source view automatically if the current address is mapped to a source file
+						OpenTool(DockFactory.SourceViewTool);
+						_autoSwitchToSourceView = false;
+					}
+				}
+
 				if(!EmuApi.IsPaused()) {
 					//Clear the highlight if the emulation is still running
 					Disassembly.SetActiveAddress(null);

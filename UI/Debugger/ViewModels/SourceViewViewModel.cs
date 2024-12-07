@@ -231,22 +231,27 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 		Lines = Lines.ToArray();
 	}
 
-	public void SetActiveAddress(int? activeAddress)
+	public bool SetActiveAddress(int? activeAddress)
 	{
 		ActiveAddress = activeAddress;
 
 		if(activeAddress >= 0) {
-			GoToRelativeAddress(activeAddress.Value);
+			return GoToRelativeAddress(activeAddress.Value);
 		}
+
+		return true;
 	}
 
-	public void GoToRelativeAddress(int address, bool addToHistory = false)
+	public bool GoToRelativeAddress(int address, bool addToHistory = false)
 	{
 		AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = CpuType.ToMemoryType() });
 		SourceCodeLocation? location = SymbolProvider.GetSourceCodeLineInfo(absAddress);
 		if(location != null) {
 			ScrollToLocation(location.Value, addToHistory);
+			return true;
 		}
+
+		return false;
 	}
 
 	public void ScrollToLocation(SourceCodeLocation loc, bool addToHistory = false)
