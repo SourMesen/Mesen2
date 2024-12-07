@@ -328,23 +328,31 @@ public class PceasSymbolImporter : ISymbolProvider
 
 							AddressInfo absAddr = GetLabelAddress(bank, addr);
 							if(absAddr.Address >= 0) {
+								long lengthFlags = long.Parse(m.Groups[3].Value, System.Globalization.NumberStyles.HexNumber);
+								int length = (int)(lengthFlags & ~0xC0000000);
+
 								if(absAddr.Type == MemoryType.PcePrgRom) {
 									//Build CDL data based on the extra flags present in the mappings
-									long lengthFlags = long.Parse(m.Groups[3].Value, System.Globalization.NumberStyles.HexNumber);
 									if((lengthFlags & 0x40000000) != 0) {
 										cdlData[absAddr.Address] |= (byte)CdlFlags.SubEntryPoint;
 									}
 
 									byte cdlFlags = (lengthFlags & 0x80000000) != 0 ? (byte)CdlFlags.Code : (byte)CdlFlags.Data;
-									for(long j = 0, len = (lengthFlags & ~0xC0000000); j < len; j++) {
+									for(long j = 0; j < length; j++) {
 										if(absAddr.Address + j < cdlData.Length) {
 											cdlData[absAddr.Address + j] |= cdlFlags;
+										} else {
+											break;
 										}
 									}
 								}
 
 								_addressByLine[_sourceFiles[fileId].Name + "_" + lineNumber.ToString()] = absAddr;
-								_linesByAddress[absAddr.Type.ToString() + absAddr.Address.ToString()] = new SourceCodeLocation(_sourceFiles[fileId], lineNumber);
+								SourceCodeLocation loc = new SourceCodeLocation(_sourceFiles[fileId], lineNumber);
+								for(int j = 0; j < length; j++) {
+									//Map this line of code to every address it represents
+									_linesByAddress[absAddr.Type.ToString() + (absAddr.Address + j).ToString()] = loc;
+								}
 							}
 						}
 					} else {

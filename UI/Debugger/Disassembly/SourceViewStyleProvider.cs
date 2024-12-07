@@ -19,15 +19,24 @@ namespace Mesen.Debugger.Disassembly
 
 		public override bool IsLineActive(CodeLineData line, int lineIndex)
 		{
+			lineIndex += _model.ScrollPosition;
+
 			if(_model.ActiveAddress.HasValue && !line.IsAddressHidden) {
 				if(_model.ActiveAddress.Value == line.Address) {
 					return true;
 				} else if(line.AbsoluteAddress.Address > 0) {
 					AddressInfo relActiveAddr = new AddressInfo() { Address = _model.ActiveAddress.Value, Type = _model.CpuType.ToMemoryType() };
 					AddressInfo absAddr = DebugApi.GetAbsoluteAddress(relActiveAddr);
-					if(line.AbsoluteAddress.Address == absAddr.Address && line.AbsoluteAddress.Type == absAddr.Type) {
-						//Relative address doesn't match but the absolute address does - different mirror, mark it as active
-						return true;
+					if(absAddr.Address > 0) {
+						if(line.AbsoluteAddress.Address == absAddr.Address && line.AbsoluteAddress.Type == absAddr.Type) {
+							//Relative address doesn't match but the absolute address does - different mirror, mark it as active
+							return true;
+						} else if(_model.SymbolProvider.GetSourceCodeLineInfo(absAddr)?.LineNumber == lineIndex) {
+							//Current line number is associated with this address, mark it as active
+							//This allows C code mappings to display as "active" for each CPU instruction
+							//that's part of a single line of C code
+							return true;
+						}
 					}
 				}
 			}
