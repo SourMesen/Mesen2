@@ -339,7 +339,7 @@ AddressInfo PceConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 
 AddressInfo PceConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)
 {
-	return _memoryManager->GetRelativeAddress(absAddress);
+	return _memoryManager->GetRelativeAddress(absAddress, _cpu->GetState().PC);
 }
 
 PceVideoState PceConsole::GetVideoState()

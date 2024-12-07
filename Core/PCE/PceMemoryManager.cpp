@@ -401,12 +401,18 @@ AddressInfo PceMemoryManager::GetAbsoluteAddress(uint32_t relAddr)
 	return { (int32_t)absAddr, _bankMemType[bank] };
 }
 
-AddressInfo PceMemoryManager::GetRelativeAddress(AddressInfo absAddr)
+AddressInfo PceMemoryManager::GetRelativeAddress(AddressInfo absAddr, uint16_t pc)
 {
+	//Start with the bank that the CPU is executing from
+	//This is to favor any mirror that exists in the current bank
+	//instead of always picking the first mirror, when mirrors exist.
+	int startBank = pc >> 13;
+
 	for(int i = 0; i < 8; i++) {
-		AddressInfo bankStart = GetAbsoluteAddress(i * 0x2000);
+		int bank = (startBank + i) & 0x07;
+		AddressInfo bankStart = GetAbsoluteAddress(bank * 0x2000);
 		if(bankStart.Type == absAddr.Type && bankStart.Address == (absAddr.Address & ~0x1FFF)) {
-			return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
+			return { (bank << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
 		}
 	}
 

@@ -388,6 +388,10 @@ namespace Mesen.Debugger.Views
 			}
 
 			_model?.SetViewer(_viewer);
+			if(_model?.ActiveAddress != null) {
+				//Go to active address when clicking on the source view tab
+				_model?.GoToRelativeAddress(_model.ActiveAddress.Value, true);
+			}
 			FocusViewer();
 		}
 

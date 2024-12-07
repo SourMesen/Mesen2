@@ -19,7 +19,20 @@ namespace Mesen.Debugger.Disassembly
 
 		public override bool IsLineActive(CodeLineData line, int lineIndex)
 		{
-			return _model.ActiveAddress.HasValue && _model.ActiveAddress.Value == line.Address;
+			if(_model.ActiveAddress.HasValue && !line.IsAddressHidden) {
+				if(_model.ActiveAddress.Value == line.Address) {
+					return true;
+				} else if(line.AbsoluteAddress.Address > 0) {
+					AddressInfo relActiveAddr = new AddressInfo() { Address = _model.ActiveAddress.Value, Type = _model.CpuType.ToMemoryType() };
+					AddressInfo absAddr = DebugApi.GetAbsoluteAddress(relActiveAddr);
+					if(line.AbsoluteAddress.Address == absAddr.Address && line.AbsoluteAddress.Type == absAddr.Type) {
+						//Relative address doesn't match but the absolute address does - different mirror, mark it as active
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		public override bool IsLineFocused(CodeLineData line, int lineIndex)

@@ -90,7 +90,7 @@ public:
 	uint8_t GetMprValue(uint8_t regSelect);
 
 	AddressInfo GetAbsoluteAddress(uint32_t relAddr);
-	AddressInfo GetRelativeAddress(AddressInfo absAddr);
+	AddressInfo GetRelativeAddress(AddressInfo absAddr, uint16_t pc);
 
 	void SetIrqSource(PceIrqSource source) { _state.ActiveIrqs |= (int)source; }
 	__forceinline uint8_t GetPendingIrqs() { return (_state.ActiveIrqs & ~_state.DisabledIrqs); }
