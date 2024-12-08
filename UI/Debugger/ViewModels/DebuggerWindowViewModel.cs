@@ -226,8 +226,8 @@ namespace Mesen.Debugger.ViewModels
 			ISymbolProvider? provider = DebugWorkspaceManager.SymbolProvider;
 			if(provider != null) {
 				SourceView = new SourceViewViewModel(this, provider, CpuType);
-				SourceView.SetActiveAddress(Disassembly.ActiveAddress);
 				DockFactory.SourceViewTool.Model = SourceView;
+				SourceView.SetActiveAddress(Disassembly.ActiveAddress);
 				if(!IsToolVisible(DockFactory.SourceViewTool)) {
 					if(DockFactory.SourceViewTool.Owner is IDock dock && IsDockVisible(dock)) {
 						DockFactory.AddDockable(dock, DockFactory.SourceViewTool);
