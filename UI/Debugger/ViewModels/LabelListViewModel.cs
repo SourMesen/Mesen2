@@ -112,7 +112,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => {
 						if(Selection.SelectedItem is LabelViewModel vm) {
 							AddressInfo addr = vm.Label.GetAbsoluteAddress();
-							BreakpointManager.ToggleBreakpoint(addr, CpuType, false);
+							BreakpointManager.ToggleBreakpoint(addr, CpuType);
 						}
 					}
 				},

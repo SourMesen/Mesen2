@@ -169,17 +169,17 @@ namespace Mesen.Debugger
 			return false;
 		}
 
-		public static void ToggleBreakpoint(AddressInfo info, CpuType cpuType, bool forceExecBreakpoint = true)
+		public static void ToggleBreakpoint(AddressInfo info, CpuType cpuType)
 		{
 			if(info.Address < 0) {
 				return;
 			}
 
-			Breakpoint? breakpoint = BreakpointManager.GetMatchingForbidBreakpoint(info, cpuType) ?? BreakpointManager.GetMatchingBreakpoint(info, cpuType, forceExecBreakpoint);
+			Breakpoint? breakpoint = BreakpointManager.GetMatchingForbidBreakpoint(info, cpuType) ?? BreakpointManager.GetMatchingBreakpoint(info, cpuType);
 			if(breakpoint != null) {
 				BreakpointManager.RemoveBreakpoint(breakpoint);
 			} else {
-				bool execBreakpoint = forceExecBreakpoint || info.Type.IsRomMemory();
+				bool execBreakpoint = true;
 				bool readWriteBreakpoint = !info.Type.IsRomMemory() || info.Type.IsRelativeMemory();
 				if(info.Type.SupportsCdl()) {
 					CdlFlags cdlData = DebugApi.GetCdlData((uint)info.Address, 1, info.Type)[0];
