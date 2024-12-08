@@ -120,6 +120,13 @@ void Fds::WriteFdsDisk(uint8_t value)
 {
 	assert(_diskNumber < _fdsDiskSides.size());
 	assert(_diskPosition < _fdsDiskSides[_diskNumber].size());
+	if(_diskPosition < 2) {
+		//Prevent crash if write mode is ever turned on at the start of the disk
+		//Unsure why this writes to "_diskPosition - 2" - it's been this way
+		//since FDS support was added.
+		return;
+	}
+
 	uint8_t currentValue = _fdsDiskSides[_diskNumber][_diskPosition - 2];
 	if(currentValue != value) {
 		_fdsDiskSides[_diskNumber][_diskPosition - 2] = value;
