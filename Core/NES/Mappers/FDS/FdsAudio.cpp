@@ -8,6 +8,7 @@
 #include "NES/APU/NesApu.h"
 #include "NES/APU/BaseExpansionAudio.h"
 #include "Utilities/Serializer.h"
+#include "FDS_LUT_norm.h"
 
 void FdsAudio::Serialize(Serializer& s)
 {
@@ -16,12 +17,12 @@ void FdsAudio::Serialize(Serializer& s)
 	SVArray(_waveTable, 64);
 	SV(_volume);
 	SV(_mod);
-	SV(_waveWriteEnabled); SV(_disableEnvelopes); SV(_haltWaveform); SV(_masterVolume); SV(_waveOverflowCounter); SV(_wavePitch); SV(_wavePosition); SV(_lastOutput);
+	SV(_waveWriteEnabled); SV(_disableEnvelopes); SV(_haltWaveform); SV(_masterVolume); SV(_waveAccumulator); SV(_waveM2Counter); SV(_wavePitch); SV(_wavePosition); SV(_lastOutput); SV(_lastGain);
 }
 
 void FdsAudio::ClockAudio()
 {
-	int frequency = _volume.GetFrequency();
+	uint16_t frequency = _volume.GetFrequency();
 	if(!_haltWaveform && !_disableEnvelopes) {
 		_volume.TickEnvelope();
 		if(_mod.TickEnvelope()) {
@@ -29,31 +30,42 @@ void FdsAudio::ClockAudio()
 		}
 	}
 
-	if(_mod.TickModulator()) {
+	// TODO: check if modulator and wave units are ticked on the same M2 cycle
+	if(_mod.TickModulator(_haltWaveform)) {
 		//Modulator was ticked, update wave pitch
 		_mod.UpdateOutput(frequency);
 	}
 
-	if(_haltWaveform) {
-		_wavePosition = 0;
-		UpdateOutput();
-	} else {
-		UpdateOutput();
+	if(++_waveM2Counter == 16) {
+		if(_haltWaveform) {
+			_waveAccumulator = 0;
+		} else {
 
-		if(frequency + _mod.GetOutput() > 0 && !_waveWriteEnabled) {
-			_waveOverflowCounter += frequency + _mod.GetOutput();
-			if(_waveOverflowCounter < frequency + _mod.GetOutput()) {
-				_wavePosition = (_wavePosition + 1) & 0x3F;
+			if(!_waveWriteEnabled) {
+				_waveAccumulator += (frequency * _mod.GetOutput()) & 0xFFFFF;
+				if(_waveAccumulator > 0xFFFFFF) {
+					_waveAccumulator -= 0x1000000;
+				}
+
+				_wavePosition = (_waveAccumulator >> 18) & 0x3F;
 			}
 		}
+		_waveM2Counter = 0;
 	}
+	UpdateOutput();
 }
 
 void FdsAudio::UpdateOutput()
 {
-	uint32_t level = std::min((int)_volume.GetGain(), 32) * WaveVolumeTable[_masterVolume];
-	uint8_t outputLevel = (_waveTable[_wavePosition] * level) / 1152;
+	// "Changes to the volume envelope only take effect while the wavetable
+	// pointer (top 6 bits of wave accumulator) is 0."
+	if(_wavePosition == 0) {
+		_lastGain = _volume.GetGain();
+	}
+	uint8_t level = std::min(_lastGain, uint8_t(32));
 
+	// volume level is PWM, but can be approximated linearly
+	uint8_t outputLevel = uint8_t(DACTable[_waveTable[_wavePosition]][_masterVolume] * float(level));
 
 	if(_lastOutput != outputLevel) {
 		_console->GetApu()->AddExpansionAudioDelta(AudioChannel::FDS, outputLevel - _lastOutput);
@@ -63,6 +75,15 @@ void FdsAudio::UpdateOutput()
 
 FdsAudio::FdsAudio(NesConsole* console) : BaseExpansionAudio(console)
 {
+	// initialize DAC LUT
+	// data comes from plgDavid's DC capture of an FDS's DAC output
+	// data capture shared from the NESDev server
+	// TODO: generate data based from FDS decap DAC schematics
+	for(int masterlevel = 0; masterlevel < 4; masterlevel++) {
+		for(int wavelevel = 0; wavelevel < 64; wavelevel++) {
+			DACTable[wavelevel][masterlevel] = (FDS_LUT_norm[wavelevel] * 64.0 * float(WaveVolumeTable[masterlevel])) / 1152.0;
+		}
+	}
 }
 
 uint8_t FdsAudio::ReadRegister(uint16_t addr)
@@ -79,9 +100,29 @@ uint8_t FdsAudio::ReadRegister(uint16_t addr)
 	} else if(addr == 0x4090) {
 		value &= 0xC0;
 		value |= _volume.GetGain();
+	} else if(addr == 0x4091) {
+		// Wave accumulator
+		value &= 0xC0;
+		value |= (_waveAccumulator >> 12) & 0xFF;
 	} else if(addr == 0x4092) {
 		value &= 0xC0;
 		value |= _mod.GetGain();
+	} else if(addr == 0x4093) {
+		// Mod accumulator
+		value &= 0xC0;
+		value |= (_mod.GetModAccumulator() >> 5) & 0x7F;
+	} else if(addr == 0x4094) {
+		// wave pitch intermediate result
+		value &= 0xC0;
+		value |= (_mod.GetOutput() >> 4) & 0xFF;
+	} else if(addr == 0x4096) {
+		// wavetable position
+		value &= 0xC0;
+		value |= _wavePosition & 0x3F;
+	} else if(addr == 0x4097) {
+		// mod counter value
+		value &= 0xC0;
+		value |= _mod.GetCounter() & 0x7F;
 	}
 
 	return value;
@@ -150,8 +191,7 @@ void FdsAudio::GetMapperStateEntries(vector<MapperStateEntry>& entries)
 	entries.push_back(MapperStateEntry("$4082/3.0-11", "Frequency", _volume.GetFrequency(), MapperStateValueType::Number16));
 	entries.push_back(MapperStateEntry("$4083.6", "Volume/Mod Envelopes Disabled", _disableEnvelopes, MapperStateValueType::Bool));
 	
-	//todo emulation logic + this based on new info
-	//entries.push_back(MapperStateEntry("$4083.7", "Halt Wave Form", _haltWaveform, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4083.7", "Halt Wave Form", _haltWaveform, MapperStateValueType::Bool));
 
 	entries.push_back(MapperStateEntry("", "Gain", _volume.GetGain(), MapperStateValueType::Number8));
 
@@ -165,10 +205,9 @@ void FdsAudio::GetMapperStateEntries(vector<MapperStateEntry>& entries)
 
 	entries.push_back(MapperStateEntry("$4086/7.0-11", "Frequency", _mod.GetFrequency(), MapperStateValueType::Number16));
 	
-	//todo emulation logic + this based on new info
-	//entries.push_back(MapperStateEntry("$4087.6", "???", false, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4087.6", "Force Tick Modulator", _mod.GetForceCarryOut(), MapperStateValueType::Bool));
 
-	entries.push_back(MapperStateEntry("$4087.7", "Disabled", _mod.IsModulationDisabled(), MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4087.7", "Counter Disabled", _mod.IsModulationCounterDisabled(), MapperStateValueType::Bool));
 	entries.push_back(MapperStateEntry("", "Gain", _mod.GetGain(), MapperStateValueType::Number8));
 	entries.push_back(MapperStateEntry("", "Mod Output", std::to_string(_mod.GetOutput())));
 
