@@ -71,6 +71,7 @@ namespace Mesen.Debugger.ViewModels
 		private object _updateLock = new();
 		private byte[] _coreSourceData = Array.Empty<byte>();
 		private byte[] _sourceData = Array.Empty<byte>();
+		private bool _refreshPending;
 
 		[Obsolete("For designer only")]
 		public TileViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
@@ -465,31 +466,42 @@ namespace Mesen.Debugger.ViewModels
 
 		private void RefreshTab()
 		{
+			if(_refreshPending) {
+				return;
+			}
+
+			_refreshPending = true;
 			Dispatcher.UIThread.Post(() => {
-				if(Disposed) {
-					return;
-				}
-
-				InitBitmap();
-				
-				lock(_updateLock) {
-					Array.Resize(ref _sourceData, _coreSourceData.Length);
-					Array.Copy(_coreSourceData, _sourceData, _coreSourceData.Length);
-				}
-
-				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetTileView(CpuType, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
-				}
-
-				if(IsNesChrModeEnabled) {
-					DrawNesChrPageDelimiters();
-				} else {
-					PageDelimiters = null;
-				}
-
-				UpdatePreviewPanel();
-				LoadSelectedPreset(true);
+				InternalRefreshTab();
+				_refreshPending = false;
 			});
+		}
+
+		private void InternalRefreshTab()
+		{
+			if(Disposed) {
+				return;
+			}
+
+			InitBitmap();
+				
+			lock(_updateLock) {
+				Array.Resize(ref _sourceData, _coreSourceData.Length);
+				Array.Copy(_coreSourceData, _sourceData, _coreSourceData.Length);
+			}
+
+			using(var framebuffer = ViewerBitmap.Lock()) {
+				DebugApi.GetTileView(CpuType, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
+			}
+
+			if(IsNesChrModeEnabled) {
+				DrawNesChrPageDelimiters();
+			} else {
+				PageDelimiters = null;
+			}
+
+			UpdatePreviewPanel();
+			LoadSelectedPreset(true);
 		}
 
 		private int GetTileAddress(PixelPoint pixelPosition)

@@ -53,6 +53,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<ContextMenuAction> ToolbarItems { get; private set; } = new();
 
 		private PictureViewer _picViewer;
+		private bool _refreshPending;
 
 		[Obsolete("For designer only")]
 		public EventViewerViewModel() : this(CpuType.Nes, new PictureViewer(), null!, null) { }
@@ -269,24 +270,35 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshUi(bool forAutoRefresh)
 		{
+			if(_refreshPending) {
+				return;
+			}
+
+			_refreshPending = true;
 			Dispatcher.UIThread.Post(() => {
-				if(Disposed) {
-					return;
-				}
-
-				InitBitmap();
-				using(var bitmapLock = ViewerBitmap.Lock()) {
-					DebugApi.GetEventViewerOutput(CpuType, bitmapLock.FrameBuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));
-				}
-
-				if(ShowListView) {
-					DateTime now = DateTime.Now;
-					if(!forAutoRefresh || (now - _lastListRefresh).TotalMilliseconds >= 66) {
-						_lastListRefresh = now;
-						ListView.RefreshList();
-					}
-				}
+				InternalRefreshUi(forAutoRefresh);
+				_refreshPending = false;
 			});
+		}
+
+		private void InternalRefreshUi(bool forAutoRefresh)
+		{
+			if(Disposed) {
+				return;
+			}
+
+			InitBitmap();
+			using(var bitmapLock = ViewerBitmap.Lock()) {
+				DebugApi.GetEventViewerOutput(CpuType, bitmapLock.FrameBuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));
+			}
+
+			if(ShowListView) {
+				DateTime now = DateTime.Now;
+				if(!forAutoRefresh || (now - _lastListRefresh).TotalMilliseconds >= 66) {
+					_lastListRefresh = now;
+					ListView.RefreshList();
+				}
+			}
 		}
 
 		private PixelPoint GetEventLocation(DebugEventInfo evt)

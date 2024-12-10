@@ -62,6 +62,7 @@ namespace Mesen.Debugger.ViewModels
 		private PictureViewer _picViewer;
 		private bool _refreshDataOnTabChange;
 		private bool _inGameLoaded;
+		private bool _refreshPending;
 
 		[Obsolete("For designer only")]
 		public TilemapViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
@@ -479,79 +480,93 @@ namespace Mesen.Debugger.ViewModels
 
 		private void RefreshTab()
 		{
+			if(_refreshPending) {
+				return;
+			}
+
+			_refreshPending = true;
 			Dispatcher.UIThread.Post(() => {
-				if(Disposed) {
-					return;
-				}
+				InternalRefreshTab();
+				_refreshPending = false;
+			});
+		}
 
-				lock(_updateLock) {
-					_coreData.CopyTo(_data);
-				}
+		private void InternalRefreshTab()
+		{
+			if(Disposed) {
+				return;
+			}
 
-				if(_data.PpuState == null || _data.PpuToolsState == null) {
-					return;
-				}
+			lock(_updateLock) {
+				_coreData.CopyTo(_data);
+			}
 
-				GetTilemapOptions options;
-				FrameInfo size;
+			if(_data.PpuState == null || _data.PpuToolsState == null) {
+				_refreshPending = false;
+				return;
+			}
 
+			GetTilemapOptions options;
+			FrameInfo size;
+
+			foreach(TilemapViewerTab tab in Tabs) {
+				options = GetOptions(tab);
+				size = DebugApi.GetTilemapSize(CpuType, options, _data.PpuState);
+				tab.Enabled = size.Width != 0 && size.Height != 0;
+			}
+
+			if(!SelectedTab.Enabled) {
 				foreach(TilemapViewerTab tab in Tabs) {
-					options = GetOptions(tab);
-					size = DebugApi.GetTilemapSize(CpuType, options, _data.PpuState);
-					tab.Enabled = size.Width != 0 && size.Height != 0;
-				}
-
-				if(!SelectedTab.Enabled) {
-					foreach(TilemapViewerTab tab in Tabs) {
-						if(tab.Enabled) {
-							SelectedTab = tab;
-							break;
-						}
+					if(tab.Enabled) {
+						SelectedTab = tab;
+						break;
 					}
 				}
+			}
 
-				options = GetOptions(SelectedTab, _data.PrevVram, _data.AccessCounters);
-				options.MasterClock = Interlocked.Read(ref _data.MasterClock);
+			options = GetOptions(SelectedTab, _data.PrevVram, _data.AccessCounters);
+			options.MasterClock = Interlocked.Read(ref _data.MasterClock);
 
-				size = DebugApi.GetTilemapSize(CpuType, options, _data.PpuState);
-				InitBitmap((int)size.Width, (int)size.Height);
+			size = DebugApi.GetTilemapSize(CpuType, options, _data.PpuState);
+			InitBitmap((int)size.Width, (int)size.Height);
 
-				using(var framebuffer = ViewerBitmap.Lock()) {
-					_data.TilemapInfo = DebugApi.GetTilemap(CpuType, options, _data.PpuState, _data.PpuToolsState, _data.Vram, _data.RgbPalette, framebuffer.FrameBuffer.Address);
-				}
+			using(var framebuffer = ViewerBitmap.Lock()) {
+				_data.TilemapInfo = DebugApi.GetTilemap(CpuType, options, _data.PpuState, _data.PpuToolsState, _data.Vram, _data.RgbPalette, framebuffer.FrameBuffer.Address);
+			}
 
-				if(_data.TilemapInfo.Bpp == 0) {
-					GridSizeX = 8;
-					GridSizeY = 8;
-					ScrollOverlayRect = default;
-					OverlayLines = null;
-					PreviewPanel = null;
-					IsTilemapInfoVisible = false;
-					return;
-				}
+			if(_data.TilemapInfo.Bpp == 0) {
+				GridSizeX = 8;
+				GridSizeY = 8;
+				ScrollOverlayRect = default;
+				OverlayLines = null;
+				PreviewPanel = null;
+				IsTilemapInfoVisible = false;
+				return;
+			}
 
-				IsTilemapInfoVisible = true;
+			IsTilemapInfoVisible = true;
 
-				GridSizeX = (int)_data.TilemapInfo.TileWidth;
-				GridSizeY = (int)_data.TilemapInfo.TileHeight;
+			GridSizeX = (int)_data.TilemapInfo.TileWidth;
+			GridSizeY = (int)_data.TilemapInfo.TileHeight;
 
-				UpdatePreviewPanel();
-				UpdateTilemapInfo();
+			UpdatePreviewPanel();
+			UpdateTilemapInfo();
 
-				if(Config.ShowScrollOverlay) {
-					ScrollOverlayRect = new Rect(
-						_data.TilemapInfo.ScrollX % size.Width,
-						_data.TilemapInfo.ScrollY % size.Height,
-						_data.TilemapInfo.ScrollWidth,
-						_data.TilemapInfo.ScrollHeight
-					);
+			if(Config.ShowScrollOverlay) {
+				ScrollOverlayRect = new Rect(
+					_data.TilemapInfo.ScrollX % size.Width,
+					_data.TilemapInfo.ScrollY % size.Height,
+					_data.TilemapInfo.ScrollWidth,
+					_data.TilemapInfo.ScrollHeight
+				);
 
-					DrawMode7Overlay();
-				} else {
-					ScrollOverlayRect = default;
-					OverlayLines = null;
-				}
-			});
+				DrawMode7Overlay();
+			} else {
+				ScrollOverlayRect = default;
+				OverlayLines = null;
+			}
+
+			_refreshPending = false;
 		}
 
 		private void UpdateTilemapInfo()

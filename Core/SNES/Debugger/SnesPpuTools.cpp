@@ -5,6 +5,7 @@
 #include "Shared/SettingTypes.h"
 #include "SNES/SnesPpu.h"
 #include "Shared/ColorUtilities.h"
+#include "Shared/MessageManager.h"
 
 static constexpr uint8_t layerBpp[8][4] = {
 	{ 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,8,0,0 }
@@ -139,6 +140,24 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 template<TileFormat format>
 void SnesPpuTools::RenderTilemap(GetTilemapOptions& options, int rowCount, LayerConfig& layer, int columnCount, uint8_t* vram, int tileHeight, int tileWidth, bool largeTileHeight, bool largeTileWidth, uint8_t bpp, uint32_t* outBuffer, FrameInfo outputSize, const uint32_t* palette, uint16_t basePaletteOffset)
 {
+	if(largeTileHeight) {
+		if(largeTileWidth) {
+			RenderTilemap<format, true, true>(options, rowCount, layer, columnCount, vram, tileHeight, tileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+		} else {
+			RenderTilemap<format, true, false>(options, rowCount, layer, columnCount, vram, tileHeight, tileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+		}
+	} else {
+		if(largeTileWidth) {
+			RenderTilemap<format, false, true>(options, rowCount, layer, columnCount, vram, tileHeight, tileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+		} else {
+			RenderTilemap<format, false, false>(options, rowCount, layer, columnCount, vram, tileHeight, tileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+		}
+	}
+}
+
+template<TileFormat format, bool largeTileHeight, bool largeTileWidth>
+void SnesPpuTools::RenderTilemap(GetTilemapOptions& options, int rowCount, LayerConfig& layer, int columnCount, uint8_t* vram, int tileHeight, int tileWidth, uint8_t bpp, uint32_t* outBuffer, FrameInfo outputSize, const uint32_t* palette, uint16_t basePaletteOffset)
+{
 	uint8_t colorMask = 0xFF;
 	bool grayscale = options.DisplayMode == TilemapDisplayMode::Grayscale;
 	if(grayscale) {
@@ -159,10 +178,11 @@ void SnesPpuTools::RenderTilemap(GetTilemapOptions& options, int rowCount, Layer
 
 			for(int y = 0; y < tileHeight; y++) {
 				uint8_t yOffset = vMirror ? (7 - (y & 0x07)) : (y & 0x07);
+				uint8_t yTileOffset = (largeTileHeight ? ((y & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0);
 
 				for(int x = 0; x < tileWidth; x++) {
 					uint16_t tileOffset = (
-						(largeTileHeight ? ((y & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
+						yTileOffset +
 						(largeTileWidth ? ((x & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
 					);
 

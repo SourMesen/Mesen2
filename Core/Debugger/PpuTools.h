@@ -308,7 +308,7 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 	}
 }
 
-template<TileFormat format> uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, uint32_t rowStart, uint8_t pixelIndex)
+template<TileFormat format> __forceinline uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, uint32_t rowStart, uint8_t pixelIndex)
 {
 	uint8_t shift = (7 - pixelIndex);
 	uint8_t color;
