@@ -1056,7 +1056,7 @@ template<class T> void NesPpu<T>::ProcessSpriteEvaluation()
 							if((_secondaryOamAddr & 0x03) == 0) {
 								//Done copying all 4 bytes
 								_spriteInRange = false;
-								_lastVisibleSpriteAddr = _spriteAddrH * 4;
+								_lastVisibleSpriteAddr = (_spriteAddrH - 1) * 4;
 
 								if(_spriteAddrL != 0) {
 									//Normally, if the sprite eval started on a non-multiple-of-4 address, it would
