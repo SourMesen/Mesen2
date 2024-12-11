@@ -920,7 +920,7 @@ void PceVdc::InternalDrawScanline()
 			uint16_t color = _vce->GetPalette(0);
 			for(; xStart < xMax; xStart++) {
 				//In picture, but BG is not enabled, draw bg color
-				out[xStart] = color;
+				out[xStart] = PceVpc::TransparentPixelFlag | color;
 			}
 		}
 	} else {
@@ -928,7 +928,7 @@ void PceVdc::InternalDrawScanline()
 			uint16_t color = _vce->GetPalette(16 * 16);
 			for(; xStart < xMax; xStart++) {
 				//Output hasn't started yet, display overscan color
-				out[xStart] = color;
+				out[xStart] = PceVpc::TransparentPixelFlag | color;
 			}
 		}
 	}
