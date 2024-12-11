@@ -710,26 +710,75 @@ private:
 		SetX(value);
 	}
 
-	void SYA()
+	void SyaSxaAxa(uint16_t baseAddr, uint8_t indexReg, uint8_t valueReg)
 	{
-		uint8_t addrHigh = GetOperand() >> 8;
-		uint8_t addrLow = GetOperand() & 0xFF;
-		uint8_t value = Y() & (addrHigh + 1);
-		
-		//From here: http://forums.nesdev.com/viewtopic.php?f=3&t=3831&start=30
-		//Unsure if this is accurate or not
-		//"the target address for e.g. SYA becomes ((y & (addr_high + 1)) << 8) | addr_low instead of the normal ((addr_high + 1) << 8) | addr_low"
-		MemoryWrite(((Y() & (addrHigh + 1)) << 8) | addrLow, value);
+		//See thread/test rom: https://forums.nesdev.org/viewtopic.php?p=297765
+		bool pageCrossed = CheckPageCrossed(baseAddr, indexReg);
+
+		//Dummy read
+		uint64_t cyc = _state.CycleCount;
+		MemoryRead(baseAddr + indexReg - (pageCrossed ? 0x100 : 0), MemoryOperationType::DummyRead);
+
+		bool hadDma = false;
+		if(_state.CycleCount - cyc > 1) {
+			//Dummy read took more than 1 cycle, so it was interrupted by a DMA
+			hadDma = true;
+		}
+
+		uint16_t operand = baseAddr + indexReg;
+
+		uint8_t addrHigh = operand >> 8;
+		uint8_t addrLow = operand & 0xFF;
+		if(pageCrossed) {
+			//When a page is crossed, the address written to is ANDed with the register
+			addrHigh &= valueReg;
+		}
+
+		//When a DMA interrupts the instruction right before the dummy read cycle,
+		//the value written is not ANDed with the MSB of the address
+		uint8_t value = hadDma ? valueReg : (valueReg & ((baseAddr >> 8) + 1));
+
+		MemoryWrite((addrHigh << 8) | addrLow, value);
 	}
 
-	void SXA()
+	void SHY()
 	{
-		uint8_t addrHigh = GetOperand() >> 8;
-		uint8_t addrLow = GetOperand() & 0xFF;
-		uint8_t value = X() & (addrHigh + 1);
-		MemoryWrite(((X() & (addrHigh + 1)) << 8) | addrLow, value);
+		SyaSxaAxa(ReadWord(), X(), Y());
 	}
-	
+
+	void SHX()
+	{
+		SyaSxaAxa(ReadWord(), Y(), X());
+	}
+
+	void SHAA()
+	{
+		SyaSxaAxa(ReadWord(), Y(), X() & A());
+	}
+
+	void SHAZ()
+	{
+		uint8_t zero = ReadByte();
+
+		uint16_t baseAddr;
+		if(zero == 0xFF) {
+			uint8_t lo = MemoryRead(0xFF);
+			uint8_t hi = MemoryRead(0x00);
+			baseAddr = lo | hi << 8;
+		} else {
+			baseAddr = MemoryReadWord(zero);
+		}
+
+		SyaSxaAxa(baseAddr, Y(), X() & A());
+	}
+
+	void TAS()
+	{
+		//Same as "SHA abs, y", but also sets SP = A & X
+		SHAA();
+		SetSP(X() & A());
+	}
+
 	//Unimplemented/Incorrect Unofficial OP codes
 	void HLT()
 	{
@@ -741,25 +790,6 @@ private:
 	{
 		//Make sure we take the right amount of cycles (not reliable for operations that write to memory, etc.)
 		GetOperandValue();
-	}
-
-	void AXA()
-	{
-		uint16_t addr = GetOperand();
-		
-		//"This opcode stores the result of A AND X AND the high byte of the target address of the operand +1 in memory."	
-		//This may not be the actual behavior, but the read/write operations are needed for proper cycle counting
-		MemoryWrite(GetOperand(), ((addr >> 8) + 1) & A() & X());
-	}
-
-	void TAS()
-	{
-		//"AND X register with accumulator and store result in stack
-		//pointer, then AND stack pointer with the high byte of the
-		//target address of the argument + 1. Store result in memory."
-		uint16_t addr = GetOperand();
-		SetSP(X() & A());
-		MemoryWrite(addr, SP() & ((addr >> 8) + 1));
 	}
 
 	void LAS()

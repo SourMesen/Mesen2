@@ -22,7 +22,8 @@ enum class NesAddrMode
 	None, Acc, Imp, Imm, Rel,
 	Zero, Abs, ZeroX, ZeroY,
 	Ind, IndX, IndY, IndYW,
-	AbsX, AbsXW, AbsY, AbsYW
+	AbsX, AbsXW, AbsY, AbsYW,
+	Other
 };
 
 enum class IRQSource
