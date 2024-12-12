@@ -129,14 +129,16 @@ public:
 				Write<uint8_t>(seg, offset + 1, (uint8_t)(value >> 8));
 			} else {
 				Exec();
-				_emu->ProcessMemoryWrite<CpuType::Ws, 2>(addr, value, opType);
-				InternalWrite(addr, (uint8_t)value);
-				InternalWrite(((seg << 4) + (uint16_t)(offset + 1)) & 0xFFFFF, value >> 8);
+				if(_emu->ProcessMemoryWrite<CpuType::Ws, 2>(addr, value, opType)) {
+					InternalWrite(addr, (uint8_t)value);
+					InternalWrite(((seg << 4) + (uint16_t)(offset + 1)) & 0xFFFFF, value >> 8);
+				}
 			}
 		} else {
 			Exec();
-			_emu->ProcessMemoryWrite<CpuType::Ws>(addr, value, opType);
-			InternalWrite(addr, value);
+			if(_emu->ProcessMemoryWrite<CpuType::Ws>(addr, value, opType)) {
+				InternalWrite(addr, value);
+			}
 		}
 	}
 
