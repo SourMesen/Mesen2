@@ -67,7 +67,7 @@ namespace Mesen.Debugger.Disassembly
 
 		private static Regex _space = new Regex("^[ \t]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _comment = new Regex("^//.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		private static Regex _keywords = new Regex("^(if|else|static|void|int|short|long|char|unsigned|signed|break|return|continue|switch|case|const|while|do|#define|#pragma|#include){1}([^a-z0-9_-]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _keywords = new Regex("^(if|else|static|extern|inline|void|int|short|long|char|unsigned|signed|uint8_t|int8_t|uint16_t|int16_t|uint32_t|int32_t|uint64_t|int64_t|struct|break|return|continue|switch|case|const|while|do|for|default|#define|#pragma|#include){1}([^a-z0-9_-]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _text = new Regex("^([a-z0-9_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _syntax = new Regex("^[]([)!+,.|:<>?&^;{}\"'/*%=#-]{1}", RegexOptions.Compiled);
 		private static Regex _number = new Regex("^(0x[0-9a-f]+|0b[01]+|[0-9]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);

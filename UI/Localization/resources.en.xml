@@ -1511,7 +1511,8 @@
 			<Control ID="lblAutoLoadSettings">Auto-load settings</Control>
 			<Control ID="lblAutoLoadHint">Automatically load the following file types when a matching file is found in the ROM's folder:</Control>
 			<Control ID="chkAutoLoadDbgFiles">.DBG files (CA65 debug symbols)</Control>
-			<Control ID="chkAutoLoadSymFiles">.SYM files (bass, RGBDS, WLA DX)</Control>
+			<Control ID="chkAutoLoadSymFiles">.SYM files (PCEAS, RGBDS, WLA DX, bass)</Control>
+			<Control ID="chkAutoLoadCdbFiles">.CDB files (SDCC)</Control>
 			<Control ID="chkAutoLoadElfFiles">.ELF files (devkitARM - GBA)</Control>
 			<Control ID="chkAutoLoadMlbFiles">.MLB files (Mesen label file)</Control>
 			<Control ID="chkAutoLoadFnsFiles">.FNS files (NESASM)</Control>

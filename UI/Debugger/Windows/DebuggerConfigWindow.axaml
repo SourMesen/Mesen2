@@ -213,6 +213,10 @@
 								Content="{l:Translate chkAutoLoadElfFiles}"
 							/>
 							<CheckBox
+								IsChecked="{Binding Integration.AutoLoadCdbFiles}"
+								Content="{l:Translate chkAutoLoadCdbFiles}"
+							/>
+							<CheckBox
 								IsChecked="{Binding Integration.AutoLoadMlbFiles}"
 								Content="{l:Translate chkAutoLoadMlbFiles}"
 							/>

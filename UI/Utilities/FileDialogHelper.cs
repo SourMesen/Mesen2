@@ -34,6 +34,7 @@ namespace Mesen.Utilities
 		public const string DbgFileExt = "dbg";
 		public const string ElfFileExt = "elf";
 		public const string SymFileExt = "sym";
+		public const string CdbFileExt = "cdb";
 		public const string MesenLabelExt = "mlb";
 		public const string NesAsmLabelExt = "fns";
 		public const string BinExt = "bin";
@@ -71,7 +72,7 @@ namespace Mesen.Utilities
 					} else if(ext == FileDialogHelper.FirmwareExt) {
 						filter.Add(new FilePickerFileType("All firmware files") { Patterns = new List<string>() { "*.sfc", "*.pce", "*.nes", "*.bin", "*.rom", "*.col" } });
 					} else if(ext == FileDialogHelper.LabelFileExt) {
-						filter.Add(new FilePickerFileType("All label files") { Patterns = new List<string>() { "*.mlb", "*.sym", "*.dbg", "*.fns" } });
+						filter.Add(new FilePickerFileType("All label files") { Patterns = new List<string>() { "*.mlb", "*.sym", "*.dbg", "*.fns", "*.elf", "*.cdb" } });
 					} else {
 						filter.Add(new FilePickerFileType(ext.ToUpper() + " files") { Patterns = new List<string>() { "*." + ext } });
 					}
