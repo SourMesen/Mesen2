@@ -141,6 +141,10 @@ void WsEeprom::WritePort(uint8_t port, uint8_t value)
 
 			if(read) {
 				if(cmd == WsEepromCommand::Read) {
+					//TODOWS
+					//For the internal eeprom, "ReadDone" flag should be cleared here, and set again after a small delay
+					//On cartridge eeprom, the flag is bugged and not reset when a read starts
+					//The read buffer should also only be set after a delay (e.g after the read is done), for both eeproms
 					_state.ReadBuffer = _data[addr << 1] | (_data[(addr << 1) + 1] << 8);
 					if(_isInternal) {
 						_emu->ProcessMemoryAccess<CpuType::Ws, MemoryType::WsInternalEeprom, MemoryOperationType::Read>(addr << 1, _state.ReadBuffer);
@@ -150,6 +154,8 @@ void WsEeprom::WritePort(uint8_t port, uint8_t value)
 					_state.ReadDone = true;
 				}
 			} else if(write) {
+				_state.ReadDone = false;
+
 				if(cmd == WsEepromCommand::Write) {
 					WriteValue(addr, _state.WriteBuffer);
 				} else if(cmd == WsEepromCommand::WriteAll) {
@@ -158,6 +164,8 @@ void WsEeprom::WritePort(uint8_t port, uint8_t value)
 					}
 				}
 			} else if(other) {
+				_state.ReadDone = false;
+
 				switch(cmd) {
 					case WsEepromCommand::Erase:
 						WriteValue(addr, 0xFFFF);
