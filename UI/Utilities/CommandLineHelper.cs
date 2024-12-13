@@ -135,6 +135,9 @@ public class CommandLineHelper
 				model.LoadScript(luaScript);
 				DebugWindowManager.OpenDebugWindow(() => new ScriptWindow(model));
 			}
+
+			//Shift focus back to main window after opening the script window(s)
+			wnd.BringToFront();
 		}
 
 		if(MovieToRecord != null) {
