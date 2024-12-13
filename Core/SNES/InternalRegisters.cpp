@@ -263,6 +263,14 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 				if(!autoRead) {
 					_autoReadClockStart = 0;
 					_autoReadNextClock = 0;
+				} else if(_autoReadClockStart != 0 && _autoReadClockStart <= _console->GetMasterClock()) {
+					//If enable flag was enabled after the first clock of the process, skip auto-read for this frame
+					//Pocky & Rocky seems to enable auto-read in the middle of the auto-read process (scanline ~226)
+					//in some scenarios (e.g: when player 2 presses Y+Left at the same time) and if the auto-read
+					//starts in the middle of its process, this corrupts input in a way that the game does not expect.
+					//TODO determine the exact behavior when auto-read is enabled/disabled mid-way through the auto-read "portion" or the frame
+					_autoReadClockStart = 0;
+					_autoReadNextClock = 0;
 				}
 			}
 
