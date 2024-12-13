@@ -59,7 +59,12 @@ void MesenMovie::Stop()
 bool MesenMovie::SetInput(BaseControlDevice *device)
 {
 	uint32_t inputRowIndex = _controlManager->GetPollCounter();
-	_lastPollCounter = inputRowIndex;
+
+	if(_lastPollCounter != inputRowIndex) {
+		_lastPollCounter = inputRowIndex;
+		assert(_deviceIndex == 0);
+		_deviceIndex = 0;
+	}
 
 	if(_inputData.size() > inputRowIndex && _inputData[inputRowIndex].size() > _deviceIndex) {
 		device->SetTextState(_inputData[inputRowIndex][_deviceIndex]);

@@ -32,6 +32,7 @@
 #include <thread>
 #include <deque>
 #include <algorithm>
+#include <assert.h>
 
 #include "Utilities/UTF8Util.h"
 
