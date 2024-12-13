@@ -19,7 +19,6 @@
 	Icon="/Assets/Edit.png"
 	Width="320" Height="180"
 	MinWidth="320" MinHeight="180"
-	ShowInTaskbar="False"
 	Title="{Binding WindowTitle}"
 >
 	<Design.DataContext>

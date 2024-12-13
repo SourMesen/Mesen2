@@ -17,7 +17,6 @@
 	x:Class="Mesen.Debugger.Windows.BreakInWindow"
 	Width="340"
 	Height="100"
-	ShowInTaskbar="False"
 	CanResize="False"
 	Name="root"
 	Title="{l:Translate wndTitle}"

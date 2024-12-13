@@ -12,7 +12,6 @@
 	Width="350"
 	MinWidth="350"
 	CanResize="False"
-	ShowInTaskbar="False"
 	SizeToContent="Height"
 	Title="{l:Translate wndTitle}"
 >

@@ -16,7 +16,6 @@
 	Width="360"
 	Height="260"
 	Name="root"
-	ShowInTaskbar="False"
 	CanResize="False"
 	Title="{l:Translate wndTitle}"
 >

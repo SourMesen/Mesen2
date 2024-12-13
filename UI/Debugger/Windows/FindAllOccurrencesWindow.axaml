@@ -17,7 +17,6 @@
 	x:Class="Mesen.Debugger.Windows.FindAllOccurrencesWindow"
 	Width="300" Height="100"
 	CanResize="False"
-	ShowInTaskbar="False"
 	Name="root"
 	Title="{l:Translate wndTitle}"
 >

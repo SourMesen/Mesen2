@@ -16,7 +16,6 @@
 	mc:Ignorable="d"
 	x:Class="Mesen.Debugger.Windows.GoToWindow"
 	Width="320" Height="55"
-	ShowInTaskbar="False"
 	CanResize="False"
 	Name="root"
 	Title="{l:Translate wndTitle}"
