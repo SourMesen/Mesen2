@@ -11,6 +11,7 @@ using Mesen.Debugger.Windows;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Utilities
 {
@@ -39,13 +40,70 @@ namespace Mesen.Debugger.Utilities
 		private static ConcurrentDictionary<Window, ToolInfo> _activeWindows = new();
 		private static int _nextId = 0;
 
+		public static void ExecuteAt(int scanline, int cycle, CpuType cpuType, Action callback)
+		{
+			//Execute callback at the specified scanline/cycle
+			//If the callback is not called by the core within 300ms
+			//call it from the UI as a fallback
+			object lockObject = new();
+			bool done = false;
+
+			int viewerId = ToolRefreshHelper.GetNextId();
+			NotificationListener? listener = new();
+			listener.OnNotification += (NotificationEventArgs e) => {
+				switch(e.NotificationType) {
+					case ConsoleNotificationType.ViewerRefresh:
+						if(e.Parameter.ToInt32() == viewerId) {
+							lock(callback) {
+								if(!done) {
+									Task.Run(() => {
+										//DebugApi.RemoveViewerId() must not be called inside the notification callback (which is
+										//the same thread as the emulation thread). Otherwise, the viewer timing collection the
+										//debugger is iterating on will be modified, causing a crash.
+										DebugApi.RemoveViewerId(viewerId, cpuType);
+									});
+
+									listener.Dispose();
+									listener = null;
+									callback();
+									done = true;
+								}
+							}
+						}
+						break;
+				}
+			};
+			
+			DebugApi.SetViewerUpdateTiming(viewerId, scanline, cycle, cpuType);
+
+			Task.Run(async () => {
+				await Task.Delay(300);
+				if(listener != null) {
+					lock(callback) {
+						if(!done) {
+							//Give up after 300ms and call the callback
+							DebugApi.RemoveViewerId(viewerId, cpuType);
+							callback();
+							listener.Dispose();
+							done = true;
+						}
+					}
+				}
+			});
+		}
+
+		private static int GetNextId()
+		{
+			return Interlocked.Increment(ref _nextId);
+		}
+
 		private static int RegisterWindow(Window wnd, RefreshTimingConfig cfg, CpuType cpuType)
 		{
 			if(_activeWindows.ContainsKey(wnd)) {
 				throw new Exception("Register window called twice");
 			}
 
-			int newId = Interlocked.Increment(ref _nextId);
+			int newId = GetNextId();
 			wnd.Closing += OnWindowClosingHandler;
 			wnd.Closed += OnWindowClosedHandler;
 

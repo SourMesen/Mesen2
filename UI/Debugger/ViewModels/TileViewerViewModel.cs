@@ -572,7 +572,16 @@ namespace Mesen.Debugger.ViewModels
 					addresses.Add(new AddressInfo() { Address = GetTileAddress(new PixelPoint(p.X + col*GridSizeX, p.Y + row*GridSizeY)), Type = Config.Source });
 				}
 			}
-			TileEditorWindow.OpenAtTile(addresses, columnCount, Config.Format, SelectedPalette, wnd);
+			TileEditorWindow.OpenAtTile(
+				addresses,
+				columnCount,
+				Config.Format,
+				SelectedPalette,
+				wnd,
+				CpuType,
+				RefreshTiming.Config.RefreshScanline,
+				RefreshTiming.Config.RefreshCycle
+			);
 		}
 
 		private void DrawNesChrPageDelimiters()

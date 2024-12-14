@@ -288,7 +288,7 @@ public class TileEditorViewModel : DisposableViewModel
 				for(int y = 0; y < _rowCount; y++) {
 					for(int x = 0; x < _columnCount; x++) {
 						fixed(UInt32* ptr = _tileBuffer) {
-							AddressInfo addr = _tileAddresses[y * _rowCount + x];
+							AddressInfo addr = _tileAddresses[y * _columnCount + x];
 							byte[] sourceData = DebugApi.GetMemoryValues(addr.Type, (uint)addr.Address, (uint)(addr.Address + bytesPerTile - 1));
 							DebugApi.GetTileView(_cpuType, GetOptions(x, y), sourceData, sourceData.Length, PaletteColors, (IntPtr)ptr);
 							UInt32* viewer = (UInt32*)framebuffer.FrameBuffer.Address;

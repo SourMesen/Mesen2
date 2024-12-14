@@ -209,7 +209,11 @@ namespace Mesen.Debugger.ViewModels
 							sprite.RealWidth / size.Width,
 							sprite.Format,
 							sprite.Palette + paletteOffset,
-							wnd);
+							wnd,
+							CpuType,
+							RefreshTiming.Config.RefreshScanline,
+							RefreshTiming.Config.RefreshCycle
+						);
 					}
 				}
 			};

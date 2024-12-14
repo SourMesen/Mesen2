@@ -120,12 +120,22 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		public static void OpenAtTile(AddressInfo tileAddr, TileFormat tileFormat, int selectedPalette, Window parent)
+		public static void OpenAtTile(List<AddressInfo> tileAddresses, int columnCount, TileFormat tileFormat, int selectedPalette, Window parent, CpuType cpuType, int scanline, int cycle)
 		{
-			OpenAtTile(new List<AddressInfo>() { tileAddr }, 1, tileFormat, selectedPalette, parent);
+			if(EmuApi.IsPaused()) {
+				//If paused, use the current state - this might mismatch if viewer doesn't have "refresh on pause" enabled
+				InternalOpenAtTile(tileAddresses, columnCount, tileFormat, selectedPalette, parent);
+			} else {
+				//While running, delay the tile viewer's opening until we can grab the memory mappings
+				//at the same time as the viewer was refreshed the last time
+				//This allows mid-screen PPU bank switching to open up properly/reliably in the tile editor
+				ToolRefreshHelper.ExecuteAt(scanline, cycle, cpuType, () => {
+					InternalOpenAtTile(tileAddresses, columnCount, tileFormat, selectedPalette, parent);
+				});
+			}
 		}
 
-		public static void OpenAtTile(List<AddressInfo> tileAddresses, int columnCount, TileFormat tileFormat, int selectedPalette, Window parent)
+		private static void InternalOpenAtTile(List<AddressInfo> tileAddresses, int columnCount, TileFormat tileFormat, int selectedPalette, Window parent)
 		{
 			for(int i = 0; i < tileAddresses.Count; i++) {
 				AddressInfo addr = tileAddresses[i];
@@ -138,9 +148,11 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			TileEditorViewModel model = new(tileAddresses, columnCount, tileFormat, selectedPalette);
-			TileEditorWindow wnd = DebugWindowManager.CreateDebugWindow<TileEditorWindow>(() => new TileEditorWindow(model));
-			wnd.ShowCentered((Control)parent);
+			Dispatcher.UIThread.Post(() => {
+				TileEditorViewModel model = new(tileAddresses, columnCount, tileFormat, selectedPalette);
+				TileEditorWindow wnd = DebugWindowManager.CreateDebugWindow<TileEditorWindow>(() => new TileEditorWindow(model));
+				wnd.ShowCentered((Control)parent);
+			});
 		}
 
 		public void ProcessNotification(NotificationEventArgs e)

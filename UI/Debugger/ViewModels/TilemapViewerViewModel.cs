@@ -705,7 +705,13 @@ namespace Mesen.Debugger.ViewModels
 				for(int col = 0; col < columnCount; col++) {
 					DebugTilemapTileInfo? tile = DebugApi.GetTilemapTileInfo((uint)(p.X + GridSizeX*col), (uint)(p.Y + GridSizeY*row), CpuType, GetOptions(SelectedTab), _data.Vram, _data.PpuState, _data.PpuToolsState);
 					if(tile == null) {
-						return;
+						if(col == 0) {
+							rowCount = row;
+							break;
+						} else {
+							columnCount = col;
+							continue;
+						}
 					}
 
 					if(palette == -1) {
@@ -714,8 +720,22 @@ namespace Mesen.Debugger.ViewModels
 					addresses.Add(new AddressInfo() { Address = tile.Value.TileAddress, Type = memType });
 				}
 			}
+
+			if(rowCount <= 0 || columnCount <= 0) {
+				return;
+			}
+
 			palette = Math.Max(0, palette);
-			TileEditorWindow.OpenAtTile(addresses, columnCount, _data.TilemapInfo.Format, palette, wnd);
+			TileEditorWindow.OpenAtTile(
+				addresses,
+				columnCount,
+				_data.TilemapInfo.Format,
+				palette,
+				wnd,
+				CpuType,
+				RefreshTiming.Config.RefreshScanline,
+				RefreshTiming.Config.RefreshCycle
+			);
 		}
 
 		private void DrawMode7Overlay()
