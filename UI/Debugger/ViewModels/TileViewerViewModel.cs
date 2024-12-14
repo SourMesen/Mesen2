@@ -149,30 +149,11 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.EditTiles,
 					SubActions = new() {
-						new ContextMenuAction() {
-							ActionType = ActionType.Custom,
-							CustomText = $"1x2 ({GridSizeX}px x {GridSizeY*2}px)",
-							IsEnabled = () => GetSelectedTileAddress() >= 0,
-							OnClick = () => EditTileGrid(1, 2, wnd)
-						},
-						new ContextMenuAction() {
-							ActionType = ActionType.Custom,
-							CustomText = $"2x1 ({GridSizeX*2}px x {GridSizeY}px)",
-							IsEnabled = () => GetSelectedTileAddress() >= 0,
-							OnClick = () => EditTileGrid(2, 1, wnd)
-						},
-						new ContextMenuAction() {
-							ActionType = ActionType.Custom,
-							CustomText = $"2x2 ({GridSizeX*2}px x {GridSizeY*2}px)",
-							IsEnabled = () => GetSelectedTileAddress() >= 0,
-							OnClick = () => EditTileGrid(2, 2, wnd)
-						},
-						new ContextMenuAction() {
-							ActionType = ActionType.Custom,
-							CustomText = $"4x4 ({GridSizeX*4}px x {GridSizeY*4}px)",
-							IsEnabled = () => GetSelectedTileAddress() >= 0,
-							OnClick = () => EditTileGrid(4, 4, wnd)
-						}
+						GetEditTileAction(1, 2, wnd),
+						GetEditTileAction(2, 1, wnd),
+						GetEditTileAction(2, 2, wnd),
+						GetEditTileAction(4, 4, wnd),
+						GetEditTileAction(8, 8, wnd)
 					}
 				},
 				new ContextMenuSeparator(),
@@ -570,6 +551,16 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				return $"${address:X4}";
 			}
+		}
+
+		private ContextMenuAction GetEditTileAction(int columnCount, int rowCount, Window wnd)
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.Custom,
+				CustomText = $"{columnCount}x{rowCount} ({GridSizeX * columnCount}px x {GridSizeY * rowCount}px)",
+				IsEnabled = () => GetSelectedTileAddress() >= 0,
+				OnClick = () => EditTileGrid(columnCount, rowCount, wnd)
+			};
 		}
 
 		private void EditTileGrid(int columnCount, int rowCount, Window wnd)
