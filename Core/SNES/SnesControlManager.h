@@ -23,6 +23,7 @@ private:
 protected:
 	SnesConsole* _console = nullptr;
 	uint8_t _lastWriteValue = 0;
+	bool _autoReadStrobe = 0;
 
 public:
 	SnesControlManager(SnesConsole* console);
@@ -36,7 +37,9 @@ public:
 	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) override;
 
 	uint8_t Read(uint16_t addr, bool forAutoRead = false);
-	void Write(uint16_t addr, uint8_t value, bool forAutoRead = false);
+	
+	void Write(uint16_t addr, uint8_t value);
+	void SetAutoReadStrobe(bool strobe);
 
 	void Serialize(Serializer &s) override;
 };

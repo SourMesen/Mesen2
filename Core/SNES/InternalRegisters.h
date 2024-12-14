@@ -29,10 +29,12 @@ private:
 
 	uint64_t _autoReadClockStart = 0;
 	uint64_t _autoReadNextClock = 0;
+	bool _autoReadActive = false;
+	uint8_t _autoReadPort1Value = 0;
+	uint8_t _autoReadPort2Value = 0;
 
 	void SetIrqFlag(bool irqFlag);
 	
-	bool IsAutoReadActive();
 	uint8_t ReadControllerData(uint8_t port, bool getMsb);
 
 public:

@@ -44,87 +44,95 @@ void InternalRegisters::Reset()
 	_irqFlag = false;
 	_autoReadClockStart = 0;
 	_autoReadNextClock = 0;
+	_autoReadActive = false;
+	_autoReadPort1Value = 0;
+	_autoReadPort2Value = 0;
 }
 
 void InternalRegisters::SetAutoJoypadReadClock()
 {
 	//Auto-read starts at the first multiple of 256 master clocks after dot 32.5 (hclock 130)
 	uint64_t rangeStart = _console->GetMasterClock() + 130;
-	_autoReadClockStart = rangeStart + ((rangeStart & 0xFF) ? (256 - (rangeStart & 0xFF)) : 0);
+	_autoReadClockStart = rangeStart + ((rangeStart & 0xFF) ? (256 - (rangeStart & 0xFF)) : 0) - 128;
 	_autoReadNextClock = _autoReadClockStart;
 }
 
 void InternalRegisters::ProcessAutoJoypad()
 {
-	if(_autoReadNextClock == 0) {
+	if(_autoReadClockStart == 0) {
 		return;
+	}
+
+	uint64_t masterClock = _console->GetMasterClock();
+	if(masterClock < _autoReadClockStart) {
+		return;
+	}
+
+	if((masterClock - _autoReadClockStart) < 256) {
+		//If EnableAutoJoypadRead changes at any point in the first 256 clocks of this process,
+		//the value sent to OUT0 can be changed and immediately strobe the controllers, etc.
+		_controlManager->SetAutoReadStrobe(_state.EnableAutoJoypadRead);
 	}
 
 	for(uint64_t clock = _autoReadNextClock; clock <= _console->GetMasterClock(); clock += 128) {
 		_autoReadNextClock = clock + 128;
-
-		if(!_state.EnableAutoJoypadRead) {
-			continue;
-		}
-
 		int step = (clock - _autoReadClockStart) / 128;
 
 		switch(step) {
-			case 0: 
-				//If bit 0 was set to 1 by a CPU write, auto-read can't set the value back to 0
-				//causing the controllers to continuously report the value of the B button
-				if((_controlManager->GetLastWriteValue() & 0x01) == 0) {
-					_controlManager->Write(0x4016, 1, true);
-				}
+			case 0:
+				//Strobe starts 128 cycles before the auto-read flag is set
+				_controlManager->SetAutoReadStrobe(_state.EnableAutoJoypadRead);
 				break;
 
 			case 1:
-				//If bit 0 was set to 1 by a CPU write, auto-read can't set the value back to 0
-				//causing the controllers to continuously report the value of the B button
-				if((_controlManager->GetLastWriteValue() & 0x01) == 0) {
-					_controlManager->Write(0x4016, 0, true);
-				}
+				if(!_state.EnableAutoJoypadRead) {
+					//Skip auto-read for this frame if the flag is not enabled at this point
+					_autoReadNextClock = 0;
+					_autoReadClockStart = 0;
+					_autoReadActive = false;
+				} else {
+					//Set the active flag, reset the registers to 0 (only if auto-read is enabled)
+					_autoReadActive = true;
 
-				_state.ControllerData[0] = 0;
-				_state.ControllerData[1] = 0;
-				_state.ControllerData[2] = 0;
-				_state.ControllerData[3] = 0;
+					_state.ControllerData[0] = 0;
+					_state.ControllerData[1] = 0;
+					_state.ControllerData[2] = 0;
+					_state.ControllerData[3] = 0;
+				}
+				break;
+
+			case 2:
+				//Strobe ends after 256 clock cycles
+				_controlManager->SetAutoReadStrobe(false);
 				break;
 
 			default:
-				if((step & 0x01) == 0) {
-					uint8_t port1 = _controlManager->Read(0x4016, true);
-					uint8_t port2 = _controlManager->Read(0x4017, true);
-
+				if((step & 0x01) == 1) {
+					//First half of the 256-clock cycle reads the ports
+					_autoReadPort1Value = _controlManager->Read(0x4016, true);
+					_autoReadPort2Value = _controlManager->Read(0x4017, true);
+				} else {
+					//Second half shifts the data and inserts the new bit at position 0
 					_state.ControllerData[0] <<= 1;
 					_state.ControllerData[1] <<= 1;
 					_state.ControllerData[2] <<= 1;
 					_state.ControllerData[3] <<= 1;
-
-					_state.ControllerData[0] |= (port1 & 0x01);
-					_state.ControllerData[1] |= (port2 & 0x01);
-					_state.ControllerData[2] |= (port1 & 0x02) >> 1;
-					_state.ControllerData[3] |= (port2 & 0x02) >> 1;
+					_state.ControllerData[0] |= (_autoReadPort1Value & 0x01);
+					_state.ControllerData[1] |= (_autoReadPort2Value & 0x01);
+					_state.ControllerData[2] |= (_autoReadPort1Value & 0x02) >> 1;
+					_state.ControllerData[3] |= (_autoReadPort2Value & 0x02) >> 1;
 				}
 				break;
 		}
 
-		if(step > 32) {
+		if(step >= 34) {
+			//Last tick done, disable auto-read
+			_autoReadClockStart = 0;
 			_autoReadNextClock = 0;
+			_autoReadActive = false;
 			break;
 		}
 	}
-}
-
-bool InternalRegisters::IsAutoReadActive()
-{
-	uint64_t masterClock = _console->GetMasterClock();
-	return (
-		_state.EnableAutoJoypadRead &&
-		_autoReadClockStart > 0 &&
-		masterClock >= _autoReadClockStart &&
-		masterClock <= _autoReadClockStart + 128 * 33 //4224 master clocks
-	);
 }
 
 uint8_t InternalRegisters::ReadControllerData(uint8_t port, bool getMsb)
@@ -141,7 +149,7 @@ uint8_t InternalRegisters::ReadControllerData(uint8_t port, bool getMsb)
 		value = (uint8_t)_state.ControllerData[port];
 	}
 
-	if(IsAutoReadActive()) {
+	if(_autoReadActive) {
 		//TODO add a break option for this?
 		_console->GetEmulator()->DebugLog("[Input] Read input during auto-read - results may be invalid.");
 	}
@@ -215,6 +223,8 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		}
 
 		case 0x4212: {
+			ProcessAutoJoypad();
+
 			uint16_t hClock = _memoryManager->GetHClock();
 			uint16_t scanline = _ppu->GetScanline();
 			uint16_t nmiScanline = _ppu->GetNmiScanline();
@@ -222,7 +232,7 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 			return (
 				(scanline >= nmiScanline ? 0x80 : 0) |
 				((hClock >= 1*4 && hClock <= 274*4) ? 0 : 0x40) |
-				(IsAutoReadActive() ? 0x01 : 0) | //Auto joypad read in progress
+				(_autoReadActive ? 0x01 : 0) | //Auto joypad read in progress
 				(_memoryManager->GetOpenBus() & 0x3E)
 			);
 		}
@@ -260,18 +270,6 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 			bool autoRead = (value & 0x01) != 0;
 			if(_state.EnableAutoJoypadRead != autoRead) {
 				ProcessAutoJoypad();
-				if(!autoRead) {
-					_autoReadClockStart = 0;
-					_autoReadNextClock = 0;
-				} else if(_autoReadClockStart != 0 && _autoReadClockStart <= _console->GetMasterClock()) {
-					//If enable flag was enabled after the first clock of the process, skip auto-read for this frame
-					//Pocky & Rocky seems to enable auto-read in the middle of the auto-read process (scanline ~226)
-					//in some scenarios (e.g: when player 2 presses Y+Left at the same time) and if the auto-read
-					//starts in the middle of its process, this corrupts input in a way that the game does not expect.
-					//TODO determine the exact behavior when auto-read is enabled/disabled mid-way through the auto-read "portion" or the frame
-					_autoReadClockStart = 0;
-					_autoReadNextClock = 0;
-				}
 			}
 
 			_state.EnableNmi = (value & 0x80) != 0;
@@ -357,4 +355,7 @@ void InternalRegisters::Serialize(Serializer &s)
 
 	SV(_autoReadClockStart);
 	SV(_autoReadNextClock);
+	SV(_autoReadActive);
+	SV(_autoReadPort1Value);
+	SV(_autoReadPort2Value);
 }
