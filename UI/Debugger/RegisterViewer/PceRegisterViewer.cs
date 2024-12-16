@@ -214,8 +214,8 @@ public class PceRegisterViewer
 			new RegEntry("$800.0-2", "Channel Select", pceState.Psg.ChannelSelect, Format.X8),
 			new RegEntry("$801.0-3", "Right Amplitude", pceState.Psg.RightVolume, Format.X8),
 			new RegEntry("$801.4-7", "Left Amplitude", pceState.Psg.LeftVolume, Format.X8),
-			new RegEntry("$807.4-7", "LFO Frequency", pceState.Psg.LfoFrequency, Format.X8),
-			new RegEntry("$808", "LFO Control", pceState.Psg.LfoControl, Format.X8),
+			new RegEntry("$808.4-7", "LFO Frequency", pceState.Psg.LfoFrequency, Format.X8),
+			new RegEntry("$809", "LFO Control", pceState.Psg.LfoControl, Format.X8),
 		};
 
 		for(int i = 0; i < 6; i++) {
@@ -229,12 +229,13 @@ public class PceRegisterViewer
 				new RegEntry("$804.7", "Channel Enabled", ch.Enabled),
 				new RegEntry("$805.0-3", "Right Amplitude", ch.RightVolume, Format.X8),
 				new RegEntry("$805.4-7", "Left Amplitude", ch.LeftVolume, Format.X8),
+				new RegEntry("$806.0-4", "DDA Output Value", ch.DdaOutputValue, Format.X8),
 				new RegEntry("", "Timer", ch.Timer),
 			});
 
 			if(i >= 4) {
-				entries.Add(new RegEntry("$806.7", "Noise Enabled", ch.NoiseEnabled));
-				entries.Add(new RegEntry("$806.0-4", "Noise Frequency", ch.NoiseFrequency, Format.X8));
+				entries.Add(new RegEntry("$807.7", "Noise Enabled", ch.NoiseEnabled));
+				entries.Add(new RegEntry("$807.0-4", "Noise Frequency", ch.NoiseFrequency, Format.X8));
 				entries.Add(new RegEntry("", "Noise Timer", ch.NoiseTimer));
 				entries.Add(new RegEntry("", "Noise Output", ch.NoiseOutput == 0x0F ? 1 : 0));
 				entries.Add(new RegEntry("", "Noise LSFR", ch.NoiseLfsr, Format.X24));
