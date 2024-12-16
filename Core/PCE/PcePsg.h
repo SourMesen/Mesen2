@@ -8,6 +8,7 @@
 class Emulator;
 class PceConsole;
 class SoundMixer;
+struct PcEngineConfig;
 struct blip_t;
 
 class PcePsg final : public ISerializable
@@ -32,6 +33,7 @@ private:
 
 	uint32_t _clockCounter = 0;
 	
+	void UpdateOutput(PcEngineConfig& cfg);
 	void UpdateSoundOffset();
 
 public:

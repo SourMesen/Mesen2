@@ -134,11 +134,15 @@ void PcePsgChannel::Write(uint16_t addr, uint8_t value)
 
 			_state.DdaEnabled = (value & 0x40) != 0;
 			_state.Amplitude = (value & 0x1F);
-
-			if(!_state.Enabled && _state.DdaEnabled) {
-				_state.WriteAddr = 0;
+			
+			if(_state.DdaEnabled) {
+				if(_state.Enabled) {
+					//Update channel output immediately when DDA is enabled
+					_state.CurrentOutput = (int8_t)_state.DdaOutputValue - _outputOffset;
+				} else {
+					_state.WriteAddr = 0;
+				}
 			}
-
 			break;
 
 		case 5:
@@ -149,6 +153,10 @@ void PcePsgChannel::Write(uint16_t addr, uint8_t value)
 		case 6:
 			if(_state.DdaEnabled) {
 				_state.DdaOutputValue = value & 0x1F;
+				if(_state.Enabled) {
+					//Update channel output immediately with the new value when DDA is enabled
+					_state.CurrentOutput = (int8_t)_state.DdaOutputValue - _outputOffset;
+				}
 			} else if(!_state.Enabled) {
 				_state.WaveData[_state.WriteAddr] = value & 0x1F;
 				_state.WriteAddr = (_state.WriteAddr + 1) & 0x1F;
