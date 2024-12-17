@@ -65,8 +65,15 @@ void CallstackManager::Pop(AddressInfo& dest, uint32_t destAddress, uint32_t sta
 		}
 
 		if(!foundMatch) {
-			//Couldn't find a matching frame, replace the current one
-			Push(prevFrame.AbsReturn, returnAddr, dest, destAddress, prevFrame.AbsReturn, returnAddr, stackPointer, StackFrameFlags::None);
+			//Couldn't find a matching frame
+			//If the new stack pointer doesn't match the last frame, push a new frame for it
+			//Otherwise, presume that the code has returned to the last function on the stack
+			//This can happen in some patterns, e.g if putting call parameters after the JSR
+			//call, and manipulating the stack upon return to return to the code after the
+			//parameters.
+			if(_callstack.back().ReturnStackPointer != stackPointer) {
+				Push(prevFrame.AbsReturn, returnAddr, dest, destAddress, prevFrame.AbsReturn, returnAddr, stackPointer, StackFrameFlags::None);
+			}
 		}
 	}
 }
