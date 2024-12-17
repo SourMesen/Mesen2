@@ -59,6 +59,9 @@ void InternalRegisters::SetAutoJoypadReadClock()
 
 void InternalRegisters::ProcessAutoJoypad()
 {
+	//Some details/timings may still be incorrect
+	//This is based on these test roms: https://github.com/undisbeliever/snes-test-roms/blob/master/src/hardware-tests/
+	//As well as the CPU schematics here: https://github.com/rgalland/SNES_S-CPU_Schematics/
 	if(_autoReadClockStart == 0) {
 		return;
 	}
@@ -77,6 +80,15 @@ void InternalRegisters::ProcessAutoJoypad()
 	for(uint64_t clock = _autoReadNextClock; clock <= _console->GetMasterClock(); clock += 128) {
 		_autoReadNextClock = clock + 128;
 		int step = (clock - _autoReadClockStart) / 128;
+		
+		if(step >= 2 && !_state.EnableAutoJoypadRead) {
+			//Disable auto-read for the rest of the frame at this point if the enable flag is turned off
+			_autoReadClockStart = 0;
+			_autoReadNextClock = 0;
+			_autoReadActive = false;
+			_controlManager->SetAutoReadStrobe(false);
+			return;
+		}
 
 		switch(step) {
 			case 0:
