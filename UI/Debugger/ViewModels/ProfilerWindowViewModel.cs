@@ -246,6 +246,12 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}
 
+			if(func.Flags.HasFlag(StackFrameFlags.Irq)) {
+				functionName = "[irq] " + functionName;
+			} else if(func.Flags.HasFlag(StackFrameFlags.Nmi)) {
+				functionName = "[nmi] " + functionName;
+			}
+
 			return functionName;
 		}
 	}

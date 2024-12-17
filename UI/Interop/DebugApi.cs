@@ -1618,6 +1618,7 @@ namespace Mesen.Interop
 		public UInt64 MinCycles;
 		public UInt64 MaxCycles;
 		public AddressInfo Address;
+		public StackFrameFlags Flags;
 
 		public UInt64 GetAvgCycles()
 		{

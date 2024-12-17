@@ -13,6 +13,7 @@ struct ProfiledFunction
 	uint64_t MinCycles = UINT64_MAX;
 	uint64_t MaxCycles = 0;
 	AddressInfo Address = {};
+	StackFrameFlags Flags = {};
 };
 
 class Profiler

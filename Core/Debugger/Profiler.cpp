@@ -46,6 +46,7 @@ void Profiler::StackFunction(AddressInfo &addr, StackFrameFlags stackFlag)
 
 		ProfiledFunction& func = _functions[key];
 		func.CallCount++;
+		func.Flags = stackFlag;
 
 		_currentFunction = key;
 		_currentCycleCount = 0;
