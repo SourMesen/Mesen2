@@ -1,0 +1,33 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="50"
+	x:Name="root"
+	x:Class="Mesen.Controls.FirmwareSelect"
+>
+	<Grid DataContext="{Binding ElementName=root}" ColumnDefinitions="*,Auto,Auto,Auto" RowDefinitions="Auto">
+		<TextBox Text="{Binding Filename}" Grid.Column="0" IsReadOnly="True" />
+		<Image
+			Grid.Column="1"
+			Stretch="None"
+			Source="/Assets/Warning.png"
+			ToolTip.Tip="{Binding WarningMessage}"
+			ToolTip.ShowDelay="0"
+			IsVisible="{Binding WarningMessage.Length}"
+			Margin="3 0"
+		/>
+		<Button Content="{l:Translate btnSelect}" Click="btnBrowse_OnClick" Grid.Column="2" />
+		<c:IconButton
+			Grid.Column="3"
+			ToolTip.Tip="{l:Translate btnDelete}"
+			Icon="Assets/Close.png"
+			Command="{Binding DeleteFirmware}"
+			Height="21"
+			Width="21"
+		/>
+	</Grid>
+</UserControl>

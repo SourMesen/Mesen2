@@ -128,6 +128,10 @@
     <Compile Update="Controls\ControllerButton.axaml.cs">
       <DependentUpon>ControllerButton.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\FirmwareSelect.axaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>FirmwareSelect.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\SoftwareRendererView.axaml.cs">
       <DependentUpon>SoftwareRendererView.axaml</DependentUpon>
     </Compile>
@@ -633,6 +637,11 @@
     <EmbeddedResource Include="Dependencies.zip" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
     <EmbeddedResource Include="Utilities\DipSwitchDefinitions.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaXaml Update="Controls\FirmwareSelect.axaml">
+      <SubType>Designer</SubType>
+    </AvaloniaXaml>
   </ItemGroup>
 
   <Target Name="PreBuildWindows" BeforeTargets="PreBuildEvent" Condition="'$(RuntimeIdentifier)'=='win-x64'">

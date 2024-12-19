@@ -64,6 +64,9 @@
 				<ResourceDictionary x:Key="Dark">
 					<Color x:Key="MesenBlackBorderColor">#FFFFFFFF</Color>
 
+					<Color x:Key="ButtonBackgroundDisabled">#333</Color>
+					<Color x:Key="RepeatButtonBackgroundDisabled">#333</Color>
+
 					<Color x:Key="MesenGridBackground">#00000000</Color>
 					<Color x:Key="MesenMenuBackground">#00000000</Color>
 					<Color x:Key="MesenMenuBackgroundHighlight">#40808080</Color>

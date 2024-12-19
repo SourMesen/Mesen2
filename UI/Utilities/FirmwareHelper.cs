@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Rendering;
 using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Localization;
@@ -15,7 +16,7 @@ namespace Mesen.Utilities
 {
 	public static class FirmwareHelper
 	{
-		private static string GetFileHash(string filename)
+		public static string GetFileHash(string filename)
 		{
 			using(SHA256 sha256Hash = SHA256.Create()) {
 				// ComputeHash - returns byte array  
@@ -44,34 +45,64 @@ namespace Mesen.Utilities
 					string? selectedFile = await FileDialogHelper.OpenFile(null, wnd, FileDialogHelper.FirmwareExt);
 					if(selectedFile != null) {
 						try {
-							List<string> expectedHashes = msg.GetFileHashes();
-							long fileSize = new FileInfo(selectedFile).Length;
-							if(fileSize != msg.Size && (msg.AltSize == 0 || fileSize != msg.AltSize)) {
-								await MesenMsgBox.Show(wnd, "FirmwareFileWrongSize", MessageBoxButtons.OK, MessageBoxIcon.Error, msg.Size.ToString());
-								continue;
-							}
-
-							string fileHash = GetFileHash(selectedFile);
-							if(!expectedHashes.Contains(fileHash)) {
-								if(await MesenMsgBox.Show(wnd, "FirmwareMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, ResourceHelper.GetEnumText(msg.Firmware), expectedHashes[0], fileHash) != DialogResult.OK) {
-									//Files don't match and user cancelled the action
-									return;
-								}
-							}
-
-							string destination = Path.Combine(ConfigManager.FirmwareFolder, filename);
-							if(selectedFile != destination) {
-								File.Copy(selectedFile, destination, true);
+							if(await SelectFirmwareFile(msg.Firmware, selectedFile, ApplicationHelper.GetMainWindow())) {
+								break;
 							}
 						} catch(Exception ex) {
 							await MesenMsgBox.ShowException(ex);
 						}
+					} else {
+						break;
 					}
+				}
+			}
+		}
 
-					//Only loop if user picks a file with the wrong size
+		public static async Task<bool> SelectFirmwareFile(FirmwareType type, string selectedFile, IRenderRoot? wnd)
+		{
+			FirmwareFiles knownFirmwares = type.GetFirmwareInfo();
+
+			long fileSize = new FileInfo(selectedFile).Length;
+
+			bool foundSizeMatch = false;
+			foreach(FirmwareFileInfo knownFirmware in knownFirmwares) {
+				if(knownFirmware.Size == fileSize) {
+					foundSizeMatch = true;
+				}
+			}
+
+			if(!foundSizeMatch) {
+				await MesenMsgBox.Show(wnd, "FirmwareFileWrongSize", MessageBoxButtons.OK, MessageBoxIcon.Error, knownFirmwares[0].Size.ToString());
+				return false;
+			}
+
+			string fileHash = GetFileHash(selectedFile);
+			bool hashMatches = false;
+			foreach(FirmwareFileInfo knownFirmware in knownFirmwares) {
+				if(Array.IndexOf(knownFirmware.Hashes, fileHash) >= 0) {
+					hashMatches = true;
 					break;
 				}
 			}
+
+			if(!hashMatches) {
+				if(await MesenMsgBox.Show(wnd, "FirmwareMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, ResourceHelper.GetEnumText(type), knownFirmwares[0].Hashes[0], fileHash) != DialogResult.OK) {
+					//Files don't match and user cancelled the action, retry
+					return false;
+				}
+			}
+
+			string destination = Path.Combine(ConfigManager.FirmwareFolder, knownFirmwares.Names[0]);
+			if(selectedFile != destination) {
+				if(File.Exists(destination)) {
+					if(await MesenMsgBox.Show(wnd, "OverwriteFirmware", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, destination) != DialogResult.OK) {
+						//Don't overwrite the existing file
+						return true;
+					}
+				}
+				File.Copy(selectedFile, destination, true);
+			}
+			return true;
 		}
 	}
 }

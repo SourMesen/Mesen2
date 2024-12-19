@@ -7,7 +7,7 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:cfg="using:Mesen.Config"
 	xmlns:l="using:Mesen.Localization"
-	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="950"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="vm:EmulationConfigViewModel"
@@ -40,6 +40,131 @@
 							<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblRunAhead}" />
 							<NumericUpDown Grid.Column="1" Grid.Row="4" Value="{Binding Config.RunAheadFrames}" Maximum="10" Minimum="0" />
 							<TextBlock Grid.Column="2" Grid.Row="4" Text="{l:Translate lblRunAheadFrames}" />
+						</Grid>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+
+		<TabItem Header="{l:Translate tpgFirmwares}">
+			<TabItem.Styles>
+				<Style Selector="Grid > TextBlock">
+					<Setter Property="MinWidth" Value="170" />
+				</Style>
+			</TabItem.Styles>
+			
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Disabled" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblGameboy}" Icon="Assets/GameboyIcon.png" Margin="0">
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,*">
+							<TextBlock Text="Boot ROM (Monochrome)" />
+							<c:FirmwareSelect FirmwareType="Gameboy" Grid.Column="1" />
+
+							<TextBlock Text="Boot ROM (Color)" Grid.Row="1" />
+							<c:FirmwareSelect FirmwareType="GameboyColor" Grid.Column="1" Grid.Row="1" />
+
+							<TextBlock Text="Boot ROM (SGB1)" Grid.Row="2" />
+							<c:FirmwareSelect FirmwareType="Sgb1GameboyCpu" Grid.Column="1" Grid.Row="2" />
+
+							<TextBlock Text="Boot ROM (SGB2)" Grid.Row="3" />
+							<c:FirmwareSelect FirmwareType="Sgb2GameboyCpu" Grid.Column="1" Grid.Row="3" />
+						</Grid>
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblGba}" Icon="Assets/GbaIcon.png" >
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,*">
+							<TextBlock Text="Boot ROM" />
+							<c:FirmwareSelect FirmwareType="GameboyAdvance" Grid.Column="1" />
+						</Grid>
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblNes}" Icon="Assets/NesIcon.png" >
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,*">
+							<TextBlock Text="FDS" />
+							<c:FirmwareSelect FirmwareType="FDS" Grid.Column="1" />
+
+							<TextBlock Text="StudyBox" Grid.Row="1" />
+							<c:FirmwareSelect FirmwareType="StudyBox" Grid.Column="1" Grid.Row="1" />
+
+							<TextBlock Text="YMF288 ADPCM ROM (EPSM)" Grid.Row="2" />
+							<c:FirmwareSelect FirmwareType="Ymf288AdpcmRom" Grid.Column="1" Grid.Row="2" />
+						</Grid>
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblSnes}" Icon="Assets/SnesIcon.png" >
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+							<TextBlock Text="DSP-1" Grid.Row="1" />
+							<c:FirmwareSelect FirmwareType="DSP1" Grid.Column="1" Grid.Row="1" />
+
+							<TextBlock Text="DSP-1B" Grid.Row="2" />
+							<c:FirmwareSelect FirmwareType="DSP1B" Grid.Column="1" Grid.Row="2" />
+
+							<TextBlock Text="DSP-2" Grid.Row="3" />
+							<c:FirmwareSelect FirmwareType="DSP2" Grid.Column="1" Grid.Row="3" />
+
+							<TextBlock Text="DSP-3" Grid.Row="4" />
+							<c:FirmwareSelect FirmwareType="DSP3" Grid.Column="1" Grid.Row="4" />
+
+							<TextBlock Text="DSP-4" Grid.Row="5" />
+							<c:FirmwareSelect FirmwareType="DSP4" Grid.Column="1" Grid.Row="5" />
+
+							<TextBlock Text="Satellaview / BS-X" Grid.Row="6" />
+							<c:FirmwareSelect FirmwareType="Satellaview" Grid.Column="1" Grid.Row="6" />
+
+							<TextBlock Text="Super Game Boy (v1)" Grid.Row="7" />
+							<c:FirmwareSelect FirmwareType="SGB1" Grid.Column="1" Grid.Row="7" />
+
+							<TextBlock Text="Super Game Boy (v2)" Grid.Row="8" />
+							<c:FirmwareSelect FirmwareType="SGB2" Grid.Column="1" Grid.Row="8" />
+
+							<TextBlock Text="ST010" Grid.Row="9" />
+							<c:FirmwareSelect FirmwareType="ST010" Grid.Column="1" Grid.Row="9" />
+
+							<TextBlock Text="ST011" Grid.Row="10" />
+							<c:FirmwareSelect FirmwareType="ST011" Grid.Column="1" Grid.Row="10" />
+
+							<TextBlock Text="ST018" Grid.Row="11" IsVisible="False" />
+							<c:FirmwareSelect FirmwareType="ST018" Grid.Column="1" Grid.Row="11" IsVisible="False" />
+						</Grid>
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblPce}" Icon="Assets/PceIcon.png" >
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,*">
+							<TextBlock Text="Super CD-ROM²" />
+							<c:FirmwareSelect FirmwareType="PceSuperCd" Grid.Column="1" />
+
+							<TextBlock Text="Games Express" Grid.Row="1" />
+							<c:FirmwareSelect FirmwareType="PceGamesExpress" Grid.Column="1" Grid.Row="1" />
+						</Grid>
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblSms}" Icon="Assets/SmsIcon.png" >
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,*">
+							<TextBlock Text="Boot ROM (SMS)" />
+							<c:FirmwareSelect FirmwareType="SmsBootRom" Grid.Column="1" />
+
+							<TextBlock Text="Boot ROM (GG)" Grid.Row="1" />
+							<c:FirmwareSelect FirmwareType="GgBootRom" Grid.Column="1" Grid.Row="1" />
+						</Grid>
+					</c:OptionSection>
+					
+					<c:OptionSection Header="{l:Translate lblWonderSwan}" Icon="Assets/WsIcon.png" >
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,*">
+							<TextBlock Text="Boot ROM (WonderSwan)" />
+							<c:FirmwareSelect FirmwareType="WonderSwan" Grid.Column="1" />
+
+							<TextBlock Text="Boot ROM (WonderSwan Color)" Grid.Row="1" />
+							<c:FirmwareSelect FirmwareType="WonderSwanColor" Grid.Column="1" Grid.Row="1" />
+
+							<TextBlock Text="Boot ROM (SwanCrystal)" Grid.Row="2" />
+							<c:FirmwareSelect FirmwareType="SwanCrystal" Grid.Column="1" Grid.Row="2" />
+						</Grid>
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblOtherConsoles}" Icon="Assets/Drive.png" >
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,*">
+							<TextBlock Text="ColecoVision - Boot ROM" />
+							<c:FirmwareSelect FirmwareType="ColecoVision" Grid.Column="1" />
 						</Grid>
 					</c:OptionSection>
 				</StackPanel>

@@ -200,7 +200,18 @@
 			<Control ID="lblRunAhead">Run Ahead:</Control>
 			<Control ID="lblRunAheadFrames">frames (reduces input lag, increases CPU usage)</Control>
 
-			<Control ID="lblRegion">Region:</Control>
+			<Control ID="tpgFirmwares">Firmwares</Control>
+			<Control ID="lblNes">NES</Control>
+			<Control ID="lblSnes">SNES</Control>
+			<Control ID="lblGameboy">Game Boy</Control>
+			<Control ID="lblGba">Game Boy Advance</Control>
+			<Control ID="lblPce">PC Engine</Control>
+			<Control ID="lblSms">SMS / Game Gear</Control>
+			<Control ID="lblColecoVision">ColecoVision</Control>
+			<Control ID="lblWonderSwan">WonderSwan</Control>
+			<Control ID="lblOtherConsoles">Other systems</Control>
+			
+			<Control ID="lblWrongHash">File does not contain the expected data, and may not work correctly.</Control>
 		</Form>
 
 		<Form ID="VideoConfigOverrideView">
@@ -1681,6 +1692,11 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
+
+		<Form ID="FirmwareSelect">
+			<Control ID="btnSelect">Select...</Control>
+			<Control ID="btnDelete">Delete file</Control>
+		</Form>
 	</Forms>
 	<Messages>
 		<Message ID="LastSession">Last Session</Message>
@@ -1698,6 +1714,11 @@
 
 		<Message ID="PromptSaveChanges">Save changes?</Message>
 		<Message ID="PromptKeepChanges">Keep changes?</Message>
+
+		<Message ID="UnknownFirmwareHash">This file does not match any of the known firmwares and may not work properly.&#xA;&#xA;Expected (SHA256): {0}&#xA;Current (SHA256): {1}</Message>
+		<Message ID="InvalidFirmwareSize">This file does not have the required size.&#xA;&#xA;Expected: {0} bytes&#xA;Current: {1} bytes</Message>
+		<Message ID="PromptDeleteFirmware">The following file will be deleted permanently. Are you sure?&#xA;&#xA;{0}</Message>
+		<Message ID="OverwriteFirmware">The following file already exists and will be overwritten. This cannot be undone. Are you sure?&#xA;&#xA;{0}</Message>
 
 		<Message ID="MovieSegment">Segment #{0}</Message>
 		<Message ID="MovieExportEntireSegment">Export entire segment</Message>
@@ -2668,6 +2689,8 @@ E
 			<Value ID="WonderSwanColor">WonderSwan Color</Value>
 			<Value ID="SwanCrystal">SwanCrystal</Value>
 			<Value ID="Ymf288AdpcmRom">YFM288 ADPCM ROM (EPSM)</Value>
+			<Value ID="SmsBootRom">Master System - Boot ROM</Value>
+			<Value ID="GgBootRom">Game Gear - Boot ROM</Value>
 		</Enum>
 
 		<Enum ID="CpuType">

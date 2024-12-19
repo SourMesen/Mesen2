@@ -411,6 +411,8 @@ bool Emulator::InternalLoadRom(VirtualFile romFile, VirtualFile patchFile, bool 
 		_console->SaveBattery();
 	}
 
+	_soundMixer->StopAudio();
+
 	if(!forPowerCycle) {
 		_movieManager->Stop();
 	}
