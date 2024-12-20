@@ -497,6 +497,7 @@ struct PcEngineConfig
 	ControllerConfig Port1;
 	ControllerConfig Port1SubPorts[5];
 
+	bool AllowInvalidInput = false;
 	bool PreventSelectRunReset = false;
 
 	PceConsoleType ConsoleType = PceConsoleType::Auto;
@@ -542,6 +543,7 @@ struct SnesConfig
 
 	ConsoleRegion Region = ConsoleRegion::Auto;
 
+	bool AllowInvalidInput = false;
 	bool BlendHighResolutionModes = false;
 	bool HideBgLayer1 = false;
 	bool HideBgLayer2 = false;
@@ -693,6 +695,7 @@ struct SmsConfig
 
 	SmsRevision Revision = SmsRevision::Compatibility;
 
+	bool AllowInvalidInput = false;
 	bool UseSgPalette = false;
 	bool GgBlendFrames = true;
 	bool RemoveSpriteLimit = false;

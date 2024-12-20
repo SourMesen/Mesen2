@@ -84,9 +84,10 @@
 				</Grid>
 			</c:OptionSection>
 
-			<c:OptionSection Header="{l:Translate grpInputSettings}">
+			<c:OptionSection Header="{l:Translate grpGeneral}">
 				<StackPanel>
 					<CheckBox IsChecked="{Binding Config.PreventSelectRunReset}" Content="{l:Translate chkPreventSelectRunReset}" />
+					<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
 				</StackPanel>
 			</c:OptionSection>
 		</StackPanel>

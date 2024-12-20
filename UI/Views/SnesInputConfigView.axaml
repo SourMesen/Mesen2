@@ -19,111 +19,119 @@
 
 	<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 		<StackPanel HorizontalAlignment="Left">
-			<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
-				<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPort1}" Margin="5 0 30 0" />
-				<c:InputComboBox
-					Grid.Row="0" Grid.Column="1"
-					Config="{Binding Config.Port1}"
-					ControllerType="{Binding Config.Port1.Type}"
-					AvailableValues="{Binding AvailableControllerTypesP12}"
-				/>
+			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPort1}" Margin="5 0 30 0" />
+					<c:InputComboBox
+						Grid.Row="0" Grid.Column="1"
+						Config="{Binding Config.Port1}"
+						ControllerType="{Binding Config.Port1.Type}"
+						AvailableValues="{Binding AvailableControllerTypesP12}"
+					/>
 
-				<c:GroupBox
-					Header="{l:Translate grpMultitap}"
-					IsVisible="{Binding HasMultitap1}"
-					HorizontalAlignment="Right"
-					Margin="0 5 -6 5"
-					Grid.Row="1"
-					Grid.Column="0"
-					Grid.ColumnSpan="3"
-				>
-					<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
-						<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblMultitap1A}" />
-						<c:InputComboBox
-							Grid.Row="0" Grid.Column="1"
-							Config="{Binding Config.Port1}"
-							ControllerType="{Binding Config.Port1A.Type}"
-							AvailableValues="{Binding AvailableControllerTypesMultitap}"
-						/>
+					<c:GroupBox
+						Header="{l:Translate grpMultitap}"
+						IsVisible="{Binding HasMultitap1}"
+						HorizontalAlignment="Right"
+						Margin="0 5 -6 5"
+						Grid.Row="1"
+						Grid.Column="0"
+						Grid.ColumnSpan="3"
+					>
+						<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblMultitap1A}" />
+							<c:InputComboBox
+								Grid.Row="0" Grid.Column="1"
+								Config="{Binding Config.Port1}"
+								ControllerType="{Binding Config.Port1A.Type}"
+								AvailableValues="{Binding AvailableControllerTypesMultitap}"
+							/>
 
-						<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblMultitap1B}" />
-						<c:InputComboBox
-							Grid.Row="1" Grid.Column="1"
-							Config="{Binding Config.Port1B}"
-							ControllerType="{Binding Config.Port1B.Type}"
-							AvailableValues="{Binding AvailableControllerTypesMultitap}"
-						/>
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblMultitap1B}" />
+							<c:InputComboBox
+								Grid.Row="1" Grid.Column="1"
+								Config="{Binding Config.Port1B}"
+								ControllerType="{Binding Config.Port1B.Type}"
+								AvailableValues="{Binding AvailableControllerTypesMultitap}"
+							/>
 
-						<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblMultitap1C}" />
-						<c:InputComboBox
-							Grid.Row="2" Grid.Column="1"
-							Config="{Binding Config.Port1C}"
-							ControllerType="{Binding Config.Port1C.Type}"
-							AvailableValues="{Binding AvailableControllerTypesMultitap}"
-						/>
+							<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblMultitap1C}" />
+							<c:InputComboBox
+								Grid.Row="2" Grid.Column="1"
+								Config="{Binding Config.Port1C}"
+								ControllerType="{Binding Config.Port1C.Type}"
+								AvailableValues="{Binding AvailableControllerTypesMultitap}"
+							/>
 
-						<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblMultitap1D}" />
-						<c:InputComboBox
-							Grid.Row="3" Grid.Column="1"
-							Config="{Binding Config.Port1D}"
-							ControllerType="{Binding Config.Port1D.Type}"
-							AvailableValues="{Binding AvailableControllerTypesMultitap}"
-						/>
-					</Grid>
-				</c:GroupBox>
+							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblMultitap1D}" />
+							<c:InputComboBox
+								Grid.Row="3" Grid.Column="1"
+								Config="{Binding Config.Port1D}"
+								ControllerType="{Binding Config.Port1D.Type}"
+								AvailableValues="{Binding AvailableControllerTypesMultitap}"
+							/>
+						</Grid>
+					</c:GroupBox>
 
-				<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblPort2}" Margin="5 0 30 0" />
-				<c:InputComboBox
-					Grid.Row="2" Grid.Column="1"
-					Config="{Binding Config.Port2}"
-					ControllerType="{Binding Config.Port2.Type}"
-					AvailableValues="{Binding AvailableControllerTypesP12}"
-				/>
+					<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblPort2}" Margin="5 0 30 0" />
+					<c:InputComboBox
+						Grid.Row="2" Grid.Column="1"
+						Config="{Binding Config.Port2}"
+						ControllerType="{Binding Config.Port2.Type}"
+						AvailableValues="{Binding AvailableControllerTypesP12}"
+					/>
 
-				<c:GroupBox
-					Header="{l:Translate grpMultitap}"
-					IsVisible="{Binding HasMultitap2}"
-					HorizontalAlignment="Right"
-					Margin="0 5 -6 5"
-					Grid.Row="3"
-					Grid.Column="0"
-					Grid.ColumnSpan="3"
-				>
-					<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
-						<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblMultitap2A}" />
-						<c:InputComboBox
-							Grid.Row="0" Grid.Column="1"
-							Config="{Binding Config.Port2}"
-							ControllerType="{Binding Config.Port2A.Type}"
-							AvailableValues="{Binding AvailableControllerTypesMultitap}"
-						/>
+					<c:GroupBox
+						Header="{l:Translate grpMultitap}"
+						IsVisible="{Binding HasMultitap2}"
+						HorizontalAlignment="Right"
+						Margin="0 5 -6 5"
+						Grid.Row="3"
+						Grid.Column="0"
+						Grid.ColumnSpan="3"
+					>
+						<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblMultitap2A}" />
+							<c:InputComboBox
+								Grid.Row="0" Grid.Column="1"
+								Config="{Binding Config.Port2}"
+								ControllerType="{Binding Config.Port2A.Type}"
+								AvailableValues="{Binding AvailableControllerTypesMultitap}"
+							/>
 
-						<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblMultitap2B}" />
-						<c:InputComboBox
-							Grid.Row="1" Grid.Column="1"
-							Config="{Binding Config.Port2B}"
-							ControllerType="{Binding Config.Port2B.Type}"
-							AvailableValues="{Binding AvailableControllerTypesMultitap}"
-						/>
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblMultitap2B}" />
+							<c:InputComboBox
+								Grid.Row="1" Grid.Column="1"
+								Config="{Binding Config.Port2B}"
+								ControllerType="{Binding Config.Port2B.Type}"
+								AvailableValues="{Binding AvailableControllerTypesMultitap}"
+							/>
 
-						<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblMultitap2C}" />
-						<c:InputComboBox
-							Grid.Row="2" Grid.Column="1"
-							Config="{Binding Config.Port2C}"
-							ControllerType="{Binding Config.Port2C.Type}"
-							AvailableValues="{Binding AvailableControllerTypesMultitap}"
-						/>
+							<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblMultitap2C}" />
+							<c:InputComboBox
+								Grid.Row="2" Grid.Column="1"
+								Config="{Binding Config.Port2C}"
+								ControllerType="{Binding Config.Port2C.Type}"
+								AvailableValues="{Binding AvailableControllerTypesMultitap}"
+							/>
 
-						<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblMultitap2D}" />
-						<c:InputComboBox
-							Grid.Row="3" Grid.Column="1"
-							Config="{Binding Config.Port2D}"
-							ControllerType="{Binding Config.Port2D.Type}"
-							AvailableValues="{Binding AvailableControllerTypesMultitap}"
-						/>
-					</Grid>
-				</c:GroupBox>
-			</Grid>
+							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblMultitap2D}" />
+							<c:InputComboBox
+								Grid.Row="3" Grid.Column="1"
+								Config="{Binding Config.Port2D}"
+								ControllerType="{Binding Config.Port2D.Type}"
+								AvailableValues="{Binding AvailableControllerTypesMultitap}"
+							/>
+						</Grid>
+					</c:GroupBox>
+				</Grid>
+			</c:OptionSection>
+
+			<c:OptionSection Header="{l:Translate grpGeneral}">
+				<StackPanel>
+					<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+				</StackPanel>
+			</c:OptionSection>
 		</StackPanel>
 	</ScrollViewer>
 </UserControl>

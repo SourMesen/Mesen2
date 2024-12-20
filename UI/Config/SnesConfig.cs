@@ -27,6 +27,8 @@ namespace Mesen.Config
 		[Reactive] public SnesControllerConfig Port2C { get; set; } = new SnesControllerConfig();
 		[Reactive] public SnesControllerConfig Port2D { get; set; } = new SnesControllerConfig();
 
+		[Reactive] public bool AllowInvalidInput { get; set; } = false;
+
 		[ValidValues(ConsoleRegion.Auto, ConsoleRegion.Ntsc, ConsoleRegion.Pal)]
 		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
 
@@ -88,6 +90,8 @@ namespace Mesen.Config
 
 				Region = this.Region,
 
+				AllowInvalidInput = this.AllowInvalidInput,
+
 				BlendHighResolutionModes = this.BlendHighResolutionModes,
 				HideBgLayer1 = this.HideBgLayer1,
 				HideBgLayer2 = this.HideBgLayer2,
@@ -146,6 +150,7 @@ namespace Mesen.Config
 
 		public ConsoleRegion Region;
 
+		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 		[MarshalAs(UnmanagedType.I1)] public bool BlendHighResolutionModes;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer1;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer2;

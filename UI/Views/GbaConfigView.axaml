@@ -65,24 +65,28 @@
 						<TextBlock Text="{l:Translate lblRtcType}" Grid.Row="1" />
 						<c:EnumComboBox SelectedItem="{Binding Config.RtcType}" MinWidth="150" Grid.Row="1" Grid.Column="1" />
 					</Grid>
-					<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
 					<c:CheckBoxWarning IsChecked="{Binding Config.EnableMgbaLogApi}" Text="{l:Translate chkEnableMgbaLogApi}" />
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgInput}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
-				<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock Text="{l:Translate lblPlayer1}" />
-						<Button
-							Margin="10 0 0 0"
-							Command="{Binding SetupPlayer}"
-							CommandParameter="{Binding $self}"
-							Content="{l:Translate btnSetup}"
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblPlayer1}" />
+							<Button
+								Margin="10 0 0 0"
+								Command="{Binding SetupPlayer}"
+								CommandParameter="{Binding $self}"
+								Content="{l:Translate btnSetup}"
 						/>
-					</StackPanel>
-				</c:OptionSection>
+						</StackPanel>
+					</c:OptionSection>
+					<c:OptionSection Header="{l:Translate grpGeneral}">
+						<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+					</c:OptionSection>
+				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgVideo}">

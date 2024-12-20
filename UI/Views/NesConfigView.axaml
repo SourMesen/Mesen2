@@ -332,8 +332,6 @@
 						<c:CheckBoxWarning IsChecked="{Binding Config.EnableDmcSampleDuplicationGlitch}" Text="{l:Translate chkEnableDmcSampleDuplicationGlitch}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableGameGenieBusConflicts}" Text="{l:Translate chkDisableGameGenieBusConflicts}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableFlashSaves}" Text="{l:Translate chkDisableFlashSaves}" />
-
-						<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>

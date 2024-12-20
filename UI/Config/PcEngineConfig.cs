@@ -24,6 +24,7 @@ namespace Mesen.Config
 		[Reactive] public ControllerConfig Port1D { get; set; } = new();
 		[Reactive] public ControllerConfig Port1E { get; set; } = new();
 
+		[Reactive] public bool AllowInvalidInput { get; set; } = false;
 		[Reactive] public bool PreventSelectRunReset { get; set; } = true;
 		
 		[Reactive] public PceConsoleType ConsoleType { get; set; } = PceConsoleType.Auto;
@@ -68,6 +69,7 @@ namespace Mesen.Config
 				Port1D = Port1D.ToInterop(),
 				Port1E = Port1E.ToInterop(),
 
+				AllowInvalidInput = this.AllowInvalidInput,
 				PreventSelectRunReset = PreventSelectRunReset,
 
 				ConsoleType = ConsoleType,
@@ -119,6 +121,7 @@ namespace Mesen.Config
 		public InteropControllerConfig Port1D;
 		public InteropControllerConfig Port1E;
 
+		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 		[MarshalAs(UnmanagedType.I1)] public bool PreventSelectRunReset;
 
 		public PceConsoleType ConsoleType;

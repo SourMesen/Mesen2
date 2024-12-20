@@ -69,23 +69,27 @@
 						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
 						<c:EnumComboBox SelectedItem="{Binding Config.RamPowerOnState}" Width="200" />
 					</StackPanel>
-					<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgInput}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
-				<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock Text="{l:Translate lblPlayer1}" />
-						<Button
-							Margin="10 0 0 0"
-							Command="{Binding SetupPlayer}"
-							CommandParameter="{Binding $self}"
-							Content="{l:Translate btnSetup}"
-						/>
-					</StackPanel>
-				</c:OptionSection>
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblPlayer1}" />
+							<Button
+								Margin="10 0 0 0"
+								Command="{Binding SetupPlayer}"
+								CommandParameter="{Binding $self}"
+								Content="{l:Translate btnSetup}"
+							/>
+						</StackPanel>
+					</c:OptionSection>
+					<c:OptionSection Header="{l:Translate grpGeneral}">
+						<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+					</c:OptionSection>
+				</StackPanel>
 			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgVideo}">

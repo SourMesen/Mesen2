@@ -41,6 +41,12 @@
 					/>
 				</Grid>
 			</c:OptionSection>
+
+			<c:OptionSection Header="{l:Translate grpGeneral}">
+				<StackPanel>
+					<c:CheckBoxWarning IsChecked="{Binding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+				</StackPanel>
+			</c:OptionSection>
 		</StackPanel>
 	</ScrollViewer>
 </UserControl>

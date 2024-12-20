@@ -19,6 +19,8 @@ public class SmsConfig : BaseConfig<SmsConfig>
 	[Reactive] public SmsControllerConfig Port1 { get; set; } = new();
 	[Reactive] public SmsControllerConfig Port2 { get; set; } = new();
 
+	[Reactive] public bool AllowInvalidInput { get; set; } = false;
+
 	[ValidValues(ConsoleRegion.Auto, ConsoleRegion.Ntsc, ConsoleRegion.Pal)]
 	[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
 
@@ -59,6 +61,7 @@ public class SmsConfig : BaseConfig<SmsConfig>
 			RamPowerOnState = RamPowerOnState,
 			Revision = Revision,
 
+			AllowInvalidInput = this.AllowInvalidInput,
 			UseSgPalette = UseSgPalette,
 			GgBlendFrames = GgBlendFrames,
 			RemoveSpriteLimit = RemoveSpriteLimit,
@@ -95,6 +98,7 @@ public struct InteropSmsConfig
 	public RamState RamPowerOnState;
 	public SmsRevision Revision;
 
+	[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 	[MarshalAs(UnmanagedType.I1)] public bool UseSgPalette;
 	[MarshalAs(UnmanagedType.I1)] public bool GgBlendFrames;
 	[MarshalAs(UnmanagedType.I1)] public bool RemoveSpriteLimit;
