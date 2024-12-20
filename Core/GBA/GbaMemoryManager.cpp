@@ -244,11 +244,19 @@ void GbaMemoryManager::UpdateOpenBus(uint32_t addr, uint32_t value)
 			value >>= 8;
 		}
 		memcpy(_state.InternalOpenBus, _state.IwramOpenBus, sizeof(_state.IwramOpenBus));
-	} else {
-		for(int i = 0; i < width; i++) {
-			_state.InternalOpenBus[i] = value;
-			value >>= 8;
-		}
+	} else if constexpr(width == 4) {
+		_state.InternalOpenBus[0] = value;
+		_state.InternalOpenBus[1] = value >> 8;
+		_state.InternalOpenBus[2] = value >> 16;
+		_state.InternalOpenBus[3] = value >> 24;
+	} else if constexpr(width == 2) {
+		_state.InternalOpenBus[2] = _state.InternalOpenBus[0] = value;
+		_state.InternalOpenBus[3] = _state.InternalOpenBus[1] = value >> 8;
+	} else if constexpr(width == 1) {
+		_state.InternalOpenBus[0] = value;
+		_state.InternalOpenBus[1] = value;
+		_state.InternalOpenBus[2] = value;
+		_state.InternalOpenBus[3] = value;
 	}
 }
 
