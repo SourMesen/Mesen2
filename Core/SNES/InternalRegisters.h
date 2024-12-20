@@ -30,6 +30,7 @@ private:
 	uint64_t _autoReadClockStart = 0;
 	uint64_t _autoReadNextClock = 0;
 	bool _autoReadActive = false;
+	bool _autoReadDisabled = true;
 	uint8_t _autoReadPort1Value = 0;
 	uint8_t _autoReadPort2Value = 0;
 

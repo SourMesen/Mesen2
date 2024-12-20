@@ -55,6 +55,7 @@ void InternalRegisters::SetAutoJoypadReadClock()
 	uint64_t rangeStart = _console->GetMasterClock() + 130;
 	_autoReadClockStart = rangeStart + ((rangeStart & 0xFF) ? (256 - (rangeStart & 0xFF)) : 0) - 128;
 	_autoReadNextClock = _autoReadClockStart;
+	_autoReadDisabled = false;
 }
 
 void InternalRegisters::ProcessAutoJoypad()
@@ -62,34 +63,22 @@ void InternalRegisters::ProcessAutoJoypad()
 	//Some details/timings may still be incorrect
 	//This is based on these test roms: https://github.com/undisbeliever/snes-test-roms/blob/master/src/hardware-tests/
 	//As well as the CPU schematics here: https://github.com/rgalland/SNES_S-CPU_Schematics/
-	if(_autoReadClockStart == 0) {
-		return;
-	}
-
 	uint64_t masterClock = _console->GetMasterClock();
 	if(masterClock < _autoReadClockStart) {
 		return;
 	}
 
-	if((masterClock - _autoReadClockStart) < 256) {
-		//If EnableAutoJoypadRead changes at any point in the first 256 clocks of this process,
-		//the value sent to OUT0 can be changed and immediately strobe the controllers, etc.
-		_controlManager->SetAutoReadStrobe(_state.EnableAutoJoypadRead);
+	if(_autoReadDisabled) {
+		if((masterClock - _autoReadClockStart) >= 256) {
+			_controlManager->SetAutoReadStrobe(false);
+		}
+		return;
 	}
 
 	for(uint64_t clock = _autoReadNextClock; clock <= _console->GetMasterClock(); clock += 128) {
 		_autoReadNextClock = clock + 128;
 		int step = (clock - _autoReadClockStart) / 128;
 		
-		if(step >= 2 && !_state.EnableAutoJoypadRead) {
-			//Disable auto-read for the rest of the frame at this point if the enable flag is turned off
-			_autoReadClockStart = 0;
-			_autoReadNextClock = 0;
-			_autoReadActive = false;
-			_controlManager->SetAutoReadStrobe(false);
-			return;
-		}
-
 		switch(step) {
 			case 0:
 				//Strobe starts 128 cycles before the auto-read flag is set
@@ -99,8 +88,7 @@ void InternalRegisters::ProcessAutoJoypad()
 			case 1:
 				if(!_state.EnableAutoJoypadRead) {
 					//Skip auto-read for this frame if the flag is not enabled at this point
-					_autoReadNextClock = 0;
-					_autoReadClockStart = 0;
+					_autoReadDisabled = true;
 					_autoReadActive = false;
 				} else {
 					//Set the active flag, reset the registers to 0 (only if auto-read is enabled)
@@ -119,7 +107,10 @@ void InternalRegisters::ProcessAutoJoypad()
 				break;
 
 			default:
-				if((step & 0x01) == 1) {
+				if(!_state.EnableAutoJoypadRead) {
+					//Disable auto-read for the rest of the frame
+					step = 34;
+				} else if((step & 0x01) == 1) {
 					//First half of the 256-clock cycle reads the ports
 					_autoReadPort1Value = _controlManager->Read(0x4016, true);
 					_autoReadPort2Value = _controlManager->Read(0x4017, true);
@@ -139,11 +130,18 @@ void InternalRegisters::ProcessAutoJoypad()
 
 		if(step >= 34) {
 			//Last tick done, disable auto-read
-			_autoReadClockStart = 0;
-			_autoReadNextClock = 0;
+			_autoReadDisabled = true;
 			_autoReadActive = false;
-			break;
+			_controlManager->SetAutoReadStrobe(false);
+			return;
 		}
+	}
+
+	if(!_state.EnableAutoJoypadRead && (masterClock - _autoReadClockStart) >= 128*3) {
+		//Disable auto-read for the rest of the frame at this point if the enable flag is turned off
+		_autoReadDisabled = true;
+		_autoReadActive = false;
+		_controlManager->SetAutoReadStrobe(false);
 	}
 }
 
@@ -282,6 +280,12 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 			bool autoRead = (value & 0x01) != 0;
 			if(_state.EnableAutoJoypadRead != autoRead) {
 				ProcessAutoJoypad();
+
+				if(_autoReadClockStart <= _console->GetMasterClock() && (_console->GetMasterClock() - _autoReadClockStart) < 256) {
+					//If EnableAutoJoypadRead changes at any point in the first 256 clocks of this process,
+					//the value sent to OUT0 can be changed and immediately strobe the controllers, etc.
+					_controlManager->SetAutoReadStrobe(autoRead);
+				}
 			}
 
 			_state.EnableNmi = (value & 0x80) != 0;
@@ -368,6 +372,7 @@ void InternalRegisters::Serialize(Serializer &s)
 	SV(_autoReadClockStart);
 	SV(_autoReadNextClock);
 	SV(_autoReadActive);
+	SV(_autoReadDisabled);
 	SV(_autoReadPort1Value);
 	SV(_autoReadPort2Value);
 }

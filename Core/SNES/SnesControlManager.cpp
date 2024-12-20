@@ -106,6 +106,8 @@ void SnesControlManager::Write(uint16_t addr, uint8_t value)
 	//of the last value written to 4016.0 by the CPU ORed with the strobe value
 	//the auto-read circuit sets. If either one is set, OUT0 will be set.
 	if(_lastWriteValue != value) {
+		_console->GetInternalRegisters()->ProcessAutoJoypad();
+
 		_lastWriteValue = value;
 		for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
 			device->WriteRam(addr, value | (uint8_t)_autoReadStrobe);
