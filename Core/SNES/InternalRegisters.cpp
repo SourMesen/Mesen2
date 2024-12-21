@@ -189,9 +189,20 @@ void InternalRegisters::SetIrqFlag(bool irqFlag)
 
 uint8_t InternalRegisters::Peek(uint16_t addr)
 {
+	//TODO controller data/_autoReadActive can be out of date because ProcessAutoJoypad() can't be called here
 	switch(addr) {
-		case 0x4210: return (_nmiFlag ? 0x80 : 0) | 0x02;
-		case 0x4211: return (_irqFlag ? 0x80 : 0);
+		case 0x4210: return (_nmiFlag ? 0x80 : 0) | 0x02 | (_memoryManager->GetOpenBus() & 0x7F);
+		case 0x4211: return (_irqFlag ? 0x80 : 0) | (_memoryManager->GetOpenBus() & 0x7F);
+
+		case 0x4212: {
+			uint16_t hClock = _memoryManager->GetHClock();
+			return (
+				(_ppu->GetScanline() >= _ppu->GetNmiScanline() ? 0x80 : 0) |
+				((hClock >= 1 * 4 && hClock <= 274 * 4) ? 0 : 0x40) |
+				(_autoReadActive ? 0x01 : 0) | //Auto joypad read in progress
+				(_memoryManager->GetOpenBus() & 0x3E)
+			);
+		}
 
 		case 0x4214:
 		case 0x4215:
@@ -203,6 +214,12 @@ uint8_t InternalRegisters::Peek(uint16_t addr)
 
 		case 0x4218: return (uint8_t)_state.ControllerData[0];
 		case 0x4219: return (uint8_t)(_state.ControllerData[0] >> 8);
+		case 0x421A: return (uint8_t)(_state.ControllerData[1] >> 8);
+		case 0x421B: return (uint8_t)(_state.ControllerData[1] >> 8);
+		case 0x421C: return (uint8_t)(_state.ControllerData[2] >> 8);
+		case 0x421D: return (uint8_t)(_state.ControllerData[2] >> 8);
+		case 0x421E: return (uint8_t)(_state.ControllerData[3] >> 8);
+		case 0x421F: return (uint8_t)(_state.ControllerData[3] >> 8);
 
 		default: return Read(addr);
 	}
