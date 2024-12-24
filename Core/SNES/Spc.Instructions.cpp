@@ -1,6 +1,50 @@
 #include "pch.h"
 #include "SNES/Spc.h"
+#include "SNES/SnesMemoryManager.h"
+#include "Shared/Emulator.h"
 #include "Utilities/HexUtilities.h"
+
+void Spc::Run()
+{
+	if(!_enabled) {
+		//Used to temporarily disable the SPC when overclocking is enabled
+		return;
+	} else if(_state.StopState != SnesCpuStopState::Running) {
+		//STOP or SLEEP were executed - execution is stopped forever.
+		_emu->ProcessHaltedCpu<CpuType::Spc>();
+		return;
+	}
+
+	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
+	while(_state.Cycle < targetCycle) {
+		ProcessCycle();
+	}
+}
+
+void Spc::ProcessCycle()
+{
+	if(_opStep == SpcOpStep::ReadOpCode) {
+#ifndef DUMMYSPC
+		_emu->ProcessInstruction<CpuType::Spc>();
+#endif 
+		_opCode = GetOpCode();
+		_opStep = SpcOpStep::Addressing;
+		_opSubStep = 0;
+	} else {
+		Exec();
+	}
+
+	if(_pendingCpuRegUpdate) {
+		//There appears to be a delay between the moment the CPU writes
+		//to a register and when the SPC can see the new value
+		//This makes the SPC see the newly written value after a 1 SPC cycle delay
+		//This allows Kishin Douji Zenki to boot without freezing
+		for(int i = 0; i < 4; i++) {
+			_state.CpuRegs[i] = _state.NewCpuRegs[i];
+		}
+		_pendingCpuRegUpdate = false;
+	}
+}
 
 void Spc::EndOp()
 {

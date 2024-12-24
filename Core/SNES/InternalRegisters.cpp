@@ -408,5 +408,7 @@ void InternalRegisters::Serialize(Serializer& s)
 
 	SV(_hCounter);
 	SV(_vCounter);
-	SV(_irqEnabled);
+	if(!s.IsSaving()) {
+		_irqEnabled = _state.EnableHorizontalIrq || _state.EnableVerticalIrq;
+	}
 }

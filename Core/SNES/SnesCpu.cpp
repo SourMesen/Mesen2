@@ -121,7 +121,11 @@ void SnesCpu::IdleTakeBranch()
 void SnesCpu::ProcessCpuCycle()
 {
 	_state.CycleCount++;
-	_state.IrqLock = _dmaController->ProcessPendingTransfers();
+	if(_dmaController->HasPendingTransfer()){
+		_state.IrqLock = _dmaController->ProcessPendingTransfers();
+	} else {
+		_state.IrqLock = false;
+	}
 	DetectNmiSignalEdge();
 }
 

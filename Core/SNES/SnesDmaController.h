@@ -49,6 +49,8 @@ public:
 	void BeginHdmaTransfer();
 	void BeginHdmaInit();
 
+	__forceinline bool HasPendingTransfer() { return _needToProcess; }
+
 	bool ProcessPendingTransfers();
 
 	void Write(uint16_t addr, uint8_t value);

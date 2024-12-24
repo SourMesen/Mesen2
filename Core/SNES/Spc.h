@@ -279,11 +279,11 @@ private:
 	uint8_t GetOpCode();
 	uint8_t ReadOperandByte();
 
-	void IncCycleCount(int32_t addr);
+	__forceinline void IncCycleCount(int32_t addr);
 	void EndOp();
 	void EndAddr();
-	void ProcessCycle();
-	void Exec();
+	__forceinline void ProcessCycle();
+	__forceinline void Exec();
 	
 	void UpdateClockRatio();
 	void ExitExecLoop();

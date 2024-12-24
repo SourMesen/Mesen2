@@ -59,7 +59,14 @@ private:
 	vector<unique_ptr<IMemoryHandler>> _workRamHandlers;
 	uint8_t _masterClockTable[0x800] = {};
 
-	void Exec();
+	typedef void(SnesMemoryManager::*Func)();
+	Func _execRead = nullptr;
+	Func _execWrite = nullptr;
+	
+	template<uint8_t clocks> void IncMasterClock();
+	void UpdateExecCallbacks();
+
+	__forceinline void Exec();
 
 	void ProcessEvent();
 
