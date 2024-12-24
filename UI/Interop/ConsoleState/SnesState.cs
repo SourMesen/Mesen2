@@ -250,6 +250,9 @@ public struct SpcState : BaseState
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
 	public byte[] CpuRegs;
 
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+	public byte[] NewCpuRegs;
+
 	public SpcTimer Timer0;
 	public SpcTimer Timer1;
 	public SpcTimer Timer2;

@@ -26,6 +26,7 @@ struct SpcState : BaseState
 	uint8_t OutputReg[4] = {};
 	uint8_t RamReg[2] = {};
 	uint8_t CpuRegs[4] = {};
+	uint8_t NewCpuRegs[4] = {};
 
 	SpcTimer<128> Timer0;
 	SpcTimer<128> Timer1;

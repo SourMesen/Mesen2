@@ -49,6 +49,7 @@ private:
 	uint8_t _opSubStep = 0;
 
 	bool _enabled = false;
+	bool _pendingCpuRegUpdate = false;
 	uint32_t _spcSampleRate = Spc::SpcSampleRate;
 
 	SpcState _state;

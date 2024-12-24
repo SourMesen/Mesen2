@@ -78,10 +78,10 @@ void Spc::Reset()
 	_state.OutputReg[3] = 0;
 
 	//Reset the values the SPC can read from the port, too (not doing this freezes Ranma Chounai Gekitou Hen on reset)
-	_state.CpuRegs[0] = 0;
-	_state.CpuRegs[1] = 0;
-	_state.CpuRegs[2] = 0;
-	_state.CpuRegs[3] = 0;
+	_state.NewCpuRegs[0] = _state.CpuRegs[0] = 0;
+	_state.NewCpuRegs[1] = _state.CpuRegs[1] = 0;
+	_state.NewCpuRegs[2] = _state.CpuRegs[2] = 0;
+	_state.NewCpuRegs[3] = _state.CpuRegs[3] = 0;
 
 	_state.RomEnabled = true;
 	_state.Cycle = 0;
@@ -307,9 +307,11 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 		case 0xF1:
 			if(value & SpcControlFlags::ClearPortsA) {
 				_state.CpuRegs[0] = _state.CpuRegs[1] = 0;
+				_state.NewCpuRegs[0] = _state.NewCpuRegs[1] = 0;
 			}
 			if(value & SpcControlFlags::ClearPortsB) {
 				_state.CpuRegs[2] = _state.CpuRegs[3] = 0;
+				_state.NewCpuRegs[2] = _state.NewCpuRegs[3] = 0;
 			}
 
 			_state.Timer0.SetEnabled((value & SpcControlFlags::Timer0) != 0);
@@ -353,7 +355,10 @@ uint8_t Spc::CpuReadRegister(uint16_t addr)
 void Spc::CpuWriteRegister(uint32_t addr, uint8_t value)
 {
 	Run();
-	_state.CpuRegs[addr & 0x03] = value;
+	if(_state.NewCpuRegs[addr & 0x03] != value) {
+		_state.NewCpuRegs[addr & 0x03] = value;
+		_pendingCpuRegUpdate = true;
+	}
 }
 
 uint8_t Spc::DspReadRam(uint16_t addr)
@@ -401,6 +406,17 @@ void Spc::ProcessCycle()
 		_opSubStep = 0;
 	} else {
 		Exec();
+	}
+
+	if(_pendingCpuRegUpdate) {
+		//There appears to be a delay between the moment the CPU writes
+		//to a register and when the SPC can see the new value
+		//This makes the SPC see the newly written value after a 1 SPC cycle delay
+		//This allows Kishin Douji Zenki to boot without freezing
+		for(int i = 0; i < 4; i++) {
+			_state.CpuRegs[i] = _state.NewCpuRegs[i];
+		}
+		_pendingCpuRegUpdate = false;
 	}
 }
 
@@ -500,6 +516,9 @@ void Spc::Serialize(Serializer &s)
 		}
 
 		SV(_operandA); SV(_operandB); SV(_tmp1); SV(_tmp2); SV(_tmp3); SV(_opCode); SV(_opStep); SV(_opSubStep); SV(_enabled);
+
+		SVArray(_state.NewCpuRegs, 4);
+		SV(_pendingCpuRegUpdate);
 	}
 }
 
