@@ -52,7 +52,7 @@ int64_t ExpressionEvaluator::GetSnesTokenValue(int64_t token, EvalResultType& re
 		case EvalValues::RegDB: return s.DBR;
 		case EvalValues::RegD: return s.D;
 		case EvalValues::RegPC: return (s.K << 16) | s.PC;
-		case EvalValues::Nmi: return ReturnBool(s.NmiFlag, resultType);
+		case EvalValues::Nmi: return ReturnBool(s.NmiFlagCounter > 0 || s.NeedNmi, resultType);
 		case EvalValues::Irq: return ReturnBool(s.IrqSource, resultType);
 		case EvalValues::PpuFrameCount: return getPpuState().FrameCount;
 		case EvalValues::PpuCycle: return getPpuState().Cycle;

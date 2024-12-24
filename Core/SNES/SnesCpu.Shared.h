@@ -5,8 +5,7 @@ void SnesCpu::PowerOn()
 	_state.SP = 0x1FF;
 	_state.PS = ProcFlags::IrqDisable;
 	_state.EmulationMode = true;
-	_state.NmiFlag = false;
-	_state.PrevNmiFlag = false;
+	_state.NmiFlagCounter = 0;
 	_state.StopState = SnesCpuStopState::Running;
 	_state.IrqSource = (uint8_t)SnesIrqSource::None;
 	_state.PrevIrqSource = (uint8_t)SnesIrqSource::None;
@@ -30,8 +29,7 @@ void SnesCpu::Reset()
 	_state.PC = GetResetVector();
 	SetSP(_state.SP);
 
-	_state.NmiFlag = false;
-	_state.PrevNmiFlag = false;
+	_state.NmiFlagCounter = 0;
 	_state.StopState = SnesCpuStopState::Running;
 	_state.IrqSource = (uint8_t)SnesIrqSource::None;
 	_state.PrevIrqSource = (uint8_t)SnesIrqSource::None;
@@ -243,7 +241,7 @@ void SnesCpu::RunOp()
 		case 0xC8: AddrMode_Imp(); INY(); break;
 		case 0xC9: AddrMode_ImmM(); CMP(); break;
 		case 0xCA: AddrMode_Imp(); DEX(); break;
-		case 0xCB: AddrMode_Imp(); WAI(); break;
+		case 0xCB: WAI(); break;
 		case 0xCC: AddrMode_Abs(); CPY(); break;
 		case 0xCD: AddrMode_Abs(); CMP(); break;
 		case 0xCE: AddrMode_Abs(); DEC(); break;
@@ -309,9 +307,9 @@ uint64_t SnesCpu::GetCycleCount()
 	return _state.CycleCount;
 }
 
-void SnesCpu::SetNmiFlag(bool nmiFlag)
+void SnesCpu::SetNmiFlag(uint8_t delay)
 {
-	_state.NmiFlag = nmiFlag;
+	_state.NmiFlagCounter = delay;
 }
 
 void SnesCpu::DetectNmiSignalEdge()
@@ -319,20 +317,33 @@ void SnesCpu::DetectNmiSignalEdge()
 	//"This edge detector polls the status of the NMI line during φ2 of each CPU cycle (i.e., during the 
 	//second half of each cycle) and raises an internal signal if the input goes from being high during 
 	//one cycle to being low during the next"
-	if(!_state.PrevNmiFlag && _state.NmiFlag) {
-		_state.NeedNmi = true;
+	if(_state.NmiFlagCounter) {
+		_state.NmiFlagCounter--;
+		if(_state.NmiFlagCounter == 0) {
+			if(!_state.IrqLock) {
+				//Trigger an NMI on the next instruction
+				_state.NmiFlagCounter = false;
+				_state.NeedNmi = true;
+				_waiOver = true;
+			} else {
+				//Delay NMI if a DMA/HDMA just finished running
+				_state.NmiFlagCounter = 1;
+				_state.NeedNmi = false;
+			}
+		}
 	}
-	_state.PrevNmiFlag = _state.NmiFlag;
-}
-
-void SnesCpu::UpdateIrqNmiFlags()
-{
+	
 	if(!_state.IrqLock) {
-		//"The internal signal goes high during φ1 of the cycle that follows the one where the edge is detected,
-		//and stays high until the NMI has been handled. "
-		_state.PrevNeedNmi = _state.NeedNmi;
-		_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+		_state.PrevIrqSource = _state.IrqSource != 0 && !CheckFlag(ProcFlags::IrqDisable);
+		if(_state.IrqSource != 0) {
+			//WAI ends even if the I flag is set (but execution won't jump to the IRQ handler)
+			_waiOver = true;
+		}
+	} else {
+		//Delay IRQ if a DMA/HDMA just finished running
+		_state.PrevIrqSource = 0;
 	}
+
 	_state.IrqLock = false;
 }
 
@@ -374,7 +385,8 @@ uint8_t SnesCpu::GetOpCode()
 
 void SnesCpu::IdleOrRead()
 {
-	if(_state.PrevIrqSource) {
+	if(!_state.IrqLock && ((_state.IrqSource != 0 || _state.PrevIrqSource != 0) && !CheckFlag(ProcFlags::IrqDisable)) || (_state.NmiFlagCounter == 1 || _state.NeedNmi)) {
+		//If an IRQ or NMI will be triggered on the next instruction/cycle, the 6-clock idle cycle turns into a dummy read at the current PC
 		ReadCode(_state.PC);
 	} else {
 		Idle();
@@ -614,6 +626,6 @@ bool SnesCpu::CheckFlag(uint8_t flag)
 void SnesCpu::Serialize(Serializer &s)
 {
 	SV(_state.A); SV(_state.CycleCount); SV(_state.D); SV(_state.DBR); SV(_state.EmulationMode); SV(_state.IrqSource); SV(_state.K);
-	SV(_state.NmiFlag); SV(_state.PC); SV(_state.PrevIrqSource); SV(_state.PrevNmiFlag); SV(_state.PS); SV(_state.SP); SV(_state.StopState);
-	SV(_state.X); SV(_state.Y); SV(_state.IrqLock); SV(_state.NeedNmi); SV(_state.PrevNeedNmi);
+	SV(_state.NmiFlagCounter); SV(_state.PC); SV(_state.PrevIrqSource); SV(_state.PS); SV(_state.SP); SV(_state.StopState);
+	SV(_state.X); SV(_state.Y); SV(_state.IrqLock); SV(_state.NeedNmi); SV(_waiOver);
 }

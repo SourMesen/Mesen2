@@ -184,6 +184,7 @@ void SnesMemoryManager::Exec()
 	
 	if((_hClock & 0x03) == 0) {
 		_emu->ProcessPpuCycle<CpuType::Snes>();
+	} else if(_hClock & 0x02) {
 		_regs->ProcessIrqCounters();
 	}
 
@@ -201,9 +202,6 @@ void SnesMemoryManager::ProcessEvent()
 
 		case SnesEventType::DramRefresh:
 			IncMasterClock40();
-			//TODOv2?
-			//_cpu->IncreaseCycleCount<5>();
-
 			if(_ppu->GetScanline() < _ppu->GetVblankStart()) {
 				_nextEvent = SnesEventType::HdmaStart;
 				_nextEventClock = 276 * 4;
@@ -221,11 +219,11 @@ void SnesMemoryManager::ProcessEvent()
 
 		case SnesEventType::EndOfScanline:
 			if(_ppu->ProcessEndOfScanline(_hClock)) {
+				_dramRefreshPosition = 538 - (_masterClock & 0x07);
 				if(_ppu->GetScanline() == 0) {
 					_nextEvent = SnesEventType::HdmaInit;
 					_nextEventClock = 12 + (_masterClock & 0x07);
 				} else {
-					_dramRefreshPosition = 538 - (_masterClock & 0x07);
 					_nextEvent = SnesEventType::DramRefresh;
 					_nextEventClock = _dramRefreshPosition;
 				}
@@ -261,7 +259,6 @@ uint8_t SnesMemoryManager::Read(uint32_t addr, MemoryOperationType type)
 
 uint8_t SnesMemoryManager::ReadDma(uint32_t addr, bool forBusA)
 {
-	_cpu->DetectNmiSignalEdge();
 	IncMasterClock4();
 
 	uint8_t value;
@@ -329,7 +326,6 @@ void SnesMemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType 
 
 void SnesMemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 {
-	_cpu->DetectNmiSignalEdge();
 	IncMasterClock4();
 	if(_emu->ProcessMemoryWrite<CpuType::Snes>(addr, value, MemoryOperationType::DmaWrite)) {
 		IMemoryHandler* handler = _mappings.GetHandler(addr);

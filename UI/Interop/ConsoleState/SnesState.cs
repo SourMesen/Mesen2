@@ -60,11 +60,9 @@ public struct SnesCpuState : BaseState
 	public SnesCpuFlags PS;
 	[MarshalAs(UnmanagedType.I1)] public bool EmulationMode;
 
-	[MarshalAs(UnmanagedType.I1)] public bool NmiFlag;
-	[MarshalAs(UnmanagedType.I1)] public bool PrevNmiFlag;
+	[MarshalAs(UnmanagedType.I1)] public byte NmiFlagCounter;
 
 	[MarshalAs(UnmanagedType.I1)] public bool IrqLock;
-	[MarshalAs(UnmanagedType.I1)] public bool PrevNeedNmi;
 	[MarshalAs(UnmanagedType.I1)] public bool NeedNmi;
 
 	public byte IrqSource;

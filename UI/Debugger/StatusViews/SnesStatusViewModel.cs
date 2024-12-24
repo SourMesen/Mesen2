@@ -103,7 +103,7 @@ namespace Mesen.Debugger.StatusViews
 			RegPS = (byte)cpu.PS;
 
 			FlagE = cpu.EmulationMode;
-			FlagNmi = cpu.NmiFlag;
+			FlagNmi = cpu.NmiFlagCounter > 0 || cpu.NeedNmi;
 			FlagIrqHvCounters = (cpu.IrqSource & (byte)SnesIrqSource.Ppu) != 0;
 			FlagIrqCoprocessor = (cpu.IrqSource & (byte)SnesIrqSource.Coprocessor) != 0;
 
@@ -140,7 +140,9 @@ namespace Mesen.Debugger.StatusViews
 			cpu.PS = (SnesCpuFlags)RegPS;
 
 			cpu.EmulationMode = FlagE;
-			cpu.NmiFlag = FlagNmi;
+			if(FlagNmi && cpu.NmiFlagCounter == 0 && !cpu.NeedNmi) {
+				cpu.NmiFlagCounter = (byte)(FlagNmi ? 1 : 0);
+			}
 			cpu.IrqSource = (byte)(
 				(FlagIrqHvCounters ? (byte)SnesIrqSource.Ppu : 0) | 
 				(FlagIrqCoprocessor ? (byte)SnesIrqSource.Coprocessor : 0)

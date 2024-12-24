@@ -1164,6 +1164,7 @@ void SnesCpu::WAI()
 {
 	//Wait for interrupt
 	_state.StopState = SnesCpuStopState::WaitingForIrq;
+	_waiOver = false;
 }
 
 /****************

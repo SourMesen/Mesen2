@@ -40,11 +40,9 @@ struct SnesCpuState : BaseState
 	bool EmulationMode;
 
 	/* Misc internal state */
-	bool NmiFlag;
-	bool PrevNmiFlag;
+	uint8_t NmiFlagCounter;
 
 	bool IrqLock;
-	bool PrevNeedNmi;
 	bool NeedNmi;
 
 	uint8_t IrqSource;

@@ -62,7 +62,7 @@ void InternalRegisters::ProcessAutoJoypad()
 {
 	//Some details/timings may still be incorrect
 	//This is based on these test roms: https://github.com/undisbeliever/snes-test-roms/blob/master/src/hardware-tests/
-	//As well as the CPU schematics here: https://github.com/rgalland/SNES_S-CPU_Schematics/
+	//See CPU schematics here: https://github.com/rgalland/SNES_S-CPU_Schematics/
 	uint64_t masterClock = _console->GetMasterClock();
 	if(masterClock < _autoReadClockStart) {
 		return;
@@ -180,9 +180,7 @@ void InternalRegisters::SetNmiFlag(bool nmiFlag)
 void InternalRegisters::SetIrqFlag(bool irqFlag)
 {
 	_irqFlag = irqFlag && (_state.EnableHorizontalIrq || _state.EnableVerticalIrq);
-	if(_irqFlag) {
-		_cpu->SetIrqSource(SnesIrqSource::Ppu);
-	} else {
+	if(!_irqFlag) {
 		_cpu->ClearIrqSource(SnesIrqSource::Ppu);
 	}
 }
@@ -233,10 +231,12 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 			
 			uint8_t value = (_nmiFlag ? 0x80 : 0) | cpuRevision;
 
-			//Reading $4210 on any cycle turns the NMI signal off (except presumably on the first PPU cycle (first 4 master clocks) of the NMI scanline.)
+			//Reading $4210 on any cycle clears the NMI flag,
+			//Except between from cycles 2 to 5 on the NMI scanline, because the CPU forces the
+			//flag to remain set for 4 cycles, only allowing it to be cleared starting on cycle 6
 			//i.e: reading $4210 at the same it gets set will return it as set, and will keep it set.
 			//Without this, Terranigma has corrupted sprites on some frames.
-			if(_memoryManager->GetHClock() >= 4 || _ppu->GetScanline() != _ppu->GetNmiScanline()) {
+			if(_nmiFlag && (_memoryManager->GetHClock() >= 6 || _ppu->GetScanline() != _ppu->GetNmiScanline())) {
 				SetNmiFlag(false);
 			}
 
@@ -245,7 +245,11 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 
 		case 0x4211: {
 			uint8_t value = (_irqFlag ? 0x80 : 0);
-			SetIrqFlag(false);
+			if(_irqFlag && !_needIrq) {
+				//Clear IRQ flag, if it wasn't just set within the last 4 cycles
+				//Same as the NMI flag, the CPU forces the IRQ flag to be set for at least 4 cycles
+				SetIrqFlag(false);
+			}
 			return value | (_memoryManager->GetOpenBus() & 0x7F);
 		}
 
@@ -305,13 +309,22 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 				}
 			}
 
-			_state.EnableNmi = (value & 0x80) != 0;
 			_state.EnableVerticalIrq = (value & 0x20) != 0;
 			_state.EnableHorizontalIrq = (value & 0x10) != 0;
 			_state.EnableAutoJoypadRead = autoRead;
+			_irqEnabled = _state.EnableHorizontalIrq || _state.EnableVerticalIrq;
 			
-			SetNmiFlag(_nmiFlag);
-			SetIrqFlag(_irqFlag);
+			bool enableNmi = (value & 0x80) != 0;
+			if(_nmiFlag && enableNmi && !_state.EnableNmi) {
+				//When enabling NMIs in the middle of vblank, trigger an NMI right away
+				_cpu->SetNmiFlag(2);
+			}			
+			_state.EnableNmi = enableNmi;
+
+			if(!_irqEnabled) {
+				//Clearing both H+V irq enabled flags will immediately clear the IRQ flag
+				SetIrqFlag(false);
+			}
 			break;
 		}
 
@@ -338,12 +351,12 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 
 		case 0x4207: 
 			_state.HorizontalTimer = (_state.HorizontalTimer & 0x100) | value; 
-			ProcessIrqCounters();
+			UpdateIrqLevel();
 			break;
 
 		case 0x4208: 
 			_state.HorizontalTimer = (_state.HorizontalTimer & 0xFF) | ((value & 0x01) << 8); 
-			ProcessIrqCounters();
+			UpdateIrqLevel();
 			break;
 
 		case 0x4209: 
@@ -352,12 +365,12 @@ void InternalRegisters::Write(uint16_t addr, uint8_t value)
 			//Calling this here fixes flashing issue in "Shin Nihon Pro Wrestling Kounin - '95 Tokyo Dome Battle 7"
 			//The write to change from scanline 16 to 17 occurs between both ProcessIrqCounter calls, which causes the IRQ
 			//line to always be high (since the previous check is on scanline 16, and the next check on scanline 17)
-			ProcessIrqCounters();
+			UpdateIrqLevel();
 			break;
 
 		case 0x420A: 
 			_state.VerticalTimer = (_state.VerticalTimer & 0xFF) | ((value & 0x01) << 8);
-			ProcessIrqCounters();
+			UpdateIrqLevel();
 			break;
 
 		case 0x420D: _state.EnableFastRom = (value & 0x01) != 0; break;
@@ -378,7 +391,7 @@ AluState InternalRegisters::GetAluState()
 	return _aluMulDiv.GetState();
 }
 
-void InternalRegisters::Serialize(Serializer &s)
+void InternalRegisters::Serialize(Serializer& s)
 {
 	SV(_state.EnableFastRom); SV(_nmiFlag); SV(_state.EnableNmi); SV(_state.EnableHorizontalIrq); SV(_state.EnableVerticalIrq); SV(_state.HorizontalTimer);
 	SV(_state.VerticalTimer); SV(_state.IoPortOutput); SV(_state.ControllerData[0]); SV(_state.ControllerData[1]); SV(_state.ControllerData[2]); SV(_state.ControllerData[3]);
@@ -392,4 +405,8 @@ void InternalRegisters::Serialize(Serializer &s)
 	SV(_autoReadDisabled);
 	SV(_autoReadPort1Value);
 	SV(_autoReadPort2Value);
+
+	SV(_hCounter);
+	SV(_vCounter);
+	SV(_irqEnabled);
 }

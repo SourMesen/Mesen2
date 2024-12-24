@@ -430,7 +430,9 @@ void Sa1::ProcessInterrupts()
 		_cpu->ClearIrqSource(SnesIrqSource::Coprocessor);
 	}
 
-	_cpu->SetNmiFlag(_state.Sa1NmiRequested && _state.Sa1NmiEnabled);
+	if(_state.Sa1NmiRequested && _state.Sa1NmiEnabled) {
+		_cpu->SetNmiFlag(1);
+	}
 
 	if((_state.CpuIrqRequested && _state.CpuIrqEnabled) || (_state.CharConvIrqFlag && _state.CharConvIrqEnabled)) {
 		_snesCpu->SetIrqSource(SnesIrqSource::Coprocessor);

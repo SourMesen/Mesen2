@@ -42,6 +42,7 @@ private:
 
 	SnesCpuState _state = {};
 	uint32_t _operand = 0;
+	bool _waiOver = true;
 
 	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);
@@ -56,7 +57,6 @@ private:
 	
 	uint16_t GetResetVector();
 
-	void UpdateIrqNmiFlags();
 	void ProcessCpuCycle();
 
 	void Idle();
@@ -347,7 +347,7 @@ public:
 	template<uint64_t value>
 	void IncreaseCycleCount();
 
-	void SetNmiFlag(bool nmiFlag);
+	void SetNmiFlag(uint8_t delay);
 	void DetectNmiSignalEdge();
 
 	void SetIrqSource(SnesIrqSource source);

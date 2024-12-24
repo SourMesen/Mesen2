@@ -478,14 +478,12 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 			_emu->ProcessEvent(EventType::EndFrame);
 
 			_frameCount++;
-			_regs->SetNmiFlag(true);
 			SendFrame();
 
 			_console->ProcessEndOfFrame();
 		} else if(_scanline >= _vblankEndScanline + 1) {
 			//"Frames are 262 scanlines in non-interlace mode, while in interlace mode frames with $213f.7=0 are 263 scanlines"
 			_oddFrame ^= 1;
-			_regs->SetNmiFlag(false);
 			_scanline = 0;
 			_rangeOver = false;
 			_timeOver = false;
@@ -514,6 +512,11 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 	return false;
 }
 
+bool SnesPpu::IsInOverclockedScanline()
+{
+	return _inOverclockedScanline;
+}
+
 void SnesPpu::UpdateSpcState()
 {
 	//When using overclocking, turn off the SPC during the extra scanlines
@@ -521,13 +524,16 @@ void SnesPpu::UpdateSpcState()
 		if(_scanline > _adjustedVblankEndScanline) {
 			//Disable APU for extra lines after NMI
 			_spc->SetSpcState(false);
+			_inOverclockedScanline = true;
 		} else if(_scanline >= _vblankStartScanline && _scanline < _nmiScanline) {
 			//Disable APU for extra lines before NMI
 			_spc->SetSpcState(false);
+			_inOverclockedScanline = true;
 		} else {
 			_spc->SetSpcState(true);
 		}
 	}
+	_inOverclockedScanline = false;
 }
 
 void SnesPpu::UpdateNmiScanline()
