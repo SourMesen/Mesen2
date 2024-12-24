@@ -144,9 +144,14 @@ bool SnesDmaController::InitHdmaChannels()
 			if(ch.HdmaIndirectAddressing) {
 				uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 				_memoryManager->IncMasterClock4();
-				uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
-				_memoryManager->IncMasterClock4();
-				ch.TransferSize = (msb << 8) | lsb;
+
+				if(!ch.HdmaFinished) {
+					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
+					_memoryManager->IncMasterClock4();
+					ch.TransferSize = (msb << 8) | lsb;
+				} else {
+					ch.TransferSize = (lsb << 8);
+				}
 			}
 		}
 	}
@@ -335,12 +340,14 @@ void SnesDmaController::BeginHdmaTransfer()
 {
 	if(_state.HdmaChannels) {
 		_hdmaPending = true;
+		_dmaStartDelay = true;
 		UpdateNeedToProcessFlag();
 	}
 }
 
 void SnesDmaController::BeginHdmaInit()
 {
+	_dmaStartDelay = true;
 	_hdmaInitPending = true;
 	UpdateNeedToProcessFlag();
 }

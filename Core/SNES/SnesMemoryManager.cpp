@@ -156,7 +156,7 @@ void SnesMemoryManager::IncMasterClock40()
 
 void SnesMemoryManager::IncMasterClockStartup()
 {
-	for(int i = 0; i < 182 / 2; i++) {
+	for(int i = 0; i < 186 / 2; i++) {
 		Exec();
 	}
 }
