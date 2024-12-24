@@ -72,6 +72,7 @@ void SnesDmaController::RunDma(DmaChannelConfig &channel)
 	}
 
 	//"Then perform the DMA: 8 master cycles overhead and 8 master cycles per byte per channel"
+	_dmaClockCounter += 8;
 	_memoryManager->IncMasterClock8();
 	ProcessPendingTransfers();
 
@@ -94,6 +95,8 @@ void SnesDmaController::RunDma(DmaChannelConfig &channel)
 		i++;
 		ProcessPendingTransfers();
 	} while(channel.TransferSize > 0 && channel.DmaActive);
+
+	_dmaClockCounter += 8 * i;
 
 	channel.DmaActive = false;
 }
@@ -118,6 +121,7 @@ bool SnesDmaController::InitHdmaChannels()
 	if(needSync) {
 		SyncStartDma();
 	}
+	_dmaClockCounter += 8;
 	_memoryManager->IncMasterClock8();
 
 	for(int i = 0; i < 8; i++) {
@@ -134,6 +138,7 @@ bool SnesDmaController::InitHdmaChannels()
 			//"2. Load $43xA (Line Counter and Repeat) from the table. I believe $00 will terminate this channel immediately."
 			ch.HdmaLineCounterAndRepeat = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress, true);
 			_memoryManager->IncMasterClock4();
+			_dmaClockCounter += 8;
 
 			ch.HdmaTableAddress++;
 			if(ch.HdmaLineCounterAndRepeat == 0) {
@@ -144,10 +149,12 @@ bool SnesDmaController::InitHdmaChannels()
 			if(ch.HdmaIndirectAddressing) {
 				uint8_t lsb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 				_memoryManager->IncMasterClock4();
+				_dmaClockCounter += 8;
 
 				if(!ch.HdmaFinished) {
 					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 					_memoryManager->IncMasterClock4();
+					_dmaClockCounter += 8;
 					ch.TransferSize = (msb << 8) | lsb;
 				} else {
 					ch.TransferSize = (lsb << 8);
@@ -192,20 +199,22 @@ void SnesDmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 			i++;
 		} while(i < transferByteCount);
 	}
+
+	_dmaClockCounter += 8 * i;
 }
 
 void SnesDmaController::SyncStartDma()
 {
 	//"after the pause, wait 2-8 master cycles to reach a whole multiple of 8 master cycles since reset"
-	_dmaStartClock = _memoryManager->GetMasterClock();
-	_memoryManager->IncrementMasterClockValue(8 - (_memoryManager->GetMasterClock() & 0x07));
+	_dmaClockCounter = 8 - (_memoryManager->GetMasterClock() & 0x07);
+	_memoryManager->IncrementMasterClockValue(_dmaClockCounter);
 }
 
 void SnesDmaController::SyncEndDma()
 {
 	//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
 	uint8_t cpuSpeed = _memoryManager->GetCpuSpeed();
-	_memoryManager->IncrementMasterClockValue(cpuSpeed - ((_memoryManager->GetMasterClock() - _dmaStartClock) % cpuSpeed));
+	_memoryManager->IncrementMasterClockValue(cpuSpeed - (_dmaClockCounter % cpuSpeed));
 }
 
 bool SnesDmaController::HasActiveDmaChannel()
@@ -231,6 +240,7 @@ bool SnesDmaController::ProcessHdmaChannels()
 	if(needSync) {
 		SyncStartDma();
 	}
+	_dmaClockCounter += 8;
 	_memoryManager->IncMasterClock8();
 
 	uint8_t originalActiveChannel = _activeChannel;
@@ -273,6 +283,7 @@ bool SnesDmaController::ProcessHdmaChannels()
 		//This value is discarded if the line counter isn't 0
 		uint8_t newCounter = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress, true);
 		_memoryManager->IncMasterClock4();
+		_dmaClockCounter += 8;
 
 		//5. If Line Counter is zero...
 		if((ch.HdmaLineCounterAndRepeat & 0x7F) == 0) {
@@ -286,6 +297,7 @@ bool SnesDmaController::ProcessHdmaChannels()
 					//and use the $00 for the low byte.So Address ends up incremented one less than otherwise expected, and one less CPU Cycle is used."
 					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 					_memoryManager->IncMasterClock4();
+					_dmaClockCounter += 8;
 					ch.TransferSize = (msb << 8);
 				} else {
 					//"If a new indirect address is required, 16 master cycles are taken to load it."
@@ -294,6 +306,8 @@ bool SnesDmaController::ProcessHdmaChannels()
 					
 					uint8_t msb = _memoryManager->ReadDma((ch.SrcBank << 16) | ch.HdmaTableAddress++, true);
 					_memoryManager->IncMasterClock4();
+
+					_dmaClockCounter += 16;
 
 					ch.TransferSize = (msb << 8) | lsb;
 				}				
@@ -372,12 +386,13 @@ bool SnesDmaController::ProcessPendingTransfers()
 
 		SyncStartDma();
 		_memoryManager->IncMasterClock8();
+		_dmaClockCounter += 8;
 		ProcessPendingTransfers();
 		
 		for(int i = 0; i < 8; i++) {
 			if(_state.Channel[i].DmaActive) {
 				_activeChannel = i;
-				RunDma(_state.Channel[i]);				
+				RunDma(_state.Channel[i]);
 			}
 		}
 		
@@ -622,7 +637,7 @@ DmaChannelConfig SnesDmaController::GetChannelConfig(uint8_t channel)
 
 void SnesDmaController::Serialize(Serializer &s)
 {
-	SV(_hdmaPending); SV(_state.HdmaChannels); SV(_dmaPending); SV(_dmaStartClock); SV(_hdmaInitPending); SV(_dmaStartDelay); SV(_needToProcess);
+	SV(_hdmaPending); SV(_state.HdmaChannels); SV(_dmaPending); SV(_dmaClockCounter); SV(_hdmaInitPending); SV(_dmaStartDelay); SV(_needToProcess);
 	for(int i = 0; i < 8; i++) {
 		SVI(_state.Channel[i].Decrement); SVI(_state.Channel[i].DestAddress); SVI(_state.Channel[i].DoTransfer); SVI(_state.Channel[i].FixedTransfer);
 		SVI(_state.Channel[i].HdmaBank); SVI(_state.Channel[i].HdmaFinished); SVI(_state.Channel[i].HdmaIndirectAddressing);
