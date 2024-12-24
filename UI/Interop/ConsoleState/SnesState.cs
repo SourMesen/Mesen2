@@ -113,6 +113,7 @@ public struct SnesPpuState : BaseState
 	public byte Ppu2OpenBus;
 
 	public byte CgramAddress;
+	public byte InternalCgramAddress;
 	public byte CgramWriteBuffer;
 	[MarshalAs(UnmanagedType.I1)] public bool CgramAddressLatch;
 

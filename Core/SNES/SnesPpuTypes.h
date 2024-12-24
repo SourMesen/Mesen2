@@ -158,6 +158,7 @@ struct SnesPpuState : public BaseState
 	uint8_t Ppu2OpenBus = 0;
 
 	uint8_t CgramAddress = 0;
+	uint8_t InternalCgramAddress = 0;
 	uint8_t CgramWriteBuffer = 0;
 	bool CgramAddressLatch = false;
 
