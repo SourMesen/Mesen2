@@ -200,6 +200,9 @@ private:
 	bool IsDoubleHeight();
 	bool IsDoubleWidth();
 
+	bool CanAccessCgram();
+	bool CanAccessVram();
+
 	void EvaluateNextLineSprites();
 	void FetchSpriteData();
 	__forceinline void FetchSpritePosition(uint8_t oamAddress);
