@@ -6,6 +6,15 @@ Mesen is a multi-system emulator (NES, SNES, Game Boy, Game Boy Advance, PC Engi
 
 [![Mesen](https://github.com/SourMesen/Mesen2/actions/workflows/build.yml/badge.svg)](https://github.com/SourMesen/Mesen2/actions/workflows/build.yml)
 
+#### <ins>Native builds</ins> ####
+
+These builds don't require .NET to be installed and offer improved start up times.  
+
+* [Windows 10 / 11](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Windows%20-%20net8.0%20-%20AoT%29.zip)  
+* [Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Linux%20-%20ubuntu-20.04%20-%20clang_aot%29.zip)  (requires **SDL2**)
+* [macOS - Intel](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28macOS%20-%20macos-13%20-%20clang_aot%29.zip)  (requires **SDL2**)
+* [macOS - Apple Silicon](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28macOS%20-%20macos-14%20-%20clang_aot%29.zip)  (requires **SDL2**)
+
 #### <ins>.NET builds</ins> ####
 
 These builds require **.NET 8** to be installed (except the Windows 7 build which requires .NET 6).  
@@ -17,15 +26,6 @@ For Linux and macOS, **SDL2** must also be installed.
 * [macOS - Apple Silicon](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28macOS%20-%20macos-14%20-%20clang%29.zip)  
 * [Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Linux%20-%20ubuntu-20.04%20-%20clang%29.zip)  
 * [Linux - AppImage](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20(Linux%20x64%20-%20AppImage).zip)
-
-#### <ins>Native builds</ins> ####
-
-These builds don't require .NET to be installed and offer improved start up times.  
-
-* **Windows 10 / 11**: An issue is causing the emulator to sometimes (randomly) freeze when opening or closing windows in the native builds on Windows. Using the native builds on Windows is not recommended until this is fixed.
-* [Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Linux%20-%20ubuntu-20.04%20-%20clang_aot%29.zip)  (requires **SDL2**)
-* [macOS - Intel](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28macOS%20-%20macos-13%20-%20clang_aot%29.zip)  (requires **SDL2**)
-* [macOS - Apple Silicon](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28macOS%20-%20macos-14%20-%20clang_aot%29.zip)  (requires **SDL2**)
 
 #### <ins>Notes / limitations</ins> ####
 

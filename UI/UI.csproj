@@ -105,13 +105,13 @@
 		<TrimmerRootAssembly Include="Dock.Settings" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.0" />
+    <PackageReference Include="Avalonia" Version="11.3.999-cibuild0054043-alpha" />
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.1.0" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.0" />
-    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.0" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.0" Condition="'$(OptimizeUi)'!='true'" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.0" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.999-cibuild0054043-alpha" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.3" Condition="'$(OptimizeUi)'!='true'" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.999-cibuild0054043-alpha" />
     <PackageReference Include="Dock.Avalonia" Version="11.2.0" />
     <PackageReference Include="Dock.Model.Mvvm" Version="11.2.0" />
     <PackageReference Include="Dotnet.Bundle" Version="*" />
