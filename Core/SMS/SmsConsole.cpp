@@ -26,6 +26,10 @@ SmsConsole::SmsConsole(Emulator* emu)
 	_emu = emu;
 }
 
+SmsConsole::~SmsConsole()
+{
+}
+
 LoadRomResult SmsConsole::LoadRom(VirtualFile& romFile)
 {
 	vector<uint8_t> romData;

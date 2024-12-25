@@ -27,6 +27,10 @@ PceConsole::PceConsole(Emulator* emu)
 	_emu = emu;
 }
 
+PceConsole::~PceConsole()
+{
+}
+
 void PceConsole::Reset()
 {
 	//The PC Engine has no reset button, behave like power cycle
