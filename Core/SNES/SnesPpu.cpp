@@ -925,10 +925,12 @@ void SnesPpu::RenderBgColor()
 	uint8_t pixelFlags = (_state.ColorMathEnabled & 0x20) ? PixelFlags::AllowColorMath : 0;
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
 		if((_mainScreenFlags[x] & 0x0F) == 0) {
+			_state.InternalCgramAddress = 0;
 			_mainScreenBuffer[x] = _cgram[0];
 			_mainScreenFlags[x] = pixelFlags;
 		}
 		if(_subScreenPriority[x] == 0) {
+			_state.InternalCgramAddress = 0;
 			_subScreenBuffer[x] = _cgram[0];
 		}
 	}
