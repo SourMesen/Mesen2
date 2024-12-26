@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d" d:DesignWidth="280" d:DesignHeight="200"
 	x:Name="root"
 	x:Class="Mesen.Controls.OverscanInput"
@@ -12,12 +13,12 @@
 >
 	<StackPanel>
 		<TextBlock Text="{l:Translate lblTop}" HorizontalAlignment="Center" />
-		<NumericUpDown Value="{Binding Overscan.Top, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center"/>
+		<c:MesenNumericUpDown Value="{Binding Overscan.Top, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center"/>
 
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 				<TextBlock Text="{l:Translate lblLeft}" HorizontalAlignment="Center" />
-				<NumericUpDown Value="{Binding Overscan.Left, ElementName=root}" Minimum="0" Maximum="100" />
+				<c:MesenNumericUpDown Value="{Binding Overscan.Left, ElementName=root}" Minimum="0" Maximum="100" />
 			</StackPanel>
 
 			<Border Width="130" Height="122" BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
@@ -34,11 +35,11 @@
 
 			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 				<TextBlock Text="{l:Translate lblRight}" HorizontalAlignment="Center" />
-				<NumericUpDown Value="{Binding Overscan.Right, ElementName=root}" Minimum="0" Maximum="100" />
+				<c:MesenNumericUpDown Value="{Binding Overscan.Right, ElementName=root}" Minimum="0" Maximum="100" />
 			</StackPanel>
 		</StackPanel>
 
 		<TextBlock Text="{l:Translate lblBottom}" HorizontalAlignment="Center" />
-		<NumericUpDown Value="{Binding Overscan.Bottom, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center" />
+		<c:MesenNumericUpDown Value="{Binding Overscan.Bottom, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center" />
 	</StackPanel>
 </UserControl>

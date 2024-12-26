@@ -41,7 +41,7 @@
 
 							<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" IsVisible="{Binding ShowCustomRatio}">
 								<TextBlock Text="{l:Translate lblCustomRatio}" VerticalAlignment="Center" />
-								<NumericUpDown
+								<c:MesenNumericUpDown
 									Value="{Binding Config.CustomAspectRatio}"
 									FormatString="0.0000"
 									Minimum="0.1"

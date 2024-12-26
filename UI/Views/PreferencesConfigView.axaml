@@ -199,12 +199,12 @@
 						<CheckBox Content="{l:Translate chkAlwaysOnTop}" IsChecked="{Binding Config.AlwaysOnTop}" />
 						<StackPanel Orientation="Horizontal" Margin="0 0 0 5">
 							<CheckBox Content="{l:Translate chkEnableAutoSaveState}" IsChecked="{Binding Config.EnableAutoSaveState}" />
-							<NumericUpDown Value="{Binding Config.AutoSaveStateDelay}" Margin="5 0" Minimum="1" Maximum="60" IsEnabled="{Binding Config.EnableAutoSaveState}" />
+							<c:MesenNumericUpDown Value="{Binding Config.AutoSaveStateDelay}" Margin="5 0" Minimum="1" Maximum="60" IsEnabled="{Binding Config.EnableAutoSaveState}" />
 							<TextBlock Text="{l:Translate lblSaveStateMinutes}" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<CheckBox Content="{l:Translate lblRewind}" IsChecked="{Binding Config.EnableRewind}" />
-							<NumericUpDown Value="{Binding Config.RewindBufferSize}" Margin="5 0" Minimum="0" Maximum="999" IsEnabled="{Binding Config.EnableRewind}" />
+							<c:MesenNumericUpDown Value="{Binding Config.RewindBufferSize}" Margin="5 0" Minimum="0" Maximum="999" IsEnabled="{Binding Config.EnableRewind}" />
 							<TextBlock Text="{l:Translate lblRewindMinutes}" />
 						</StackPanel>
 					</c:OptionSection>

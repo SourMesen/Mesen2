@@ -361,6 +361,7 @@
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MaxHeight" Value="21" />
 		<Setter Property="Margin" Value="1" />
+		<Setter Property="ClipValueToMinMax" Value="True" />
 	</Style>
 
 	<Style Selector="NumericUpDown RepeatButton">

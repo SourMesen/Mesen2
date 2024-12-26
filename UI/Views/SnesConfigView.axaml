@@ -89,7 +89,7 @@
 
 						<TextBlock Grid.Row="1" Text="{l:Translate lblSpcClockSpeedAdjustment}" />
 						<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-							<NumericUpDown
+							<c:MesenNumericUpDown
 								Minimum="-999"
 								Maximum="999"
 								Value="{Binding Config.SpcClockSpeedAdjustment}"
@@ -128,16 +128,16 @@
 					<c:OptionSection Header="{l:Translate grpPpuTiming}">
 						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
 							<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
-							<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{Binding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+							<c:MesenNumericUpDown Grid.Column="1" Grid.Row="0" Value="{Binding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
 							<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
-							<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
+							<c:MesenNumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
 						</Grid>
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblChipSpecificOc}">
 						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
 							<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblSuperFxClockSpeed}" />
-							<NumericUpDown
+							<c:MesenNumericUpDown
 								Grid.Column="1"
 								Grid.Row="0"
 								Value="{Binding Config.GsuClockSpeed}"

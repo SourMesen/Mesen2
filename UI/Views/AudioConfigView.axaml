@@ -60,7 +60,7 @@
 
 							<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblAudioLatency}" />
 							<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
-								<NumericUpDown
+								<c:MesenNumericUpDown
 									Minimum="15"
 									Maximum="300"
 									Value="{Binding Config.AudioLatency}"
@@ -112,12 +112,12 @@
 						<StackPanel Margin="10 5 0 0">
 							<StackPanel Orientation="Horizontal">
 								<CheckBox IsChecked="{Binding Config.AudioPlayerAutoDetectSilence}" Content="{l:Translate chkAudioPlayerAutoDetectSilence}" />
-								<NumericUpDown Margin="5 1" Maximum="999999" Value="{Binding Config.AudioPlayerSilenceDelay}" IsEnabled="{Binding Config.AudioPlayerAutoDetectSilence}" />
+								<c:MesenNumericUpDown Margin="5 1" Maximum="999999" Value="{Binding Config.AudioPlayerSilenceDelay}" IsEnabled="{Binding Config.AudioPlayerAutoDetectSilence}" />
 								<TextBlock Text="{l:Translate lblMillisecondsOfSilence}" />
 							</StackPanel>
 							<StackPanel Orientation="Horizontal">
 								<CheckBox IsChecked="{Binding Config.AudioPlayerEnableTrackLength}" Content="{l:Translate chkAudioPlayerEnableTrackLength}" />
-								<NumericUpDown Margin="5 1" Maximum="9999" Value="{Binding Config.AudioPlayerTrackLength}" IsEnabled="{Binding Config.AudioPlayerEnableTrackLength}" />
+								<c:MesenNumericUpDown Margin="5 1" Maximum="9999" Value="{Binding Config.AudioPlayerTrackLength}" IsEnabled="{Binding Config.AudioPlayerEnableTrackLength}" />
 								<TextBlock Text="{l:Translate lblSeconds}" />
 							</StackPanel>
 						</StackPanel>
@@ -170,7 +170,7 @@
 							IsChecked="{Binding Config.CrossFeedEnabled}"
 							Content="{l:Translate chkCrossFeedEnabled}"
 						/>
-						<NumericUpDown
+						<c:MesenNumericUpDown
 							IsEnabled="{Binding Config.CrossFeedEnabled}"
 							Margin="10 0 5 0"
 							Minimum="0"
@@ -186,7 +186,7 @@
 						/>
 						<Grid Margin="25 0 0 0" ColumnDefinitions="Auto, Auto" RowDefinitions="Auto, Auto">
 							<TextBlock Text="{l:Translate lblStrength}" />
-							<NumericUpDown
+							<c:MesenNumericUpDown
 								Grid.Column="1"
 								IsEnabled="{Binding Config.ReverbEnabled}"
 								Margin="10 0 5 2"
@@ -198,7 +198,7 @@
 								Grid.Row="1"
 								Text="{l:Translate lblDelay}"
 							/>
-							<NumericUpDown
+							<c:MesenNumericUpDown
 								Grid.Row="1"
 								Grid.Column="1"
 								IsEnabled="{Binding Config.ReverbEnabled}"

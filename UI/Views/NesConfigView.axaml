@@ -117,20 +117,20 @@
 								Width="100"
 							/>
 							<StackPanel Orientation="Horizontal" IsVisible="{Binding IsDelayStereoEffect}">
-								<NumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoDelay}" />
+								<c:MesenNumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoDelay}" />
 								<TextBlock Text="{l:Translate lblMs}" Margin="5 0 0 0" />
 							</StackPanel>
 							<StackPanel Orientation="Horizontal" IsVisible="{Binding IsPanningStereoEffect}">
-								<NumericUpDown Minimum="0" Maximum="180" Value="{Binding Config.StereoPanningAngle}" />
+								<c:MesenNumericUpDown Minimum="0" Maximum="180" Value="{Binding Config.StereoPanningAngle}" />
 								<TextBlock Text="{l:Translate lblAngle}" Margin="5 0 0 0" />
 							</StackPanel>
 							<StackPanel Orientation="Horizontal" IsVisible="{Binding IsCombStereoEffect}" Margin="10 0">
 								<TextBlock Text="{l:Translate lblDelay}" />
-								<NumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoCombFilterDelay}" />
+								<c:MesenNumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoCombFilterDelay}" />
 								<TextBlock Text="{l:Translate lblMs}" Margin="5 0" />
 
 								<TextBlock Text="{l:Translate lblStrength}" Margin="10 0 0 0" />
-								<NumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoCombFilterStrength}" />
+								<c:MesenNumericUpDown Minimum="0" Maximum="100" Value="{Binding Config.StereoCombFilterStrength}" />
 								<TextBlock Text="%" Margin="5 0 0 0" />
 							</StackPanel>
 						</StackPanel>
@@ -354,9 +354,9 @@
 					<c:OptionSection Header="{l:Translate grpPpuTiming}">
 						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
 							<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
-							<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{Binding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+							<c:MesenNumericUpDown Grid.Column="1" Grid.Row="0" Value="{Binding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
 							<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
-							<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
+							<c:MesenNumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
 						</Grid>
 					</c:OptionSection>
 				</StackPanel>

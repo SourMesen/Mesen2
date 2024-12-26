@@ -74,7 +74,7 @@
 
 			<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblLength}" />
 			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="4">
-				<NumericUpDown
+				<c:MesenNumericUpDown
 					Value="{Binding Label.Length}"
 					Minimum="1"
 					Maximum="65536"

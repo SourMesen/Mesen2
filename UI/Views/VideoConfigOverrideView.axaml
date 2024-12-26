@@ -46,7 +46,7 @@
 				<c:EnumComboBox SelectedItem="{Binding AspectRatio}" Width="160" IsEnabled="{Binding OverrideAspectRatio}" />
 				<StackPanel Orientation="Horizontal" IsVisible="{Binding AspectRatio, Converter={StaticResource EnumMatchConverter}, ConverterParameter={x:Static cfg:VideoAspectRatio.Custom}}">
 					<TextBlock Text="{l:Translate lblCustomRatio}" VerticalAlignment="Center" Margin="5 0 0 0" />
-					<NumericUpDown
+					<c:MesenNumericUpDown
 						Value="{Binding CustomAspectRatio}"
 						FormatString="0.0000"
 						Minimum="0.1"

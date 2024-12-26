@@ -106,9 +106,9 @@
 
 					<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblSize}" />
 					<StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal">
-						<NumericUpDown Value="{Binding Config.ColumnCount}" Minimum="4" Maximum="256" Increment="2" />
+						<c:MesenNumericUpDown Value="{Binding Config.ColumnCount}" Minimum="4" Maximum="256" Increment="2" />
 						<TextBlock Margin="5 0">by</TextBlock>
-						<NumericUpDown Value="{Binding Config.RowCount}" Minimum="4" Maximum="256" Increment="2" />
+						<c:MesenNumericUpDown Value="{Binding Config.RowCount}" Minimum="4" Maximum="256" Increment="2" />
 					</StackPanel>
 					
 					<TextBlock Grid.Column="0" Grid.Row="5" Text="{l:Translate lblFormat}" IsVisible="{Binding ShowFormatDropdown}" />

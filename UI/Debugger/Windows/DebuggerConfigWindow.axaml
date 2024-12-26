@@ -98,7 +98,7 @@
 					<c:OptionSection Header="{l:Translate lblRestrictions}">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblMaxExecutionTime}" />
-							<NumericUpDown Margin="3 0" Minimum="1" Maximum="100" Value="{Binding Script.ScriptTimeout}" />
+							<c:MesenNumericUpDown Margin="3 0" Minimum="1" Maximum="100" Value="{Binding Script.ScriptTimeout}" />
 							<TextBlock Text="{l:Translate lblSeconds}" />
 						</StackPanel>
 						<CheckBox IsChecked="{Binding Script.AllowIoOsAccess}" Content="{l:Translate chkAllowIoOsAccess}" />
@@ -259,7 +259,7 @@
 					<c:OptionSection Header="{l:Translate lblSourceView}">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock VerticalAlignment="Center" Text="{l:Translate lblTabSize}" />
-							<NumericUpDown Value="{Binding Integration.TabSize}" Minimum="1" Maximum="16" />
+							<c:MesenNumericUpDown Value="{Binding Integration.TabSize}" Minimum="1" Maximum="16" />
 						</StackPanel>
 					</c:OptionSection>
 				</StackPanel>

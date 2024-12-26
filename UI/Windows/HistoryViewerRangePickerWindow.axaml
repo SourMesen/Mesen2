@@ -23,7 +23,7 @@
 
 		<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto">
 			<TextBlock Text="{l:Translate lblStartTime}" VerticalAlignment="Center" Margin="0 0 5 0" />
-			<NumericUpDown
+			<c:MesenNumericUpDown
 				Grid.Column="1"
 				Value="{Binding StartTime, ElementName=root}"
 				Minimum="{Binding MinValue, ElementName=root}"
@@ -31,7 +31,7 @@
 		  />
 			<TextBlock Grid.Column="2" Text="{l:Translate lblSeconds}" />
 			<TextBlock Grid.Row="1" Text="{l:Translate lblEndTime}" VerticalAlignment="Center" Margin="0 0 5 0" />
-			<NumericUpDown
+			<c:MesenNumericUpDown
 				Grid.Column="1"
 				Grid.Row="1"
 				Value="{Binding EndTime, ElementName=root}"
