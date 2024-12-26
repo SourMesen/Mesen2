@@ -97,6 +97,10 @@ void SmsMemoryManager::Init(Emulator* emu, SmsConsole* console, vector<uint8_t>&
 	_state.WorkRamEnabled = true;
 	_state.IoEnabled = true;
 
+	//Power on values unverified, probably incorrect?
+	_state.GgExtConfig = 0x7F;
+	_state.GgExtData = 0xFF;
+
 	RefreshMappings();
 }
 
@@ -129,7 +133,8 @@ void SmsMemoryManager::RefreshMappings()
 		}
 
 		if(_biosMapper && _state.BiosEnabled && (_model == SmsModel::GameGear || !_state.CartridgeEnabled)) {
-			_biosMapper->RefreshMappings();
+			bool enableCart = _model == SmsModel::GameGear;
+			_biosMapper->RefreshMappings(enableCart);
 		}
 	}
 }
@@ -386,11 +391,11 @@ void SmsMemoryManager::WriteGameGearPort(uint8_t port, uint8_t value)
 		case 0: break; //read-only
 
 		//TODOSMS GG - input/output ext port
-		case 1: break;
-		case 2: break;
-		case 3: break;
+		case 1: _state.GgExtData = value & 0x7F; break;
+		case 2: _state.GgExtConfig = value; break;
+		case 3: _state.GgSendData = value; break;
 		case 4: break; //read-only
-		case 5: break;
+		case 5: _state.GgSerialConfig = value; break;
 
 		//Sound panning - write-only
 		case 6:
@@ -457,11 +462,11 @@ uint8_t SmsMemoryManager::ReadGameGearPort(uint8_t port)
 		}
 
 		//TODOSMS GG - input/output ext port
-		case 1: return 0x7F;
-		case 2: return 0xFF;
-		case 3: return 0x00;
+		case 1: return _state.GgExtData;
+		case 2: return _state.GgExtConfig;
+		case 3: return _state.GgSendData;
 		case 4: return 0xFF;
-		case 5: return 0x00;
+		case 5: return _state.GgSerialConfig;
 
 		//Sound panning - write-only
 		case 6: return 0xFF;
@@ -531,6 +536,11 @@ void SmsMemoryManager::Serialize(Serializer& s)
 	SV(_state.WorkRamEnabled);
 	SV(_state.BiosEnabled);
 	SV(_state.IoEnabled);
+
+	SV(_state.GgExtData);
+	SV(_state.GgExtConfig);
+	SV(_state.GgSendData);
+	SV(_state.GgSerialConfig);
 
 	if(_cartRamSize > 0) {
 		SVArray(_cartRam, _cartRamSize);

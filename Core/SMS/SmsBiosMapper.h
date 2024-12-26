@@ -14,7 +14,7 @@ public:
 	SmsBiosMapper(SmsMemoryManager* memoryManager);
 
 	void WriteRegister(uint16_t addr, uint8_t value);
-	void RefreshMappings();
+	void RefreshMappings(bool cartridgeEnabled);
 
 	void Serialize(Serializer& s) override;
 };

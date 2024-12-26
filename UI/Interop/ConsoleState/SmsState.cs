@@ -170,6 +170,10 @@ public struct SmsMemoryManagerState
 	public byte[] IsWriteRegister;
 
 	public byte OpenBus;
+	public byte GgExtData;
+	public byte GgExtConfig;
+	public byte GgSendData;
+	public byte GgSerialConfig;
 
 	[MarshalAs(UnmanagedType.I1)] public bool ExpEnabled;
 	[MarshalAs(UnmanagedType.I1)] public bool CartridgeEnabled;

@@ -179,6 +179,10 @@ struct SmsMemoryManagerState
 	bool IsWriteRegister[0x100];
 
 	uint8_t OpenBus;
+	uint8_t GgExtData;
+	uint8_t GgExtConfig;
+	uint8_t GgSendData;
+	uint8_t GgSerialConfig;
 
 	bool ExpEnabled;
 	bool CartridgeEnabled;
