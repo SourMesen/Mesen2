@@ -39,7 +39,7 @@
 		
 		<ContentControl Name="AudioPlayer" DockPanel.Dock="Bottom" Content="{Binding AudioPlayer}" />
 
-		<Panel Name="RendererPanel" Background="Black">
+		<Panel Name="RendererPanel" Background="Black" Focusable="True">
 			<ContentControl Background="#181818" Content="{Binding RecentGames}" IsVisible="{Binding RecentGames.Visible}" />
 
 			<m:NativeRenderer

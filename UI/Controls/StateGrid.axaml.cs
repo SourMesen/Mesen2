@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Mesen.Interop;
 using Mesen.Config;
 using Avalonia.Threading;
+using System.Linq;
 
 namespace Mesen.Controls
 {
@@ -111,7 +112,7 @@ namespace Mesen.Controls
 		{
 			InitializeComponent();
 			Focusable = true;
-			_timerInput.Interval = TimeSpan.FromMilliseconds(100);
+			_timerInput.Interval = TimeSpan.FromMilliseconds(50);
 			_timerInput.Tick += timerInput_Tick;
 		}
 
@@ -242,84 +243,75 @@ namespace Mesen.Controls
 			grid.Children.AddRange(entries);
 		}
 
-		private bool _waitForRelease = false;
+		private bool _loadRequested = false;
 		private RecentGameInfo? _entryToLoad = null;
+		private HashSet<ushort> _pressedKeyCodes = new();
 
 		private void timerInput_Tick(object? sender, EventArgs e)
 		{
 			if(!IsEffectivelyVisible || !IsKeyboardFocusWithin || Entries == null || Entries.Count == 0) {
 				_entryToLoad = null;
-				_waitForRelease = false;
+				_loadRequested = false;
 				return;
 			}
-				
-			ControllerConfig nesPort = ConfigManager.Config.Nes.Port1;
-			ControllerConfig snesPort = ConfigManager.Config.Snes.Port1;
-			ControllerConfig pcePort = ConfigManager.Config.PcEngine.Port1;
-			ControllerConfig gbPort = ConfigManager.Config.Gameboy.Controller;
-			ControllerConfig gbaPort = ConfigManager.Config.Gba.Controller;
-			ControllerConfig smsPort = ConfigManager.Config.Sms.Port1;
+
+			List<KeyMapping> mappings = new List<ControllerConfig>() {
+				ConfigManager.Config.Nes.Port1, ConfigManager.Config.Snes.Port1, ConfigManager.Config.PcEngine.Port1,
+				ConfigManager.Config.Gameboy.Controller, ConfigManager.Config.Gba.Controller, ConfigManager.Config.Sms.Port1,
+				ConfigManager.Config.Ws.ControllerHorizontal
+			}.SelectMany((a) => new List<KeyMapping>() { a.Mapping1, a.Mapping2, a.Mapping3, a.Mapping4 }).ToList();
 
 			List<ushort> keyCodes = InputApi.GetPressedKeys();
-			ushort keyCode = keyCodes.Count > 0 ? keyCodes[0] : (ushort)0;
-			if(keyCode > 0) {
-				//Use player 1's controls to navigate the recent game selection screen
-				if(!_waitForRelease) {
-					List<KeyMapping> mappings = new List<KeyMapping>() {
-						nesPort.Mapping1, nesPort.Mapping2, nesPort.Mapping3, nesPort.Mapping4,
-						snesPort.Mapping1, snesPort.Mapping2, snesPort.Mapping3, snesPort.Mapping4,
-						pcePort.Mapping1, pcePort.Mapping2, pcePort.Mapping3, pcePort.Mapping4,
-						gbPort.Mapping1, gbPort.Mapping2, gbPort.Mapping3, gbPort.Mapping4,
-						gbaPort.Mapping1, gbaPort.Mapping2, gbaPort.Mapping3, gbaPort.Mapping4,
-						smsPort.Mapping1, smsPort.Mapping2, smsPort.Mapping3,	smsPort.Mapping4
-					};
 
+			foreach(ushort keyCode in keyCodes) {
+				//Use player 1's controls to navigate the recent game selection screen
+				if(keyCode > 0 && _pressedKeyCodes.Add(keyCode)) {
 					foreach(KeyMapping mapping in mappings) {
 						if(mapping.Left == keyCode) {
-							_waitForRelease = true;
 							if(SelectedIndex == 0) {
 								SelectedIndex = Entries.Count - 1;
 							} else {
 								SelectedIndex--;
 							}
+							_entryToLoad = Entries[SelectedIndex % Entries.Count];
 							break;
 						} else if(mapping.Right == keyCode) {
-							_waitForRelease = true;
 							SelectedIndex = (SelectedIndex + 1) % Entries.Count;
+							_entryToLoad = Entries[SelectedIndex % Entries.Count];
 							break;
 						} else if(mapping.Down == keyCode) {
-							_waitForRelease = true;
 							if(SelectedIndex + _colCount < Entries.Count) {
 								SelectedIndex += _colCount;
 							} else {
 								SelectedIndex = Math.Min(SelectedIndex % _colCount, Entries.Count - 1);
 							}
+							_entryToLoad = Entries[SelectedIndex % Entries.Count];
 							break;
 						} else if(mapping.Up == keyCode) {
-							_waitForRelease = true;
 							if(SelectedIndex < _colCount) {
 								SelectedIndex = Entries.Count - (_colCount - (SelectedIndex % _colCount));
 							} else {
 								SelectedIndex -= _colCount;
 							}
+							_entryToLoad = Entries[SelectedIndex % Entries.Count];
 							break;
 						} else if(mapping.A == keyCode || mapping.B == keyCode || mapping.X == keyCode || mapping.Y == keyCode || mapping.Select == keyCode || mapping.Start == keyCode) {
-							_waitForRelease = true;
-							_entryToLoad = Entries[SelectedIndex % Entries.Count];
+							_loadRequested = true;
 							break;
 						}
 					}
 				}
-			} else {
-				_waitForRelease = false;
-				
-				if(_entryToLoad != null) {
-					//Load game/state once button is released to avoid game processing pressed button
-					if(_entryToLoad.IsEnabled()) {
-						_entryToLoad.Load();
-					}
-					_entryToLoad = null;
+			}
+
+			_pressedKeyCodes.Clear();
+			_pressedKeyCodes.UnionWith(keyCodes);
+
+			if(_loadRequested && keyCodes.Count == 0) {
+				//Load game/state once all buttons are released to avoid game processing pressed button
+				if(_entryToLoad?.IsEnabled() == true) {
+					_entryToLoad.Load();
 				}
+				_loadRequested = false;
 			}
 		}
 	}

@@ -11,6 +11,7 @@
 >
 	<UserControl.Resources>
 		<Color x:Key="ButtonBorderBrushDisabled">Gray</Color>
+		<Color x:Key="ButtonBackgroundDisabled">Black</Color>
 		<Color x:Key="ButtonBorderBrushPointerOver">#00C0FF</Color>
 	</UserControl.Resources>
 	<UserControl.Styles>
@@ -22,9 +23,11 @@
 		</Style>
 		<Style Selector="Button">
 			<Setter Property="BorderBrush" Value="SlateGray" />
+			<Setter Property="Background" Value="Black" />
 		</Style>
 		<Style Selector="Button.activeEntry">
-			<Setter Property="BorderBrush" Value="#0078D7" />
+			<Setter Property="BorderBrush" Value="#0088E7" />
+			<Setter Property="Background" Value="#FF3A3A3A" />
 		</Style>
 	</UserControl.Styles>
 	
@@ -48,7 +51,6 @@
 			Classes.activeEntry="{Binding IsActiveEntry, ElementName=root}"
 			BorderThickness="2"
 			Height="NaN"
-			Background="Black"
 			Click="OnImageClick"
 			IsEnabled="{Binding Enabled, ElementName=root}"
 			HorizontalAlignment="Center"

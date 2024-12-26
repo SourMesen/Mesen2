@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using Mesen.Controls;
 using Mesen.Localization;
 using System.Diagnostics;
+using Avalonia.VisualTree;
 
 namespace Mesen.Windows
 {
@@ -207,8 +208,12 @@ namespace Mesen.Windows
 			_timerBackgroundFlag.Tick += timerUpdateBackgroundFlag;
 			_timerBackgroundFlag.Start();
 
-			//Force focus on window itself, to avoid menu being given focus by default
-			Focus();
+			//Give focus to panel to avoid menu being given focus by default
+			this.GetControl<Panel>("RendererPanel").Focus();
+
+			//Focus on the recent games dialog if it's visible
+			//This also enables keyboard/gamepad navigation on the selection screen without having to click it first
+			this.FindDescendantOfType<StateGrid>()?.Focus();
 
 			Task.Run(() => {
 				CommandLineHelper cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
@@ -301,6 +306,9 @@ namespace Mesen.Windows
 					if(!evtParams.IsPowerCycle) {
 						Dispatcher.UIThread.Post(() => {
 							_model.RecentGames.Visible = false;
+							if(IsKeyboardFocusWithin) {
+								this.GetControl<Panel>("RendererPanel").Focus();
+							}
 
 							DispatcherTimer.RunOnce(() => {
 								if(_cmdLine != null) {
@@ -327,6 +335,9 @@ namespace Mesen.Windows
 				case ConsoleNotificationType.GameResumed:
 					Dispatcher.UIThread.Post(() => {
 						_model.RecentGames.Visible = false;
+						if(IsKeyboardFocusWithin) {
+							this.GetControl<Panel>("RendererPanel").Focus();
+						}
 					});
 					break;
 
