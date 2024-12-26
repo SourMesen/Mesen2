@@ -274,13 +274,11 @@ void NesControlManager::ProcessWrites()
 
 void NesControlManager::Reset(bool softReset)
 {
-	ResetLagCounter();
 }
 
 void NesControlManager::Serialize(Serializer& s)
 {
 	BaseControlManager::Serialize(s);
-	SV(_lagCounter);
 	SV(_writeAddr);
 	SV(_writeValue);
 	SV(_writePending);

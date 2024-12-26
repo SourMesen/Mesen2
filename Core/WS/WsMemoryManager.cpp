@@ -261,7 +261,11 @@ uint8_t WsMemoryManager::InternalReadPort(uint16_t port, bool isWordAccess)
 			case 0xB2: return _state.EnabledIrqs;
 			case 0xB3: return _serial->Read(port);
 			case 0xB4: return GetActiveIrqs();
-			case 0xB5: return _controlManager->Read();
+
+			case 0xB5:
+				_controlManager->SetInputReadFlag();
+				return _controlManager->Read();
+
 			case 0xB7: return _state.EnableLowBatteryNmi ? 0x10 : 0;
 			default:
 				//TODOWS open bus

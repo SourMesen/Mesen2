@@ -326,6 +326,7 @@ void Emulator::Reset()
 	_systemActionManager->ResetState();
 
 	_console->GetControlManager()->UpdateInputState();
+	_console->GetControlManager()->ResetLagCounter();
 
 	_videoRenderer->ClearFrame();
 

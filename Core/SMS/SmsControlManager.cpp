@@ -89,6 +89,8 @@ uint8_t SmsControlManager::InternalReadPort(uint8_t port)
 
 uint8_t SmsControlManager::ReadPort(uint8_t port)
 {
+	SetInputReadFlag();
+
 	if(_console->GetModel() == SmsModel::ColecoVision) {
 		return ReadColecoVisionPort(port);
 	}
