@@ -357,7 +357,18 @@ void Spc::CpuWriteRegister(uint32_t addr, uint8_t value)
 	Run();
 	if(_state.NewCpuRegs[addr & 0x03] != value) {
 		_state.NewCpuRegs[addr & 0x03] = value;
-		_pendingCpuRegUpdate = true;
+
+		//If the CPU's write lands in the first half of the SPC cycle (each cycle is 2 clocks) then the SPC 
+		//can see the new value immediately, otherwise it only sees the new value on the following cycle.
+		//The delay is needed for Kishin Kishin Douji Zenki to boot.
+		//However, always delaying to the next SPC cycle causes Kawasaki Superbike Challenge to freeze on boot.
+		//Delaying only when the write occurs in the SPC cycle's second half allows both games to work (at the default 32040hz.)
+		//This solution behaves as if the CPU values were latched/updated every 2mhz tick (which matches the SPC's input clock)
+		if(_memoryManager->GetMasterClock() * _clockRatio - _state.Cycle <= 1) {
+			_state.CpuRegs[addr & 0x03] = value;
+		} else {
+			_pendingCpuRegUpdate = true;
+		}
 	}
 }
 
