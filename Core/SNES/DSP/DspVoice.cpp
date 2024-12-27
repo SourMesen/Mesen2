@@ -264,6 +264,7 @@ void DspVoice::Step3c()
 	switch(_cfg->InterpolationType) {
 		case DspInterpolationType::Gauss: output = DspInterpolation::Gauss(_interpolationPos, _sampleBuffer, _bufferPos); break;
 		case DspInterpolationType::Cubic: output = DspInterpolation::Cubic(_interpolationPos, _sampleBuffer, _bufferPos); break;
+		case DspInterpolationType::Sinc: output = DspInterpolation::Sinc(_interpolationPos, _sampleBuffer, _bufferPos); break;
 		case DspInterpolationType::None: output = _sampleBuffer[((_interpolationPos >> 12) + _bufferPos) % 12]; break;
 	}
 

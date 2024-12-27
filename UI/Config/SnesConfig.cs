@@ -188,6 +188,7 @@ namespace Mesen.Config
 	{
 		Gauss,
 		Cubic,
+		Sinc,
 		None
 	}
 }

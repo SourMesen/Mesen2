@@ -530,6 +530,7 @@ enum class DspInterpolationType
 {
 	Gauss,
 	Cubic,
+	Sinc,
 	None
 };
 

@@ -2078,6 +2078,7 @@ E
 		<Enum ID="DspInterpolationType">
 			<Value ID="Gauss">Gauss (default, accurate)</Value>
 			<Value ID="Cubic">Cubic</Value>
+			<Value ID="Sinc">Sinc</Value>
 			<Value ID="None">None</Value>
 		</Enum>
 		<Enum ID="SnesSuperScopeButtons">
