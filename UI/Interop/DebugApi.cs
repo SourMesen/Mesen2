@@ -220,7 +220,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 		[DllImport(DllPath)] public static extern AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);
 
-		[DllImport(DllPath)] public static extern void SetLabel(uint address, MemoryType memType, string label, string comment);
+		[DllImport(DllPath)] public static extern void SetLabel(uint address, MemoryType memType, [MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.LPUTF8Str)] string comment);
 		[DllImport(DllPath)] public static extern void ClearLabels();
 
 		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] InteropBreakpoint[] breakpoints, UInt32 length);
