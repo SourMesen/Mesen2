@@ -16,8 +16,8 @@ void Spc::Run()
 	}
 
 	//Minus 1 because each call to ProcessCycle increments _state.Cycle by 2
-	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio) - 1;
-	while(_state.Cycle < targetCycle) {
+	int64_t targetCycle = (int64_t)(_memoryManager->GetMasterClock() * _clockRatio) - 1;
+	while((int64_t)_state.Cycle < targetCycle) {
 		ProcessCycle();
 	}
 }
