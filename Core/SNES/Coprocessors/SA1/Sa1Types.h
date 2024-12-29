@@ -107,9 +107,3 @@ struct Sa1State
 
 	uint8_t Banks[4];
 };
-
-struct DebugSa1State
-{
-	SnesCpuState Cpu;
-	Sa1State Sa1;
-};

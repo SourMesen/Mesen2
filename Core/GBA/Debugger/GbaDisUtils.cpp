@@ -403,7 +403,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 	uint32_t opCode = info.GetByteCode()[0] | (info.GetByteCode()[1] << 8) | (info.GetByteCode()[2] << 16) | (info.GetByteCode()[3] << 24);
 
-	GbaArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
+	ArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
 
 	auto writeBranchTarget = [&str, labelManager](uint32_t addr) {
 		AddressInfo relAddr = { (int32_t)addr, MemoryType::GbaMemory };
@@ -416,7 +416,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 	};
 
 	switch(category) {
-		case GbaArmOpCategory::Branch:
+		case ArmOpCategory::Branch:
 		{
 			str.Write('B');
 			if(opCode & (1 << 24)) {
@@ -430,42 +430,42 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::DataProcessing:
+		case ArmOpCategory::DataProcessing:
 		{
 			bool immediate = (opCode & (1 << 25)) != 0;
 			uint8_t rn = (opCode >> 16) & 0x0F;
 			uint8_t rd = (opCode >> 12) & 0x0F;
 			bool updateFlags = (opCode & (1 << 20)) != 0;
 
-			GbaAluOperation aluOp = (GbaAluOperation)((opCode >> 21) & 0x0F);
+			ArmAluOperation aluOp = (ArmAluOperation)((opCode >> 21) & 0x0F);
 			switch(aluOp) {
-				case GbaAluOperation::And: str.Write("AND"); break;
-				case GbaAluOperation::Eor: str.Write("EOR"); break;
-				case GbaAluOperation::Sub: str.Write("SUB"); break;
-				case GbaAluOperation::Rsb: str.Write("RSB"); break;
-				case GbaAluOperation::Add: str.Write("ADD"); break;
-				case GbaAluOperation::Adc: str.Write("ADC"); break;
-				case GbaAluOperation::Sbc: str.Write("SBC"); break;
-				case GbaAluOperation::Rsc: str.Write("RSC"); break;
-				case GbaAluOperation::Tst: str.Write("TST"); break;
-				case GbaAluOperation::Teq: str.Write("TEQ"); break;
-				case GbaAluOperation::Cmp: str.Write("CMP"); break;
-				case GbaAluOperation::Cmn: str.Write("CMN"); break;
-				case GbaAluOperation::Orr: str.Write("ORR"); break;
-				case GbaAluOperation::Mov: str.Write("MOV"); break;
-				case GbaAluOperation::Bic: str.Write("BIC"); break;
-				case GbaAluOperation::Mvn: str.Write("MVN"); break;
+				case ArmAluOperation::And: str.Write("AND"); break;
+				case ArmAluOperation::Eor: str.Write("EOR"); break;
+				case ArmAluOperation::Sub: str.Write("SUB"); break;
+				case ArmAluOperation::Rsb: str.Write("RSB"); break;
+				case ArmAluOperation::Add: str.Write("ADD"); break;
+				case ArmAluOperation::Adc: str.Write("ADC"); break;
+				case ArmAluOperation::Sbc: str.Write("SBC"); break;
+				case ArmAluOperation::Rsc: str.Write("RSC"); break;
+				case ArmAluOperation::Tst: str.Write("TST"); break;
+				case ArmAluOperation::Teq: str.Write("TEQ"); break;
+				case ArmAluOperation::Cmp: str.Write("CMP"); break;
+				case ArmAluOperation::Cmn: str.Write("CMN"); break;
+				case ArmAluOperation::Orr: str.Write("ORR"); break;
+				case ArmAluOperation::Mov: str.Write("MOV"); break;
+				case ArmAluOperation::Bic: str.Write("BIC"); break;
+				case ArmAluOperation::Mvn: str.Write("MVN"); break;
 			}
 
 			WriteCond(str, opCode);
-			bool isCmp = aluOp >= GbaAluOperation::Tst && aluOp <= GbaAluOperation::Cmn;
+			bool isCmp = aluOp >= ArmAluOperation::Tst && aluOp <= ArmAluOperation::Cmn;
 			if(updateFlags && !isCmp) {
 				str.Write('S');
 			}
 
 			str.Write(' ');
 
-			if(aluOp == GbaAluOperation::Mov || aluOp == GbaAluOperation::Mvn) {
+			if(aluOp == ArmAluOperation::Mov || aluOp == ArmAluOperation::Mvn) {
 				WriteReg(str, rd);
 			} else if(isCmp) {
 				WriteReg(str, rn);
@@ -521,7 +521,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::SingleDataTransfer:
+		case ArmOpCategory::SingleDataTransfer:
 		{
 			bool immediate = (opCode & (1 << 25)) == 0;
 			bool pre = (opCode & (1 << 24)) != 0;
@@ -593,7 +593,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::Mrs:
+		case ArmOpCategory::Mrs:
 		{
 			uint8_t rd = (opCode >> 12) & 0x0F;
 			bool psrSrc = opCode & (1 << 22);
@@ -606,7 +606,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::Msr:
+		case ArmOpCategory::Msr:
 		{
 			bool immediate = opCode & (1 << 25);
 			bool psrDst = opCode & (1 << 22);
@@ -646,7 +646,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::SingleDataSwap:
+		case ArmOpCategory::SingleDataSwap:
 		{
 			str.Write("SWP");
 			WriteCond(str, opCode);
@@ -669,7 +669,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::BranchExchangeRegister:
+		case ArmOpCategory::BranchExchangeRegister:
 		{
 			str.Write("BX");
 			WriteCond(str, opCode);
@@ -679,7 +679,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::BlockDataTransfer:
+		case ArmOpCategory::BlockDataTransfer:
 		{
 			bool pre = (opCode & (1 << 24)) != 0;
 			bool up = (opCode & (1 << 23)) != 0;
@@ -720,7 +720,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::SignedHalfDataTransfer:
+		case ArmOpCategory::SignedHalfDataTransfer:
 		{
 			bool pre = (opCode & (1 << 24)) != 0;
 			bool up = (opCode & (1 << 23)) != 0;
@@ -786,7 +786,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::Multiply:
+		case ArmOpCategory::Multiply:
 		{
 			uint8_t rd = (opCode >> 16) & 0x0F;
 			uint8_t rn = (opCode >> 12) & 0x0F;
@@ -815,7 +815,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::MultiplyLong:
+		case ArmOpCategory::MultiplyLong:
 		{
 			uint8_t rh = (opCode >> 16) & 0x0F;
 			uint8_t rl = (opCode >> 12) & 0x0F;
@@ -843,7 +843,7 @@ void GbaDisUtils::ArmDisassemble(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 		}
 
-		case GbaArmOpCategory::SoftwareInterrupt:
+		case ArmOpCategory::SoftwareInterrupt:
 		{
 			uint32_t value = opCode & 0xFFFFFF;
 			str.Write("SWI");
@@ -955,15 +955,15 @@ EffectiveAddressInfo GbaDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Gba
 				return {};
 		}
 	} else {
-		GbaArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
+		ArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
 		switch(category) {
-			case GbaArmOpCategory::BranchExchangeRegister: {
+			case ArmOpCategory::BranchExchangeRegister: {
 				uint8_t rs = opCode & 0x0F;
 				return { (int)state.R[rs], 0, true, MemoryType::GbaMemory };
 			}
 
-			case GbaArmOpCategory::InvalidOp:
-			case GbaArmOpCategory::BlockDataTransfer:
+			case ArmOpCategory::InvalidOp:
+			case ArmOpCategory::BlockDataTransfer:
 				return {};
 		}
 	}
@@ -1011,8 +1011,8 @@ bool GbaDisUtils::IsJumpToSub(uint32_t opCode, uint8_t flags)
 		}
 		return false;
 	} else {
-		GbaArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
-		if(category == GbaArmOpCategory::Branch) {
+		ArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
+		if(category == ArmOpCategory::Branch) {
 			bool withLink = opCode & (1 << 24);
 			return withLink;
 		}
@@ -1036,8 +1036,8 @@ bool GbaDisUtils::IsReturnInstruction(uint32_t opCode, uint8_t flags)
 		}
 		return false;
 	} else {
-		GbaArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
-		if(category == GbaArmOpCategory::BranchExchangeRegister) {
+		ArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
+		if(category == ArmOpCategory::BranchExchangeRegister) {
 			//BX 14
 			uint8_t rs = opCode & 0x0F;
 			return rs == 14;
@@ -1093,24 +1093,24 @@ bool GbaDisUtils::IsUnconditionalJump(uint32_t opCode, uint8_t flags)
 
 bool GbaDisUtils::IsArmBranch(uint32_t opCode)
 {
-	GbaArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
+	ArmOpCategory category = GbaCpu::GetArmOpCategory(opCode);
 	switch(category) {
-		case GbaArmOpCategory::Branch: return true;
-		case GbaArmOpCategory::BranchExchangeRegister: return true;
-		case GbaArmOpCategory::SoftwareInterrupt: return true;
+		case ArmOpCategory::Branch: return true;
+		case ArmOpCategory::BranchExchangeRegister: return true;
+		case ArmOpCategory::SoftwareInterrupt: return true;
 
-		case GbaArmOpCategory::Msr: return false;
+		case ArmOpCategory::Msr: return false;
 
-		case GbaArmOpCategory::Mrs:
-		case GbaArmOpCategory::DataProcessing:
-		case GbaArmOpCategory::Multiply:
-		case GbaArmOpCategory::SingleDataSwap: {
+		case ArmOpCategory::Mrs:
+		case ArmOpCategory::DataProcessing:
+		case ArmOpCategory::Multiply:
+		case ArmOpCategory::SingleDataSwap: {
 			uint8_t rd = (opCode >> 12) & 0x0F;
 			return rd == 15;
 		}
 
-		case GbaArmOpCategory::SingleDataTransfer:
-		case GbaArmOpCategory::SignedHalfDataTransfer: {
+		case ArmOpCategory::SingleDataTransfer:
+		case ArmOpCategory::SignedHalfDataTransfer: {
 			uint8_t rd = (opCode >> 12) & 0x0F;
 			if(rd == 15) {
 				bool pre = (opCode & (1 << 24));
@@ -1124,13 +1124,13 @@ bool GbaDisUtils::IsArmBranch(uint32_t opCode)
 			return false;
 		}
 
-		case GbaArmOpCategory::MultiplyLong: {
+		case ArmOpCategory::MultiplyLong: {
 			uint8_t rl = (opCode >> 12) & 0x0F;
 			uint8_t rh = (opCode >> 16) & 0x0F;
 			return rl == 15 || rh == 15;
 		}
 
-		case GbaArmOpCategory::BlockDataTransfer: {
+		case ArmOpCategory::BlockDataTransfer: {
 			uint8_t rn = (opCode >> 16) & 0x0F;
 			bool load = (opCode & (1 << 20));
 			if(rn == 15) {

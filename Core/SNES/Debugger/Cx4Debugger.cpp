@@ -199,7 +199,7 @@ uint64_t Cx4Debugger::GetCpuCycleCount(bool forProfiler)
 DebuggerFeatures Cx4Debugger::GetSupportedFeatures()
 {
 	DebuggerFeatures features = {};
-	features.ChangeProgramCounter = true;
+	features.ChangeProgramCounter = AllowChangeProgramCounter;
 	features.CallStack = true;
 	features.StepOut = true;
 	features.StepOver = true;

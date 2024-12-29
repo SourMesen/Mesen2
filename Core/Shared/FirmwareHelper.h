@@ -149,6 +149,25 @@ public:
 		return false;
 	}
 
+	static bool LoadSt018Firmware(Emulator* emu, vector<uint8_t>& out)
+	{
+		string filename = "st018.rom";
+		uint32_t size = 0x28000;
+		if(AttemptLoadFirmware(out, filename, size)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::ST018, size);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(out, filename, size)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for ST018");
+		return false;
+	}
+
 	static bool LoadBsxFirmware(Emulator* emu, uint8_t** prgRom, uint32_t& prgSize)
 	{
 		if(AttemptLoadBsxFirmware(prgRom, prgSize)) {

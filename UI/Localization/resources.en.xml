@@ -2711,6 +2711,7 @@ E
 			<Value ID="Sa1">SA-1</Value>
 			<Value ID="Gsu">GSU</Value>
 			<Value ID="Cx4">CX4</Value>
+			<Value ID="St018">ST018</Value>
 			<Value ID="Gameboy">Game Boy</Value>
 			<Value ID="Nes">NES</Value>
 			<Value ID="Pce">PC Engine</Value>
@@ -2726,6 +2727,7 @@ E
 			<Value ID="GsuMemory">GSU Memory</Value>
 			<Value ID="NecDspMemory">DSP-n Memory</Value>
 			<Value ID="Cx4Memory">CX4 Memory</Value>
+			<Value ID="St018Memory">ST018 Memory</Value>
 			<Value ID="SnesPrgRom">PRG ROM</Value>
 			<Value ID="SnesWorkRam">Work RAM</Value>
 			<Value ID="SnesSaveRam">Save RAM</Value>
@@ -2742,9 +2744,12 @@ E
 			<Value ID="Sa1InternalRam">SA-1 IRAM</Value>
 			<Value ID="GsuWorkRam">GSU Work RAM</Value>
 			<Value ID="Cx4DataRam">CX4 Data RAM</Value>
-			<Value ID="BsxPsRam">BS-X - PSRAM</Value>
-			<Value ID="BsxMemoryPack">BS-X - Memory Pack</Value>
-			
+			<Value ID="BsxPsRam">BS-X PSRAM</Value>
+			<Value ID="BsxMemoryPack">BS-X Memory Pack</Value>
+			<Value ID="St018PrgRom">ST018 PRG ROM</Value>
+			<Value ID="St018DataRom">ST018 Data ROM</Value>
+			<Value ID="St018WorkRam">ST018 Work RAM</Value>
+
 			<Value ID="GameboyMemory">GB - CPU Memory</Value>
 			<Value ID="GbPrgRom">GB - PRG ROM</Value>
 			<Value ID="GbWorkRam">GB - Work RAM</Value>
@@ -3150,6 +3155,7 @@ E
 			<Value ID="OpenDebugger">Open Debugger</Value>
 			<Value ID="OpenSpcDebugger">Open SPC Debugger</Value>
 			<Value ID="OpenSa1Debugger">Open SA-1 Debugger</Value>
+			<Value ID="OpenSt018Debugger">Open ST018 Debugger</Value>
 			<Value ID="OpenGsuDebugger">Open GSU Debugger</Value>
 			<Value ID="OpenNecDspDebugger">Open DSP Debugger</Value>
 			<Value ID="OpenCx4Debugger">Open CX4 Debugger</Value>
@@ -3432,6 +3438,7 @@ E
 			<Value ID="OpenDebugger">Debugger</Value>
 			<Value ID="OpenSpcDebugger">SPC Debugger</Value>
 			<Value ID="OpenSa1Debugger">SA-1 Debugger</Value>
+			<Value ID="OpenSt018Debugger">ST018 Debugger</Value>
 			<Value ID="OpenGsuDebugger">GSU Debugger</Value>
 			<Value ID="OpenNecDspDebugger">DSP Debugger</Value>
 			<Value ID="OpenCx4Debugger">CX4 Debugger</Value>

@@ -160,7 +160,7 @@ uint64_t GsuDebugger::GetCpuCycleCount(bool forProfiler)
 DebuggerFeatures GsuDebugger::GetSupportedFeatures()
 {
 	DebuggerFeatures features = {};
-	features.ChangeProgramCounter = true;
+	features.ChangeProgramCounter = AllowChangeProgramCounter;
 	return features;
 }
 

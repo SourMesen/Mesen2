@@ -29,7 +29,7 @@ private:
 	typedef void(GbaCpu::* Func)();
 	static Func _armTable[0x1000];
 	static Func _thumbTable[0x100];
-	static GbaArmOpCategory _armCategory[0x1000];
+	static ArmOpCategory _armCategory[0x1000];
 	static GbaThumbOpCategory _thumbCategory[0x100];
 
 	uint32_t Add(uint32_t op1, uint32_t op2, bool carry, bool updateFlags);
@@ -129,7 +129,7 @@ public:
 
 	void Init(Emulator* emu, GbaMemoryManager* memoryManager, GbaRomPrefetch* prefetch);
 
-	static GbaArmOpCategory GetArmOpCategory(uint32_t opCode);
+	static ArmOpCategory GetArmOpCategory(uint32_t opCode);
 	static GbaThumbOpCategory GetThumbOpCategory(uint16_t opCode);
 
 	GbaCpuState& GetState();

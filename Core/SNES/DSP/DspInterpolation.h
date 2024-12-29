@@ -102,7 +102,8 @@ private:
 		import numpy as np
  
 		fc = 0.5  # Cutoff frequency as a fraction of the sampling rate (in (0, 0.5)).
-		n = np.arange(10)
+		N = 10
+		n = np.arange(N)
  
 		for x in range(0, 256): 
 			# Compute sinc filter.

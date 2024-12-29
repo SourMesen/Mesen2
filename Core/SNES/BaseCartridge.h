@@ -12,6 +12,7 @@ class EmuSettings;
 class NecDsp;
 class Sa1;
 class Gsu;
+class St018;
 class Cx4;
 class SuperGameboy;
 class BsxCart;
@@ -40,7 +41,8 @@ private:
 	NecDsp *_necDsp = nullptr;
 	Sa1 *_sa1 = nullptr;
 	Gsu *_gsu = nullptr;
-	Cx4 *_cx4 = nullptr;
+	Cx4* _cx4 = nullptr;
+	St018 *_st018 = nullptr;
 	SuperGameboy *_sgb = nullptr;
 	BsxCart* _bsx = nullptr;
 	unique_ptr<BsxMemoryPack> _bsxMemPack;
@@ -124,6 +126,7 @@ public:
 	Sa1* GetSa1();
 	Gsu* GetGsu();
 	Cx4* GetCx4();
+	St018* GetSt018();
 	SuperGameboy* GetSuperGameboy();
 	BsxCart* GetBsx();
 	BsxMemoryPack* GetBsxMemoryPack();

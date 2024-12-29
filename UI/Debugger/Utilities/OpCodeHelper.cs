@@ -307,6 +307,9 @@ public static class OpCodeHelper
 			}
 			return desc;
 		};
+
+		//Use same tooltips for ST018 ARMv3 CPU
+		_data[CpuType.St018] = _data[CpuType.Gba];
 	}
 
 	private static DocFileFormat? ReadDocumentationFile(string filename)

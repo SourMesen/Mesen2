@@ -2943,6 +2943,33 @@
     <ClInclude Include="GBA\GbaCpuMultiply.h">
       <Filter>GBA</Filter>
     </ClInclude>
+    <ClInclude Include="SNES\Coprocessors\ST018\St018.h">
+      <Filter>SNES\Coprocessors\ST018</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\Coprocessors\ST018\St018Types.h">
+      <Filter>SNES\Coprocessors\ST018</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\Coprocessors\ST018\ArmV3Cpu.h">
+      <Filter>SNES\Coprocessors\ST018</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\Coprocessors\ST018\ArmV3Types.h">
+      <Filter>SNES\Coprocessors\ST018</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\Debugger\St018Debugger.h">
+      <Filter>SNES\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\Debugger\TraceLogger\St018TraceLogger.h">
+      <Filter>SNES\Debugger\TraceLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\Debugger\DummyArmV3Cpu.h">
+      <Filter>SNES\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\Debugger\St018DisUtils.h">
+      <Filter>SNES\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\ArmEnums.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -3284,6 +3311,27 @@
     <ClCompile Include="NES\Mappers\Homebrew\Rainbow.cpp">
       <Filter>NES\Mappers\Homebrew</Filter>
     </ClCompile>
+    <ClCompile Include="SNES\Coprocessors\ST018\St018.cpp">
+      <Filter>SNES\Coprocessors\ST018</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES\Coprocessors\ST018\ArmV3Cpu.cpp">
+      <Filter>SNES\Coprocessors\ST018</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES\Debugger\St018Debugger.cpp">
+      <Filter>SNES\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES\Debugger\TraceLogger\St018TraceLogger.cpp">
+      <Filter>SNES\Debugger\TraceLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES\Debugger\DummyArmV3Cpu.cpp">
+      <Filter>SNES\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\ExpressionEvaluator.St018.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES\Debugger\St018DisUtils.cpp">
+      <Filter>SNES\Debugger</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">
@@ -3405,6 +3453,9 @@
     </Filter>
     <Filter Include="WS\APU">
       <UniqueIdentifier>{e8ed2b40-f0e0-4dc5-89b7-9acc460359c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\ST018">
+      <UniqueIdentifier>{387c0b44-8063-45e8-a28a-b6d9e27b5a3f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

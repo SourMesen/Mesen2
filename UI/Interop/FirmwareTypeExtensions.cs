@@ -16,7 +16,7 @@ public static class FirmwareTypeExtensions
 			
 			case FirmwareType.ST010: return new("st010.rom") { new(0xD000, "FA9BCED838FEDEA11C6F6ACE33D1878024BDD0D02CC9485899D0BDD4015EC24C") };
 			case FirmwareType.ST011: return new("st011.rom") { new(0xD000, "8B2B3F3F3E6E29F4D21D8BC736B400BC988B7D2214EBEE15643F01C1FEE2F364") };
-			case FirmwareType.ST018: return new("st018.rom") { new(0xD000, "6DF209AB5D2524D1839C038BE400AE5EB20DAFC14A3771A3239CD9E8ACD53806") };
+			case FirmwareType.ST018: return new("st018.rom") { new(0x28000, "6DF209AB5D2524D1839C038BE400AE5EB20DAFC14A3771A3239CD9E8ACD53806") };
 			
 			case FirmwareType.Satellaview: return new("BS-X.bin") {
 				new(1024 * 1024,

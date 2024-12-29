@@ -573,6 +573,8 @@ namespace Mesen.Debugger.Utilities
 		OpenGsuDebugger,
 		[IconFile("Sa1Debugger")]
 		OpenSa1Debugger,
+		[IconFile("St018Debugger")]
+		OpenSt018Debugger,
 		[IconFile("GameboyDebugger")]
 		OpenGameboyDebugger,
 

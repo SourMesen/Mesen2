@@ -16,6 +16,7 @@ public:
 			case CpuType::Sa1: return MemoryType::Sa1Memory;
 			case CpuType::Gsu: return MemoryType::GsuMemory;
 			case CpuType::Cx4: return MemoryType::Cx4Memory;
+			case CpuType::St018: return MemoryType::St018Memory;
 			case CpuType::Gameboy: return MemoryType::GameboyMemory;
 			case CpuType::Nes: return MemoryType::NesMemory;
 			case CpuType::Pce: return MemoryType::PceMemory;
@@ -36,6 +37,7 @@ public:
 			case CpuType::Sa1: return 6;
 			case CpuType::Gsu: return 6;
 			case CpuType::Cx4: return 6;
+			case CpuType::St018: return 8;
 			case CpuType::Gameboy: return 4;
 			case CpuType::Nes: return 4;
 			case CpuType::Pce: return 4;
@@ -85,7 +87,13 @@ public:
 			case MemoryType::Cx4DataRam:
 			case MemoryType::Cx4Memory:
 				return CpuType::Cx4;
-				
+
+			case MemoryType::St018Memory:
+			case MemoryType::St018PrgRom:
+			case MemoryType::St018DataRom:
+			case MemoryType::St018WorkRam:
+				return CpuType::St018;
+
 			case MemoryType::GbPrgRom:
 			case MemoryType::GbWorkRam:
 			case MemoryType::GbCartRam:
@@ -222,6 +230,8 @@ public:
 			case MemoryType::PcePrgRom:
 			case MemoryType::DspDataRom:
 			case MemoryType::DspProgramRom:
+			case MemoryType::St018PrgRom:
+			case MemoryType::St018DataRom:
 			case MemoryType::SpcRom:
 			case MemoryType::SmsPrgRom:
 			case MemoryType::SmsBootRom:

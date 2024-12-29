@@ -114,6 +114,15 @@
     <ClInclude Include="SMS\SmsPsg.h" />
     <ClInclude Include="SMS\SmsTypes.h" />
     <ClInclude Include="SMS\SmsVdp.h" />
+    <ClInclude Include="Shared\ArmEnums.h" />
+    <ClInclude Include="SNES\Coprocessors\ST018\ArmV3Cpu.h" />
+    <ClInclude Include="SNES\Coprocessors\ST018\ArmV3Types.h" />
+    <ClInclude Include="SNES\Coprocessors\ST018\St018.h" />
+    <ClInclude Include="SNES\Coprocessors\ST018\St018Types.h" />
+    <ClInclude Include="SNES\Debugger\DummyArmV3Cpu.h" />
+    <ClInclude Include="SNES\Debugger\St018Debugger.h" />
+    <ClInclude Include="SNES\Debugger\St018DisUtils.h" />
+    <ClInclude Include="SNES\Debugger\TraceLogger\St018TraceLogger.h" />
     <ClInclude Include="SNES\DSP\DspInterpolation.h" />
     <ClInclude Include="SNES\DSP\Dsp.h" />
     <ClInclude Include="NES\Debugger\NesCodeDataLogger.h" />
@@ -794,6 +803,7 @@
     <ClCompile Include="Debugger\BaseEventManager.cpp" />
     <ClCompile Include="Debugger\CdlManager.cpp" />
     <ClCompile Include="Debugger\DisassemblySearch.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.St018.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Ws.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Cx4.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gameboy.cpp" />
@@ -938,6 +948,9 @@
     <ClCompile Include="SMS\SmsPsg.cpp" />
     <ClCompile Include="SMS\SmsVdp.cpp" />
     <ClCompile Include="SNES\AluMulDiv.cpp" />
+    <ClCompile Include="SNES\Coprocessors\ST018\ArmV3Cpu.cpp" />
+    <ClCompile Include="SNES\Coprocessors\ST018\St018.cpp" />
+    <ClCompile Include="SNES\Debugger\DummyArmV3Cpu.cpp" />
     <ClCompile Include="SNES\Debugger\DummySnesCpu.cpp" />
     <ClCompile Include="SNES\Debugger\DummySpc.cpp" />
     <ClCompile Include="SNES\Debugger\SnesPpuTools.cpp" />
@@ -956,6 +969,9 @@
     <ClCompile Include="Debugger\CallstackManager.cpp" />
     <ClCompile Include="Shared\CheatManager.cpp" />
     <ClCompile Include="Debugger\CodeDataLogger.cpp" />
+    <ClCompile Include="SNES\Debugger\St018Debugger.cpp" />
+    <ClCompile Include="SNES\Debugger\St018DisUtils.cpp" />
+    <ClCompile Include="SNES\Debugger\TraceLogger\St018TraceLogger.cpp" />
     <ClCompile Include="SNES\DSP\Dsp.cpp" />
     <ClCompile Include="SNES\DSP\DspVoice.cpp" />
     <ClCompile Include="SNES\SnesConsole.cpp" />

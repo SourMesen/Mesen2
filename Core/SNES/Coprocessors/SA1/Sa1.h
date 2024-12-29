@@ -92,7 +92,7 @@ public:
 	uint8_t* DebugGetInternalRam();
 	uint32_t DebugGetInternalRamSize();
 
-	DebugSa1State GetState();
+	Sa1State& GetState();
 	SnesCpuState& GetCpuState();
 
 	uint16_t ReadVector(uint16_t vector);

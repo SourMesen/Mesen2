@@ -2,13 +2,12 @@
 #include "SNES/Debugger/TraceLogger/Cx4TraceLogger.h"
 #include "SNES/SnesPpu.h"
 #include "SNES/SnesMemoryManager.h"
-#include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-Cx4TraceLogger::Cx4TraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Gsu)
+Cx4TraceLogger::Cx4TraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Cx4)
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;

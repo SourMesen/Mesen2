@@ -791,12 +791,9 @@ uint32_t Sa1::DebugGetInternalRamSize()
 	return Sa1::InternalRamSize;
 }
 
-DebugSa1State Sa1::GetState()
+Sa1State& Sa1::GetState()
 {
-	return {
-		_cpu->GetState(),
-		_state
-	};
+	return _state;
 }
 
 SnesCpuState& Sa1::GetCpuState()

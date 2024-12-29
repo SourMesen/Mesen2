@@ -268,6 +268,9 @@ private:
 	unordered_map<string, int64_t>& GetNecDspTokens();
 	int64_t GetNecDspTokenValue(int64_t token, EvalResultType& resultType);
 
+	unordered_map<string, int64_t>& GetSt018Tokens();
+	int64_t GetSt018TokenValue(int64_t token, EvalResultType& resultType);
+
 	unordered_map<string, int64_t>& GetGameboyTokens();
 	int64_t GetGameboyTokenValue(int64_t token, EvalResultType& resultType);
 

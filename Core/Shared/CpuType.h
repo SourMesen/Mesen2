@@ -9,6 +9,7 @@ enum class CpuType : uint8_t
 	Sa1,
 	Gsu,
 	Cx4,
+	St018,
 	Gameboy,
 	Nes,
 	Pce,

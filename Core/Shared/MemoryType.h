@@ -8,6 +8,7 @@ enum class MemoryType
 	NecDspMemory,
 	GsuMemory,
 	Cx4Memory,
+	St018Memory,
 	GameboyMemory,
 	NesMemory,
 	NesPpuMemory,
@@ -34,6 +35,9 @@ enum class MemoryType
 	Cx4DataRam,
 	BsxPsRam,
 	BsxMemoryPack,
+	St018PrgRom,
+	St018DataRom,
+	St018WorkRam,
 
 	GbPrgRom,
 	GbWorkRam,

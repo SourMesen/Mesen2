@@ -3,7 +3,6 @@
 #include "Shared/Emulator.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/Coprocessors/SA1/Sa1Cpu.h"
-#include "SNES/SnesMemoryManager.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 #include "SNES/MemoryMappings.h"
 #include "Shared/MemoryOperationType.h"

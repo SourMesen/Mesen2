@@ -2,13 +2,12 @@
 #include "SNES/Debugger/TraceLogger/NecDspTraceLogger.h"
 #include "SNES/SnesPpu.h"
 #include "SNES/SnesMemoryManager.h"
-#include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-NecDspTraceLogger::NecDspTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Gsu)
+NecDspTraceLogger::NecDspTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuDebugger, CpuType::NecDsp)
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;

@@ -7,6 +7,7 @@
 #include "SNES/Coprocessors/SA1/Sa1.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
 #include "SNES/Coprocessors/GSU/Gsu.h"
+#include "SNES/Coprocessors/ST018/St018.h"
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "SNES/Coprocessors/BSX/BsxCart.h"
@@ -95,6 +96,7 @@ uint32_t MemoryDumper::GetMemorySize(MemoryType type)
 		case MemoryType::Sa1Memory: return 0x1000000;
 		case MemoryType::GsuMemory: return 0x1000000;
 		case MemoryType::Cx4Memory: return 0x1000000;
+		case MemoryType::St018Memory: return 0x20000;
 		case MemoryType::GameboyMemory: return 0x10000;
 		case MemoryType::NesMemory: return 0x10000;
 		case MemoryType::NesPpuMemory: return 0x4000;
@@ -152,6 +154,14 @@ void MemoryDumper::GetMemoryState(MemoryType type, uint8_t *buffer)
 			if(_cartridge->GetCx4()) {
 				for(int i = 0; i <= 0xFFFFFF; i += 0x1000) {
 					_cartridge->GetCx4()->GetMemoryMappings()->PeekBlock(i, buffer + i);
+				}
+			}
+			break;
+
+		case MemoryType::St018Memory:
+			if(_cartridge->GetSt018()) {
+				for(int i = 0; i < 0x20000; i += 0x1000) {
+					_cartridge->GetSt018()->PeekBlock(i, buffer + i);
 				}
 			}
 			break;
@@ -268,6 +278,7 @@ void MemoryDumper::InternalSetMemoryValues(MemoryType originalMemoryType, uint32
 			case MemoryType::NecDspMemory: SetMemoryValue(MemoryType::DspProgramRom, address, value, disableSideEffects); return;
 			case MemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
 			case MemoryType::Cx4Memory: _cartridge->GetCx4()->GetMemoryMappings()->DebugWrite(address, value); break;
+			case MemoryType::St018Memory: _cartridge->GetSt018()->DebugWrite(address, value); break;
 			case MemoryType::GameboyMemory: _gameboy->GetMemoryManager()->DebugWrite(address, value); break;
 			case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value, disableSideEffects); break;
 			case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
@@ -362,6 +373,7 @@ uint8_t MemoryDumper::InternalGetMemoryValue(MemoryType memoryType, uint32_t add
 		case MemoryType::NecDspMemory: return GetMemoryValue(MemoryType::DspProgramRom, address);
 		case MemoryType::GsuMemory: return _cartridge->GetGsu()->GetMemoryMappings()->Peek(address);
 		case MemoryType::Cx4Memory: return _cartridge->GetCx4()->GetMemoryMappings()->Peek(address);
+		case MemoryType::St018Memory: return _cartridge->GetSt018()->DebugRead(address);
 		case MemoryType::GameboyMemory: return _gameboy->GetMemoryManager()->DebugRead(address);
 		case MemoryType::NesMemory: return _nesConsole->DebugRead(address);
 		case MemoryType::NesPpuMemory: return _nesConsole->DebugReadVram(address);

@@ -28,6 +28,8 @@ public class SnesRegisterViewer
 			tabs.Add(GbRegisterViewer.GetGbMiscTab(ref gbState, tabPrefix));
 		} else if(cpuTypes.Contains(CpuType.Gsu)) {
 			tabs.Add(GetSnesGsuTab(ref snesState.Gsu));
+		} else if(cpuTypes.Contains(CpuType.St018)) {
+			tabs.Add(GetSnesSt018Tab(ref snesState.St018));
 		}
 
 		return tabs;
@@ -64,9 +66,30 @@ public class SnesRegisterViewer
 		return new RegisterViewerTab("GSU", entries);
 	}
 
+	private static RegisterViewerTab GetSnesSt018Tab(ref St018State state)
+	{
+		List<RegEntry> entries = new List<RegEntry>() {
+			new RegEntry("", "SNES Registers"),
+			new RegEntry("$3800", "ARM -> SNES Data", state.DataSnes),
+			new RegEntry("$3804.0", "ARM -> SNES Data Ready", state.HasDataForSnes),
+			new RegEntry("$3804.2", "Ack", state.Ack),
+			new RegEntry("$3804.3", "SNES -> ARM Data Ready", state.HasDataForArm),
+			new RegEntry("$3804.7", "ARM CPU Reset", state.ArmReset),
+
+			new RegEntry("", "ST018 Registers"),
+			new RegEntry("$40000010", "ARM -> SNES Data", state.DataArm),
+			new RegEntry("$40000020.0", "ARM -> SNES Data Ready", state.HasDataForSnes),
+			new RegEntry("$40000020.2", "Ack", state.Ack),
+			new RegEntry("$40000020.3", "SNES -> ARM Data Ready", state.HasDataForArm),
+			new RegEntry("$40000020.7", "ARM CPU Reset", state.ArmReset),
+		};
+
+		return new RegisterViewerTab("ST018", entries);
+	}
+
 	private static RegisterViewerTab GetSnesSa1Tab(ref SnesState state)
 	{
-		Sa1State sa1 = state.Sa1.Sa1;
+		Sa1State sa1 = state.Sa1;
 
 		List<RegEntry> entries = new List<RegEntry>() {
 			new RegEntry("$2200", "SA-1 CPU Control"),

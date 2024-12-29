@@ -595,6 +595,7 @@ namespace Mesen.Debugger.ViewModels
 					addTag(cfg.ShowRegisters, "HL:[H,2h][L,2h] IX:[IX,4h] IY:[IY,4h] S:[SP,4h] ");
 					break;
 
+				case CpuType.St018:
 				case CpuType.Gba:
 					addTag(cfg.ShowRegisters, "R0:[R0,8h] R1:[R1,8h] R2:[R2,8h] R3:[R3,8h] R4:[R4,8h] R5:[R5,8h] R6:[R6,8h] R7:[R7,8h] R8:[R8,8h] R9:[R9,8h] R10:[R10,8h] R11:[R11,8h] R12:[R12,8h] R13:[R13,8h] R14:[R14,8h] R15:[R15,8h] ");
 					addTag(cfg.ShowStatusFlags, cfg.StatusFormat switch {
@@ -664,7 +665,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Nes => new string[] { "A", "X", "Y", "P", "SP" },
 				CpuType.Pce => new string[] { "A", "X", "Y", "P", "SP" },
 				CpuType.Sms => new string[] { "A", "B", "C", "D", "E", "F", "H", "L", "IX", "IY", "A'", "B'", "C'", "D'", "E'", "F'", "H'", "L'", "I", "R", "PS", "SP" },
-				CpuType.Gba  => new string[] { "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "CPSR" },
+				CpuType.Gba or CpuType.St018  => new string[] { "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "CPSR" },
 				CpuType.Ws => new string[] { "AX", "BX", "CX", "DX", "CS", "IP", "SS", "SP", "BP", "DS", "ES", "SI", "DI", "F" },
 				_ => throw new Exception("unsupported cpu type")
 			};

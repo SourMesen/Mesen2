@@ -278,7 +278,7 @@ uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 		value = InternalRead(mode, addr, addr);
 		UpdateOpenBus<1>(addr, value);
 		value = isSigned ? (uint32_t)(int8_t)value : (uint8_t)value;
-		_emu->ProcessMemoryRead<CpuType::Gba, 1>(addr, value, mode & GbaAccessMode::Prefetch ? MemoryOperationType::ExecOpCode : MemoryOperationType::Read);
+		_emu->ProcessMemoryRead<CpuType::Gba, 1>(addr, value, MemoryOperationType::Read);
 	} else if(mode & GbaAccessMode::HalfWord) {
 		uint8_t b0 = InternalRead(mode, addr & ~0x01, addr);
 		uint8_t b1 = InternalRead(mode, addr | 1, addr);

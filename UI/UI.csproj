@@ -165,6 +165,9 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\StatusViews\St018StatusView.axaml.cs">
+      <DependentUpon>St018StatusView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\StatusViews\GbaStatusView.axaml.cs">
       <DependentUpon>GbaStatusView.axaml</DependentUpon>
     </Compile>

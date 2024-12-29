@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Shared/MemoryType.h"
 #include "Shared/BaseState.h"
+#include "Shared/ArmEnums.h"
 #include "Utilities/Serializer.h"
 
 enum class GbaCpuMode : uint8_t
@@ -507,23 +508,6 @@ struct GbaState
 	GbaControlManagerState ControlManager;
 };
 
-enum class GbaArmOpCategory
-{
-	BranchExchangeRegister,
-	Branch,
-	Msr,
-	Mrs,
-	DataProcessing,
-	Multiply,
-	MultiplyLong,
-	SingleDataTransfer,
-	SignedHalfDataTransfer,
-	BlockDataTransfer,
-	SingleDataSwap,
-	SoftwareInterrupt,
-	InvalidOp,
-};
-
 enum class GbaThumbOpCategory
 {
 	MoveShiftedRegister,
@@ -547,29 +531,6 @@ enum class GbaThumbOpCategory
 	LongBranchLink,
 
 	InvalidOp,
-};
-
-enum class GbaAluOperation : uint8_t
-{
-	And,
-	Eor,
-	Sub,
-	Rsb,
-
-	Add,
-	Adc,
-	Sbc,
-	Rsc,
-
-	Tst,
-	Teq,
-	Cmp,
-	Cmn,
-
-	Orr,
-	Mov,
-	Bic,
-	Mvn
 };
 
 enum class GbaIrqSource

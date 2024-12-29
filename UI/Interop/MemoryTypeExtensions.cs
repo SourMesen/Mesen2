@@ -25,6 +25,12 @@ namespace Mesen.Interop
 				case MemoryType.Cx4Memory:
 					return CpuType.Cx4;
 
+				case MemoryType.St018Memory:
+				case MemoryType.St018PrgRom:
+				case MemoryType.St018DataRom:
+				case MemoryType.St018WorkRam:
+					return CpuType.St018;
+
 				case MemoryType.DspDataRam:
 				case MemoryType.DspDataRom:
 				case MemoryType.DspProgramRom:
@@ -214,6 +220,7 @@ namespace Mesen.Interop
 				case MemoryType.GsuMemory:
 				case MemoryType.NecDspMemory:
 				case MemoryType.Cx4Memory:
+				case MemoryType.St018Memory:
 				case MemoryType.GameboyMemory:
 				case MemoryType.NesMemory:
 				case MemoryType.NesPpuMemory:
@@ -237,6 +244,8 @@ namespace Mesen.Interop
 				case MemoryType.PcePrgRom:
 				case MemoryType.DspDataRom:
 				case MemoryType.DspProgramRom:
+				case MemoryType.St018PrgRom:
+				case MemoryType.St018DataRom:
 				case MemoryType.SpcRom:
 				case MemoryType.SmsPrgRom:
 				case MemoryType.SmsBootRom:
@@ -259,7 +268,11 @@ namespace Mesen.Interop
 				case MemoryType.SpcRam:
 				case MemoryType.SpcRom:
 				case MemoryType.Sa1InternalRam:
-				
+				case MemoryType.St018Memory:
+				case MemoryType.St018PrgRom:
+				case MemoryType.St018DataRom:
+				case MemoryType.St018WorkRam:
+
 				//Gameboy
 				case MemoryType.GbPrgRom:
 				case MemoryType.GbWorkRam:
@@ -326,6 +339,7 @@ namespace Mesen.Interop
 				case MemoryType.GsuMemory:
 				case MemoryType.NecDspMemory:
 				case MemoryType.Cx4Memory:
+				case MemoryType.St018Memory:
 				case MemoryType.GameboyMemory:
 				case MemoryType.NesMemory:
 				case MemoryType.PceMemory:
@@ -419,6 +433,7 @@ namespace Mesen.Interop
 				MemoryType.GsuMemory => "GSU",
 				MemoryType.NecDspMemory => "DSP",
 				MemoryType.Cx4Memory => "CX4",
+				MemoryType.St018Memory => "ARM",
 
 				MemoryType.SnesPrgRom => "PRG",
 				MemoryType.SnesWorkRam => "WRAM",
@@ -435,6 +450,10 @@ namespace Mesen.Interop
 				MemoryType.DspProgramRom => "PRG",
 				MemoryType.DspDataRam => "RAM",
 				MemoryType.DspDataRom => "ROM",
+
+				MemoryType.St018PrgRom => "PRG",
+				MemoryType.St018DataRom => "ROM",
+				MemoryType.St018WorkRam => "RAM",
 
 				MemoryType.Sa1InternalRam => "IRAM",
 				MemoryType.Cx4DataRam => "DATA",

@@ -123,8 +123,8 @@
 							<TextBlock Text="ST011" Grid.Row="10" />
 							<c:FirmwareSelect FirmwareType="ST011" Grid.Column="1" Grid.Row="10" />
 
-							<TextBlock Text="ST018" Grid.Row="11" IsVisible="False" />
-							<c:FirmwareSelect FirmwareType="ST018" Grid.Column="1" Grid.Row="11" IsVisible="False" />
+							<TextBlock Text="ST018" Grid.Row="11" />
+							<c:FirmwareSelect FirmwareType="ST018" Grid.Column="1" Grid.Row="11" />
 						</Grid>
 					</c:OptionSection>
 

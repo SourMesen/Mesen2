@@ -76,6 +76,9 @@
 		<DataTemplate DataType="{x:Type sv:NecDspStatusViewModel}">
 			<sv:NecDspStatusView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type sv:St018StatusViewModel}">
+			<sv:St018StatusView />
+		</DataTemplate>
 		<DataTemplate DataType="{x:Type sv:NesStatusViewModel}">
 			<sv:NesStatusView />
 		</DataTemplate>

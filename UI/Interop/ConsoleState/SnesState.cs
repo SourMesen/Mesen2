@@ -344,6 +344,88 @@ public struct NecDspState : BaseState
 	public byte SP;
 }
 
+
+public enum ArmV3CpuMode : byte
+{
+	User = 0b10000,
+	Fiq = 0b10001,
+	Irq = 0b10010,
+	Supervisor = 0b10011,
+	Abort = 0b10111,
+	Undefined = 0b11011,
+	System = 0b11111,
+}
+
+public struct ArmV3CpuFlags
+{
+	public ArmV3CpuMode Mode;
+	[MarshalAs(UnmanagedType.I1)] public bool FiqDisable;
+	[MarshalAs(UnmanagedType.I1)] public bool IrqDisable;
+
+	[MarshalAs(UnmanagedType.I1)] public bool Overflow;
+	[MarshalAs(UnmanagedType.I1)] public bool Carry;
+	[MarshalAs(UnmanagedType.I1)] public bool Zero;
+	[MarshalAs(UnmanagedType.I1)] public bool Negative;
+}
+
+public struct ArmV3InstructionData
+{
+	public UInt32 Address;
+	public UInt32 OpCode;
+}
+
+public struct ArmV3CpuPipeline
+{
+	public ArmV3InstructionData Fetch;
+	public ArmV3InstructionData Decode;
+	public ArmV3InstructionData Execute;
+	[MarshalAs(UnmanagedType.I1)] public bool ReloadRequested;
+	public byte Mode;
+}
+
+public struct ArmV3CpuState : BaseState
+{
+	public ArmV3CpuPipeline Pipeline;
+
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+	public UInt32[] R;
+	public ArmV3CpuFlags CPSR;
+
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
+	public UInt32[] UserRegs;
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
+	public UInt32[] FiqRegs;
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+	public UInt32[] IrqRegs;
+
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+	public UInt32[] SupervisorRegs;
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+	public UInt32[] AbortRegs;
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+	public UInt32[] UndefinedRegs;
+
+	public ArmV3CpuFlags FiqSpsr;
+	public ArmV3CpuFlags IrqSpsr;
+	public ArmV3CpuFlags SupervisorSpsr;
+	public ArmV3CpuFlags AbortSpsr;
+	public ArmV3CpuFlags UndefinedSpsr;
+
+	public UInt64 CycleCount;
+}
+
+public struct St018State : BaseState
+{
+	[MarshalAs(UnmanagedType.I1)] public bool HasDataForSnes;
+	public byte DataSnes;
+
+	[MarshalAs(UnmanagedType.I1)] public bool HasDataForArm;
+	public byte DataArm;
+
+	[MarshalAs(UnmanagedType.I1)] public bool ArmReset;
+	[MarshalAs(UnmanagedType.I1)] public bool Ack;
+}
+
 public struct GsuFlags
 {
 	[MarshalAs(UnmanagedType.I1)] public bool Zero;
@@ -603,12 +685,6 @@ public struct Sa1State
 	public byte[] Banks;
 }
 
-public struct DebugSa1State
-{
-	public SnesCpuState Cpu;
-	public Sa1State Sa1;
-}
-
 public enum Sa1MathOp
 {
 	Mul = 0,
@@ -674,9 +750,10 @@ public struct SnesState : BaseState
 	public SpcState Spc;
 	public DspState Dsp;
 	public NecDspState NecDsp;
-	public DebugSa1State Sa1;
+	public Sa1State Sa1;
 	public GsuState Gsu;
 	public Cx4State Cx4;
+	public St018State St018;
 
 	public SnesDmaControllerState Dma;
 	public InternalRegisterState InternalRegs;

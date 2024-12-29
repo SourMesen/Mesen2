@@ -13,6 +13,7 @@
 #include "SNES/Coprocessors/GSU/Gsu.h"
 #include "SNES/Coprocessors/SDD1/Sdd1.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
+#include "SNES/Coprocessors/ST018/St018.h"
 #include "SNES/Coprocessors/OBC1/Obc1.h"
 #include "SNES/Coprocessors/SPC7110/Spc7110.h"
 #include "SNES/Coprocessors/BSX/BsxCart.h"
@@ -537,6 +538,9 @@ void BaseCartridge::InitCoprocessor()
 		_coprocessor.reset(new Cx4(_console));
 		_cx4 = dynamic_cast<Cx4*>(_coprocessor.get());
 		_needCoprocSync = true;
+	} else if(_coprocessorType == CoprocessorType::ST018) {
+		_coprocessor.reset(new St018(_console));
+		_st018 = dynamic_cast<St018*>(_coprocessor.get());
 	} else if(_coprocessorType == CoprocessorType::OBC1 && _saveRamSize > 0) {
 		_coprocessor.reset(new Obc1(_console, _saveRam, _saveRamSize));
 	} else if(_coprocessorType == CoprocessorType::SGB) {
@@ -848,6 +852,11 @@ Sa1* BaseCartridge::GetSa1()
 Cx4* BaseCartridge::GetCx4()
 {
 	return _cx4;
+}
+
+St018* BaseCartridge::GetSt018()
+{
+	return _st018;
 }
 
 SuperGameboy* BaseCartridge::GetSuperGameboy()
