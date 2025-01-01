@@ -81,6 +81,11 @@ namespace Mesen
 				Program.CommandLineArgs = (string[])args.Clone();
 				BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
 				EmuApi.Release();
+
+				//Cleanup portable installation
+				if(ConfigManager.HomeFolder == ConfigManager.DefaultPortableFolder && Directory.Exists(ConfigManager.DefaultDocumentsFolder)) {
+					Directory.Delete(ConfigManager.DefaultDocumentsFolder, true);
+				}
 			}
 
 			return 0;
