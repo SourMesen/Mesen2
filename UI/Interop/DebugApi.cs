@@ -621,6 +621,9 @@ namespace Mesen.Interop
 		St018PrgRom,
 		St018DataRom,
 		St018WorkRam,
+		SufamiTurboFirmware,
+		SufamiTurboSecondCart,
+		SufamiTurboSecondCartRam,
 
 		GbPrgRom,
 		GbWorkRam,

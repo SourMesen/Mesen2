@@ -1725,6 +1725,8 @@
 		<Message ID="PromptSaveChanges">Save changes?</Message>
 		<Message ID="PromptKeepChanges">Keep changes?</Message>
 
+		<Message ID="PromptLoadSufamiTurbo">Do you want to load a second Sufami Turbo ROM to insert into slot B?</Message>
+
 		<Message ID="UnknownFirmwareHash">This file does not match any of the known firmwares and may not work properly.&#xA;&#xA;Expected (SHA256): {0}&#xA;Current (SHA256): {1}</Message>
 		<Message ID="InvalidFirmwareSize">This file does not have the required size.&#xA;&#xA;Expected: {0} bytes&#xA;Current: {1} bytes</Message>
 		<Message ID="PromptDeleteFirmware">The following file will be deleted permanently. Are you sure?&#xA;&#xA;{0}</Message>
@@ -2683,6 +2685,7 @@ E
 			<Value ID="ST010">ST010</Value>
 			<Value ID="ST011">ST011</Value>
 			<Value ID="ST018">ST018</Value>
+			<Value ID="SufamiTurbo">Sufami Turbo</Value>
 			<Value ID="Satellaview">Satellaview (BS-X)</Value>
 			<Value ID="Gameboy">Game Boy CPU</Value>
 			<Value ID="GameboyColor">Game Boy Color CPU</Value>
@@ -2749,7 +2752,10 @@ E
 			<Value ID="St018PrgRom">ST018 PRG ROM</Value>
 			<Value ID="St018DataRom">ST018 Data ROM</Value>
 			<Value ID="St018WorkRam">ST018 Work RAM</Value>
-
+			<Value ID="SufamiTurboFirmware">Sufami Turbo Firmware</Value>
+			<Value ID="SufamiTurboSecondCart">Sufami Slot B ROM</Value>
+			<Value ID="SufamiTurboSecondCartRam">Sufami Slot B RAM</Value>
+			
 			<Value ID="GameboyMemory">GB - CPU Memory</Value>
 			<Value ID="GbPrgRom">GB - PRG ROM</Value>
 			<Value ID="GbWorkRam">GB - Work RAM</Value>

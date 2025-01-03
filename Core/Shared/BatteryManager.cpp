@@ -2,6 +2,7 @@
 #include "Shared/BatteryManager.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/StringUtilities.h"
 
 void BatteryManager::Initialize(string romName, bool setBatteryFlag)
 {
@@ -9,9 +10,13 @@ void BatteryManager::Initialize(string romName, bool setBatteryFlag)
 	_hasBattery = setBatteryFlag;
 }
 
-string BatteryManager::GetBasePath()
+string BatteryManager::GetBasePath(string& extension)
 {
-	return FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), _romName);
+	if(StringUtilities::StartsWith(extension, ".")) {
+		return FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), _romName + extension);
+	} else {
+		return FolderUtilities::CombinePath(FolderUtilities::GetSaveFolder(), extension);
+	}
 }
 
 void BatteryManager::SetBatteryProvider(shared_ptr<IBatteryProvider> provider)
@@ -32,7 +37,7 @@ void BatteryManager::SaveBattery(string extension, uint8_t* data, uint32_t lengt
 	}
 
 	_hasBattery = true;
-	ofstream out(GetBasePath() + extension, ios::binary);
+	ofstream out(GetBasePath(extension), ios::binary);
 	if(out) {
 		out.write((char*)data, length);
 	}
@@ -52,7 +57,7 @@ vector<uint8_t> BatteryManager::LoadBattery(string extension)
 		//Used by movie player to provider initial state of ram at startup
 		batteryData = provider->LoadBattery(extension);
 	} else {
-		VirtualFile file = GetBasePath() + extension;
+		VirtualFile file = GetBasePath(extension);
 		if(file.IsValid()) {
 			file.ReadFile(batteryData);
 		}

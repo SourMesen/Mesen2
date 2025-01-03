@@ -13,7 +13,7 @@
 
 const std::initializer_list<string> VirtualFile::RomExtensions = {
 	".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox",
-	".sfc", ".swc", ".fig", ".smc", ".bs", ".spc",
+	".sfc", ".swc", ".fig", ".smc", ".bs", ".st", ".spc",
 	".gb", ".gbc", ".gbx", ".gbs",
 	".pce", ".sgx", ".cue", ".hes",
 	".sms", ".gg", ".sg", ".col",

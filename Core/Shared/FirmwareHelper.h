@@ -16,6 +16,7 @@ enum class FirmwareType
 	ST011,
 	ST018,
 	Satellaview,
+	SufamiTurbo,
 	Gameboy,
 	GameboyColor,
 	GameboyAdvance,
@@ -182,6 +183,25 @@ public:
 		}
 
 		MessageManager::DisplayMessage("Error", "Could not find firmware file for BS-X");
+		return false;
+	}
+
+	static bool LoadSufamiTurboFirmware(Emulator* emu, vector<uint8_t>& data)
+	{
+		string filename = "SufamiTurbo.sfc";
+		
+		if(AttemptLoadFirmware(data, filename, 0x40000)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::SufamiTurbo, 0x40000);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(data, filename, 0x40000)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for Sufami Turbo");
 		return false;
 	}
 

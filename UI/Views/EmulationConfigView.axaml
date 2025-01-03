@@ -92,7 +92,7 @@
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblSnes}" Icon="Assets/SnesIcon.png" >
-						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
 							<TextBlock Text="DSP-1" Grid.Row="1" />
 							<c:FirmwareSelect FirmwareType="DSP1" Grid.Column="1" Grid.Row="1" />
 
@@ -111,20 +111,23 @@
 							<TextBlock Text="Satellaview / BS-X" Grid.Row="6" />
 							<c:FirmwareSelect FirmwareType="Satellaview" Grid.Column="1" Grid.Row="6" />
 
-							<TextBlock Text="Super Game Boy (v1)" Grid.Row="7" />
-							<c:FirmwareSelect FirmwareType="SGB1" Grid.Column="1" Grid.Row="7" />
+							<TextBlock Text="Sufami Turbo" Grid.Row="7" />
+							<c:FirmwareSelect FirmwareType="SufamiTurbo" Grid.Column="1" Grid.Row="7" />
 
-							<TextBlock Text="Super Game Boy (v2)" Grid.Row="8" />
-							<c:FirmwareSelect FirmwareType="SGB2" Grid.Column="1" Grid.Row="8" />
+							<TextBlock Text="Super Game Boy (v1)" Grid.Row="8" />
+							<c:FirmwareSelect FirmwareType="SGB1" Grid.Column="1" Grid.Row="8" />
 
-							<TextBlock Text="ST010" Grid.Row="9" />
-							<c:FirmwareSelect FirmwareType="ST010" Grid.Column="1" Grid.Row="9" />
+							<TextBlock Text="Super Game Boy (v2)" Grid.Row="9" />
+							<c:FirmwareSelect FirmwareType="SGB2" Grid.Column="1" Grid.Row="9" />
 
-							<TextBlock Text="ST011" Grid.Row="10" />
-							<c:FirmwareSelect FirmwareType="ST011" Grid.Column="1" Grid.Row="10" />
+							<TextBlock Text="ST010" Grid.Row="10" />
+							<c:FirmwareSelect FirmwareType="ST010" Grid.Column="1" Grid.Row="10" />
 
-							<TextBlock Text="ST018" Grid.Row="11" />
-							<c:FirmwareSelect FirmwareType="ST018" Grid.Column="1" Grid.Row="11" />
+							<TextBlock Text="ST011" Grid.Row="11" />
+							<c:FirmwareSelect FirmwareType="ST011" Grid.Column="1" Grid.Row="11" />
+
+							<TextBlock Text="ST018" Grid.Row="12" />
+							<c:FirmwareSelect FirmwareType="ST018" Grid.Column="1" Grid.Row="12" />
 						</Grid>
 					</c:OptionSection>
 

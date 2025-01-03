@@ -71,6 +71,9 @@ namespace Mesen.Interop
 				case MemoryType.SnesCgRam:
 				case MemoryType.BsxPsRam:
 				case MemoryType.BsxMemoryPack:
+				case MemoryType.SufamiTurboFirmware:
+				case MemoryType.SufamiTurboSecondCart:
+				case MemoryType.SufamiTurboSecondCartRam:
 				case MemoryType.SnesRegister:
 					return CpuType.Snes;
 
@@ -246,6 +249,8 @@ namespace Mesen.Interop
 				case MemoryType.DspProgramRom:
 				case MemoryType.St018PrgRom:
 				case MemoryType.St018DataRom:
+				case MemoryType.SufamiTurboFirmware:
+				case MemoryType.SufamiTurboSecondCart:
 				case MemoryType.SpcRom:
 				case MemoryType.SmsPrgRom:
 				case MemoryType.SmsBootRom:
@@ -272,6 +277,9 @@ namespace Mesen.Interop
 				case MemoryType.St018PrgRom:
 				case MemoryType.St018DataRom:
 				case MemoryType.St018WorkRam:
+				case MemoryType.SufamiTurboFirmware:
+				case MemoryType.SufamiTurboSecondCart:
+				case MemoryType.SufamiTurboSecondCartRam:
 
 				//Gameboy
 				case MemoryType.GbPrgRom:
@@ -461,6 +469,10 @@ namespace Mesen.Interop
 
 				MemoryType.BsxPsRam => "PSRAM",
 				MemoryType.BsxMemoryPack => "MPACK",
+				
+				MemoryType.SufamiTurboFirmware => "BOOT",
+				MemoryType.SufamiTurboSecondCart => "BPRG",
+				MemoryType.SufamiTurboSecondCartRam => "BRAM",
 
 				MemoryType.GameboyMemory => "CPU",
 				MemoryType.GbPrgRom => "PRG",

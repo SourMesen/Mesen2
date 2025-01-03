@@ -119,6 +119,7 @@
     <ClInclude Include="SNES\Coprocessors\ST018\ArmV3Types.h" />
     <ClInclude Include="SNES\Coprocessors\ST018\St018.h" />
     <ClInclude Include="SNES\Coprocessors\ST018\St018Types.h" />
+    <ClInclude Include="SNES\Coprocessors\SufamiTurbo\SufamiTurbo.h" />
     <ClInclude Include="SNES\Debugger\DummyArmV3Cpu.h" />
     <ClInclude Include="SNES\Debugger\St018Debugger.h" />
     <ClInclude Include="SNES\Debugger\St018DisUtils.h" />

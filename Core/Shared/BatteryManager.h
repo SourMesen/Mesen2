@@ -22,7 +22,7 @@ private:
 	std::weak_ptr<IBatteryProvider> _provider;
 	std::weak_ptr<IBatteryRecorder> _recorder;
 
-	string GetBasePath();
+	string GetBasePath(string& extension);
 
 public:
 	void Initialize(string romName, bool setBatteryFlag = false);

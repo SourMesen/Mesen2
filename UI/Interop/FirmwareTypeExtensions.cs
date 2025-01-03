@@ -18,6 +18,8 @@ public static class FirmwareTypeExtensions
 			case FirmwareType.ST011: return new("st011.rom") { new(0xD000, "8B2B3F3F3E6E29F4D21D8BC736B400BC988B7D2214EBEE15643F01C1FEE2F364") };
 			case FirmwareType.ST018: return new("st018.rom") { new(0x28000, "6DF209AB5D2524D1839C038BE400AE5EB20DAFC14A3771A3239CD9E8ACD53806") };
 			
+			case FirmwareType.SufamiTurbo: return new("SufamiTurbo.sfc") { new(0x40000, "EDACB453DA14F825F05D1134D6035F4BF034E55F7CFB97C70C4EE107EABC7342") };
+			
 			case FirmwareType.Satellaview: return new("BS-X.bin") {
 				new(1024 * 1024,
 					"27CFDB99F7E4252BF3740D420147B63C4C88616883BC5E7FE43F2F30BF8C8CBB", //Japan, no DRM

@@ -61,6 +61,9 @@ public:
 			case MemoryType::SnesWorkRam:
 			case MemoryType::BsxMemoryPack:
 			case MemoryType::BsxPsRam:
+			case MemoryType::SufamiTurboFirmware:
+			case MemoryType::SufamiTurboSecondCart:
+			case MemoryType::SufamiTurboSecondCartRam:
 			case MemoryType::SnesRegister:
 				return CpuType::Snes;
 
@@ -232,6 +235,8 @@ public:
 			case MemoryType::DspProgramRom:
 			case MemoryType::St018PrgRom:
 			case MemoryType::St018DataRom:
+			case MemoryType::SufamiTurboFirmware:
+			case MemoryType::SufamiTurboSecondCart:
 			case MemoryType::SpcRom:
 			case MemoryType::SmsPrgRom:
 			case MemoryType::SmsBootRom:
@@ -255,6 +260,7 @@ public:
 			case MemoryType::NesSaveRam:
 			case MemoryType::GbCartRam:
 			case MemoryType::SnesSaveRam:
+			case MemoryType::SufamiTurboSecondCartRam:
 			case MemoryType::PceSaveRam:
 			case MemoryType::SnesRegister:
 			case MemoryType::SmsCartRam:

@@ -22,6 +22,7 @@ enum class ConsoleNotificationType
 	ViewerRefresh,
 	EventViewerRefresh,
 	MissingFirmware,
+	SufamiTurboFilePrompt,
 	BeforeGameUnload,
 	BeforeGameLoad,
 	GameLoadFailed,

@@ -80,6 +80,7 @@ namespace Mesen.Interop
 		ViewerRefresh,
 		EventViewerRefresh,
 		MissingFirmware,
+		SufamiTurboFilePrompt,
 		BeforeGameUnload,
 		BeforeGameLoad,
 		GameLoadFailed,

@@ -21,6 +21,7 @@ class Gameboy;
 class SnesConsole;
 class Emulator;
 class SpcFileData;
+class SufamiTurbo;
 enum class ConsoleRegion;
 enum class RamState;
 
@@ -47,6 +48,7 @@ private:
 	BsxCart* _bsx = nullptr;
 	unique_ptr<BsxMemoryPack> _bsxMemPack;
 	unique_ptr<Gameboy> _gameboy;
+	unique_ptr<SufamiTurbo> _sufamiTurbo;
 
 	CartFlags::CartFlags _flags = CartFlags::CartFlags::None;
 	CoprocessorType _coprocessorType = CoprocessorType::None;
@@ -83,10 +85,13 @@ private:
 	void InitRamPowerOnState();
 
 	void LoadRom();
-	void EnsureValidPrgRomSize();
 
 	void LoadSpc();
+	
+	bool LoadSufamiTurbo(VirtualFile& romFile);
+
 	bool LoadGameboy(VirtualFile& romFile);
+
 	void SetupCpuHalt();
 	void InitCoprocessor();
 	void LoadEmbeddedFirmware();
@@ -98,6 +103,8 @@ public:
 	virtual ~BaseCartridge();
 
 	static unique_ptr<BaseCartridge> CreateCartridge(SnesConsole* console, VirtualFile &romFile);
+
+	static void EnsureValidPrgRomSize(uint32_t& size, uint8_t*& rom);
 
 	void Reset();
 

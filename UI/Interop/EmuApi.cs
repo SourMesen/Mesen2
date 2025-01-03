@@ -257,6 +257,7 @@ namespace Mesen.Interop
 		ST011,
 		ST018,
 		Satellaview,
+		SufamiTurbo,
 		Gameboy,
 		GameboyColor,
 		GameboyAdvance,
@@ -283,6 +284,12 @@ namespace Mesen.Interop
 		public FirmwareType Firmware;
 		public UInt32 Size;
 		public UInt32 AltSize;
+	}
+
+	public struct SufamiTurboFilePromptMessage
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5000)]
+		public byte[] Filename;
 	}
 
 	public struct ExecuteShortcutParams

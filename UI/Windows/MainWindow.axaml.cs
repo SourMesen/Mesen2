@@ -24,6 +24,7 @@ using Mesen.Controls;
 using Mesen.Localization;
 using System.Diagnostics;
 using Avalonia.VisualTree;
+using System.Text;
 
 namespace Mesen.Windows
 {
@@ -367,7 +368,7 @@ namespace Mesen.Windows
 					});
 					break;
 
-				case ConsoleNotificationType.MissingFirmware:
+				case ConsoleNotificationType.MissingFirmware: {
 					MissingFirmwareMessage msg = Marshal.PtrToStructure<MissingFirmwareMessage>(e.Parameter);
 					TaskCompletionSource tcs = new TaskCompletionSource();
 					Dispatcher.UIThread.Post(async () => {
@@ -376,6 +377,25 @@ namespace Mesen.Windows
 					});
 					tcs.Task.Wait();
 					break;
+				}
+
+				case ConsoleNotificationType.SufamiTurboFilePrompt: {
+					SufamiTurboFilePromptMessage msg = Marshal.PtrToStructure<SufamiTurboFilePromptMessage>(e.Parameter);
+					TaskCompletionSource tcs = new TaskCompletionSource();
+					Dispatcher.UIThread.Post(async () => {
+						if(await MesenMsgBox.Show(this, "PromptLoadSufamiTurbo", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+							string? selectedFile = await FileDialogHelper.OpenFile(null, this, FileDialogHelper.SufamiTurboExt);
+							if(selectedFile != null) {
+								byte[] file = Encoding.UTF8.GetBytes(selectedFile);
+								Array.Copy(file, msg.Filename, file.Length);
+								Marshal.StructureToPtr<SufamiTurboFilePromptMessage>(msg, e.Parameter, false);
+							}
+						}
+						tcs.SetResult();
+					});
+					tcs.Task.Wait();
+					break;
+				}
 
 				case ConsoleNotificationType.BeforeGameLoad:
 					Dispatcher.UIThread.Post(() => {

@@ -76,6 +76,8 @@ namespace Mesen.Config
 				case MemoryType.PcePrgRom:
 				case MemoryType.SmsPrgRom:
 				case MemoryType.SpcRom:
+				case MemoryType.SufamiTurboFirmware:
+				case MemoryType.SufamiTurboSecondCart:
 				case MemoryType.DspProgramRom:
 				case MemoryType.DspDataRom:
 				case MemoryType.GbBootRom:
@@ -107,11 +109,12 @@ namespace Mesen.Config
 					return ImportWorkRamLabels;
 
 				case MemoryType.SnesSaveRam:
+				case MemoryType.BsxMemoryPack:
+				case MemoryType.SufamiTurboSecondCartRam:
 				case MemoryType.NesSaveRam:
 				case MemoryType.PceSaveRam:
 				case MemoryType.GbCartRam:
 				case MemoryType.SmsCartRam:
-				case MemoryType.BsxMemoryPack:
 				case MemoryType.GbaSaveRam:
 				case MemoryType.WsCartRam:
 					return ImportSaveRamLabels;

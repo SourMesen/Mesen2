@@ -2970,6 +2970,9 @@
     <ClInclude Include="Shared\ArmEnums.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="SNES\Coprocessors\SufamiTurbo\SufamiTurbo.h">
+      <Filter>SNES\Coprocessors\SufamiTurbo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -3456,6 +3459,9 @@
     </Filter>
     <Filter Include="SNES\Coprocessors\ST018">
       <UniqueIdentifier>{387c0b44-8063-45e8-a28a-b6d9e27b5a3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SNES\Coprocessors\SufamiTurbo">
+      <UniqueIdentifier>{bfdd4bb9-41c2-4255-a8c3-0176c990cbf3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
