@@ -18,7 +18,7 @@ SoundMixer::SoundMixer(Emulator* emu)
 	_audioDevice = nullptr;
 	_resampler.reset(new SoundResampler(emu));
 	_sampleBuffer = new int16_t[0x10000];
-	_pitchAdjustBuffer = new int16_t[0x10000];
+	_pitchAdjustBuffer = new int16_t[0x8000];
 	_reverbFilter.reset(new ReverbFilter());
 	_crossFeedFilter.reset(new CrossFeedFilter());
 }
@@ -93,7 +93,7 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	_rightSample = samples[1];
 
 	int16_t *out = _sampleBuffer;
-	uint32_t count = _resampler->Resample(samples, sampleCount, sourceRate, cfg.SampleRate, out, 0x10000);
+	uint32_t count = _resampler->Resample(samples, sampleCount, sourceRate, cfg.SampleRate, out, 0x10000 / 2);
 
 	uint32_t targetRate = (uint32_t)(cfg.SampleRate * _resampler->GetRateAdjustment());
 	for(IAudioProvider* provider : _audioProviders) {
@@ -147,7 +147,11 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 				if(emulationSpeed > 0 && emulationSpeed < 100) {
 					//Slow down playback when playing at less than 100% speed
 					_pitchAdjust.SetSampleRates(targetRate, targetRate * 100.0 / emulationSpeed);
-					count = _pitchAdjust.Resample<false>(_sampleBuffer, count, _pitchAdjustBuffer, 0x10000);
+					count = _pitchAdjust.Resample<false>(_sampleBuffer, count, _pitchAdjustBuffer, 0x8000 / 2);
+					if(count >= 0x4000) {
+						//Mute sound when playing so slowly that the 64k buffer is not large enough to hold everything
+						memset(_pitchAdjustBuffer, 0, 0x8000 * sizeof(int16_t));
+					}
 					out = _pitchAdjustBuffer;
 				}
 
