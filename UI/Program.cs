@@ -80,7 +80,6 @@ namespace Mesen
 			if(instance.FirstInstance) {
 				Program.CommandLineArgs = (string[])args.Clone();
 				BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
-				EmuApi.Release();
 			}
 
 			return 0;

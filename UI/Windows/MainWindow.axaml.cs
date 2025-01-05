@@ -44,7 +44,8 @@ namespace Mesen.Windows
 		private bool _testModeEnabled;
 		private bool _needResume = false;
 		private bool _needCloseValidation = true;
-		
+		private bool _isClosing = false;
+
 		private bool _preventFullscreenToggle = false;
 
 		private Panel _rendererPanel;
@@ -161,8 +162,10 @@ namespace Mesen.Windows
 				_timerBackgroundFlag.Stop();
 				EmuApi.Stop();
 				_listener?.Dispose();
+				EmuApi.Release();
 				ConfigManager.Config.MainWindow.SaveWindowSettings(this);
 				ConfigManager.Config.Save();
+				_isClosing = true;
 			}
 		}
 
@@ -685,8 +688,10 @@ namespace Mesen.Windows
 
 		private void OnActiveChanged()
 		{
-			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, !IsActive);
-			InputApi.ResetKeyState();
+			if(!_isClosing) {
+				ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, !IsActive);
+				InputApi.ResetKeyState();
+			}
 		}
 
 		private void timerUpdateBackgroundFlag(object? sender, EventArgs e)
