@@ -36,7 +36,7 @@ namespace Mesen.Windows
 		private NotificationListener? _listener = null;
 		private ShortcutHandler _shortcutHandler;
 
-		private MouseManager _mouseManager;
+		private MouseManager? _mouseManager = null;
 		private ContentControl _audioPlayer;
 		private MainMenuView _mainMenu;
 		private CommandLineHelper? _cmdLine;
@@ -106,7 +106,6 @@ namespace Mesen.Windows
 			_softwareRenderer = this.GetControl<SoftwareRendererView>("SoftwareRenderer");
 			_audioPlayer = this.GetControl<ContentControl>("AudioPlayer");
 			_mainMenu = this.GetControl<MainMenuView>("MainMenu");
-			_mouseManager = new MouseManager(this, _usesSoftwareRenderer ? _softwareRenderer : _renderer, _mainMenu, _usesSoftwareRenderer);
 			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
 
 #if DEBUG
@@ -180,7 +179,7 @@ namespace Mesen.Windows
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			_mouseManager.Dispose();
+			_mouseManager?.Dispose();
 		}
 
 		private void OnDrop(object? sender, DragEventArgs e)
@@ -203,6 +202,8 @@ namespace Mesen.Windows
 			if(Design.IsDesignMode) {
 				return;
 			}
+
+			_mouseManager = new MouseManager(this, _usesSoftwareRenderer ? _softwareRenderer : _renderer, _mainMenu, _usesSoftwareRenderer);
 
 			ConfigManager.Config.InitializeFontDefaults();
 			ConfigManager.Config.Preferences.ApplyFontOptions();

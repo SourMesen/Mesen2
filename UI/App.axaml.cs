@@ -44,7 +44,14 @@ namespace Mesen
 					new PreferencesConfig().InitializeFontDefaults();
 					desktop.MainWindow = new SetupWizardWindow();
 				} else {
-					desktop.MainWindow = new MainWindow();
+					try {
+						desktop.MainWindow = new MainWindow();
+					} catch {
+						//Something broke when trying to load the main window, the settings file might be invalid/broken, try to reset them
+						Configuration.BackupSettings(ConfigManager.ConfigFile);
+						ConfigManager.ResetSettings(false);
+						desktop.MainWindow = new MainWindow();
+					}
 				}
 			}
 			base.OnFrameworkInitializationCompleted();

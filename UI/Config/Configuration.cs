@@ -259,16 +259,22 @@ namespace Mesen.Config
 			} catch {
 				try {
 					//File exists but couldn't be loaded, make a backup of the old settings before we overwrite them
-					string? folder = Path.GetDirectoryName(configFile);
-					if(folder != null) {
-						File.Copy(configFile, Path.Combine(folder, "settings." + DateTime.Now.ToString("yyyy-M-dd_HH-mm-ss") + ".bak"), true);
-					}
+					BackupSettings(configFile);
 				} catch { }
 
 				config = Configuration.CreateConfig();
 			}
 
 			return config;
+		}
+
+		public static void BackupSettings(string configFile)
+		{
+			//File exists but couldn't be loaded, make a backup of the old settings before we overwrite them
+			string? folder = Path.GetDirectoryName(configFile);
+			if(folder != null) {
+				File.Copy(configFile, Path.Combine(folder, "settings." + DateTime.Now.ToString("yyyy-M-dd_HH-mm-ss") + ".bak"), true);
+			}
 		}
 
 		public void Serialize(string configFile)
