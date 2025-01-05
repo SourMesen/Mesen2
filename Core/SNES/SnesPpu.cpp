@@ -1940,9 +1940,6 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 		}
 
 		case 0x2105:
-			if(_state.BgMode != (value & 0x07)) {
-				LogDebug("[Debug] Entering mode: " + std::to_string(value & 0x07) + " (SL: " + std::to_string(_scanline) + ")");
-			}
 			_state.BgMode = value & 0x07;
 			ConvertToHiRes();
 
