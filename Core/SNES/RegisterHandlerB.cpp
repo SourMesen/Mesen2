@@ -62,7 +62,7 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 	addr &= 0xFFFF;
 	if(addr >= 0x2140 && addr <= 0x217F) {
 		_spc->CpuWriteRegister(addr & 0x03, value);
-	} if(addr >= 0x2180 && addr <= 0x2183) {
+	} else if(addr >= 0x2180 && addr <= 0x2183) {
 		switch(addr & 0xFFFF) {
 			case 0x2180:
 				if(_emu->ProcessMemoryWrite<CpuType::Snes>(0x7E0000 | _wramPosition, value, MemoryOperationType::Write)) {
