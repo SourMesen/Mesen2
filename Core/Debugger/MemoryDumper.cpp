@@ -353,6 +353,10 @@ void MemoryDumper::GetMemoryValues(MemoryType memoryType, uint32_t start, uint32
 	for(uint32_t i = start; i <= end && i < size; i++) {
 		output[x++] = InternalGetMemoryValue(memoryType, i);
 	}
+
+	if(end >= size) {
+		memset(output + x, 0, end - x + 1);
+	}
 }
 
 uint8_t MemoryDumper::GetMemoryValue(MemoryType memoryType, uint32_t address, bool disableSideEffects)

@@ -78,7 +78,6 @@ uint32_t PpuTools::GetSpriteBackgroundColor(SpriteBackground bgColor, const uint
 template<TileFormat format>
 void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t *colors, uint32_t *outBuffer)
 {
-	uint32_t ramMask = srcSize - 1;
 	uint8_t* ram = source;
 	uint8_t bpp;
 
@@ -170,7 +169,7 @@ void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, 
 			for(int y = 0; y < tileHeight; y++) {
 				uint32_t pixelStart = addr + y * rowOffset;
 				for(int x = 0; x < tileWidth; x++) {
-					uint8_t color = GetTilePixelColor<format>(ram, ramMask, pixelStart, x);
+					uint8_t color = GetTilePixelColor<format>(ram, 0xFFFFFFFF, pixelStart, x);
 					if(color != 0 || options.Background == TileBackground::PaletteColor) {
 						uint32_t pos = baseOutputOffset + (y * options.Width * tileWidth) + x;
 						if(pos < outputSize) {
