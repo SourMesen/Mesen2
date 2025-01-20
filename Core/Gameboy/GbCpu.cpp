@@ -88,6 +88,11 @@ void GbCpu::Exec()
 				_memoryManager->ClearIrqRequest(irqVector);
 			}
 
+			//Clear any pending IME update from a EI op - this can happen if EI is executed twice in a row
+			//just before an interrupt occurs, which incorrectly caused IME to be set to true at the
+			//start of the interrupt handler (which breaks "Batman - The Video Game")
+			_state.EiPending = false;
+
 			_state.IME = false;
 			_emu->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
 		}
