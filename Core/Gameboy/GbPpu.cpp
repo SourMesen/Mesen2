@@ -46,6 +46,9 @@ void GbPpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 	_state.CgbEnabled = _gameboy->IsCgb();
 	_lastFrameTime = 0;
 
+	_gameboy->InitializeRam(_state.CgbBgPalettes, 4 * 8 * sizeof(uint16_t));
+	_gameboy->InitializeRam(_state.CgbObjPalettes, 4 * 8 * sizeof(uint16_t));
+
 	UpdatePalette();
 
 	Write(0xFF48, 0xFF);
