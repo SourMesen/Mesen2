@@ -272,6 +272,10 @@ namespace Mesen.Windows
 		{
 			Dispatcher.UIThread.Post(() => {
 				CommandLineHelper cmdLine = new(e.Args, false);
+
+				//Set _cmdLine to allow Lua scripts to be loaded once/if a game is loaded
+				_cmdLine = cmdLine;
+
 				ConfigManager.Config.ApplyConfig();
 				cmdLine.LoadFiles();
 			});

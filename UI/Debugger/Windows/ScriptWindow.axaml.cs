@@ -37,6 +37,8 @@ namespace Mesen.Debugger.Windows
 		private MesenTextEditor _txtScriptLog;
 		private DispatcherTimer _timer;
 		private ScriptWindowViewModel _model;
+		
+		public ScriptWindowViewModel Model => _model;
 
 		static ScriptWindow()
 		{

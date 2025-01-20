@@ -131,6 +131,12 @@ public class CommandLineHelper
 	{
 		if(LuaScriptsToLoad.Count > 0) {
 			foreach(string luaScript in LuaScriptsToLoad) {
+				ScriptWindow? existingWnd = DebugWindowManager.GetDebugWindow<ScriptWindow>(wnd => !string.IsNullOrWhiteSpace(wnd.Model.FilePath) && Path.GetFullPath(wnd.Model.FilePath) == Path.GetFullPath(luaScript));
+				if(existingWnd != null) {
+					//Script is already opened, skip it
+					continue;
+				}
+
 				ScriptWindowViewModel model = new();
 				model.LoadScript(luaScript);
 				DebugWindowManager.OpenDebugWindow(() => new ScriptWindow(model));
