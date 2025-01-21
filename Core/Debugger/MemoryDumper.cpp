@@ -355,7 +355,7 @@ void MemoryDumper::GetMemoryValues(MemoryType memoryType, uint32_t start, uint32
 	}
 
 	if(end >= size) {
-		memset(output + x, 0, end - x + 1);
+		memset(output + x, 0, end - start - x + 1);
 	}
 }
 
