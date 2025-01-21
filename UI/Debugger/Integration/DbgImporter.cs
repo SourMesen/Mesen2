@@ -690,6 +690,12 @@ namespace Mesen.Debugger.Integration
 
 					string comment = "";
 					for(int i = line.LineNumber; i >= 0; i--) {
+						if(i >= _files[line.FileID].Data.Length) {
+							//Invalid line number, usually caused by a mismatch between the DBG file and source files
+							_errorCount++;
+							continue;
+						}
+
 						string sourceCodeLine = _files[line.FileID].Data[i];
 
 						Regex regex;
@@ -945,7 +951,8 @@ namespace Mesen.Debugger.Integration
 			LoadFileData(basePath);
 
 			BuildCdlData();
-
+			
+			int prgSize = DebugApi.GetMemorySize(_prgMemType);
 			foreach(LineInfo line in _lines.Values) {
 				SourceCodeLocation location = line.GetLocation();
 				foreach(int spanID in line.SpanIDs) {
@@ -953,6 +960,11 @@ namespace Mesen.Debugger.Integration
 						if(_segments.TryGetValue(span.SegmentID, out SegmentInfo segment) && !segment.IsRam) {
 							for(int i = 0; i < span.Size; i++) {
 								int prgAddress = segment.FileOffset - _headerSize + span.Offset + i;
+								if(prgAddress < 0 || prgAddress >= prgSize) {
+									//Negative addresses can be generated if the current span/segment is the .nes file header
+									//Addresses beyond the PRG size can also be generated when CHR data is included on that row (NES)
+									continue;
+								}
 
 								if(_linesByPrgAddress.TryGetValue(prgAddress, out SourceCodeLocation existingLine)) {
 									//If the line was already assigned to a line marked as "External", keep that instead of overwriting it
