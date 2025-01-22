@@ -66,6 +66,10 @@ void Spc7110::Serialize(Serializer& s)
 	if(_rtc) {
 		SV(_rtc);
 	}
+
+	if(!s.IsSaving()) {
+		UpdateMappings();
+	}
 }
 
 uint8_t Spc7110::Read(uint32_t addr)
@@ -362,7 +366,7 @@ void Spc7110::IncrementPosition4810()
 void Spc7110::LoadEntryHeader()
 {
 	uint32_t address = _directoryBase + _directoryIndex * 4;
-	_decompMode = ReadDataRom(address);
+	_decompMode = ReadDataRom(address) & 0x03;
 	_srcAddress = (ReadDataRom(address + 1) << 16) | (ReadDataRom(address + 2) << 8) | ReadDataRom(address + 3);
 }
 
