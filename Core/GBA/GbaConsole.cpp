@@ -195,11 +195,11 @@ void GbaConsole::InitSaveRam(string& gameCode, vector<uint8_t>& romData)
 				}
 			};
 
-			checkMarker("SRAM_", GbaSaveType::Sram);
-			checkMarker("EEPROM_", GbaSaveType::EepromUnknown);
-			checkMarker("FLASH_", GbaSaveType::Flash64);
-			checkMarker("FLASH512_", GbaSaveType::Flash64);
-			checkMarker("FLASH1M_", GbaSaveType::Flash128);
+			checkMarker("SRAM_V", GbaSaveType::Sram);
+			checkMarker("EEPROM_V", GbaSaveType::EepromUnknown);
+			checkMarker("FLASH_V", GbaSaveType::Flash64);
+			checkMarker("FLASH512_V", GbaSaveType::Flash64);
+			checkMarker("FLASH1M_V", GbaSaveType::Flash128);
 
 			if(_saveType == GbaSaveType::AutoDetect) {
 				//Default to SRAM when nothing is found, for best compatibility
