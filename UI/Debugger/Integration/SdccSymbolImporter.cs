@@ -16,6 +16,7 @@ public abstract class SdccSymbolImporter : ISymbolProvider
 {
 	private static Regex _globalSymbolRegex = new Regex(@"^L:G\$([^$]+)\$([0-9_]+)\$(\d+):([0-9A-Fa-f]+)$", RegexOptions.Compiled);
 	private static Regex _srcMappingRegex = new Regex(@"^L:C\$([^$]+)\$(\d+)\$([0-9_]+)\$(\d+):([0-9A-Fa-f]+)$", RegexOptions.Compiled);
+	private static Regex _symRegex = new Regex(@"^([0-9a-fA-F]{2,4})[:]{0,1}([0-9a-fA-F]{4}) ([^\s]*)", RegexOptions.Compiled);
 
 	private Dictionary<string, SourceFileInfo> _sourceFiles = new();
 	private Dictionary<string, AddressInfo> _addressByLine = new();
@@ -230,6 +231,12 @@ public abstract class SdccSymbolImporter : ISymbolProvider
 			}
 		}
 
+		string symPath = Path.ChangeExtension(path, ".sym");
+		if(File.Exists(symPath)) {
+			//Also load the no$ format symbol file, too (some symbols are missing from the .cdb files)
+			LoadSymFile(symPath, labels);
+		}
+
 		LabelManager.SetLabels(labels.Values, true);
 
 		if(showResult) {
@@ -237,6 +244,84 @@ public abstract class SdccSymbolImporter : ISymbolProvider
 				MesenMsgBox.Show(null, "ImportLabelsWithErrors", MessageBoxButtons.OK, MessageBoxIcon.Warning, labels.Count.ToString(), errorCount.ToString());
 			} else {
 				MesenMsgBox.Show(null, "ImportLabels", MessageBoxButtons.OK, MessageBoxIcon.Info, labels.Count.ToString());
+			}
+		}
+	}
+
+	private record MemAddress(int addr, MemoryType type);
+
+	private void LoadSymFile(string path, Dictionary<string, CodeLabel> labels)
+	{
+		string[] lines = File.ReadAllLines(path);
+
+		HashSet<MemAddress> existingLabels = labels.Values.Select(l => new MemAddress((int)l.Address, l.MemoryType)).ToHashSet();
+		HashSet<MemAddress> existingSymbols = _symbols.Values.Where(l => l.Address != null).Select(l => new MemAddress(l.Address!.Value.Address, l.Address.Value.Type)).ToHashSet();
+
+		for(int i = 0; i < lines.Length; i++) {
+			string str = lines[i].Trim();
+			Match m;
+			if((m = _symRegex.Match(str)).Success) {
+				string name = m.Groups[3].Value;
+				if(name.StartsWith("C$") || name.StartsWith("A$") || name.StartsWith("s_") || name.StartsWith("l_") || name.Contains("$sloc") || name.StartsWith("XG$")) {
+					continue;
+				}
+
+				if(name.StartsWith("G$")) {
+					string[] nameParts = name.Split('$');
+					if(nameParts.Length > 1) {
+						name = nameParts[1];
+					} else {
+						continue;
+					}
+				} else {
+					int index = name.IndexOf("$");
+					if(index > 0) {
+						name = name.Substring(0, index);
+					}
+				}
+
+				int bank = int.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
+				int addr = int.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
+				
+				if(!TryDecodeAddress(addr, out AddressInfo absAddr)) {
+					continue;
+				}
+
+				MemAddress memAddr = new MemAddress(absAddr.Address, absAddr.Type);
+				string baseLabel = LabelManager.InvalidLabelRegex.Replace(name, "_");
+
+				if(!existingLabels.Contains(memAddr) && ConfigManager.Config.Debug.Integration.IsMemoryTypeImportEnabled(absAddr.Type)) {
+					string label = baseLabel;
+					int count = 0;
+					while(labels.ContainsKey(label)) {
+						//Ensure labels are unique
+						label = baseLabel + "_" + count.ToString();
+						count++;
+					}
+					
+					labels[label] = new CodeLabel() {
+						Label = label,
+						Address = (UInt32)absAddr.Address,
+						MemoryType = absAddr.Type,
+						Comment = "",
+						Flags = CodeLabelFlags.None,
+						Length = 1
+					};
+
+					existingLabels.Add(memAddr);
+				}
+
+				if(!existingSymbols.Contains(memAddr)) {
+					string symName = name;
+					int count = 0;
+					while(_symbols.ContainsKey(symName)) {
+						//Ensure labels are unique
+						symName = name + "_" + count.ToString();
+						count++;
+					}
+					_symbols[symName] = new SymbolInfo(symName, absAddr);
+					existingSymbols.Add(memAddr);
+				}
 			}
 		}
 	}

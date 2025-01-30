@@ -21,7 +21,6 @@ public abstract class WlaDxImporter : ISymbolProvider
 	private static Regex _fileV2Regex = new Regex(@"^([0-9a-fA-F]{4}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) (.*)", RegexOptions.Compiled);
 	private static Regex _addrV2Regex = new Regex(@"^([0-9a-fA-F]{8}) ([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
 	private static Regex _filePathRegex = new Regex(@"^(""([^;""]*)""\s*;{0,1}\s*(.*))|(.*)", RegexOptions.Compiled);
-	private static Regex _pceasSourceRegex = new Regex(@"^([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
 
 	private Dictionary<int, SourceFileInfo> _sourceFiles = new();
 	private Dictionary<string, AddressInfo> _addressByLine = new();
