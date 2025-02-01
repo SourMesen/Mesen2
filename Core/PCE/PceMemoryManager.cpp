@@ -79,13 +79,6 @@ PceMemoryManager::PceMemoryManager(Emulator* emu, PceConsole* console, PceVpc* v
 		}
 	}
 
-	for(int i = 0; i <= 0xFF; i++) {
-		_bankMask[i] = 0x1FFF;
-	}
-	
-	//Save RAM is 2KB, not 8KB
-	_bankMask[0xF7] = 0x7FF;
-
 	//Map ROM to all 128 banks
 	uint32_t bankCount = _prgRomSize / 0x2000;
 
@@ -327,7 +320,7 @@ uint8_t PceMemoryManager::DebugRead(uint16_t addr)
 {
 	uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 	if(bank != 0xFF) {
-		return _readBanks[bank][addr & _bankMask[bank]];
+		return _readBanks[bank][addr & 0x1FFF];
 	} else {
 		//TODO read registers without side effects
 		if(_console->GetRomFormat() == RomFormat::PceHes && addr >= 0x1C00 && addr <= 0x1C01) {
@@ -341,10 +334,16 @@ uint8_t PceMemoryManager::DebugRead(uint16_t addr)
 void PceMemoryManager::DebugWrite(uint16_t addr, uint8_t value)
 {
 	uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
-	if(bank != 0xFF) {
+	if(bank == 0xF7) {
+		if(_writeBanks[0xF7] && (addr & 0x1FFF) <= 0x7FF) {
+			//Only allow writes to the first 2kb - save RAM is not mirrored
+			//"Death Bringer" breaks if save RAM is mirrored.
+			_writeBanks[0xF7][addr & 0x7FF] = value;
+		}
+	} else if(bank != 0xFF) {
 		uint8_t* data = _writeBanks[bank];
 		if(data) {
-			data[addr & _bankMask[bank]] = value;
+			data[addr & 0x1FFF] = value;
 		}
 	} else {
 		//TODO write registers
@@ -389,13 +388,19 @@ AddressInfo PceMemoryManager::GetAbsoluteAddress(uint32_t relAddr)
 {
 	uint8_t bank = _state.Mpr[(relAddr & 0xE000) >> 13];
 	uint32_t absAddr;
-	uint16_t mask = _bankMask[bank];
 	switch(_bankMemType[bank]) {
-		case MemoryType::PcePrgRom: absAddr = (uint32_t)(_readBanks[bank] - _prgRom) + (relAddr & mask); break;
-		case MemoryType::PceWorkRam: absAddr = (uint32_t)(_readBanks[bank] - _workRam) + (relAddr & mask); break;
-		case MemoryType::PceSaveRam: absAddr = (uint32_t)(_readBanks[bank] - _saveRam) + (relAddr & mask); break;
-		case MemoryType::PceCdromRam: absAddr = (uint32_t)(_readBanks[bank] - _cdromRam) + (relAddr & mask); break;
-		case MemoryType::PceCardRam: absAddr = (uint32_t)(_readBanks[bank] - _cardRam) + (relAddr & mask); break;
+		case MemoryType::PcePrgRom: absAddr = (uint32_t)(_readBanks[bank] - _prgRom) + (relAddr & 0x1FFF); break;
+		case MemoryType::PceWorkRam: absAddr = (uint32_t)(_readBanks[bank] - _workRam) + (relAddr & 0x1FFF); break;
+		case MemoryType::PceSaveRam:
+			if((relAddr & 0x1FFF) <= 0x7FF) {
+				absAddr = (uint32_t)(_readBanks[bank] - _saveRam) + (relAddr & 0x7FF);
+			} else {
+				//Unmapped past the first 2kb
+				return { -1, MemoryType::None };
+			}
+			break;
+		case MemoryType::PceCdromRam: absAddr = (uint32_t)(_readBanks[bank] - _cdromRam) + (relAddr & 0x1FFF); break;
+		case MemoryType::PceCardRam: absAddr = (uint32_t)(_readBanks[bank] - _cardRam) + (relAddr & 0x1FFF); break;
 		default: return { -1, MemoryType::None };
 	}
 	return { (int32_t)absAddr, _bankMemType[bank] };
@@ -412,6 +417,11 @@ AddressInfo PceMemoryManager::GetRelativeAddress(AddressInfo absAddr, uint16_t p
 		int bank = (startBank + i) & 0x07;
 		AddressInfo bankStart = GetAbsoluteAddress(bank * 0x2000);
 		if(bankStart.Type == absAddr.Type && bankStart.Address == (absAddr.Address & ~0x1FFF)) {
+			if(bankStart.Type == MemoryType::PceSaveRam && (absAddr.Address & 0x1FFF) >= 0x800) {
+				//unmapped
+				break;
+			}
+
 			return { (bank << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
 		}
 	}

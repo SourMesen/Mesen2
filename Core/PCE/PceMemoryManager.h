@@ -40,7 +40,6 @@ private:
 	
 	uint8_t* _readBanks[0x100] = {};
 	uint8_t* _writeBanks[0x100] = {};
-	uint16_t _bankMask[0x100] = {};
 	MemoryType _bankMemType[0x100] = {};
 
 	uint8_t* _workRam = nullptr;
@@ -105,7 +104,7 @@ __forceinline uint8_t PceMemoryManager::Read(uint16_t addr, MemoryOperationType 
 	uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 	uint8_t value;
 	if(bank != 0xFF) {
-		value = _readBanks[bank][addr & _bankMask[bank]];
+		value = _readBanks[bank][addr & 0x1FFF];
 	} else {
 		value = ReadRegister(addr & 0x1FFF);
 	}
@@ -129,9 +128,14 @@ __forceinline void PceMemoryManager::Write(uint16_t addr, uint8_t value, MemoryO
 			_mapper->Write(bank, addr, value);
 		}
 
-		if(bank != 0xFF) {
+		if(bank == 0xF7) {
+			if(_writeBanks[bank] && (addr & 0x1FFF) <= 0x7FF) {
+				//Only allow writes to the first 2kb - save RAM is not mirrored
+				_writeBanks[bank][addr & 0x7FF] = value;
+			}
+		} else if(bank != 0xFF) {
 			if(_writeBanks[bank]) {
-				_writeBanks[bank][addr & _bankMask[bank]] = value;
+				_writeBanks[bank][addr & 0x1FFF] = value;
 			}
 		} else {
 			WriteRegister(addr & 0x1FFF, value);
