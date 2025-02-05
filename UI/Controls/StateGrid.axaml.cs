@@ -244,13 +244,11 @@ namespace Mesen.Controls
 		}
 
 		private bool _loadRequested = false;
-		private RecentGameInfo? _entryToLoad = null;
 		private HashSet<ushort> _pressedKeyCodes = new();
 
 		private void timerInput_Tick(object? sender, EventArgs e)
 		{
 			if(!IsEffectivelyVisible || !IsKeyboardFocusWithin || Entries == null || Entries.Count == 0) {
-				_entryToLoad = null;
 				_loadRequested = false;
 				return;
 			}
@@ -273,11 +271,9 @@ namespace Mesen.Controls
 							} else {
 								SelectedIndex--;
 							}
-							_entryToLoad = Entries[SelectedIndex % Entries.Count];
 							break;
 						} else if(mapping.Right == keyCode) {
 							SelectedIndex = (SelectedIndex + 1) % Entries.Count;
-							_entryToLoad = Entries[SelectedIndex % Entries.Count];
 							break;
 						} else if(mapping.Down == keyCode) {
 							if(SelectedIndex + _colCount < Entries.Count) {
@@ -285,7 +281,6 @@ namespace Mesen.Controls
 							} else {
 								SelectedIndex = Math.Min(SelectedIndex % _colCount, Entries.Count - 1);
 							}
-							_entryToLoad = Entries[SelectedIndex % Entries.Count];
 							break;
 						} else if(mapping.Up == keyCode) {
 							if(SelectedIndex < _colCount) {
@@ -293,7 +288,6 @@ namespace Mesen.Controls
 							} else {
 								SelectedIndex -= _colCount;
 							}
-							_entryToLoad = Entries[SelectedIndex % Entries.Count];
 							break;
 						} else if(mapping.A == keyCode || mapping.B == keyCode || mapping.X == keyCode || mapping.Y == keyCode || mapping.Select == keyCode || mapping.Start == keyCode) {
 							_loadRequested = true;
@@ -306,10 +300,11 @@ namespace Mesen.Controls
 			_pressedKeyCodes.Clear();
 			_pressedKeyCodes.UnionWith(keyCodes);
 
-			if(_loadRequested && keyCodes.Count == 0) {
+			if(_loadRequested && keyCodes.Count == 0 && Entries.Count > 0) {
 				//Load game/state once all buttons are released to avoid game processing pressed button
-				if(_entryToLoad?.IsEnabled() == true) {
-					_entryToLoad.Load();
+				RecentGameInfo entry = Entries[SelectedIndex % Entries.Count];
+				if(entry.IsEnabled() == true) {
+					entry.Load();
 				}
 				_loadRequested = false;
 			}
