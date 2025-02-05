@@ -98,13 +98,23 @@ namespace Mesen.ViewModels
 					CheatDbGameEntry? dbEntry = await CheatDatabaseWindow.Show(consoleType, parent);
 					if(dbEntry != null && consoleType == MainWindowViewModel.Instance.RomInfo.ConsoleType) {
 						List<CheatCode> newCheats = new();
+						HashSet<string> existingCheats = new();
+						foreach(CheatCode cheatCode in Cheats) {
+							string key = cheatCode.Description + cheatCode.Codes + cheatCode.Type.ToString();
+							existingCheats.Add(key);
+						}
+
 						foreach(CheatDbCheatEntry cheatEntry in dbEntry.Cheats) {
 							CheatCode newCheat = new CheatCode();
 							newCheat.Description = cheatEntry.Desc;
 							newCheat.Enabled = false;
 							newCheat.Type = GetCheatType(consoleType, cheatEntry.Code);
 							newCheat.Codes = string.Join(Environment.NewLine, cheatEntry.Code.Split(";", StringSplitOptions.RemoveEmptyEntries));
-							newCheats.Add(newCheat);
+							
+							string key = newCheat.Description + newCheat.Codes + newCheat.Type.ToString();
+							if(!existingCheats.Contains(key)) {
+								newCheats.Add(newCheat);
+							}
 						}
 						Cheats.AddRange(newCheats);
 						Sort();
