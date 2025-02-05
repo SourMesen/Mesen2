@@ -393,7 +393,11 @@ namespace Mesen.Debugger.ViewModels
 				}
 			} while(i < SelectionEnd);
 
-			byteCount = endAddress - SelectionStart + 1;
+			if(SelectionStart <= endAddress) {
+				byteCount = endAddress - SelectionStart + 1;
+			} else {
+				byteCount = 0;
+			}
 
 			return sb.ToString();
 		}

@@ -97,7 +97,9 @@ namespace Mesen.Debugger.ViewModels
 			StartAddress = address;
 			Code = code;
 
-			_originalCode = DebugApi.GetMemoryValues(CpuType.ToMemoryType(), (uint)StartAddress, (uint)(StartAddress + OriginalByteCount - 1));
+			if(OriginalByteCount > 0) {
+				_originalCode = DebugApi.GetMemoryValues(CpuType.ToMemoryType(), (uint)StartAddress, (uint)(StartAddress + OriginalByteCount - 1));
+			}
 		}
 
 		private void UpdateAssembly(string code)
