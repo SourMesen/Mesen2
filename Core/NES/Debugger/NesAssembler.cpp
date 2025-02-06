@@ -61,6 +61,7 @@ AssemblerSpecialCodes NesAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 			op.AddrMode = NesAddrMode::IndY;
 		} else if(operand.HasClosingParenthesis && operand.ByteCount > 0) {
 			op.AddrMode = NesAddrMode::Ind;
+			operand.ByteCount = 2;
 		} else {
 			return AssemblerSpecialCodes::ParsingError;
 		}
@@ -72,7 +73,7 @@ AssemblerSpecialCodes NesAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 				op.AddrMode = NesAddrMode::AbsX;
 			} else if(operand.ByteCount == 1) {
 				//Sometimes zero page addressing is not available, even if the operand is in the zero page
-				op.AddrMode = IsOpModeAvailable(op.OpCode, NesAddrMode::ZeroX) ? NesAddrMode::ZeroX : NesAddrMode::AbsX;
+				AdjustOperandSize(op, operand, NesAddrMode::ZeroX, NesAddrMode::AbsX);
 			} else {
 				return AssemblerSpecialCodes::ParsingError;
 			}
@@ -81,7 +82,7 @@ AssemblerSpecialCodes NesAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 				op.AddrMode = NesAddrMode::AbsY;
 			} else if(operand.ByteCount == 1) {
 				//Sometimes zero page addressing is not available, even if the operand is in the zero page
-				op.AddrMode = IsOpModeAvailable(op.OpCode, NesAddrMode::ZeroY) ? NesAddrMode::ZeroY : NesAddrMode::AbsY;
+				AdjustOperandSize(op, operand, NesAddrMode::ZeroY, NesAddrMode::AbsY);
 			} else {
 				return AssemblerSpecialCodes::ParsingError;
 			}
@@ -110,8 +111,7 @@ AssemblerSpecialCodes NesAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 				op.AddrMode = NesAddrMode::Abs;
 			} else if(operand.ByteCount == 1) {
 				//Sometimes zero page addressing is not available, even if the operand is in the zero page
-				op.AddrMode = IsOpModeAvailable(op.OpCode, NesAddrMode::Zero) ? NesAddrMode::Zero : NesAddrMode::Abs;
-				operand.ByteCount = 1;
+				AdjustOperandSize(op, operand, NesAddrMode::Zero, NesAddrMode::Abs);
 			} else {
 				return AssemblerSpecialCodes::ParsingError;
 			}

@@ -159,7 +159,7 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 				op.AddrMode = PceAddrMode::AbsX;
 			} else if(operand.ByteCount == 1) {
 				//Sometimes zero page addressing is not available, even if the operand is in the zero page
-				op.AddrMode = IsOpModeAvailable(op.OpCode, PceAddrMode::ZeroX) ? PceAddrMode::ZeroX : PceAddrMode::AbsX;
+				AdjustOperandSize(op, operand, PceAddrMode::ZeroX, PceAddrMode::AbsX);
 			} else {
 				return AssemblerSpecialCodes::InvalidOperands;
 			}
@@ -168,7 +168,7 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 				op.AddrMode = PceAddrMode::AbsY;
 			} else if(operand.ByteCount == 1) {
 				//Sometimes zero page addressing is not available, even if the operand is in the zero page
-				op.AddrMode = IsOpModeAvailable(op.OpCode, PceAddrMode::ZeroY) ? PceAddrMode::ZeroY : PceAddrMode::AbsY;
+				AdjustOperandSize(op, operand, PceAddrMode::ZeroY, PceAddrMode::AbsY);
 			} else {
 				return AssemblerSpecialCodes::InvalidOperands;
 			}
@@ -194,12 +194,12 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 				//Update data to match relative jump
 				operand.ByteCount = 1;
 				operand.Value = (uint8_t)addressGap;
-			} else if(operand.ByteCount == 2 || operand.ValueType == OperandValueType::Label) {
+			} else if(operand.ByteCount == 2) {
 				op.AddrMode = PceAddrMode::Abs;
 				operand.ByteCount = 2;
 			} else if(operand.ByteCount == 1) {
 				//Sometimes zero page addressing is not available, even if the operand is in the zero page
-				op.AddrMode = IsOpModeAvailable(op.OpCode, PceAddrMode::Zero) ? PceAddrMode::Zero : PceAddrMode::Abs;
+				AdjustOperandSize(op, operand, PceAddrMode::Zero, PceAddrMode::Abs);
 			} else {
 				return AssemblerSpecialCodes::InvalidOperands;
 			}

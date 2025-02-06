@@ -75,6 +75,16 @@ protected:
 	virtual bool IsOfficialOp(uint8_t opcode) = 0;
 	virtual AssemblerSpecialCodes ResolveOpMode(AssemblerLineData& op, uint32_t instructionAddress, bool firstPass) = 0;
 
+	void AdjustOperandSize(AssemblerLineData& op, AssemblerOperand& operand, T orgMode, T extMode)
+	{
+		if(!IsOpModeAvailable(op.OpCode, orgMode)) {
+			op.AddrMode = extMode;
+			operand.ByteCount = 2;
+		} else {
+			op.AddrMode = orgMode;
+		}
+	}
+
 public:
 	Base6502Assembler(LabelManager* labelManager, CpuType cpuType)
 	{
@@ -117,12 +127,18 @@ public:
 		}
 
 		if(_needSecondPass) {
-			currentPassLabels.clear();
-			output.clear();
-			startAddress = originalStartAddr;
-			for(string& line : codeLines) {
-				ProcessLine(line, startAddress, output, temporaryLabels, false, currentPassLabels);
-			}
+			vector<int16_t> prevOut;
+			int pass = 1;
+			do {
+				prevOut = output;
+				currentPassLabels.clear();
+				output.clear();
+				startAddress = originalStartAddr;
+				for(string& line : codeLines) {
+					ProcessLine(line, startAddress, output, temporaryLabels, false, currentPassLabels);
+				}
+				pass++;
+			} while(prevOut != output && pass <= 5);
 		}
 
 		memcpy(assembledCode, output.data(), std::min<int>(100000, (int)output.size()) * sizeof(uint16_t));
