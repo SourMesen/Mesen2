@@ -65,6 +65,10 @@ public:
 	static bool StartsWith(string& str, const char* content)
 	{
 		size_t length = strlen(content);
+		if(str.size() < length) {
+			return false;
+		}
+
 		for(size_t i = 0; i < length; i++) {
 			if(str[i] != content[i]) {
 				return false;
@@ -72,7 +76,24 @@ public:
 		}
 		return true;
 	}
-	
+
+	static bool EndsWith(string& str, const char* content)
+	{
+		size_t length = strlen(content);
+		if(str.size() < length) {
+			return false;
+		}
+
+		size_t startPos = str.size() - length;
+		for(size_t i = startPos; i < str.size(); i++) {
+			if(str[i] != content[i - startPos]) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	static bool Contains(string& str, const char* content)
 	{
 		size_t length = strlen(content);

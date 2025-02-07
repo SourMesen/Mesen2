@@ -67,6 +67,7 @@ private:
 	bool _gapEnded = true;
 	bool _scanningDisk = false;
 	bool _transferComplete = false;
+	bool _useQdFormat = false;
 	
 	vector<uint8_t> _fdsRawData;
 	vector<vector<uint8_t>> _fdsDiskSides;

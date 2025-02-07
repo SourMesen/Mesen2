@@ -5,18 +5,13 @@
 class BaseLoader
 {
 protected:
-	bool _checkOnly;
-
 	void Log(string message)
 	{
-		if(!_checkOnly) {
-			MessageManager::Log(message);
-		}
+		MessageManager::Log(message);
 	}
 
 public:
-	BaseLoader(bool checkOnly = false)
+	BaseLoader()
 	{
-		_checkOnly = checkOnly;
 	}
 };

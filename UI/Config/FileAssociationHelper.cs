@@ -70,6 +70,7 @@ namespace Mesen.Config
 
 			CreateMimeType("x-mesen-nes", "nes", "NES ROM", mimeTypes, cfg.AssociateNesRomFiles);
 			CreateMimeType("x-mesen-fds", "fds", "FDS ROM", mimeTypes, cfg.AssociateNesRomFiles);
+			CreateMimeType("x-mesen-qd", "qd", "FDS ROM (QD format)", mimeTypes, cfg.AssociateNesRomFiles);
 			CreateMimeType("x-mesen-studybox", "studybox", "Studybox ROM (Famicom)", mimeTypes, cfg.AssociateNesRomFiles);
 			CreateMimeType("x-mesen-unif", "unf", "NES ROM", mimeTypes, cfg.AssociateNesRomFiles);
 
@@ -191,6 +192,7 @@ namespace Mesen.Config
 
 			FileAssociationHelper.UpdateFileAssociation("nes", cfg.AssociateNesRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("fds", cfg.AssociateNesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("qd", cfg.AssociateNesRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("unf", cfg.AssociateNesRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("studybox", cfg.AssociateNesRomFiles);
 

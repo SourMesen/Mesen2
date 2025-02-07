@@ -13,7 +13,7 @@ namespace Mesen.Utilities
 		private static HashSet<string> _romExtensions = new HashSet<string>() {
 			".sfc", ".smc", ".fig", ".swc", ".bs", ".st",
 			".gb", ".gbc", ".gbx",
-			".nes", ".unif", ".unf", ".fds", ".studybox",
+			".nes", ".unif", ".unf", ".fds", ".qd", ".studybox",
 			".pce", ".sgx", ".cue",
 			".sms", ".gg", ".sg", ".col",
 			".gba",

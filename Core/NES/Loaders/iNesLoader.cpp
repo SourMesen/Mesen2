@@ -142,7 +142,7 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 		Log("[iNes] EPSM: Yes");
 	}
 
-	if(!_checkOnly && !romData.Info.IsNes20Header) {
+	if(!romData.Info.IsNes20Header) {
 		GameDatabase::SetGameInfo(romData.Info.Hash.PrgChrCrc32, romData, databaseEnabled, preloadedHeader != nullptr);
 	}
 

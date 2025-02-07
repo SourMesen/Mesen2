@@ -710,7 +710,7 @@
 			<Control ID="grpFileAssociations">File Associations</Control>
 			<Control ID="chkSnesRomFiles">SNES roms: .sfc, .smc, .swc, .fig, .bs</Control>
 			<Control ID="chkSnesMusicFiles">SNES music: .spc</Control>
-			<Control ID="chkNesRomFiles">NES roms: .nes, .unif, .fds, .studybox</Control>
+			<Control ID="chkNesRomFiles">NES roms: .nes, .unif, .fds, .qd, .studybox</Control>
 			<Control ID="chkNesMusicFiles">NES music: .nsf, .nsfe</Control>
 			<Control ID="chkGbRomFiles">Game Boy roms: .gb, .gbc, .gbx</Control>
 			<Control ID="chkGbMusicFiles">Game Boy music: .gbs</Control>

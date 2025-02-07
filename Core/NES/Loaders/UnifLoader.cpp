@@ -191,14 +191,10 @@ void UnifLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, bool databa
 		Log("[UNIF] Mirroring: " + mirroringType);
 		Log("[UNIF] Battery: " + string(romData.Info.HasBattery ? "Yes" : "No"));
 
-		if(!_checkOnly) {
-			GameDatabase::SetGameInfo(romData.Info.Hash.PrgChrCrc32, romData, databaseEnabled, false);
-		}
+		GameDatabase::SetGameInfo(romData.Info.Hash.PrgChrCrc32, romData, databaseEnabled, false);
 
 		if(romData.Info.MapperID == UnifBoards::UnknownBoard) {
-			if(!_checkOnly) {
-				MessageManager::DisplayMessage("Error", "UnsupportedMapper", "UNIF: " + _mapperName);
-			}
+			MessageManager::DisplayMessage("Error", "UnsupportedMapper", "UNIF: " + _mapperName);
 			romData.Error = true;
 		}
 	}

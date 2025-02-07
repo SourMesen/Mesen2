@@ -15,6 +15,7 @@
 #include "Shared/FirmwareHelper.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/Serializer.h"
+#include "Utilities/StringUtilities.h"
 
 void Fds::InitMapper()
 {
@@ -48,8 +49,10 @@ void Fds::InitMapper(RomData &romData)
 	_fdsDiskSides = romData.FdsDiskData;
 	_fdsDiskHeaders = romData.FdsDiskHeaders;
 	_fdsRawData = romData.RawData;
+	string filename = StringUtilities::ToLower(romData.Info.Filename);
+	_useQdFormat = StringUtilities::EndsWith(filename, ".qd");
 
-	FdsLoader loader;
+	FdsLoader loader(_useQdFormat);
 	loader.LoadDiskData(_fdsRawData, _orgDiskSides, _orgDiskHeaders);
 	
 	//Apply save data (saved as an IPS file), if found
@@ -69,7 +72,7 @@ void Fds::LoadDiskData(vector<uint8_t> ipsData)
 	_fdsDiskSides.clear();
 	_fdsDiskHeaders.clear();
 	
-	FdsLoader loader;
+	FdsLoader loader(_useQdFormat);
 	vector<uint8_t> patchedData;
 	if(ipsData.size() > 0 && IpsPatcher::PatchBuffer(ipsData, _fdsRawData, patchedData)) {
 		loader.LoadDiskData(patchedData, _fdsDiskSides, _fdsDiskHeaders);
@@ -80,9 +83,9 @@ void Fds::LoadDiskData(vector<uint8_t> ipsData)
 
 vector<uint8_t> Fds::CreateIpsPatch()
 {
-	FdsLoader loader;
+	FdsLoader loader(_useQdFormat);
 	bool needHeader = (memcmp(_fdsRawData.data(), "FDS\x1a", 4) == 0);
-	vector<uint8_t> newData = loader.RebuildFdsFile(_fdsDiskSides, needHeader);	
+	vector<uint8_t> newData = loader.RebuildFdsFile(_fdsDiskSides, needHeader);
 	return IpsPatcher::CreatePatch(_fdsRawData, newData);
 }
 
