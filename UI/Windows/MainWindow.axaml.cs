@@ -460,6 +460,10 @@ namespace Mesen.Windows
 
 		public void SetScale(double scale)
 		{
+			if(scale < 1) {
+				scale = 1;
+			}
+
 			//TODOv2 - Calling this twice seems to fix what might be an issue in Avalonia?
 			//On the first call, when DPI > 100%, sometimes _rendererPanel's bounds are incorrect
 			InternalSetScale(scale);
@@ -474,7 +478,6 @@ namespace Mesen.Windows
 			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
 			if(WindowState == WindowState.Normal) {
 				_rendererSize = new Size();
-
 
 				//When menu is set to auto-hide, don't count its height when calculating the window's final size
 				double menuHeight = ConfigManager.Config.Preferences.AutoHideMenu ? 0 : _mainMenu.Bounds.Height;
