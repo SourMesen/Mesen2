@@ -122,11 +122,11 @@
 				<WrapPanel>
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="0 0 5 0">
 						<TextBlock>H Clock:</TextBlock>
-						<c:MesenNumericTextBox Grid.Column="1" Value="{Binding HClock}" IsEnabled="False" Max="1364" MinWidth="40" />
+						<c:MesenNumericTextBox Grid.Column="1" Value="{Binding HClock}" IsEnabled="False" MinWidth="40" />
 						<TextBlock Grid.Row="1">Cycle:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{Binding Cycle}" IsEnabled="False" Max="340" />
+						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{Binding Cycle}" IsEnabled="False" />
 						<TextBlock Grid.Row="2">Scanline:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{Binding Scanline}" IsEnabled="False" Max="261" Min="-1" />
+						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{Binding Scanline}" IsEnabled="False" Min="-1" />
 					</Grid>
 					
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">

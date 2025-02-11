@@ -109,9 +109,9 @@
 				<WrapPanel>
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 						<TextBlock>Cycle:</TextBlock>
-						<c:MesenNumericTextBox Grid.Column="1" Value="{Binding Cycle}" IsEnabled="False" Max="340" />
+						<c:MesenNumericTextBox Grid.Column="1" Value="{Binding Cycle}" IsEnabled="False" />
 						<TextBlock Grid.Row="1">Scanline:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{Binding Scanline}" IsEnabled="False" Max="261" Min="-1" />
+						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{Binding Scanline}" IsEnabled="False" Min="-1" />
 
 						<TextBlock Grid.Row="2">Bus:</TextBlock>
 						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{Binding BusAddr}" Hex="True" Max="0x3FFF" IsEnabled="False" />
