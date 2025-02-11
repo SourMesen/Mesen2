@@ -248,6 +248,11 @@ void NesConsole::UpdateRegion(bool forceUpdate)
 			default: region = ConsoleRegion::Ntsc; break;
 		}
 	}
+
+	if(_vsSubConsole) {
+		_vsSubConsole->UpdateRegion(forceUpdate);
+	}
+
 	if(_region != region || forceUpdate) {
 		_region = region;
 
