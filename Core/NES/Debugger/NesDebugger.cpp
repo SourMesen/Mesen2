@@ -513,7 +513,8 @@ bool NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption 
 
 void NesDebugger::GetRomHeader(uint8_t* headerData, uint32_t& size)
 {
-	if(size < sizeof(NesHeader) || _console->GetRomFormat() != RomFormat::iNes) {
+	bool supportedFormat = _console->GetRomFormat() == RomFormat::iNes || _console->GetRomFormat() == RomFormat::VsSystem || _console->GetRomFormat() == RomFormat::VsDualSystem;
+	if(size < sizeof(NesHeader) || !supportedFormat) {
 		size = 0;
 		return;
 	}
