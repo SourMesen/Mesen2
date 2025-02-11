@@ -95,7 +95,7 @@ namespace Mesen.Config
 							"Pad1 RT Up", "Pad1 RT Down", "Pad1 RT Left", "Pad1 RT Right",
 							"Pad1 Y", "Pad1 B",
 						} },
-						{ KeyPresetType.XboxP2, new string[] { "Pad1 Up", "Pad2 Down", "Pad2 Left", "Pad2 Right",
+						{ KeyPresetType.XboxP2, new string[] { "Pad2 Up", "Pad2 Down", "Pad2 Left", "Pad2 Right",
 							"Pad2 X", "Pad2 A",
 							"Pad2 Back", "Pad2 Start",
 							"Pad2 L1", "Pad2 L2", "Pad2 R1", "Pad2 R2",
