@@ -286,7 +286,7 @@ bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType o
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
 		SleepOnBreakRequest<type>();
-		return true;
+		return !_debuggers[(int)type].Debugger->GetFrozenAddressManager().IsFrozenAddress(addr);
 	}
 
 	switch(type) {
