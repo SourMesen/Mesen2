@@ -195,7 +195,6 @@ namespace Mesen.Debugger.Controls
 
 		public PictureViewer()
 		{
-			Focusable = true;
 			VerticalAlignment = VerticalAlignment.Top;
 			HorizontalAlignment = HorizontalAlignment.Left;
 			ClipToBounds = true;
@@ -291,10 +290,8 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		protected override void OnKeyDown(KeyEventArgs e)
+		public void ProcessKeyDown(KeyEventArgs e)
 		{
-			base.OnKeyDown(e);
-
 			if(!AllowSelection) {
 				return;
 			}

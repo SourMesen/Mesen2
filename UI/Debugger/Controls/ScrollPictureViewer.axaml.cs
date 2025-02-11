@@ -178,6 +178,7 @@ namespace Mesen.Debugger.Controls
 		public ScrollPictureViewer()
 		{
 			InitializeComponent();
+			Focusable = true;
 			Background = new SolidColorBrush(0xFF202020);
 		}
 
@@ -191,6 +192,12 @@ namespace Mesen.Debugger.Controls
 		private void Viewer_PointerPressed(object? sender, PointerPressedEventArgs e)
 		{
 			_lastPosition = e.GetCurrentPoint(this).Position;
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			InnerViewer.ProcessKeyDown(e);
 		}
 
 		private void UpdateScrollBarVisibility()
