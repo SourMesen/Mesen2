@@ -175,7 +175,7 @@ namespace Mesen.Debugger
 				return;
 			}
 
-			Breakpoint? breakpoint = BreakpointManager.GetMatchingForbidBreakpoint(info, cpuType) ?? BreakpointManager.GetMatchingBreakpoint(info, cpuType);
+			Breakpoint? breakpoint = BreakpointManager.GetMatchingForbidBreakpoint(info, cpuType) ?? BreakpointManager.GetMatchingBreakpoint(info, cpuType, true);
 			if(breakpoint != null) {
 				BreakpointManager.RemoveBreakpoint(breakpoint);
 			} else {
