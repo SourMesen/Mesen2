@@ -28,7 +28,7 @@ void FdsLoader::AddGaps(vector<uint8_t>& diskSide, uint8_t* readBuffer, uint32_t
 	//Start image with 28300 bits of gap
 	diskSide.insert(diskSide.end(), 28300 / 8, 0);
 
-	auto read = [&](int i) -> uint8_t {
+	auto read = [&](uint32_t i) -> uint8_t {
 		if(i >= 0 && i < bufferSize) {
 			return readBuffer[i];
 		}
@@ -155,7 +155,7 @@ void FdsLoader::LoadDiskData(vector<uint8_t>& romFile, vector<vector<uint8_t>>& 
 
 		diskHeaders.push_back(vector<uint8_t>(romFile.data() + fileOffset + 1, romFile.data() + fileOffset + 57));
 
-		AddGaps(fdsDiskImage, &romFile[fileOffset], romFile.size() - fileOffset);
+		AddGaps(fdsDiskImage, &romFile[fileOffset], (uint32_t)(romFile.size() - fileOffset));
 		fileOffset += GetSideCapacity();
 
 		//Ensure the image is at least the expected size of a disk
