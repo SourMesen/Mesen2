@@ -312,7 +312,7 @@ public class NesHeaderEditViewModel : DisposableViewModel
 			header.ChrRam = (MemorySizes)binHeader.GetChrRamSize();
 			header.ChrRamBattery = (MemorySizes)binHeader.GetSaveChrRamSize();
 			header.InputType = binHeader.GetInputType();
-			header.VsPpu = (VsPpuType)bytes[13];
+			header.VsPpu = (VsPpuType)(bytes[13] & 0x0F);
 			header.VsSystem = binHeader.GetVsSystemType();
 
 			return header;
