@@ -68,8 +68,6 @@ private:
 
 	bool HasBankSwitching();
 
-	void SelectNextTrack();
-
 protected:
 	uint16_t GetPrgPageSize() override { return 0x1000; }
 	uint16_t GetChrPageSize() override { return 0x2000; }

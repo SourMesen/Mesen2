@@ -165,7 +165,23 @@ void AudioPlayerHud::MoveToNextTrack()
 	if(!_changeTrackPending) {
 		_changeTrackPending = true;
 		AudioPlayerActionParams params = {};
-		params.Action = AudioPlayerAction::NextTrack;
+
+		AudioPlayerConfig cfg = _emu->GetSettings()->GetAudioPlayerConfig();
+		AudioTrackInfo track = _emu->GetAudioTrackInfo();
+		if(!cfg.Repeat) {
+			if(cfg.Shuffle) {
+				std::random_device rd;
+				std::mt19937 mt(rd());
+				std::uniform_int_distribution<> dist(0, track.TrackCount - 1);
+				params.Action = AudioPlayerAction::SelectTrack;
+				params.TrackNumber = dist(mt);
+			} else {
+				params.Action = AudioPlayerAction::NextTrack;
+			}
+		} else {
+			params.Action = AudioPlayerAction::SelectTrack;
+			params.TrackNumber = track.TrackNumber - 1;
+		}
 		_emu->ProcessAudioPlayerAction(params);
 	}
 }

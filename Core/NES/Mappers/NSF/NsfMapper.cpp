@@ -196,21 +196,6 @@ void NsfMapper::ClearIrq()
 	_console->GetCpu()->ClearIrqSource(IRQSource::External);
 }
 
-void NsfMapper::SelectNextTrack()
-{
-	if(!_settings->GetAudioPlayerConfig().Repeat) {
-		if(_settings->GetAudioPlayerConfig().Shuffle) {
-			std::random_device rd;
-			std::mt19937 mt(rd());
-			std::uniform_int_distribution<> dist(0, _nsfHeader.TotalSongs - 1);
-			_songNumber = dist(mt);
-		} else {
-			_songNumber = (_songNumber + 1) % _nsfHeader.TotalSongs;
-		}
-	}
-	SelectTrack(_songNumber);
-}
-
 void NsfMapper::ProcessCpuClock()
 {
 	BaseProcessCpuClock();

@@ -318,12 +318,14 @@ void SnesConsole::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	if(_spcTrackNumber >= 0) {
 		int i = (int)_spcTrackNumber;
 		switch(p.Action) {
+			case AudioPlayerAction::NextTrack: i++; break;
 			case AudioPlayerAction::PrevTrack:
 				if(GetAudioTrackInfo().Position < 2) {
 					i--;
 				}
 				break;
-			case AudioPlayerAction::NextTrack: i++; break;
+
+			case AudioPlayerAction::SelectTrack: i = (int)p.TrackNumber; break;
 		}
 
 		if(i < 0) {
