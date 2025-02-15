@@ -123,16 +123,10 @@ void Fds::WriteFdsDisk(uint8_t value)
 {
 	assert(_diskNumber < _fdsDiskSides.size());
 	assert(_diskPosition < _fdsDiskSides[_diskNumber].size());
-	if(_diskPosition < 2) {
-		//Prevent crash if write mode is ever turned on at the start of the disk
-		//Unsure why this writes to "_diskPosition - 2" - it's been this way
-		//since FDS support was added.
-		return;
-	}
 
-	uint8_t currentValue = _fdsDiskSides[_diskNumber][_diskPosition - 2];
+	uint8_t currentValue = _fdsDiskSides[_diskNumber][_diskPosition];
 	if(currentValue != value) {
-		_fdsDiskSides[_diskNumber][_diskPosition - 2] = value;
+		_fdsDiskSides[_diskNumber][_diskPosition] = value;
 		_needSave = true;
 	}
 }
@@ -310,6 +304,7 @@ void Fds::ProcessCpuClock()
 			if(!_diskReady) {
 				_gapEnded = false;
 				_crcAccumulator = 0;
+				_badCrc = false;
 			} else if(diskData && !_gapEnded) {
 				_gapEnded = true;
 				needIrq = false;
@@ -322,6 +317,10 @@ void Fds::ProcessCpuClock()
 					_cpu->SetIrqSource(IRQSource::FdsDisk);
 				}
 			}
+
+			if(!_previousCrcControlFlag && _crcControl) {
+				_badCrc = _crcAccumulator != 0;
+			}
 		} else {
 			if(!_crcControl) {
 				_transferComplete = true;
@@ -333,22 +332,19 @@ void Fds::ProcessCpuClock()
 
 			if(!_diskReady) {
 				diskData = 0x00;
+				_crcAccumulator = 0;
 			}
 
 			if(!_crcControl) {
 				UpdateCrc(diskData);
 			} else {
-				if(!_previousCrcControlFlag) {
-					//Finish CRC calculation
-					UpdateCrc(0x00);
-					UpdateCrc(0x00);
-				}
 				diskData = _crcAccumulator & 0xFF;
 				_crcAccumulator >>= 8;
 			}
 
 			WriteFdsDisk(diskData);
 			_gapEnded = false;
+			_badCrc = false;
 		}
 
 		_previousCrcControlFlag = _crcControl;
@@ -373,15 +369,12 @@ void Fds::ProcessCpuClock()
 
 void Fds::UpdateCrc(uint8_t value)
 {
-	for(uint16_t n = 0x01; n <= 0x80; n <<= 1) {
+	_crcAccumulator ^= value;
+	for(uint16_t n = 0; n < 8; n++) {
 		uint8_t carry = (_crcAccumulator & 1);
 		_crcAccumulator >>= 1;
 		if(carry) {
 			_crcAccumulator ^= 0x8408;
-		}
-
-		if(value & n) {
-			_crcAccumulator ^= 0x8000;
 		}
 	}
 }
@@ -471,7 +464,7 @@ uint8_t Fds::ReadRegister(uint16_t addr)
 
 				value |= _cpu->HasIrqSource(IRQSource::External) ? 0x01 : 0x00;
 				value |= _transferComplete ? 0x02 : 0x00;
-				value |= _badCrc ? 0x10 : 0x00;
+				value |= _useQdFormat && _badCrc ? 0x10 : 0x00;
 				//value |= _endOfHead ? 0x40 : 0x00;
 				//value |= _diskRegEnabled ? 0x80 : 0x00;
 
