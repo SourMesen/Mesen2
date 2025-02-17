@@ -74,7 +74,7 @@ void GbaApu::InternalRun()
 
 	GbaConfig& cfg = _settings->GetGbaConfig();
 
-	uint64_t samplingRate = 0x08ll << (3 - _state.SamplingRate);
+	uint64_t samplingRate = 0x10ll << (3 - _state.SamplingRate);
 	int16_t bitRateMask = ~0;
 	switch(_state.SamplingRate) {
 		case 0: break;
@@ -87,7 +87,11 @@ void GbaApu::InternalRun()
 
 	bool changed = true;
 	while(clocksToRun > 0) {
-		uint32_t minTimer = clocksToRun < samplingRate ? clocksToRun : samplingRate;
+		uint32_t minTimer = samplingRate - (_prevClockCount & (samplingRate - 1));
+		if(minTimer > clocksToRun) {
+			//Only sample audio every X clocks, based on the sampling rate selected
+			break;
+		}
 
 		if(enabled) {
 			if constexpr(sq1Enabled) {
@@ -95,7 +99,7 @@ void GbaApu::InternalRun()
 				_square1->Exec(minTimer);
 				changed |= output != _square1->GetRawOutput();
 			}
-
+			
 			if constexpr(sq2Enabled) {
 				uint8_t output = _square2->GetRawOutput();
 				_square2->Exec(minTimer);
@@ -114,62 +118,57 @@ void GbaApu::InternalRun()
 				changed |= output != _noise->GetRawOutput();
 			}
 
-			if((_prevClockCount & 0x1000) && !(_prevClockCount + minTimer & 0x1000)) {
+			if((_prevClockCount & 0x1000) && !((_prevClockCount + minTimer) & 0x1000)) {
 				ClockFrameSequencer();
 			}
 		}
 
-		bool updateSample = (_prevClockCount & samplingRate) && !(_prevClockCount + minTimer & samplingRate);
 		_prevClockCount += minTimer;
 		clocksToRun -= minTimer;
 
-		if(updateSample) {
-			if(changed) {
-				changed = false;
+		if(changed) {
+			changed = false;
 
-				double gbVolume = _state.GbVolume ? _state.GbVolume : 0.5;
+			double gbVolume = _state.GbVolume ? _state.GbVolume : 0.5;
 
-				int16_t gbLeftOutput = (
-					(_square1->GetOutput() * (int32_t)(cfg.Square1Vol & _state.EnableLeftSq1) / 100) +
-					(_square2->GetOutput() * (int32_t)(cfg.Square2Vol & _state.EnableLeftSq2) / 100) +
-					(_wave->GetOutput() * (int32_t)(cfg.WaveVol & _state.EnableLeftWave) / 100) +
-					(_noise->GetOutput() * (int32_t)(cfg.NoiseVol & _state.EnableLeftNoise) / 100)
-				) * (_state.LeftVolume + 1) * gbVolume;
+			int16_t gbLeftOutput = (
+				(_square1->GetOutput() * (int32_t)(cfg.Square1Vol & _state.EnableLeftSq1) / 100) +
+				(_square2->GetOutput() * (int32_t)(cfg.Square2Vol & _state.EnableLeftSq2) / 100) +
+				(_wave->GetOutput() * (int32_t)(cfg.WaveVol & _state.EnableLeftWave) / 100) +
+				(_noise->GetOutput() * (int32_t)(cfg.NoiseVol & _state.EnableLeftNoise) / 100)
+			) * (_state.LeftVolume + 1) * gbVolume;
 
-				_leftSample = ((std::clamp(
-					_state.Bias +
-					gbLeftOutput +
-					((_state.EnableLeftA ? (_state.DmaSampleA * (int32_t)cfg.ChannelAVol / 100) : 0) << (_state.VolumeA + 1)) +
-					((_state.EnableLeftB ? (_state.DmaSampleB * (int32_t)cfg.ChannelBVol / 100) : 0) << (_state.VolumeB + 1))
-				, 0, 0x3FF) & bitRateMask) - _state.Bias) * 32;
+			_leftSample = ((std::clamp(
+				_state.Bias +
+				gbLeftOutput +
+				((_state.EnableLeftA ? (_state.DmaSampleA * (int32_t)cfg.ChannelAVol / 100) : 0) << (_state.VolumeA + 1)) +
+				((_state.EnableLeftB ? (_state.DmaSampleB * (int32_t)cfg.ChannelBVol / 100) : 0) << (_state.VolumeB + 1))
+			, 0, 0x3FF) & bitRateMask) - _state.Bias) * 32;
 
-				int16_t gbRightOutput = (
-					(_square1->GetOutput() * (int32_t)(cfg.Square1Vol & _state.EnableRightSq1) / 100) +
-					(_square2->GetOutput() * (int32_t)(cfg.Square2Vol & _state.EnableRightSq2) / 100) +
-					(_wave->GetOutput() * (int32_t)(cfg.WaveVol & _state.EnableRightWave) / 100) +
-					(_noise->GetOutput() * (int32_t)(cfg.NoiseVol & _state.EnableRightNoise) / 100)
-				) * (_state.RightVolume + 1) * gbVolume;
+			int16_t gbRightOutput = (
+				(_square1->GetOutput() * (int32_t)(cfg.Square1Vol & _state.EnableRightSq1) / 100) +
+				(_square2->GetOutput() * (int32_t)(cfg.Square2Vol & _state.EnableRightSq2) / 100) +
+				(_wave->GetOutput() * (int32_t)(cfg.WaveVol & _state.EnableRightWave) / 100) +
+				(_noise->GetOutput() * (int32_t)(cfg.NoiseVol & _state.EnableRightNoise) / 100)
+			) * (_state.RightVolume + 1) * gbVolume;
 
-				_rightSample = ((std::clamp(
-					_state.Bias +
-					gbRightOutput +
-					((_state.EnableRightA ? (_state.DmaSampleA * (int32_t)cfg.ChannelAVol / 100) : 0) << (_state.VolumeA + 1)) +
-					((_state.EnableRightB ? (_state.DmaSampleB * (int32_t)cfg.ChannelBVol / 100) : 0) << (_state.VolumeB + 1))
-				, 0, 0x3FF) & bitRateMask) - _state.Bias) * 32;
-			}
+			_rightSample = ((std::clamp(
+				_state.Bias +
+				gbRightOutput +
+				((_state.EnableRightA ? (_state.DmaSampleA * (int32_t)cfg.ChannelAVol / 100) : 0) << (_state.VolumeA + 1)) +
+				((_state.EnableRightB ? (_state.DmaSampleB * (int32_t)cfg.ChannelBVol / 100) : 0) << (_state.VolumeB + 1))
+			, 0, 0x3FF) & bitRateMask) - _state.Bias) * 32;
+		}
 
 			//Use low pass filter and subtract the result to filter out DC offset
-			_soundBuffer[_sampleCount] = _leftSample - _filterL.Process(_leftSample);
-			_soundBuffer[_sampleCount + 1] = _rightSample - _filterR.Process(_rightSample);
-			_sampleCount += 2;
-		}
+		_soundBuffer[_sampleCount] = _leftSample - _filterL.Process(_leftSample);
+		_soundBuffer[_sampleCount + 1] = _rightSample - _filterR.Process(_rightSample);
+		_sampleCount += 2;
 	}
 
 	if(_sampleCount >= 2000) {
 		PlayQueuedAudio();
 	}
-
-	_prevClockCount = clockCount;
 }
 
 void GbaApu::PlayQueuedAudio()
