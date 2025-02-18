@@ -78,32 +78,38 @@ private:
 		bankNumber = _prgBanks[reg-0x5113];
 		memoryType = PrgMemoryType::PrgRom;
 		if((((bankNumber & 0x80) == 0x00) && reg != 0x5117) || reg == 0x5113) {
-			bankNumber &= 0x07;
 			accessType = MemoryAccessType::Read;
 			if(_prgRamProtect1 == 0x02 && _prgRamProtect2 == 0x01) {
 				accessType |= MemoryAccessType::Write;
 			}
 
-			// WRAM/SRAM mirroring logic (only supports existing/known licensed MMC5 boards)
-			//            Bank number
-			//            0 1 2 3 4 5 6 7
-			// --------------------------
-			// None     : - - - - - - - -
-			// 1x 8kb   : 0 0 0 0 - - - -
-			// 2x 8kb   : 0 0 0 0 1 1 1 1
-			// 1x 32kb  : 0 1 2 3 - - - -
-			if(IsNes20() || _romInfo.IsInDatabase) {
-				memoryType = PrgMemoryType::WorkRam;
-				if(HasBattery() && (bankNumber <= 3 || _saveRamSize > 0x2000)) {
-					memoryType = PrgMemoryType::SaveRam;
-				}
-
-				if(_saveRamSize + _workRamSize != 0x4000 && bankNumber >= 4) {
-					//When not 2x 8kb (=16kb), banks 4/5/6/7 select the empty socket and return open bus
-					accessType = MemoryAccessType::NoAccess;
-				}
-			} else {
+			if(IsNes20() && (_workRamSize == 0x20000 || _saveRamSize == 0x20000)) {
+				bankNumber &= 0x0F;
 				memoryType = HasBattery() ? PrgMemoryType::SaveRam : PrgMemoryType::WorkRam;
+			} else {
+				bankNumber &= 0x07;
+
+				// WRAM/SRAM mirroring logic (only supports existing/known licensed MMC5 boards)
+				//            Bank number
+				//            0 1 2 3 4 5 6 7
+				// --------------------------
+				// None     : - - - - - - - -
+				// 1x 8kb   : 0 0 0 0 - - - -
+				// 2x 8kb   : 0 0 0 0 1 1 1 1
+				// 1x 32kb  : 0 1 2 3 - - - -
+				if(IsNes20() || _romInfo.IsInDatabase) {
+					memoryType = PrgMemoryType::WorkRam;
+					if(HasBattery() && (bankNumber <= 3 || _saveRamSize > 0x2000)) {
+						memoryType = PrgMemoryType::SaveRam;
+					}
+
+					if(_saveRamSize + _workRamSize != 0x4000 && bankNumber >= 4) {
+						//When not 2x 8kb (=16kb), banks 4/5/6/7 select the empty socket and return open bus
+						accessType = MemoryAccessType::NoAccess;
+					}
+				} else {
+					memoryType = HasBattery() ? PrgMemoryType::SaveRam : PrgMemoryType::WorkRam;
+				}
 			}
 		} else {
 			accessType = MemoryAccessType::Read;
