@@ -135,7 +135,6 @@ jobs:
       matrix:
         compiler: [clang, clang_aot]
         platform: [
-          {os: macos-13, arch: x64},
           {os: macos-14, arch: arm64}
         ]
         include:
@@ -163,13 +162,34 @@ jobs:
 
       # stderr is not detected as a TTY, so diagnostics are by default printed without colours;
       # forcing colours makes the log a little nicer to read.
-      - name: Build Mesen
+      - name: Build Mesen ARM
         run: |
-          ${{ matrix.make_flags }} make -j$(sysctl -n hw.logicalcpu)
+          ${{ matrix.make_flags }} make -j$(sysctl -n hw.logicalcpu) MESENPLATFORM=osx-arm64
+
+      - name: Build Mesen x64
+        run: |
+          ${{ matrix.make_flags }} make -j$(sysctl -n hw.logicalcpu) MESENPLATFORM=osx-x64
+
+      # Combine the two generated macos executables (and dylibs) into an universal bin using lipo
+      - name: Build Mesen Universal
+        run: |
+          mkdir -p bin/osx-universal/Release/publish
+          for filename in bin/osx-arm64/Release/osx-arm64/publish/*.dylib; do
+            [ -e "$filename" ] || continue
+            name=$(basename "$filename" .dylib)
+            # If the command below errors out, its usually because its already a universal dylib, or it doesn't exist for x64 so just copy it over from the arm folder.
+            lipo -create bin/osx-arm64/Release/osx-arm64/publish/$name.dylib bin/osx-x64/Release/osx-x64/publish/$name.dylib -output bin/osx-universal/Release/publish/$name.dylib \
+              || cp bin/osx-arm64/Release/osx-arm64/publish/$name.dylib bin/osx-universal/Release/publish/
+          done
+          # now add the Mesen executable as well
+          lipo -create bin/osx-arm64/Release/osx-arm64/publish/Mesen bin/osx-x64/Release/osx-x64/publish/Mesen -output bin/osx-universal/Release/publish/Mesen
+          # and then copy everything over into the new Mesen.app folder
+          cp -R bin/osx-arm64/Release/osx-arm64/publish/Mesen.app bin/osx-universal/Release/
+          cp bin/osx-universal/Release/publish/* bin/osx-universal/Release/Mesen.app/Contents/MacOS/
 
       - name: Sign binary
         env:
-          APP_NAME: bin/osx-${{ matrix.platform.arch }}/Release/osx-${{ matrix.platform.arch }}/publish/Mesen.app
+          APP_NAME: bin/osx-universal/Release/Mesen.app
           CERT_DATA: ${{ secrets.MACOS_CERTIFICATE }}
           CERT_PASS: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           ENTITLEMENTS: UI/Mesen.entitlements
@@ -194,10 +214,10 @@ jobs:
 
       - name: Zip Mesen.app
         run: |
-          ditto -c -k --sequesterRsrc --keepParent bin/osx-${{ matrix.platform.arch }}/Release/osx-${{ matrix.platform.arch }}/publish/Mesen.app bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip
+          ditto -c -k --sequesterRsrc --keepParent bin/osx-universal/Release/Mesen.app bin/osx-universal/Release/Mesen.app.zip
 
       - name: Upload Mesen
         uses: actions/upload-artifact@v4
         with:
-          name: Mesen (macOS - ${{ matrix.platform.os }} - ${{ matrix.compiler }})
-          path: bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip
+          name: Mesen (macOS - universal - ${{ matrix.compiler }})
+          path: bin/osx-universal/Release/Mesen.app.zip
