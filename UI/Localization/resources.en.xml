@@ -354,6 +354,7 @@
 			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>
 			<Control ID="chkDisableGameGenieBusConflicts">Disable Game Genie bus conflict emulation</Control>
 			<Control ID="chkDisableFlashSaves">Disable flash saves (UNROM512 / GTROM / Rainbow)</Control>
+			<Control ID="chkOverwriteOriginalRom">Update original ROM file directly when modified (FDS / Flash)</Control>
 			<Control ID="chkEnableDmcSampleDuplicationGlitch">Enable DMC sample duplication glitch (late-G &amp; H CPU behavior)</Control>
 			<Control ID="chkEnableCpuTestMode">Enable CPU test mode registers</Control>
 			<Control ID="lblConsoleType">Console model:</Control>

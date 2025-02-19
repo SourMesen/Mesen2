@@ -72,7 +72,6 @@ private:
 	vector<uint8_t> _fdsRawData;
 	vector<vector<uint8_t>> _fdsDiskSides;
 	vector<vector<uint8_t>> _fdsDiskHeaders;
-	string _romFilepath;
 
 	vector<vector<uint8_t>> _orgDiskSides;
 	vector<vector<uint8_t>> _orgDiskHeaders;

@@ -63,20 +63,8 @@ protected:
 
 		SV(_flash);
 		SV(_prgBank);
-
-		if(s.IsSaving()) {
-			vector<uint8_t> prgRom = vector<uint8_t>(_prgRom, _prgRom + _prgSize);
-			vector<uint8_t> ipsData = IpsPatcher::CreatePatch(_orgPrgRom, prgRom);
-			SVVector(ipsData);
-		} else {
-			vector<uint8_t> ipsData;
-			SVVector(ipsData);
-
-			vector<uint8_t> patchedPrgRom;
-			if(IpsPatcher::PatchBuffer(ipsData, _orgPrgRom, patchedPrgRom)) {
-				memcpy(_prgRom, patchedPrgRom.data(), _prgSize);
-			}
-		}
+		
+		SerializeRomDiff(s, _orgPrgRom);
 	}
 
 	void ApplySaveData()
@@ -85,14 +73,7 @@ protected:
 			return;
 		}
 
-		//Apply save data (saved as an IPS file), if found
-		vector<uint8_t> ipsData = _emu->GetBatteryManager()->LoadBattery(".ips");
-		if(!ipsData.empty()) {
-			vector<uint8_t> patchedPrgRom;
-			if(IpsPatcher::PatchBuffer(ipsData, _orgPrgRom, patchedPrgRom)) {
-				memcpy(_prgRom, patchedPrgRom.data(), _prgSize);
-			}
-		}
+		LoadRomPatch(_orgPrgRom);
 	}
 
 	void SaveBattery() override
@@ -102,11 +83,7 @@ protected:
 		}
 
 		if(HasBattery()) {
-			vector<uint8_t> prgRom = vector<uint8_t>(_prgRom, _prgRom + _prgSize);
-			vector<uint8_t> ipsData = IpsPatcher::CreatePatch(_orgPrgRom, prgRom);
-			if(ipsData.size() > 8) {
-				_emu->GetBatteryManager()->SaveBattery(".ips", ipsData.data(), (uint32_t)ipsData.size());
-			}
+			SaveRom(_orgPrgRom);
 		}
 	}
 

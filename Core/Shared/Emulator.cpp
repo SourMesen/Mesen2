@@ -286,6 +286,11 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave, bool save
 		_emuThread.release();
 	}
 
+	if(_console && saveBattery) {
+		//Only save battery on power off, otherwise SaveBattery() is called by LoadRom()
+		_console->SaveBattery();
+	}
+
 	if(!preventRecentGameSave && _console && !_settings->GetPreferences().DisableGameSelectionScreen && !_audioPlayerHud) {
 		RomInfo romInfo = GetRomInfo();
 		_saveStateManager->SaveRecentGame(romInfo.RomFile.GetFileName(), romInfo.RomFile, romInfo.PatchFile);
@@ -300,10 +305,6 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave, bool save
 	_rewindManager->Reset();
 
 	if(_console) {
-		if(saveBattery) {
-			//Only save battery on power off, otherwise SaveBattery() is called by LoadRom()
-			_console->SaveBattery();
-		}
 		_console.reset();
 	}
 

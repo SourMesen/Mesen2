@@ -36,24 +36,7 @@ void Rainbow::ApplySaveData()
 		return;
 	}
 
-	//Apply save data (saved as an IPS file), if found
-	vector<uint8_t> ipsData = _emu->GetBatteryManager()->LoadBattery(".ips");
-	if(!ipsData.empty()) {
-		vector<uint8_t> patchedPrgRom;
-		if(IpsPatcher::PatchBuffer(ipsData, _orgPrgRom, patchedPrgRom)) {
-			memcpy(_prgRom, patchedPrgRom.data(), _prgSize);
-		}
-	}
-
-	if(_chrRomSize > 0) {
-		ipsData = _emu->GetBatteryManager()->LoadBattery(".chr.ips");
-		if(!ipsData.empty()) {
-			vector<uint8_t> patchedChrRom;
-			if(IpsPatcher::PatchBuffer(ipsData, _orgChrRom, patchedChrRom)) {
-				memcpy(_chrRom, patchedChrRom.data(), _chrRomSize);
-			}
-		}
-	}
+	LoadRomPatch(_orgPrgRom, &_orgChrRom);
 }
 
 void Rainbow::SaveBattery()
@@ -64,19 +47,7 @@ void Rainbow::SaveBattery()
 		return;
 	}
 
-	vector<uint8_t> prgRom = vector<uint8_t>(_prgRom, _prgRom + _prgSize);
-	vector<uint8_t> ipsData = IpsPatcher::CreatePatch(_orgPrgRom, prgRom);
-	if(ipsData.size() > 8) {
-		_emu->GetBatteryManager()->SaveBattery(".ips", ipsData.data(), (uint32_t)ipsData.size());
-	}
-
-	if(_chrRomSize > 0) {
-		vector<uint8_t> chrRom = vector<uint8_t>(_chrRom, _chrRom + _chrRomSize);
-		ipsData = IpsPatcher::CreatePatch(_orgChrRom, chrRom);
-		if(ipsData.size() > 8) {
-			_emu->GetBatteryManager()->SaveBattery(".chr.ips", ipsData.data(), (uint32_t)ipsData.size());
-		}
-	}
+	SaveRom(_orgPrgRom, &_orgChrRom);
 }
 
 void Rainbow::Reset(bool softReset)
@@ -1129,4 +1100,6 @@ void Rainbow::Serialize(Serializer& s)
 	SV(_chrFlash);
 
 	SV(_audio);
+
+	SerializeRomDiff(s, _orgPrgRom, &_orgChrRom);
 }

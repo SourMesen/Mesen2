@@ -58,7 +58,11 @@ void FdsLoader::AddGaps(vector<uint8_t>& diskSide, uint8_t* readBuffer, uint32_t
 				}
 				break;
 
-			default: return; //End parsing when we encounter an invalid block type (This is what Nestopia apppears to do)
+			default:
+				//Unexpected data, pretend the rest of the FDS file is on the disk as-is
+				diskSide.push_back(0x80);
+				diskSide.insert(diskSide.end(), &readBuffer[j], readBuffer+bufferSize);
+				return;
 		}
 
 		if(_useQdFormat) {
@@ -96,10 +100,10 @@ vector<uint8_t> FdsLoader::RebuildFdsFile(vector<vector<uint8_t>> diskData, bool
 		output.insert(output.end(), header, header + sizeof(header));
 	}
 
+	int sideCount = 0;
 	for(vector<uint8_t> &diskSide : diskData) {
 		bool inGap = true;
 		size_t i = 0, len = diskSide.size();
-		size_t gapNeeded = GetSideCapacity();
 		uint32_t fileSize = 0;
 		while(i < len) {
 			if(inGap) {
@@ -114,14 +118,27 @@ vector<uint8_t> FdsLoader::RebuildFdsFile(vector<vector<uint8_t>> diskData, bool
 					case 2: blockLength = 2; break; //File count
 					case 3: blockLength = 16; fileSize = diskSide[i + 13] + diskSide[i + 14] * 0x100;  break; //File header
 					case 4: blockLength = 1 + fileSize; break;
+					default:
+						//Invalid/non-standard data, use the rest of the disk data as-is
+						output.insert(output.end(), &diskSide[i], diskSide.data()+diskSide.size());
+						blockLength = 0;
+						break;
+				}
+
+				if(blockLength == 0) {
+					//Found non-standard data and copied the rest of the raw data, move to next disk
+					break;
 				}
 
 				if(_useQdFormat) {
 					blockLength += 2;
 				}
 
+				if(i + blockLength >= GetSideCapacity()) {
+					break;
+				}
+
 				output.insert(output.end(), &diskSide[i], &diskSide[i] + blockLength);
-				gapNeeded -= blockLength;
 				i += blockLength;
 
 				if(!_useQdFormat) {
@@ -131,7 +148,10 @@ vector<uint8_t> FdsLoader::RebuildFdsFile(vector<vector<uint8_t>> diskData, bool
 				inGap = true;
 			}
 		}
-		output.insert(output.end(), gapNeeded, 0);
+
+		//Force each side to be exactly the number of bytes expected by the format
+		sideCount++;
+		output.resize(sideCount * GetSideCapacity() + (needHeader ? 16 : 0));
 	}
 
 	return output;
@@ -145,8 +165,10 @@ void FdsLoader::LoadDiskData(vector<uint8_t>& romFile, vector<vector<uint8_t>>& 
 	if(hasHeader) {
 		numberOfSides = romFile[4];
 		fileOffset = 16;
+		romFile.resize(numberOfSides * GetSideCapacity() + 16);
 	} else {
 		numberOfSides = (uint8_t)(romFile.size() / GetSideCapacity());
+		romFile.resize(numberOfSides * GetSideCapacity());
 	}
 
 	for(uint32_t i = 0; i < numberOfSides; i++) {
@@ -155,7 +177,7 @@ void FdsLoader::LoadDiskData(vector<uint8_t>& romFile, vector<vector<uint8_t>>& 
 
 		diskHeaders.push_back(vector<uint8_t>(romFile.data() + fileOffset + 1, romFile.data() + fileOffset + 57));
 
-		AddGaps(fdsDiskImage, &romFile[fileOffset], (uint32_t)(romFile.size() - fileOffset));
+		AddGaps(fdsDiskImage, &romFile[fileOffset], GetSideCapacity());
 		fileOffset += GetSideCapacity();
 
 		//Ensure the image is at least the expected size of a disk

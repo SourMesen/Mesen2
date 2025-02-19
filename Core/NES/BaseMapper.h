@@ -187,6 +187,10 @@ protected:
 
 	virtual vector<MapperStateEntry> GetMapperStateEntries() { return {}; }
 
+	void LoadRomPatch(vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom = nullptr);
+	void SaveRom(vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom = nullptr);
+	void SerializeRomDiff(Serializer& s, vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom = nullptr);
+
 public:
 	static constexpr uint32_t NametableSize = 0x400;
 	

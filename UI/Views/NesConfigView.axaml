@@ -332,6 +332,7 @@
 						<c:CheckBoxWarning IsChecked="{Binding Config.EnableDmcSampleDuplicationGlitch}" Text="{l:Translate chkEnableDmcSampleDuplicationGlitch}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableGameGenieBusConflicts}" Text="{l:Translate chkDisableGameGenieBusConflicts}" />
 						<c:CheckBoxWarning IsChecked="{Binding Config.DisableFlashSaves}" Text="{l:Translate chkDisableFlashSaves}" />
+						<c:CheckBoxWarning IsChecked="{Binding Config.OverwriteOriginalRom}" Text="{l:Translate chkOverwriteOriginalRom}" />
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>

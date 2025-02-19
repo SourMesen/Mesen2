@@ -1255,3 +1255,95 @@ void BaseMapper::SwapMemoryAccess(BaseMapper* sub, bool mainHasAccess)
 	SetCpuMemoryMapping(0x6000, 0x7FFF, memory, 0, size, mainHasAccess ? MemoryAccessType::ReadWrite : MemoryAccessType::NoAccess);
 	sub->SetCpuMemoryMapping(0x6000, 0x7FFF, memory, 0, size, mainHasAccess ? MemoryAccessType::NoAccess : MemoryAccessType::ReadWrite);
 }
+
+void BaseMapper::LoadRomPatch(vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom)
+{
+	if(!_console->GetNesConfig().OverwriteOriginalRom) {
+		//Apply save data (saved as an IPS file), if found
+		vector<uint8_t> ipsData = _emu->GetBatteryManager()->LoadBattery(".ips");
+		if(!ipsData.empty()) {
+			vector<uint8_t> patchedPrgRom;
+			if(IpsPatcher::PatchBuffer(ipsData, orgPrgRom, patchedPrgRom)) {
+				memcpy(_prgRom, patchedPrgRom.data(), _prgSize);
+			}
+		}
+
+		if(_chrRomSize > 0 && orgChrRom) {
+			ipsData = _emu->GetBatteryManager()->LoadBattery(".chr.ips");
+			if(!ipsData.empty()) {
+				vector<uint8_t> patchedChrRom;
+				if(IpsPatcher::PatchBuffer(ipsData, *orgChrRom, patchedChrRom)) {
+					memcpy(_chrRom, patchedChrRom.data(), _chrRomSize);
+				}
+			}
+		}
+	}
+}
+
+void BaseMapper::SaveRom(vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom)
+{
+	if(_console->GetNesConfig().OverwriteOriginalRom) {
+		bool needUpdate = memcmp(orgPrgRom.data(), _prgRom, _prgSize) != 0;
+		if(_chrRomSize > 0 && orgChrRom) {
+			needUpdate |= memcmp(orgChrRom->data(), _chrRom, _chrRomSize) != 0;
+		}
+
+		if(needUpdate) {
+			ofstream file(_emu->GetRomInfo().RomFile, ios::binary);
+			if(!_romInfo.IsHeaderlessRom) {
+				file.write((char*)&_romInfo.Header, sizeof(NesHeader));
+			}
+			file.write((char*)_prgRom, _prgSize);
+			if(_chrRomSize > 0 && orgChrRom) {
+				file.write((char*)_chrRom, _chrRomSize);
+			}
+		}
+	} else {
+		vector<uint8_t> prgRom = vector<uint8_t>(_prgRom, _prgRom + _prgSize);
+		vector<uint8_t> ipsData = IpsPatcher::CreatePatch(orgPrgRom, prgRom);
+		if(ipsData.size() > 8) {
+			_emu->GetBatteryManager()->SaveBattery(".ips", ipsData.data(), (uint32_t)ipsData.size());
+		}
+
+		if(_chrRomSize > 0 && orgChrRom) {
+			vector<uint8_t> chrRom = vector<uint8_t>(_chrRom, _chrRom + _chrRomSize);
+			ipsData = IpsPatcher::CreatePatch(*orgChrRom, chrRom);
+			if(ipsData.size() > 8) {
+				_emu->GetBatteryManager()->SaveBattery(".chr.ips", ipsData.data(), (uint32_t)ipsData.size());
+			}
+		}
+	}
+}
+
+void BaseMapper::SerializeRomDiff(Serializer& s, vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom)
+{
+	if(s.IsSaving()) {
+		vector<uint8_t> prgRom = vector<uint8_t>(_prgRom, _prgRom + _prgSize);
+		vector<uint8_t> ipsData = IpsPatcher::CreatePatch(orgPrgRom, prgRom);
+		SVVector(ipsData);
+
+		if(_chrRomSize > 0 && orgChrRom) {
+			vector<uint8_t> chrRom = vector<uint8_t>(_chrRom, _chrRom + _chrRomSize);
+			vector<uint8_t> chrIpsData = IpsPatcher::CreatePatch(*orgChrRom, chrRom);
+			SVVector(chrIpsData);
+		}
+	} else {
+		vector<uint8_t> ipsData;
+		SVVector(ipsData);
+
+		vector<uint8_t> patchedPrgRom;
+		if(IpsPatcher::PatchBuffer(ipsData, orgPrgRom, patchedPrgRom)) {
+			memcpy(_prgRom, patchedPrgRom.data(), _prgSize);
+		}
+
+		if(_chrRomSize > 0 && orgChrRom) {
+			vector<uint8_t> chrIpsData;
+			SVVector(chrIpsData);
+
+			vector<uint8_t> patchedChrRom;
+			if(IpsPatcher::PatchBuffer(chrIpsData, *orgChrRom, patchedChrRom)) {
+				memcpy(_chrRom, patchedChrRom.data(), _chrRomSize);
+			}
+		}
+	}
+}
