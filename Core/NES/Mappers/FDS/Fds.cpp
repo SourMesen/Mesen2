@@ -72,7 +72,7 @@ void Fds::LoadDiskData(vector<uint8_t> ipsData)
 	_fdsDiskHeaders.clear();
 	
 	FdsLoader loader(_useQdFormat);
-	if(!_settings->OverwriteOriginalRom) {
+	if(_settings->OverwriteOriginalRom) {
 		loader.LoadDiskData(_fdsRawData, _fdsDiskSides, _fdsDiskHeaders);
 	} else {
 		vector<uint8_t> patchedData;
