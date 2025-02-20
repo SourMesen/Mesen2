@@ -976,6 +976,7 @@ void Emulator::InputBarcode(uint64_t barcode, uint32_t digitCount)
 	if(console) {
 		shared_ptr<IBarcodeReader> reader = console->GetControlManager()->GetControlDevice<IBarcodeReader>();
 		if(reader) {
+			auto lock = AcquireLock();
 			reader->InputBarcode(barcode, digitCount);
 		}
 	}
@@ -987,6 +988,7 @@ void Emulator::ProcessTapeRecorderAction(TapeRecorderAction action, string filen
 	if(console) {
 		shared_ptr<ITapeRecorder> recorder = console->GetControlManager()->GetControlDevice<ITapeRecorder>();
 		if(recorder) {
+			auto lock = AcquireLock();
 			recorder->ProcessTapeRecorderAction(action, filename);
 		}
 	}

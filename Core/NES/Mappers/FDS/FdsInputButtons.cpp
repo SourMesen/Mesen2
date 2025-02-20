@@ -59,11 +59,14 @@ void FdsInputButtons::OnAfterSetState()
 
 void FdsInputButtons::EjectDisk()
 {
+	auto lock = _emu->AcquireLock();
 	_needEjectDisk = true;
 }
 
 void FdsInputButtons::InsertDisk(uint8_t diskNumber)
 {
+	auto lock = _emu->AcquireLock();
+
 	if(diskNumber >= _sideCount) {
 		return;
 	}
@@ -85,9 +88,8 @@ void FdsInputButtons::SwitchDiskSide()
 {
 	if(!_fds->IsAutoInsertDiskEnabled()) {
 		if(_fds->IsDiskInserted()) {
-			_emu->Pause();
+			auto lock = _emu->AcquireLock();
 			InsertDisk((_fds->GetCurrentDisk() ^ 0x01) % _fds->GetSideCount());
-			_emu->Resume();
 		}
 	}
 }
@@ -95,9 +97,8 @@ void FdsInputButtons::SwitchDiskSide()
 void FdsInputButtons::InsertNextDisk()
 {
 	if(!_fds->IsAutoInsertDiskEnabled()) {
-		_emu->Pause();
+		auto lock = _emu->AcquireLock();
 		InsertDisk(((_fds->GetCurrentDisk() & 0xFE) + 2) % _fds->GetSideCount());
-		_emu->Resume();
 	}
 }
 

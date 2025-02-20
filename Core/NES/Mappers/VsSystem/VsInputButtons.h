@@ -80,18 +80,16 @@ public:
 	void InsertCoin(uint8_t port)
 	{
 		if(port < 4) {
-			_emu->Pause();
+			auto lock = _emu->AcquireLock();
 			_needInsertCoin[port] = VsInputButtons::InsertCoinFrameCount;
 			MessageManager::DisplayMessage("VS System", "CoinInsertedSlot", std::to_string(port + 1));
-			_emu->Resume();
 		}
 	}
 
 	void SetServiceButtonState(int consoleId, bool pressed)
 	{
-		_emu->Pause();
+		auto lock = _emu->AcquireLock();
 		_needServiceButton[consoleId] = pressed;
-		_emu->Resume();
 	}
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override
