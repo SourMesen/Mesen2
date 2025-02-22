@@ -136,9 +136,14 @@
 		<Setter Property="Template">
 			<ControlTemplate>
 				<DockableControl TrackingMode="Visible">
-					<ItemsControl ItemsSource="{ReflectionBinding VisibleDockables}">
+					<!--
+						Use name to restrict style, otherwise it gets applied further down the tree
+						and causes exceptions when trying to bind the values (including in tooltips
+						attached to a control in the dock control)
+					-->
+					<ItemsControl ItemsSource="{ReflectionBinding VisibleDockables}" Name="DockItemsControl">
 						<ItemsControl.Styles>
-							<Style Selector="ItemsControl > ContentPresenter">
+							<Style Selector="ItemsControl#DockItemsControl > ContentPresenter">
 								<Setter x:DataType="core:IDock" Property="(ProportionalStackPanel.Proportion)" Value="{Binding Proportion}" />
 
 								<!-- prevent error in binding -->

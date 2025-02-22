@@ -1,19 +1,15 @@
-﻿using Avalonia.Data;
-using Dock.Avalonia.Controls;
-using Dock.Model;
+﻿using Dock.Avalonia.Controls;
 using Dock.Model.Core;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.ViewModels.DebuggerDock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dock.Model.Controls;
 using Mesen.Debugger.StatusViews;
-using Mesen.Debugger.Controls;
 using Dock.Model.Mvvm;
 using Dock.Model.Mvvm.Controls;
+using Dock.Model.Mvvm.Core;
 
 namespace Mesen.Debugger
 {
@@ -81,7 +77,7 @@ namespace Mesen.Debugger
 								Proportion = 0.60,
 								VisibleDockables = CreateList<IDockable>(DisassemblyTool, SourceViewTool)
 							},
-							new ProportionalDockSplitter(),
+							new MesenProportionalDockSplitter(),
 							new ProportionalDock {
 								Proportion = 0.40,
 								Orientation = Orientation.Vertical,
@@ -90,7 +86,7 @@ namespace Mesen.Debugger
 										Proportion = 0.5,
 										VisibleDockables = CreateList<IDockable>(StatusTool)
 									},
-									new ProportionalDockSplitter(),
+									new MesenProportionalDockSplitter(),
 									new ToolDock {
 										Proportion = 0.5,
 										VisibleDockables = CreateList<IDockable>(LabelListTool, FunctionListTool, FindResultListTool, ControllerListTool)
@@ -99,7 +95,7 @@ namespace Mesen.Debugger
 							}
 						)
 					},
-					new ProportionalDockSplitter(),
+					new MesenProportionalDockSplitter(),
 					new ProportionalDock {
 						Proportion = 0.25,
 						Orientation = Orientation.Horizontal,
@@ -108,12 +104,12 @@ namespace Mesen.Debugger
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(WatchListTool)
 							},
-							new ProportionalDockSplitter(),
+							new MesenProportionalDockSplitter(),
 							new ToolDock {
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(BreakpointListTool)
 							},
-							new ProportionalDockSplitter(),
+							new MesenProportionalDockSplitter(),
 							new ToolDock {
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(CallStackTool)
@@ -132,7 +128,7 @@ namespace Mesen.Debugger
 
 		public override IProportionalDockSplitter CreateProportionalDockSplitter()
 		{
-			return new ProportionalDockSplitter();
+			return new MesenProportionalDockSplitter();
 		}
 
 		public override void InitLayout(IDockable layout)
@@ -152,7 +148,7 @@ namespace Mesen.Debugger
 		public DockEntryDefinition ToDockDefinition(IDockable dockable)
 		{
 			DockEntryDefinition entry = new();
-			if(dockable is ProportionalDockSplitter) {
+			if(dockable is MesenProportionalDockSplitter) {
 				entry.Type = DockEntryType.Splitter;
 			} else if(dockable is IDock dock) {
 				if(dock is IRootDock) {
@@ -266,4 +262,9 @@ namespace Mesen.Debugger
 		public int SelectedIndex { get; set; } = 0;
 		public List<DockEntryDefinition>? Children { get; set; }
 	}
+}
+
+public class MesenProportionalDockSplitter : DockBase, IProportionalDockSplitter
+{
+	//The regular ProportionalDockSplitter in Dock.Model.Mvvm.Controls inherits from DockableBase, which causes an exception when styles are applied
 }
