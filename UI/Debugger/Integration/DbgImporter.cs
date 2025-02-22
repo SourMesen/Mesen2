@@ -850,6 +850,11 @@ namespace Mesen.Debugger.Integration
 				int prgAddress = GetPrgAddress(span);
 				if(prgAddress >= 0 && prgAddress < prgSize) {
 					for(int i = 0; i < span.Size; i++) {
+						if(prgAddress + i >= prgSize) {
+							//Prevent crash if invalid data exists in the dbg file
+							break;
+						}
+
 						if(cdlFile[prgAddress + i] != (byte)CdlFlags.Data && !span.IsData && span.Size <= 4) {
 							byte opCode = prgRomContent[prgAddress];
 							cdlFile[prgAddress + i] = (byte)(CdlFlags.Code | GetOpFlags(opCode, span.Size));
