@@ -13,7 +13,6 @@ private:
 	GbaWaveState _state = {};
 	GbaApu* _apu = nullptr;
 	GbaConsole* _console = nullptr;
-	bool _allowRamAccess = false;
 	void UpdateOutput();
 
 public:
