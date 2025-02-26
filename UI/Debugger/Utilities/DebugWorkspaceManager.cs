@@ -282,6 +282,8 @@ namespace Mesen.Debugger.Utilities
 
 			LabelManager.ResetLabels();
 			BreakpointManager.ClearBreakpoints();
+			WatchManager.ClearEntries();
+
 			if(dbgWorkspace.WorkspaceByCpu.Count == 0) {
 				DefaultLabelHelper.SetDefaultLabels();
 			} else {

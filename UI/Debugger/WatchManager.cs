@@ -37,6 +37,13 @@ namespace Mesen.Debugger
 			return manager;
 		}
 
+		public static void ClearEntries()
+		{
+			foreach(WatchManager wm in _watchManagers.Values) {
+				wm.WatchEntries = new();
+			}
+		}
+
 		public WatchManager(CpuType cpuType)
 		{
 			_cpuType = cpuType;
