@@ -171,7 +171,7 @@ uint32_t SmsEventManager::TakeEventSnapshot(bool forAutoRefresh)
 	uint16_t cycle = _vdp->GetCycle();
 	uint16_t scanline = _vdp->GetScanline();
 
-	if(scanline >= _vdp->GetState().VisibleScanlineCount || scanline == 0) {
+	if(scanline >= _vdp->GetState().VisibleScanlineCount || (forAutoRefresh && (scanline == 0 && cycle == 0))) {
 		memcpy(_ppuBuffer, _vdp->GetScreenBuffer(false), 256 * 240 * sizeof(uint16_t));
 	} else {
 		uint32_t offset = 256 * scanline;
@@ -203,7 +203,7 @@ void SmsEventManager::DrawScreen(uint32_t* buffer)
 	for(uint32_t y = 0, len = _visibleScanlineCount * 2; y < len; y++) {
 		for(uint32_t x = 0; x < 256*2; x++) {
 			int srcOffset = (y >> 1) * 256 + (x >> 1);
-			buffer[y*SmsEventManager::ScanlineWidth + x + 26] = ColorUtilities::Rgb555ToArgb(src[srcOffset]);
+			buffer[y*SmsEventManager::ScanlineWidth + x + SmsVdp::SmsVdpLeftBorder * 2] = ColorUtilities::Rgb555ToArgb(src[srcOffset]);
 		}
 	}
 }

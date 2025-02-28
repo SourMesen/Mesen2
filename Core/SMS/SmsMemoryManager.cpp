@@ -65,11 +65,13 @@ void SmsMemoryManager::Init(Emulator* emu, SmsConsole* console, vector<uint8_t>&
 			_state.CardEnabled = true;
 		} else {
 			_state.CartridgeEnabled = true;
-		}
-		memset(_workRam, 0, _workRamSize);
 
-		//default value for $3E that some games expect after bios runs
-		_workRam[0] = _model == SmsModel::GameGear ? 0xA8 : 0xAB;
+			//Setup work ram to match SMS' post-bios state
+			memset(_workRam, 0, _workRamSize);
+
+			//default value for $3E that some games expect after bios runs
+			_workRam[0] = _model == SmsModel::GameGear ? 0xA8 : 0xAB;
+		}
 	}
 
 	if(_model == SmsModel::GameGear) {

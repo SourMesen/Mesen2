@@ -87,7 +87,7 @@ struct SmsVdpState : public BaseState
 	uint8_t CodeReg;
 	bool ControlPortMsbToggle;
 
-	uint8_t ReadBuffer;
+	uint8_t VramBuffer;
 	uint8_t PaletteLatch;
 	uint8_t HCounterLatch;
 

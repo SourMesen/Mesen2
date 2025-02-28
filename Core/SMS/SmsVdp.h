@@ -11,10 +11,21 @@ class SmsCpu;
 class SmsControlManager;
 class SmsMemoryManager;
 
+enum class SmsVdpMemAccess : uint8_t
+{
+	None = 0,
+	BgLoadTable = 1,
+	BgLoadTile = 2,
+	SpriteEval = 3,
+	SpriteLoadTable = 4,
+	SpriteLoadTile = 5,
+	CpuSlot = 6
+};
+
 class SmsVdp final : public ISerializable
 {
 public:
-	static constexpr int SmsVdpLeftBorder = 13;
+	static constexpr int SmsVdpLeftBorder = 8;
 
 private:
 	Emulator* _emu = nullptr;
@@ -63,18 +74,28 @@ private:
 	struct SpriteShifter
 	{
 		uint8_t TileData[4] = {};
+		uint16_t TileAddr = 0;
 		int16_t SpriteX = 0;
+		uint8_t SpriteRow = 0;
+		bool HardwareSprite = false;
 	};
 
+	uint8_t _evalCounter = 0;
+	uint8_t _inRangeSpriteCount = 0;
+	bool _spriteOverflowPending = false;
+	
+	uint8_t _spriteIndex = 0;
+	uint8_t _inRangeSpriteIndex = 0;
 	uint8_t _spriteCount = 0;
+	uint8_t _inRangeSprites[64] = {};
 	SpriteShifter _spriteShifters[64];
 
 	uint8_t _paletteRam[0x40] = {};
 	uint16_t _scanlineCount = 262;
 	ConsoleRegion _region = ConsoleRegion::Ntsc;
 
-	uint8_t _writeBuffer = 0;
 	SmsVdpWriteType _writePending = SmsVdpWriteType::None;
+	bool _readPending = false;
 
 	bool _latchRequest = false;
 	uint8_t _latchPos = 0;
@@ -87,35 +108,55 @@ private:
 	uint8_t _bgPatternData = 0;
 	uint8_t _textModeStep = 0;
 
+	SmsVdpMemAccess _memAccess[342] = {};
+
 	void UpdateIrqState();
 
 	void UpdateDisplayMode();
 
 	uint8_t ReadVerticalCounter();
 
+	__forceinline uint8_t ReadVram(uint16_t addr, SmsVdpMemAccess type);
+	__forceinline void WriteVram(uint16_t addr, uint8_t value, SmsVdpMemAccess type);
+
+	void DebugProcessMemoryAccessView();
+	__forceinline void ProcessVramAccess();
+	void ProcessVramWrite();
+
 	uint8_t ReverseBitOrder(uint8_t val);
 	
 	__forceinline void Exec();
-	__forceinline void ProcessVramWrite();
-	__forceinline int GetVisiblePixelIndex();
+	__forceinline void ExecForcedBlank();
+	__forceinline void ProcessForcedBlankVblank();
+
+	int GetVisiblePixelIndex();
 	__forceinline void LoadBgTilesSms();
 	void LoadBgTilesSg();
 	void LoadBgTilesSgTextMode();
-	__forceinline void PushBgPixel(uint8_t color, int index);
+	void PushBgPixel(uint8_t color, int index);
+	
 	__forceinline void DrawPixel();
-	__forceinline void ProcessScanlineEvents();
+
+	void ProcessScanlineEvents();
+	void ProcessEndOfScanline();
+
+	__forceinline void ProcessSpriteEvaluation();
+
+	uint16_t GetSmsSpriteTileAddr(uint8_t sprTileIndex, uint8_t spriteRow, uint8_t i);
+	void LoadSpriteTilesSms();
+	void LoadExtraSpritesSms();
 	__forceinline uint16_t GetPixelColor();
+
+	void LoadSpriteTilesSg();
+	void LoadExtraSpritesSg();
+	void ShiftSprite(uint8_t sprIndex);
+	void ShiftSpriteSg(uint8_t sprIndex);
+
+	__forceinline bool IsZoomedSpriteAllowed(int spriteIndex);
 
 	void WriteRegister(uint8_t reg, uint8_t value);
 	void WriteSmsPalette(uint8_t addr, uint8_t value);
 	void WriteGameGearPalette(uint8_t addr, uint16_t value);
-
-	void LoadSpritesSms();
-	void LoadSpritesSg();
-	void ShiftSprite(uint8_t sprIndex);
-	void ShiftSpriteSg(uint8_t sprIndex);
-
-	bool IsZoomedSpriteAllowed(int spriteIndex);
 
 	void InitSmsPostBiosState();
 	void InitGgPowerOnState();

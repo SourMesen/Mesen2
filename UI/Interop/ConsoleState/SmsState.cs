@@ -75,7 +75,7 @@ public struct SmsVdpState : BaseState
 	public byte CodeReg;
 	[MarshalAs(UnmanagedType.I1)] public bool ControlPortMsbToggle;
 
-	public byte ReadBuffer;
+	public byte VramBuffer;
 	public byte PaletteLatch;
 	public byte HCounterLatch;
 

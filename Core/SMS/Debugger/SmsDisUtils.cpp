@@ -24,10 +24,10 @@ constexpr const char* _opTemplate[256] = {
 	"SUB B",		"SUB C",		"SUB D",			"SUB E",		"SUB y",			"SUB z",		"SUB x",		"SUB A",		"SBC A, B",		"SBC A, C",		"SBC A, D",		"SBC A, E",	"SBC A, y",	"SBC A, z",	"SBC A, x",	"SBC A, A",
 	"AND B",		"AND C",		"AND D",			"AND E",		"AND y",			"AND z",		"AND x",		"AND A",		"XOR B",			"XOR C",			"XOR D",			"XOR E",		"XOR y",		"XOR z",		"XOR x",		"XOR A",
 	"OR B",		"OR C",		"OR D",			"OR E",		"OR y",			"OR z",		"OR x",		"OR A",		"CP B",			"CP C",			"CP D",			"CP E",		"CP y",		"CP z",		"CP x",		"CP A",
-	"RET NZ",	"POP BC",	"JP NZ, a",		"JP a",		"CALL NZ, a",	"PUSH BC",	"ADD A, d",	"RST 00H",	"RET Z",			"RET",			"JP Z, a",		"PREFIX_CB","CALL Z, a","CALL a",	"ADC A, d",	"RST 08H",
-	"RET NC",	"POP DE",	"JP NC, a",		"OUT (p), A","CALL NC, a",	"PUSH DE",	"SUB d",		"RST 10H",	"RET C",			"EXX",			"JP C, a",		"IN A, (p)","CALL C, a","PREFIX_DD","SBC A, d",	"RST 18H",
-	"RET PO",	"POP w",		"JP PO, a",		"EX (SP), w","CALL PO, a",	"PUSH w",	"AND d",		"RST 20H",	"RET PE",		"JP w",			"JP PE, a",		"EX DE, w",	"CALL PE, a","PREFIX_ED","XOR d",	"RST 28H",
-	"RET P",		"POP AF",	"JP P, a",		"DI",			"CALL P, a",	"PUSH AF",	"OR d",		"RST 30H",	"RET M",			"LD SP, w",		"JP M, a",		"EI",			"CALL M, a","PREFIX_FD","CP d",		"RST 38H"
+	"RET NZ",	"POP BC",	"JP NZ, a",		"JP a",		"CALL NZ, a",	"PUSH BC",	"ADD A, d",	"RST $00",	"RET Z",			"RET",			"JP Z, a",		"PREFIX_CB","CALL Z, a","CALL a",	"ADC A, d",	"RST $08",
+	"RET NC",	"POP DE",	"JP NC, a",		"OUT (p), A","CALL NC, a",	"PUSH DE",	"SUB d",		"RST $10",	"RET C",			"EXX",			"JP C, a",		"IN A, (p)","CALL C, a","PREFIX_DD","SBC A, d",	"RST $18",
+	"RET PO",	"POP w",		"JP PO, a",		"EX (SP), w","CALL PO, a",	"PUSH w",	"AND d",		"RST $20",	"RET PE",		"JP w",			"JP PE, a",		"EX DE, w",	"CALL PE, a","PREFIX_ED","XOR d",	"RST $28",
+	"RET P",		"POP AF",	"JP P, a",		"DI",			"CALL P, a",	"PUSH AF",	"OR d",		"RST $30",	"RET M",			"LD SP, w",		"JP M, a",		"EI",			"CALL M, a","PREFIX_FD","CP d",		"RST $38"
 };
 
 constexpr const char* _cbTemplate[256] = {

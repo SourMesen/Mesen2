@@ -12,9 +12,21 @@ SmsVdpTools::SmsVdpTools(Debugger* debugger, Emulator *emu, SmsConsole* console)
 	_console = console;
 }
 
+void SmsVdpTools::SetMemoryAccessData(uint16_t scanline, SmsVdpMemAccess* data, uint16_t scanlineCount)
+{
+	_scanlineCount = scanlineCount;
+	memcpy(_memAccess + scanline * 342, data, 342);
+}
+
 FrameInfo SmsVdpTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
 {
 	SmsVdpState& state = (SmsVdpState&)baseState;
+
+	if(options.Layer == 1) {
+		//Mem accesses
+		return { 342, _scanlineCount };
+	}
+
 	bool isTextMode = !state.UseMode4 && state.M1_Use224LineMode;
 	return { isTextMode ? 240u : 256u, state.NametableHeight };
 }
@@ -22,6 +34,31 @@ FrameInfo SmsVdpTools::GetTilemapSize(GetTilemapOptions options, BaseState& base
 DebugTilemapInfo SmsVdpTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, BaseState& ppuToolsState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	SmsVdpState& state = (SmsVdpState&)baseState;
+
+	if(options.Layer == 1) {
+		//Mem accesses
+		DebugTilemapInfo result = {};
+		result.TileHeight = 1;
+		result.TileWidth = 1;
+		result.RowCount = _scanlineCount;
+		result.ColumnCount = 342;
+		result.Bpp = 8;
+		result.Format = TileFormat::DirectColor;
+		for(int i = 0, len = (int)(result.RowCount * result.ColumnCount); i < len; i+=2) {
+			switch(_memAccess[i]) {
+				case SmsVdpMemAccess::None: outBuffer[i] = 0xFF606060; break;
+				case SmsVdpMemAccess::BgLoadTable: outBuffer[i] = 0xFF00FF00; break;
+				case SmsVdpMemAccess::BgLoadTile: outBuffer[i] = 0xFF0000FF; break;
+				case SmsVdpMemAccess::SpriteEval: outBuffer[i] = 0xFFFF0000; break;
+				case SmsVdpMemAccess::SpriteLoadTable: outBuffer[i] = 0xFF00E080; break;
+				case SmsVdpMemAccess::SpriteLoadTile: outBuffer[i] = 0xFF0080E0; break;
+				case SmsVdpMemAccess::CpuSlot: outBuffer[i] = 0xFFA0A0A0; break;
+			}
+
+			outBuffer[i + 1] = outBuffer[i];
+		}
+		return result;
+	}
 
 	bool isGameGear = _console->GetModel() == SmsModel::GameGear;
 	bool isTextMode = !state.UseMode4 && state.M1_Use224LineMode;
@@ -154,7 +191,7 @@ DebugTilemapTileInfo SmsVdpTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	DebugTilemapTileInfo result = {};
 
 	FrameInfo size = GetTilemapSize(options, baseState);
-	if(x >= size.Width || y >= size.Height) {
+	if(x >= size.Width || y >= size.Height || options.Layer == 1) {
 		return result;
 	}
 

@@ -14,6 +14,7 @@
 #include "Shared/ColorUtilities.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/RandomHelper.h"
+#include "Debugger/SmsVdpTools.h"
 
 void SmsVdp::Init(Emulator* emu, SmsConsole* console, SmsCpu* cpu, SmsControlManager* controlManager, SmsMemoryManager* memoryManager)
 {
@@ -35,6 +36,9 @@ void SmsVdp::Init(Emulator* emu, SmsConsole* console, SmsCpu* cpu, SmsControlMan
 	//Unsure what the proper fix for this is (R is supposed to be 0 at reset based on the Z80 datasheet)
 	_state.Scanline = RandomHelper::GetValue(0, 200);
 	_state.VCounter = _state.Scanline;
+
+	//Offset VDP from CPU clock - passes VDPTest "HCounter correct"
+	_state.Cycle = 1;
 
 	_videoRam = new uint8_t[0x4000];
 	console->InitializeRam(_videoRam, 0x4000);
@@ -97,12 +101,20 @@ void SmsVdp::UpdateConfig()
 
 void SmsVdp::UpdateIrqState()
 {
-	if(_state.VerticalBlankIrqPending && _state.EnableVerticalBlankIrq && _model != SmsModel::ColecoVision) {
-		_cpu->SetIrqSource(SmsIrqSource::Vdp);
+	if(_state.VerticalBlankIrqPending && _state.EnableVerticalBlankIrq) {
+		if(_model == SmsModel::ColecoVision) {
+			_cpu->SetNmiLevel(true);
+		} else {
+			_cpu->SetIrqSource(SmsIrqSource::Vdp);
+		}
 	} else if(_state.ScanlineIrqPending && _state.EnableScanlineIrq) {
 		_cpu->SetIrqSource(SmsIrqSource::Vdp);
 	} else {
-		_cpu->ClearIrqSource(SmsIrqSource::Vdp);
+		if(_model == SmsModel::ColecoVision) {
+			_cpu->SetNmiLevel(false);
+		} else {
+			_cpu->ClearIrqSource(SmsIrqSource::Vdp);
+		}
 	}
 }
 
@@ -154,54 +166,83 @@ uint8_t SmsVdp::ReadVerticalCounter()
 
 void SmsVdp::Exec()
 {
-	if(_state.RenderingEnabled) {
-		if(_state.Scanline < _state.VisibleScanlineCount) {
-			if(_writePending != SmsVdpWriteType::None) {
-				switch(_state.Cycle - 5) {
-					case 256: case 258: case 260: case 262:
-					case 288: case 290: case 292: case 294: case 296:
-					case 322: case 324:
-						//external access slots during hblank, timing might be slightly off
-						ProcessVramWrite();
-						break;
-				}
-			}
-
-			if(_state.Cycle < 256 + SmsVdp::SmsVdpLeftBorder) {
-				if(_state.Cycle >= 5 && _state.Cycle < 261) {
+	uint16_t cyc = _state.Cycle;
+	if(!_state.RenderingEnabled) {
+		ExecForcedBlank();
+	} else if(cyc < 256 + SmsVdp::SmsVdpLeftBorder) {
+		//0 to 263 - left border + draw screen
+		bool visibleScanline = _state.Scanline < _state.VisibleScanlineCount;
+		if(visibleScanline || _state.VCounter == 0 || _state.VCounter == _scanlineCount - 1) {
+			if(cyc < 256) {
+				//0 to 255 - load BG tiles (+ sprite eval for remaining sprites)
+				if(visibleScanline) {
 					if(_state.UseMode4) {
 						LoadBgTilesSms();
 					} else {
 						LoadBgTilesSg();
 					}
+				} else {
+					if((cyc & 0x07) == 2 && (cyc & 0x18)) {
+						ProcessSpriteEvaluation();
+						if(_state.UseMode4) {
+							ProcessSpriteEvaluation();
+						}
+					}
 				}
-				if(_state.Cycle >= SmsVdp::SmsVdpLeftBorder) {
-					DrawPixel();
-				}
-			} else if(_state.Cycle >= 317) {
-				ProcessScanlineEvents();
 			}
-		} else {
-			if(_writePending != SmsVdpWriteType::None && !(_state.Cycle & 0x01)) {
-				//external access slots every other cycle in vblank
-				ProcessVramWrite();
-			}
-			if(_state.Cycle >= 317) {
-				ProcessScanlineEvents();
-			}
-		}
-	} else {
-		if(_writePending != SmsVdpWriteType::None && !(_state.Cycle & 0x01)) {
-			//external access slots every other cycle while rendering is disabled
-			ProcessVramWrite();
-		}
-		
-		if(_state.Cycle < 256 + SmsVdp::SmsVdpLeftBorder) {
-			if(_state.Scanline < _state.VisibleScanlineCount && _state.Cycle >= SmsVdp::SmsVdpLeftBorder) {
+
+			if(visibleScanline && cyc >= SmsVdp::SmsVdpLeftBorder) {
+				//8 to 263 - draw screen
 				DrawPixel();
 			}
-		} else if(_state.Cycle >= 317) {
+
+			if(!(cyc & 0x01) && _memAccess[cyc] == SmsVdpMemAccess::None) {
+				//Unused slots are available for the CPU to read/write data
+				ProcessVramAccess();
+			}
+		} else {
+			ProcessForcedBlankVblank();
+		}
+	} else if(cyc < 326) {
+		//Cycles 264 - 325 - load sprite tiles (hblank)
+		if(_state.Scanline < _state.VisibleScanlineCount || _state.VCounter == 0 || _state.Scanline == _scanlineCount - 1) {
+			if(_state.UseMode4) {
+				LoadSpriteTilesSms();
+			} else {
+				LoadSpriteTilesSg();
+			}
+		}
+
+		if(!(cyc & 0x01) && _memAccess[cyc] == SmsVdpMemAccess::None) {
+			//Unused slots are available for the CPU to read/write data
+			ProcessVramAccess();
+		}
+
+		if(cyc >= 313) {
 			ProcessScanlineEvents();
+		}
+	} else {
+		//326-341 - sprite evaluation (first 8/16 sprites) (hblank)
+		if(!(cyc & 0x01)) {
+			if(_state.Scanline < _state.VisibleScanlineCount || _state.VCounter == 0 || _state.VCounter == _scanlineCount - 1) {
+				if(cyc == 326) {
+					_evalCounter = 0;
+					_inRangeSpriteCount = 0;
+					memset(_inRangeSprites, 0, sizeof(_inRangeSprites));
+				}
+
+				ProcessSpriteEvaluation();
+				if(_state.UseMode4) {
+					ProcessSpriteEvaluation();
+				}
+			}
+		
+			if(_memAccess[cyc] == SmsVdpMemAccess::None) {
+				//Unused slots are available for the CPU to read/write data
+				ProcessVramAccess();
+			}
+		} else if(cyc == 341) {
+			ProcessEndOfScanline();
 		}
 	}
 
@@ -210,14 +251,94 @@ void SmsVdp::Exec()
 	_emu->ProcessPpuCycle<CpuType::Sms>();
 }
 
+void SmsVdp::ExecForcedBlank()
+{
+	uint16_t cyc = _state.Cycle;
+	ProcessForcedBlankVblank();
+
+	if(cyc >= SmsVdp::SmsVdpLeftBorder && cyc < 256 + SmsVdp::SmsVdpLeftBorder) {
+		if(_state.Scanline < _state.VisibleScanlineCount) {
+			DrawPixel();
+		}
+	} else if(cyc == 341) {
+		ProcessEndOfScanline();
+	} else if(cyc >= 313) {
+		ProcessScanlineEvents();
+	}
+}
+
+void SmsVdp::ProcessForcedBlankVblank()
+{
+	//When rendering is disabled (or during vblank), sprite eval runs every other slot (when in mode 4 only)
+	uint16_t cyc = _state.Cycle;
+	if(cyc < 256) {
+		if(_state.UseMode4) {
+			if(cyc == 0 || _evalCounter >= 0x40) {
+				_evalCounter = 0;
+				_inRangeSpriteCount = 0;
+				memset(_inRangeSprites, 0, sizeof(_inRangeSprites));
+			}
+
+			if((cyc & 0x03) == 0) {
+				ProcessSpriteEvaluation();
+				ProcessSpriteEvaluation();
+			}
+		} else {
+			//Outside of mode 4, the VDP fetches NT entries every other slot
+			//This is not emulated (and shouldn't impact emulation)
+		}
+
+		if((cyc & 0x03) == 2) {
+			//Unused slots are available for the CPU to read/write data
+			ProcessVramAccess();
+		}
+	} else {
+		if(!(cyc & 0x01)) {
+			//Unused slots are available for the CPU to read/write data
+			ProcessVramAccess();
+		}
+	}
+}
+
+uint8_t SmsVdp::ReadVram(uint16_t addr, SmsVdpMemAccess type)
+{
+	_memAccess[_state.Cycle] = type;
+	return _videoRam[addr];
+}
+
+void SmsVdp::WriteVram(uint16_t addr, uint8_t value, SmsVdpMemAccess type)
+{
+	_memAccess[_state.Cycle] = type;
+	_videoRam[addr] = value;
+}
+
+void SmsVdp::DebugProcessMemoryAccessView()
+{
+	//Store memory access buffer in ppu tools to display in tilemap viewer
+	SmsVdpTools* ppuTools = ((SmsVdpTools*)_emu->InternalGetDebugger()->GetPpuTools(CpuType::Sms));
+	ppuTools->SetMemoryAccessData(_state.Scanline, _memAccess, _scanlineCount);
+}
+
+void SmsVdp::ProcessVramAccess()
+{
+	_memAccess[_state.Cycle] = SmsVdpMemAccess::CpuSlot;
+	if(_writePending != SmsVdpWriteType::None) {
+		ProcessVramWrite();
+	} else if(_readPending) {
+		_readPending = false;
+		_state.VramBuffer = _videoRam[_state.AddressReg];
+		_state.AddressReg = (_state.AddressReg + 1) & 0x3FFF;
+	}
+}
+
 void SmsVdp::ProcessVramWrite()
 {
 	if(_writePending == SmsVdpWriteType::Palette) {
-		_emu->ProcessPpuWrite<CpuType::Sms>(_state.AddressReg & 0x1F, _writeBuffer, MemoryType::SmsPaletteRam);
-		WriteSmsPalette(_state.AddressReg & 0x1F, _writeBuffer);
+		_emu->ProcessPpuWrite<CpuType::Sms>(_state.AddressReg & 0x1F, _state.VramBuffer, MemoryType::SmsPaletteRam);
+		WriteSmsPalette(_state.AddressReg & 0x1F, _state.VramBuffer);
 	} else {
-		_emu->ProcessPpuWrite<CpuType::Sms>(_state.AddressReg, _writeBuffer, MemoryType::SmsVideoRam);
-		_videoRam[_state.AddressReg] = _writeBuffer;
+		_emu->ProcessPpuWrite<CpuType::Sms>(_state.AddressReg, _state.VramBuffer, MemoryType::SmsVideoRam);
+		WriteVram(_state.AddressReg, _state.VramBuffer, SmsVdpMemAccess::CpuSlot);
 	}
 	_state.AddressReg = (_state.AddressReg + 1) & 0x3FFF;
 	_writePending = SmsVdpWriteType::None;
@@ -230,7 +351,7 @@ int SmsVdp::GetVisiblePixelIndex()
 
 void SmsVdp::LoadBgTilesSms()
 {
-	uint16_t cycle = _state.Cycle - 5;
+	uint16_t cycle = _state.Cycle;
 	switch(cycle & 0x07) {
 		case 0: {
 			uint8_t x;
@@ -242,7 +363,7 @@ void SmsVdp::LoadBgTilesSms()
 
 			uint16_t y = cycle >= 192 && _state.VerticalScrollLock ? _state.Scanline : _bgOffsetY;
 			uint16_t ntAddr = (_state.EffectiveNametableAddress + ((x / 8) + (y / 8) * 32) * 2) & _state.NametableAddressMask;
-			uint16_t ntData = _videoRam[ntAddr] | (_videoRam[ntAddr + 1] << 8);
+			uint16_t ntData = ReadVram(ntAddr, SmsVdpMemAccess::BgLoadTable) | (ReadVram(ntAddr + 1, SmsVdpMemAccess::BgLoadTable) << 8);
 
 			bool vMirror = ntData & 0x400;
 			uint16_t tileIndex = ntData & 0x1FF;
@@ -256,24 +377,20 @@ void SmsVdp::LoadBgTilesSms()
 		}
 
 		case 2:
-			if(_state.Cycle & 0x18) {
-				//sprite evaluation (read Y pos)
-			} else {
-				//external slot
-				if(_writePending != SmsVdpWriteType::None) {
-					ProcessVramWrite();
-				}
+			if(cycle & 0x18) {
+				ProcessSpriteEvaluation();
+				ProcessSpriteEvaluation();
 			}
 			break;
 
 		case 4: {
 			uint16_t addr = _revision == SmsRevision::Sms1 ? ((_bgTileAddr & _state.ColorTableAddress) | (_bgTileAddr & 0x3F)) : _bgTileAddr;
 			if(_bgHorizontalMirror) {
-				_bgShifters[0] |= ReverseBitOrder(_videoRam[addr]) << (16 - _pixelsAvailable);
-				_bgShifters[1] |= ReverseBitOrder(_videoRam[addr + 1]) << (16 - _pixelsAvailable);
+				_bgShifters[0] |= ReverseBitOrder(ReadVram(addr, SmsVdpMemAccess::BgLoadTile)) << (16 - _pixelsAvailable);
+				_bgShifters[1] |= ReverseBitOrder(ReadVram(addr+1, SmsVdpMemAccess::BgLoadTile)) << (16 - _pixelsAvailable);
 			} else {
-				_bgShifters[0] |= _videoRam[addr] << (16 - _pixelsAvailable);
-				_bgShifters[1] |= _videoRam[addr + 1] << (16 - _pixelsAvailable);
+				_bgShifters[0] |= ReadVram(addr, SmsVdpMemAccess::BgLoadTile) << (16 - _pixelsAvailable);
+				_bgShifters[1] |= ReadVram(addr+1, SmsVdpMemAccess::BgLoadTile) << (16 - _pixelsAvailable);
 			}
 			break;
 		}
@@ -281,11 +398,11 @@ void SmsVdp::LoadBgTilesSms()
 		case 6: {
 			uint16_t addr = _revision == SmsRevision::Sms1 ? ((_bgTileAddr & _state.BgPatternTableAddress) | (_bgTileAddr & 0x7FF)) : _bgTileAddr;
 			if(_bgHorizontalMirror) {
-				_bgShifters[2] |= ReverseBitOrder(_videoRam[addr + 2]) << (16 - _pixelsAvailable);
-				_bgShifters[3] |= ReverseBitOrder(_videoRam[addr + 3]) << (16 - _pixelsAvailable);
+				_bgShifters[2] |= ReverseBitOrder(ReadVram(addr+2, SmsVdpMemAccess::BgLoadTile)) << (16 - _pixelsAvailable);
+				_bgShifters[3] |= ReverseBitOrder(ReadVram(addr+3, SmsVdpMemAccess::BgLoadTile)) << (16 - _pixelsAvailable);
 			} else {
-				_bgShifters[2] |= _videoRam[addr + 2] << (16 - _pixelsAvailable);
-				_bgShifters[3] |= _videoRam[addr + 3] << (16 - _pixelsAvailable);
+				_bgShifters[2] |= ReadVram(addr+2, SmsVdpMemAccess::BgLoadTile) << (16 - _pixelsAvailable);
+				_bgShifters[3] |= ReadVram(addr+3, SmsVdpMemAccess::BgLoadTile) << (16 - _pixelsAvailable);
 			}
 
 			if(_disableBackground) {
@@ -306,7 +423,7 @@ void SmsVdp::LoadBgTilesSg()
 		return;
 	}
 
-	uint16_t cycle = _state.Cycle - 5;
+	uint16_t cycle = _state.Cycle;
 	switch(cycle & 0x07) {
 		case 0: {
 			uint8_t x = (uint8_t)_state.Cycle;
@@ -315,7 +432,7 @@ void SmsVdp::LoadBgTilesSg()
 			uint16_t ntAddr = _state.NametableAddress + ((x / 8) + tilemapRow * 32);
 
 			uint8_t tileRow = (y & 0x07);
-			_bgTileIndex = _videoRam[ntAddr];
+			_bgTileIndex = ReadVram(ntAddr, SmsVdpMemAccess::BgLoadTable);
 			if(_state.M3_Use240LineMode) {
 				//Mode 3 - "Multicolor"
 				_bgTileAddr = (_state.BgPatternTableAddress & 0x3800) + (_bgTileIndex * 8) + (tilemapRow & 0x03) * 2 + (tileRow >= 4 ? 1 : 0);
@@ -333,18 +450,14 @@ void SmsVdp::LoadBgTilesSg()
 		}
 
 		case 2:
-			if(_state.Cycle & 0x18) {
+			if(cycle & 0x18) {
 				//sprite evaluation (read Y pos)
-			} else {
-				//external slot
-				if(_writePending != SmsVdpWriteType::None) {
-					ProcessVramWrite();
-				}
+				ProcessSpriteEvaluation();
 			}
 			break;
 
 		case 4:
-			_bgPatternData = _videoRam[_bgTileAddr];
+			_bgPatternData = ReadVram(_bgTileAddr, SmsVdpMemAccess::BgLoadTile);
 			break;
 
 		case 6: {
@@ -357,11 +470,11 @@ void SmsVdp::LoadBgTilesSg()
 				uint16_t mask = ((_state.ColorTableAddress >> 3) | 0x07) & 0x3FF;
 				uint8_t tileRow = (_state.Scanline & 0x07);
 				uint16_t colorTableAddr = (_state.ColorTableAddress & 0x2000) | ((_bgTileIndex & mask) << 3) + tileRow;
-				color = _videoRam[colorTableAddr];
+				color = ReadVram(colorTableAddr, SmsVdpMemAccess::BgLoadTile);
 			} else {
 				//Mode 0 - "Graphic 1"
 				uint16_t colorTableAddr = (_state.ColorTableAddress & 0x3FC0) | ((_bgTileIndex >> 3) & 0x1F);
-				color = _videoRam[colorTableAddr];
+				color = ReadVram(colorTableAddr, SmsVdpMemAccess::BgLoadTable);
 			}
 
 			for(int i = 0; i < 8; i++) {
@@ -388,32 +501,26 @@ void SmsVdp::LoadBgTilesSg()
 
 void SmsVdp::LoadBgTilesSgTextMode()
 {
-	if(_state.Cycle < 10 || _state.Cycle > 250) {
-		_textModeStep = 0;
+	if(_state.Cycle >= 240) {
 		return;
+	} else if(_state.Cycle == 0) {
+		_textModeStep = 0;
 	}
 
 	switch(_textModeStep++) {
 		case 0: {
-			uint8_t x = (uint8_t)_state.Cycle - 8;
+			uint8_t x = (uint8_t)_state.Cycle;
 			uint16_t y = _state.Scanline;
 			uint8_t tilemapRow = (y / 8);
 			uint16_t ntAddr = _state.NametableAddress + ((x / 6) + tilemapRow * 40);
 			uint8_t tileRow = (y & 0x07);
-			_bgTileIndex = _videoRam[ntAddr];
+			_bgTileIndex = ReadVram(ntAddr, SmsVdpMemAccess::BgLoadTable);
 			_bgTileAddr = (_state.BgPatternTableAddress & 0x3800) + (_bgTileIndex * 8) + tileRow;
 			break;
 		}
 
 		case 2:
-			//CPU slot
-			if(_writePending != SmsVdpWriteType::None) {
-				ProcessVramWrite();
-			}
-			break;
-
-		case 4:
-			_bgPatternData = _videoRam[_bgTileAddr];
+			_bgPatternData = ReadVram(_bgTileAddr, SmsVdpMemAccess::BgLoadTile);
 
 			for(int i = 0; i < 6; i++) {
 				uint8_t color = (_bgPatternData & 0x80) ? _state.TextColorIndex : _state.BackgroundColorIndex;
@@ -426,7 +533,7 @@ void SmsVdp::LoadBgTilesSgTextMode()
 				_bgPriority = 0;
 			}
 
-			if(_state.Cycle == 249) {
+			if(_state.Cycle == 238) {
 				for(int i = 0; i < 8; i++) {
 					PushBgPixel(_state.BackgroundColorIndex, i);
 				}
@@ -434,6 +541,10 @@ void SmsVdp::LoadBgTilesSgTextMode()
 			}
 
 			_pixelsAvailable += 6;
+			break;
+
+		case 4:
+			//CPU slot
 			break;
 
 		case 5:
@@ -474,42 +585,36 @@ void SmsVdp::DrawPixel()
 void SmsVdp::ProcessScanlineEvents()
 {
 	switch(_state.Cycle) {
-		case 318:
+		case 313:
 			_state.HorizontalScrollLatch = _state.HorizontalScroll;
 			break;
 
-		case 320:
+		case 315:
 			//vertical blank irq (on last visible scanline)
 			if(_state.Scanline == _state.VisibleScanlineCount) {
 				_state.VerticalBlankIrqPending = true;
 				UpdateIrqState();
-				if(_state.EnableVerticalBlankIrq && _model == SmsModel::ColecoVision) {
-					_cpu->SetNmiLevel(true);
-					_cpu->SetNmiLevel(false);
-				}
 			}
 
 			_state.VCounter++;
-			if(_state.VCounter == _state.VisibleScanlineCount && _model == SmsModel::Sms) {
-				_cpu->SetNmiLevel(_controlManager->IsPausePressed());
+			if(_state.VCounter == _scanlineCount - 1) {
+				if(_model == SmsModel::Sms) {
+					_cpu->SetNmiLevel(_controlManager->IsPausePressed());
+				}
 			} else if(_state.VCounter >= _scanlineCount) {
 				_state.VCounter = 0;
 			}
 
-			//sprite overflow flag set (if needed)
-			_spriteCount = 0;
-			if(_state.Scanline < _state.VisibleScanlineCount || _state.VCounter == 0) {
-				if(_state.UseMode4) {
-					//TODOSMS - fix timing, tile loading + sprite evaluation should be done throughout the scanline
-					LoadSpritesSms();
-				} else if(!_state.M1_Use224LineMode) {
-					//Only load sprites if not in text mode
-					LoadSpritesSg();
+			if(_spriteOverflowPending) {
+				_spriteOverflowPending = false;
+				if(_state.Scanline < _state.VisibleScanlineCount || _state.VCounter == 0) {
+					//Don't trigger sprite overflow from the sprite eval fetches that run during vblank
+					_state.SpriteOverflow = true;
 				}
 			}
 			break;
 
-		case 321:
+		case 316:
 			//horizontal irq
 			if(_state.Scanline <= 191 || _state.Scanline == _scanlineCount - 1) {
 				if(_state.ScanlineCounterLatch-- == 0) {
@@ -521,179 +626,415 @@ void SmsVdp::ProcessScanlineEvents()
 				_state.ScanlineCounterLatch = _state.ScanlineCounter;
 			}
 			break;
-
-		case 341:
-			_state.Cycle = -1;
-			_state.Scanline++;
-			if(_state.Scanline == _state.VisibleScanlineCount) {
-				_emu->ProcessEvent(EventType::EndFrame, CpuType::Sms);
-				_state.FrameCount++;
-
-				_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
-
-				RenderedFrame frame(_currentOutputBuffer, 256, 240, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
-				bool rewinding = _emu->GetRewindManager()->IsRewinding();
-				_emu->GetVideoDecoder()->UpdateFrame(frame, rewinding, rewinding);
-
-				_currentOutputBuffer = _currentOutputBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
-
-				UpdateConfig();
-
-				_console->ProcessEndOfFrame();
-				_emu->ProcessEndOfFrame();
-			} else if(_state.Scanline >= _scanlineCount) {
-				_state.Scanline = 0;
-				_state.VerticalScrollLatch = _state.VerticalScroll;
-				_emu->ProcessEvent(EventType::StartFrame, CpuType::Sms);
-			}
-
-			_bgShifters[0] = 0;
-			_bgShifters[1] = 0;
-			_bgShifters[2] = 0;
-			_bgShifters[3] = 0;
-			_bgPriority = 0;
-			_bgPalette = 0;
-
-			uint8_t borderWidth = 0;
-			if(_state.UseMode4) {
-				if(_state.Scanline < 16 && _state.HorizontalScrollLock) {
-					borderWidth = 0;
-				} else {
-					borderWidth = (_state.HorizontalScrollLatch & 0x07);
-				}
-			} else {
-				//Add 8 pixels of border on the left when in text mode
-				borderWidth = _state.M1_Use224LineMode ? 8 : 0;
-			}
-
-			_pixelsAvailable = 0;
-			for(int i = 0; i < borderWidth; i++) {
-				PushBgPixel(_state.BackgroundColorIndex, i);
-				_bgPalette |= 0x800000 >> i;
-			}
-			_pixelsAvailable = borderWidth;
-
-			//Mask feature only works in mode 4
-			bool maskFirstColumn = _state.UseMode4 ? _state.MaskFirstColumn : false;
-
-			_minDrawCycle = _state.RenderingEnabled ? (maskFirstColumn ? (SmsVdp::SmsVdpLeftBorder + 8): SmsVdp::SmsVdpLeftBorder) : 342;
-			_bgOffsetY = _state.Scanline + _state.VerticalScrollLatch;
-			if(_bgOffsetY >= _state.NametableHeight) {
-				_bgOffsetY -= _state.NametableHeight;
-			}
-			break;
 	}
 }
 
-void SmsVdp::LoadSpritesSms()
+void SmsVdp::ProcessEndOfScanline()
 {
-	uint16_t spriteAddr = _state.SpriteTableAddress & 0x3F00;
+	if(_emu->IsDebugging()) {
+		DebugProcessMemoryAccessView();
+	}
+	memset(_memAccess, 0, sizeof(_memAccess));
+
+	//Set to cycle 0 temporarily (for event viewer, etc.), and then back to -1 at the end because the cycle gets incremented after this in Exec()
+	_state.Cycle = 0;
+	_state.Scanline++;
+	if(_state.Scanline == _state.VisibleScanlineCount) {
+		_emu->ProcessEvent(EventType::EndFrame, CpuType::Sms);
+		_state.FrameCount++;
+
+		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
+
+		RenderedFrame frame(_currentOutputBuffer, 256, 240, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
+		bool rewinding = _emu->GetRewindManager()->IsRewinding();
+		_emu->GetVideoDecoder()->UpdateFrame(frame, rewinding, rewinding);
+
+		UpdateConfig();
+
+		_console->ProcessEndOfFrame();
+		_emu->ProcessEndOfFrame();
+	} else if(_state.Scanline >= _scanlineCount) {
+		_state.Scanline = 0;
+		_state.VerticalScrollLatch = _state.VerticalScroll;
+		_emu->ProcessEvent(EventType::StartFrame, CpuType::Sms);
+		_currentOutputBuffer = _currentOutputBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+	}
+
+	_bgShifters[0] = 0;
+	_bgShifters[1] = 0;
+	_bgShifters[2] = 0;
+	_bgShifters[3] = 0;
+	_bgPriority = 0;
+	_bgPalette = 0;
+
+	uint8_t borderWidth = 0;
+	if(_state.UseMode4) {
+		if(_state.Scanline < 16 && _state.HorizontalScrollLock) {
+			borderWidth = 0;
+		} else {
+			borderWidth = (_state.HorizontalScrollLatch & 0x07);
+		}
+	} else {
+		//Add 8 pixels of border on the left when in text mode
+		borderWidth = _state.M1_Use224LineMode ? 8 : 0;
+	}
+
+	_pixelsAvailable = 0;
+	for(int i = 0; i < borderWidth; i++) {
+		PushBgPixel(_state.BackgroundColorIndex, i);
+		_bgPalette |= 0x800000 >> i;
+	}
+	_pixelsAvailable = borderWidth;
+
+	//Mask feature only works in mode 4
+	bool maskFirstColumn = _state.UseMode4 ? _state.MaskFirstColumn : false;
+
+	_minDrawCycle = _state.RenderingEnabled ? (maskFirstColumn ? (SmsVdp::SmsVdpLeftBorder + 8) : SmsVdp::SmsVdpLeftBorder) : 342;
+	_bgOffsetY = _state.Scanline + _state.VerticalScrollLatch;
+	if(_bgOffsetY >= _state.NametableHeight) {
+		_bgOffsetY -= _state.NametableHeight;
+	}
+
+	_state.Cycle = -1;
+}
+
+void SmsVdp::ProcessSpriteEvaluation()
+{
+	if(!_state.UseMode4 && _state.M1_Use224LineMode) {
+		//No sprites in text mode
+		return;
+	}
+
+	//Fetch sprite 0 after a sprite with Y=$D0 is found
+	//TODOSMS what sprite is actually fetched by hardware?
+	uint8_t i = _evalCounter == 0xFF ? 0 : _evalCounter;
+
+	uint16_t spriteAddr;
+	uint8_t sprY;
+	if(_state.UseMode4) {
+		spriteAddr = _state.SpriteTableAddress & 0x3F00;
+		sprY = ReadVram(spriteAddr + i, SmsVdpMemAccess::SpriteEval) + 17; //+17 to force wraparound to the top when sprite is at Y >= 241 (8x16 sprites)
+	} else {
+		spriteAddr = _state.SpriteTableAddress;
+		sprY = ReadVram(spriteAddr + i * 4, SmsVdpMemAccess::SpriteEval) + 17; //+17 to force wraparound to the top when sprite is at Y >= 241 (8x16 sprites)
+	}
+
+	if(_state.VisibleScanlineCount == 192 && sprY == 0xD0 + 17) {
+		//Don't check/draw any more sprites
+		_evalCounter = 0xFF;
+		return;
+	}
+
+	if(_evalCounter == 0xFF) {
+		//Sprite evaluation was cancelled by a sprite with Y=$D0)
+		return;
+	}
+
+	_evalCounter++;
+
 	uint8_t spriteHeight = (_state.UseLargeSprites ? 16 : 8) << (uint8_t)_state.EnableDoubleSpriteSize;
-	uint16_t scanline = (_state.Scanline + 17);
+	uint16_t scanline = (_state.VCounter + 17);
 	if(scanline >= _scanlineCount) {
 		scanline -= _scanlineCount;
 	}
 
-	for(int i = 0; i < 64; i++) {
-		uint8_t sprY = _videoRam[spriteAddr + i] + 17; //+17 to force wraparound to the top when sprite is at Y >= 241 (8x16 sprites)
-		if(_state.VisibleScanlineCount == 192 && sprY == 0xD0 + 17) {
-			//Don't check/draw any more sprites
+	if(scanline >= sprY && scanline < sprY + spriteHeight) {
+		if(!_state.UseMode4) {
+			if(_inRangeSpriteCount >= 4) {
+				if(!_spriteOverflowPending) {
+					_state.SpriteOverflowIndex = i;
+				}
+				_spriteOverflowPending = true;
+				if(!_removeSpriteLimit) {
+					return;
+				}
+			}
+		} else {
+			if(_inRangeSpriteCount >= 8) {
+				_spriteOverflowPending = true;
+				if(!_removeSpriteLimit) {
+					return;
+				}
+			}
+			_spriteShifters[_inRangeSpriteCount].SpriteRow = (scanline - sprY) >> (uint8_t)_state.EnableDoubleSpriteSize;
+		}
+
+		_inRangeSprites[_inRangeSpriteCount] = i;
+		_inRangeSpriteCount++;
+	}
+}
+
+uint16_t SmsVdp::GetSmsSpriteTileAddr(uint8_t sprTileIndex, uint8_t spriteRow, uint8_t i)
+{
+	if(_state.UseLargeSprites) {
+		sprTileIndex &= ~0x01;
+	}
+
+	return (_state.SpritePatternSelector & 0x2000) | (sprTileIndex << 5) | (spriteRow << 2);
+}
+
+void SmsVdp::LoadSpriteTilesSms()
+{
+	uint16_t spriteAddr = _state.SpriteTableAddress & 0x3F00;
+
+	//Cycles 264 to 325
+	uint16_t cycle = _state.Cycle - 264;
+	switch(cycle) {
+		case 0: case 12:
+		case 34: case 46: {
+			//Load sprite N X value
+			if(cycle == 0) {
+				_spriteCount = 0;
+			}
+
+			_spriteShifters[_spriteCount].HardwareSprite = true;
+			
+			uint16_t loadAddr = spriteAddr + 0x80 + _inRangeSprites[_spriteCount] * 2;
+			_spriteShifters[_spriteCount].SpriteX = ReadVram(loadAddr, SmsVdpMemAccess::SpriteLoadTable);
+			uint8_t sprTileIndex = ReadVram(loadAddr + 1, SmsVdpMemAccess::SpriteLoadTable);
+			_spriteShifters[_spriteCount].TileAddr = GetSmsSpriteTileAddr(sprTileIndex, _spriteShifters[_spriteCount].SpriteRow, _inRangeSprites[_spriteCount]);
 			break;
 		}
 
-		if(scanline >= sprY && scanline < sprY + spriteHeight) {
-			if(_spriteCount >= 8) {
-				_state.SpriteOverflow = true;
-				if(!_removeSpriteLimit) {
-					break;
-				}
-			}
+		case 2: case 14:
+		case 36: case 48: {
+			//Load sprite N+1 X value
+			_spriteShifters[_spriteCount + 1].HardwareSprite = true;
 
-			uint16_t sprTileIndex = _videoRam[spriteAddr + 0x80 + i * 2 + 1];
-			if(_state.UseLargeSprites) {
-				sprTileIndex &= ~0x01;
-			}
+			uint16_t loadAddr = spriteAddr + 0x80 + _inRangeSprites[_spriteCount + 1] * 2;
+			_spriteShifters[_spriteCount + 1].SpriteX = ReadVram(loadAddr, SmsVdpMemAccess::SpriteLoadTable);
+			uint8_t sprTileIndex = ReadVram(loadAddr + 1, SmsVdpMemAccess::SpriteLoadTable);
+			_spriteShifters[_spriteCount + 1].TileAddr = GetSmsSpriteTileAddr(sprTileIndex, _spriteShifters[_spriteCount + 1].SpriteRow, _inRangeSprites[_spriteCount + 1]);
+			break;
+		}
 
-			uint8_t spriteRow = (scanline - sprY) >> (uint8_t)_state.EnableDoubleSpriteSize;
-			uint16_t sprTileAddr = (_state.SpritePatternSelector & 0x2000) | (sprTileIndex << 5) | (spriteRow << 2);
-			
-			//TODOSMS implement mask if bits 1/0 of SpritePatternSelector aren't set
+		case 4: case 16:
+		case 38: case 50:
+			//Load sprite N tile (1st word)
+			_spriteShifters[_spriteCount].TileData[0] = ReadVram(_spriteShifters[_spriteCount].TileAddr, SmsVdpMemAccess::SpriteLoadTile);
+			_spriteShifters[_spriteCount].TileData[1] = ReadVram(_spriteShifters[_spriteCount].TileAddr + 1, SmsVdpMemAccess::SpriteLoadTile);
+			break;
 
-			_spriteShifters[_spriteCount].TileData[0] = _videoRam[sprTileAddr];
-			_spriteShifters[_spriteCount].TileData[1] = _videoRam[sprTileAddr + 1];
-			_spriteShifters[_spriteCount].TileData[2] = _videoRam[sprTileAddr + 2];
-			_spriteShifters[_spriteCount].TileData[3] = _videoRam[sprTileAddr + 3];
-			_spriteShifters[_spriteCount].SpriteX = _videoRam[spriteAddr + 0x80 + i * 2];
-
+		case 6: case 18:
+		case 40: case 52:
+			//Load sprite N tile (2nd word)
+			_spriteShifters[_spriteCount].TileData[2] = ReadVram(_spriteShifters[_spriteCount].TileAddr + 2, SmsVdpMemAccess::SpriteLoadTile);
+			_spriteShifters[_spriteCount].TileData[3] = ReadVram(_spriteShifters[_spriteCount].TileAddr + 3, SmsVdpMemAccess::SpriteLoadTile);
 			if(_state.ShiftSpritesLeft) {
 				//Shift all sprites to the left by 8 pixels
 				ShiftSprite(_spriteCount);
 			}
-			_spriteCount++;
+			break;
+
+		case 8: case 20:
+		case 42: case 54:
+			//Load sprite N+1 tile (1st word)
+			_spriteShifters[_spriteCount + 1].TileData[0] = ReadVram(_spriteShifters[_spriteCount + 1].TileAddr, SmsVdpMemAccess::SpriteLoadTile);
+			_spriteShifters[_spriteCount + 1].TileData[1] = ReadVram(_spriteShifters[_spriteCount + 1].TileAddr + 1, SmsVdpMemAccess::SpriteLoadTile);
+			break;
+
+		case 10: case 22:
+		case 44: case 56:
+			//Load sprite N+1 tile (2nd word)
+			_spriteShifters[_spriteCount + 1].TileData[2] = ReadVram(_spriteShifters[_spriteCount + 1].TileAddr + 2, SmsVdpMemAccess::SpriteLoadTile);
+			_spriteShifters[_spriteCount + 1].TileData[3] = ReadVram(_spriteShifters[_spriteCount + 1].TileAddr + 3, SmsVdpMemAccess::SpriteLoadTile);
+			if(_state.ShiftSpritesLeft) {
+				//Shift all sprites to the left by 8 pixels
+				ShiftSprite(_spriteCount + 1);
+			}
+
+			_spriteCount += 2;
+			if(cycle == 56) {
+				_spriteCount = _inRangeSpriteCount;
+				if(_inRangeSpriteCount > 8 && _removeSpriteLimit) {
+					LoadExtraSpritesSms();
+				}
+			}
+			break;
+
+		case 24: case 26: case 28: case 30: case 32: case 58: case 60:
+			//293, 295, 297, 299, 301, 327, 329
+			//external access slots
+			break;
+	}
+}
+
+void SmsVdp::LoadExtraSpritesSms()
+{
+	uint16_t spriteAddr = _state.SpriteTableAddress & 0x3F00;
+	for(int i = 8; i < _inRangeSpriteCount; i++) {
+		_spriteShifters[i].SpriteX = _videoRam[spriteAddr + 0x80 + _inRangeSprites[i] * 2];
+		
+		uint8_t sprTileIndex = _videoRam[spriteAddr + 0x80 + _inRangeSprites[i] * 2 + 1];
+		uint16_t sprTileAddr = GetSmsSpriteTileAddr(sprTileIndex, _spriteShifters[i].SpriteRow, _inRangeSprites[i]);
+		_spriteShifters[i].TileData[0] = _videoRam[sprTileAddr];
+		_spriteShifters[i].TileData[1] = _videoRam[sprTileAddr + 1];
+		_spriteShifters[i].TileData[2] = _videoRam[sprTileAddr + 2];
+		_spriteShifters[i].TileData[3] = _videoRam[sprTileAddr + 3];
+		_spriteShifters[i].HardwareSprite = false;
+		_spriteCount++;
+
+		if(_state.ShiftSpritesLeft) {
+			//Shift all sprites to the left by 8 pixels
+			ShiftSprite(i);
 		}
 	}
 }
 
-void SmsVdp::LoadSpritesSg()
+void SmsVdp::LoadSpriteTilesSg()
+{
+	if(_state.M1_Use224LineMode) {
+		//No sprites in text mode
+		return;
+	}
+
+	uint16_t spriteAddr = _state.SpriteTableAddress;
+
+	//Cycles 264 to 325
+	uint16_t cycle = _state.Cycle - 264;
+	switch(cycle) {
+		case 0: case 12:
+		case 34: case 46: {
+			//Sprite Y value
+			if(cycle == 0) {
+				_spriteCount = 0;
+				_spriteIndex = 0;
+				_inRangeSpriteIndex = 0;
+			}
+
+			uint8_t sprY = ReadVram(spriteAddr + _inRangeSprites[_inRangeSpriteIndex] * 4, SmsVdpMemAccess::SpriteLoadTable) + 17;
+			uint16_t scanline = (_state.VCounter + 17);
+			if(scanline >= _scanlineCount) {
+				scanline -= _scanlineCount;
+			}
+
+			//Keep lowest bits only - Y may have changed and be out-of-range between sprite eval and sprite fetching
+			uint8_t row = (scanline - sprY) & ((_state.UseLargeSprites ? 0x0F : 0x07) << (uint8_t)_state.EnableDoubleSpriteSize);
+			_spriteShifters[_spriteIndex].SpriteRow = row >> (uint8_t)_state.EnableDoubleSpriteSize;
+			_spriteShifters[_spriteIndex].HardwareSprite = true;
+			break;
+		}
+
+		case 2: case 14:
+		case 36: case 48:
+			//Sprite X value
+			_spriteShifters[_spriteIndex].SpriteX = ReadVram(spriteAddr + _inRangeSprites[_inRangeSpriteIndex] * 4 + 1, SmsVdpMemAccess::SpriteLoadTable);
+			break;
+
+		case 4: case 16:
+		case 38: case 50: {
+			//Sprite tile index
+			uint16_t sprTileIndex = ReadVram(spriteAddr + _inRangeSprites[_inRangeSpriteIndex] * 4 + 2, SmsVdpMemAccess::SpriteLoadTable);
+			if(_state.UseLargeSprites) {
+				sprTileIndex &= ~0x03;
+			}
+
+			_spriteShifters[_spriteIndex].TileAddr = _state.SpritePatternSelector | (sprTileIndex << 3) | _spriteShifters[_spriteIndex].SpriteRow;
+			break;
+		}
+
+		case 6: case 18:
+		case 40: case 52:
+			//Sprite attributes
+			_spriteShifters[_spriteIndex].TileData[1] = ReadVram(spriteAddr + _inRangeSprites[_inRangeSpriteIndex] * 4 + 3, SmsVdpMemAccess::SpriteLoadTable);
+			break;
+
+		case 8: case 20:
+		case 42: case 54:
+			//Sprite tile data (first byte)
+			_spriteShifters[_spriteIndex].TileData[0] = ReadVram(_spriteShifters[_spriteIndex].TileAddr, SmsVdpMemAccess::SpriteLoadTile);
+			break;
+
+		case 10: case 22:
+		case 44: case 56: {
+			//Sprite tile data (second byte - for large sprites only)
+			bool shiftSprite = _spriteShifters[_spriteIndex].TileData[1] & 0x80;
+			_spriteShifters[_spriteIndex].TileData[1] &= 0x0F; //sprite color
+			int16_t xPos = _spriteShifters[_spriteIndex].SpriteX;
+			if(shiftSprite) {
+				//Shift all sprites to the left by 8 pixels
+				ShiftSpriteSg(_spriteIndex);
+			}
+			_spriteIndex++;
+
+			if(_state.UseLargeSprites) {
+				_spriteShifters[_spriteIndex] = _spriteShifters[_spriteIndex - 1];
+				_spriteShifters[_spriteIndex].TileData[0] = ReadVram(_spriteShifters[_spriteIndex].TileAddr + 16, SmsVdpMemAccess::SpriteLoadTile);
+				_spriteShifters[_spriteIndex].SpriteX = xPos + (_state.EnableDoubleSpriteSize ? 16 : 8);
+				if(shiftSprite) {
+					//Shift all sprites to the left by 8 pixels
+					ShiftSpriteSg(_spriteIndex);
+				}
+				_spriteIndex++;
+			}
+			
+			_inRangeSpriteIndex++;
+			if(_inRangeSpriteCount > 0) {
+				_inRangeSpriteCount--;
+				_spriteCount += _state.UseLargeSprites ? 2 : 1;
+			}
+
+			if(cycle == 56 && _inRangeSpriteCount > 0 && _removeSpriteLimit) {
+				LoadExtraSpritesSg();
+			}
+			break;
+		}
+
+		case 24: case 26: case 28: case 30: case 32: case 58: case 60:
+			//293, 295, 297, 299, 301, 327, 329
+			//external access slots
+			break;
+	}
+}
+
+void SmsVdp::LoadExtraSpritesSg()
 {
 	uint16_t spriteAddr = _state.SpriteTableAddress;
-	uint8_t spriteSize = (_state.UseLargeSprites ? 16 : 8) << (uint8_t)_state.EnableDoubleSpriteSize;
-	uint8_t sgSpriteCount = 0;
 	uint16_t scanline = (_state.Scanline + 17);
 	if(scanline >= _scanlineCount) {
 		scanline -= _scanlineCount;
 	}
 
-	bool spriteOverflow = false;
-	for(int i = 0; i < 32; i++) {
-		uint8_t sprY = _videoRam[spriteAddr + i * 4] + 17; //+17 to force wraparound to the top when sprite is at Y >= 241 (16x16 sprites)
-		if(sprY == 0xD0 + 17) {
-			//Don't check/draw any more sprites
-			break;
+	for(int i = 0; i < _inRangeSpriteCount; i++) {
+		_spriteShifters[_spriteIndex].SpriteX = _videoRam[spriteAddr + _inRangeSprites[_inRangeSpriteIndex] * 4 + 1];
+		uint8_t sprY = _videoRam[spriteAddr + _inRangeSprites[_inRangeSpriteIndex] * 4] + 17;
+		_spriteShifters[_spriteIndex].SpriteRow = (scanline - sprY) >> (uint8_t)_state.EnableDoubleSpriteSize;
+
+		uint16_t sprTileIndex = _videoRam[spriteAddr + _inRangeSprites[_inRangeSpriteIndex] * 4 + 2];
+		if(_state.UseLargeSprites) {
+			sprTileIndex &= ~0x03;
+		}
+		
+		_spriteShifters[_spriteIndex].HardwareSprite = false;
+		_spriteShifters[_spriteIndex].TileAddr = _state.SpritePatternSelector | (sprTileIndex << 3) | _spriteShifters[_spriteIndex].SpriteRow;
+		_spriteShifters[_spriteIndex].TileData[1] = _videoRam[spriteAddr + _inRangeSprites[_inRangeSpriteIndex] * 4 + 3];
+		_spriteShifters[_spriteIndex].TileData[0] = _videoRam[_spriteShifters[_spriteIndex].TileAddr];
+
+		bool shiftSprite = _spriteShifters[_spriteIndex].TileData[1] & 0x80;
+		_spriteShifters[_spriteIndex].TileData[1] &= 0x0F; //sprite color
+		int16_t xPos = _spriteShifters[_spriteIndex].SpriteX;
+		if(shiftSprite) {
+			//Shift all sprites to the left by 8 pixels
+			ShiftSpriteSg(_spriteIndex);
 		}
 
-		if(scanline >= sprY && scanline < sprY + spriteSize) {
-			if(sgSpriteCount >= 4) {
-				if(!spriteOverflow) {
-					_state.SpriteOverflowIndex = i;
-				}
-				spriteOverflow = true;
-				if(!_removeSpriteLimit) {
-					break;
-				}
+		_spriteCount++;
+		_spriteIndex++;
+		_inRangeSpriteIndex++;
+
+		if(_state.UseLargeSprites) {
+			_spriteShifters[_spriteIndex] = _spriteShifters[_spriteIndex - 1];
+			_spriteShifters[_spriteIndex].TileData[0] = _videoRam[_spriteShifters[_spriteIndex].TileAddr + 16];
+			_spriteShifters[_spriteIndex].SpriteX = xPos + (_state.EnableDoubleSpriteSize ? 16 : 8);
+			if(shiftSprite) {
+				//Shift all sprites to the left by 8 pixels
+				ShiftSpriteSg(_spriteIndex);
 			}
 
-			uint16_t sprTileIndex = _videoRam[spriteAddr + i * 4 + 2];
-			if(_state.UseLargeSprites) {
-				sprTileIndex &= ~0x03;
-			}
-
-			uint8_t spriteRow = (scanline - sprY) >> (uint8_t)_state.EnableDoubleSpriteSize;
-			uint16_t sprTileAddr = _state.SpritePatternSelector | (sprTileIndex << 3) | spriteRow;
-
-			uint8_t attributes = _videoRam[spriteAddr + i * 4 + 3];
-			_spriteShifters[_spriteCount].TileData[0] = _videoRam[sprTileAddr];
-			_spriteShifters[_spriteCount].TileData[1] = attributes & 0x0F; //sprite color
-			_spriteShifters[_spriteCount].SpriteX = _videoRam[spriteAddr + i * 4 + 1];
-			if(attributes & 0x80) {
-				ShiftSpriteSg(_spriteCount);
-			}
 			_spriteCount++;
-
-			if(_state.UseLargeSprites) {
-				_spriteShifters[_spriteCount].TileData[0] = _videoRam[sprTileAddr + 16];
-				_spriteShifters[_spriteCount].TileData[1] = attributes & 0x0F; //sprite color
-				_spriteShifters[_spriteCount].SpriteX = _videoRam[spriteAddr + i * 4 + 1] + (_state.EnableDoubleSpriteSize ? 16 : 8);
-				if(attributes & 0x80) {
-					ShiftSpriteSg(_spriteCount);
-				}
-				_spriteCount++;
-			}
-			
-			sgSpriteCount++;
+			_spriteIndex++;
 		}
 	}
-	_state.SpriteOverflow = spriteOverflow;
 }
 
 void SmsVdp::ShiftSprite(uint8_t sprIndex)
@@ -758,7 +1099,7 @@ uint16_t SmsVdp::GetPixelColor()
 
 				if(sprColor != 0) {
 					if(spriteDrawn) {
-						_state.SpriteCollision |= i < 8;
+						_state.SpriteCollision |= _spriteShifters[i].HardwareSprite;
 						continue;
 					} else {
 						spritePixelColor = sprColor;
@@ -773,7 +1114,7 @@ uint16_t SmsVdp::GetPixelColor()
 
 				if(sprColor != 0) {
 					if(spriteDrawn) {
-						_state.SpriteCollision |= i < 8;
+						_state.SpriteCollision |= _spriteShifters[i].HardwareSprite;
 						continue;
 					} else {
 						uint8_t spritePalette = _spriteShifters[i].TileData[1];
@@ -807,11 +1148,21 @@ uint16_t SmsVdp::GetPixelColor()
 			return _activeSgPalette[color == 0 ? _state.BackgroundColorIndex : color];
 		}
 	}
-	return _state.UseMode4 ? _internalPaletteRam[0x10 + spritePixelColor] : _activeSgPalette[spritePixelColor];
+
+	if(_state.UseMode4) {
+		return _internalPaletteRam[0x10 + spritePixelColor];
+	} else {
+		return _activeSgPalette[spritePixelColor];
+	}
 }
 
 void SmsVdp::WriteRegister(uint8_t reg, uint8_t value)
 {
+	if(reg >= 8 && _model == SmsModel::ColecoVision) {
+		//These registers don't exist on the TMS9918A
+		return;
+	}
+
 	switch(reg) {
 		case 0:
 			_state.SyncDisabled = (value & 0x01) != 0; //TODOSMS not implemented
@@ -899,8 +1250,7 @@ void SmsVdp::WritePort(uint8_t port, uint8_t value)
 				//"When the second byte is written, the value at the VRAM location specified
 				//by the address register is retrieved and stored in a buffer, and the address
 				//register is incremented"
-				_state.ReadBuffer = _videoRam[_state.AddressReg];
-				_state.AddressReg = (_state.AddressReg + 1) & 0x3FFF;
+				_readPending = true;
 			} else if(_state.CodeReg == 2) {
 				WriteRegister((_state.AddressReg & 0xF00) >> 8, _state.AddressReg & 0xFF);
 			}
@@ -913,7 +1263,7 @@ void SmsVdp::WritePort(uint8_t port, uint8_t value)
 		_state.ControlPortMsbToggle = false;
 
 		//"An additional quirk is that writing to the data port will also load the buffer with the value written."
-		_state.ReadBuffer = value;
+		_state.VramBuffer = value;
 
 		//TODOSMS break option for write while previous write is pending?
 		if(_state.CodeReg == 3) {
@@ -931,12 +1281,10 @@ void SmsVdp::WritePort(uint8_t port, uint8_t value)
 				_state.AddressReg = (_state.AddressReg + 1) & 0x3FFF;
 			} else {
 				_writePending = SmsVdpWriteType::Palette;
-				_writeBuffer = value;
 			}
 		} else {
 			//VRAM write
 			_writePending = SmsVdpWriteType::Vram;
-			_writeBuffer = value;
 		}
 	}
 }
@@ -959,8 +1307,8 @@ uint8_t SmsVdp::ReadPort(uint8_t port)
 			//The value stored at the current VRAM location specified by the address
 			//register is then copied to the buffer, and the address register is incremented"
 			_state.ControlPortMsbToggle = false;
-			uint8_t value = _state.ReadBuffer;
-			_state.ReadBuffer = _videoRam[_state.AddressReg];
+			uint8_t value = _state.VramBuffer;
+			_state.VramBuffer = _videoRam[_state.AddressReg];
 			_state.AddressReg = (_state.AddressReg + 1) & 0x3FFF;
 			return value;
 		}
@@ -991,7 +1339,7 @@ uint8_t SmsVdp::PeekPort(uint8_t port)
 	switch(port & 0xC1) {
 		case 0x40: return ReadVerticalCounter(); //V counter
 		case 0x41: return _state.HCounterLatch; //H counter
-		case 0x80: return _state.ReadBuffer;
+		case 0x80: return _state.VramBuffer;
 
 		case 0x81:
 			//Control Port
@@ -1014,14 +1362,19 @@ void SmsVdp::SetLocationLatchRequest(uint8_t x)
 
 void SmsVdp::InternalLatchHorizontalCounter(uint16_t cycle)
 {
-	uint16_t counter = (cycle == 0 ? 341 : (cycle - 1)) >> 1;
+	cycle += 3;
+	if(cycle >= 342) {
+		cycle -= 342;
+	}
+
+	uint16_t counter = cycle >> 1;
 	_state.HCounterLatch = counter > 0x93 ? (counter + 0x55) : counter;
 	_latchRequest = false;
 }
 
 void SmsVdp::LatchHorizontalCounter()
 {
-	InternalLatchHorizontalCounter(_state.Cycle == 0 ? 341 : (_state.Cycle - 1));
+	InternalLatchHorizontalCounter(_state.Cycle);
 }
 
 void SmsVdp::SetRegion(ConsoleRegion region)
@@ -1128,7 +1481,7 @@ void SmsVdp::Serialize(Serializer& s)
 	SV(_state.AddressReg);
 	SV(_state.CodeReg);
 	SV(_state.ControlPortMsbToggle);
-	SV(_state.ReadBuffer);
+	SV(_state.VramBuffer);
 	SV(_state.HCounterLatch);
 	SV(_state.VerticalBlankIrqPending);
 	SV(_state.ScanlineIrqPending);
@@ -1170,8 +1523,20 @@ void SmsVdp::Serialize(Serializer& s)
 	if(s.GetFormat() != SerializeFormat::Map) {
 		//Hide these entries from the Lua API
 		SVArray(_bgShifters, 4);
+
+		SV(_evalCounter);
+		SV(_inRangeSpriteCount);
+		SV(_spriteOverflowPending);
+
+		SV(_spriteIndex);
+		SV(_inRangeSpriteIndex);
+		SV(_spriteCount);
+		SVArray(_inRangeSprites, 64);
 		for(int i = 0; i < 64; i++) {
+			SVI(_spriteShifters[i].HardwareSprite);
 			SVI(_spriteShifters[i].SpriteX);
+			SVI(_spriteShifters[i].SpriteRow);
+			SVI(_spriteShifters[i].TileAddr);
 			SVI(_spriteShifters[i].TileData[0]);
 			SVI(_spriteShifters[i].TileData[1]);
 			SVI(_spriteShifters[i].TileData[2]);
@@ -1186,14 +1551,13 @@ void SmsVdp::Serialize(Serializer& s)
 		SV(_minDrawCycle);
 		SV(_pixelsAvailable);
 		SV(_bgHorizontalMirror);
-		SV(_spriteCount);
 		SV(_scanlineCount);
 		SV(_region);
 		SV(_revision);
 		SV(_latchRequest);
 		SV(_latchPos);
+		SV(_readPending);
 		SV(_writePending);
-		SV(_writeBuffer);
 		SV(_bgTileIndex);
 		SV(_bgPatternData);
 		SV(_textModeStep);

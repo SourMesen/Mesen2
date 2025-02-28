@@ -333,7 +333,8 @@ namespace Mesen.Debugger.ViewModels
 
 				case CpuType.Sms:
 					Tabs = new List<TilemapViewerTab>() {
-						new() { Title = "", Layer = 0 }
+						new() { Title = "BG", Layer = 0 },
+						new() { Title = "Mem Access", Layer = 1 }
 					};
 					break;
 

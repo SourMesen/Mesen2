@@ -34,7 +34,7 @@ public class SmsRegisterViewer
 			new RegEntry("$BF.7", "Vertical blank IRQ pending", vdp.VerticalBlankIrqPending),
 			new RegEntry("$BF.6", "Sprite overflow", vdp.SpriteOverflow),
 			new RegEntry("$BF.5", "Sprite collision", vdp.SpriteCollision),
-			new RegEntry("--", "Data port read buffer", vdp.ReadBuffer),
+			new RegEntry("--", "Data port buffer", vdp.VramBuffer),
 			new RegEntry("--", "Address register", vdp.AddressReg, Format.X16),
 			new RegEntry("--", "Code register", vdp.CodeReg),
 			new RegEntry("--", "Control port MSB toggle", vdp.ControlPortMsbToggle),
