@@ -49,7 +49,7 @@ void WsCpu::Exec()
 
 	if(irqPending) {
 		_state.Halted = false;
-		if(_state.Flags.Irq) {
+		if(_state.Flags.Irq && _suppressIrqClock != _state.CycleCount) {
 			Interrupt(_memoryManager->GetIrqVector(), true);
 		}
 	}
@@ -232,7 +232,12 @@ void WsCpu::PopFlags()
 	Idle<2>();
 	uint16_t flags;
 	Pop(flags);
+	bool irq = _state.Flags.Irq;
 	_state.Flags.Set(flags);
+	if(!irq && _state.Flags.Irq) {
+		//Suppress IRQs for the next instruction when irq flag gets set
+		SuppressIrq(false);
+	}
 }
 
 void WsCpu::PopMemory()
@@ -475,7 +480,12 @@ void WsCpu::RetInterrupt()
 	Pop(_state.CS);
 	uint16_t flags;
 	Pop(flags);
+	bool irq = _state.Flags.Irq;
 	_state.Flags.Set(flags);
+	if(!irq && _state.Flags.Irq) {
+		//Suppress IRQs for the next instruction when irq flag gets set
+		SuppressIrq(false);
+	}
 	ClearPrefetch();
 }
 
@@ -809,10 +819,31 @@ void WsCpu::Halt()
 	_state.Halted = true;
 }
 
+void WsCpu::SuppressIrq(bool suppressTrap)
+{
+	//When the IRQ flag gets set, or when the SS segment is modified, IRQs
+	//are suppressed after the current instruction and will only trigger
+	//on the instruction after that.
+	_suppressIrqClock = _state.CycleCount;
+	if(suppressTrap) {
+		_suppressTrapClock = _state.CycleCount;
+	}
+}
+
 void WsCpu::SetFlagValue(bool& flag, bool value)
 {
 	Idle<4>();
 	flag = value;
+}
+
+void WsCpu::SetIrqFlag()
+{
+	Idle<4>();
+	if(!_state.Flags.Irq) {
+		_state.Flags.Irq = true;
+		//Suppress IRQs for the next instruction when irq flag gets set
+		SuppressIrq(false);
+	}
 }
 
 void WsCpu::ClearPrefetch()
@@ -1070,6 +1101,10 @@ void WsCpu::MoveSegment()
 
 	if constexpr(direction) {
 		SetModSegRegister(_modRm.Register, param);
+		if(_modRm.Register == 2) {
+			//SS was updated, suppress IRQs after this instruction
+			SuppressIrq(true);
+		}
 	} else {
 		SetModRm(param);
 	}
@@ -1827,7 +1862,7 @@ start:
 		case 0x14: ProcessAluImm<AluOp::Adc, uint8_t>(); break;
 		case 0x15: ProcessAluImm<AluOp::Adc, uint16_t>(); break;
 		case 0x16: PushSegment(_state.SS); break;
-		case 0x17: PopSegment(_state.SS); break;
+		case 0x17: PopSegment(_state.SS); SuppressIrq(true); break;
 		case 0x18: ProcessAluModRm<AluOp::Sbb, false, uint8_t>(); break;
 		case 0x19: ProcessAluModRm<AluOp::Sbb, false, uint16_t>(); break;
 		case 0x1A: ProcessAluModRm<AluOp::Sbb, true, uint8_t>(); break;
@@ -2069,7 +2104,7 @@ start:
 		case 0xF8: SetFlagValue(_state.Flags.Carry, false); break; //CLC
 		case 0xF9: SetFlagValue(_state.Flags.Carry, true); break; //STC
 		case 0xFA: SetFlagValue(_state.Flags.Irq, false); break; //CLI
-		case 0xFB: SetFlagValue(_state.Flags.Irq, true); break; //STI
+		case 0xFB: SetIrqFlag(); break; //STI
 		case 0xFC: SetFlagValue(_state.Flags.Direction, false); break; //CLD
 		case 0xFD: SetFlagValue(_state.Flags.Direction, true); break; //STD
 		case 0xFE: Grp45ModRm<uint8_t>(); break;
@@ -2080,7 +2115,7 @@ start:
 		_prefix = {};
 	}
 
-	if(_state.Flags.Trap) {
+	if(_state.Flags.Trap && _suppressTrapClock != _state.CycleCount) {
 		Interrupt(1);
 	}
 }
@@ -2129,4 +2164,7 @@ void WsCpu::Serialize(Serializer& s)
 	SV(_modRm.Mode);
 	SV(_modRm.Register);
 	SV(_modRm.Rm);
+
+	SV(_suppressIrqClock);
+	SV(_suppressTrapClock);
 }

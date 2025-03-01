@@ -59,10 +59,10 @@ void WsPpu::ProcessHblank()
 	_timer->TickHorizontalTimer();
 	if(_state.Scanline < WsConstants::ScreenHeight) {
 		switch(_state.Mode) {
-		case WsVideoMode::Monochrome: DrawScanline<WsVideoMode::Monochrome>(); break;
-		case WsVideoMode::Color2bpp: DrawScanline<WsVideoMode::Color2bpp>(); break;
-		case WsVideoMode::Color4bpp: DrawScanline<WsVideoMode::Color4bpp>(); break;
-		case WsVideoMode::Color4bppPacked: DrawScanline<WsVideoMode::Color4bppPacked>(); break;
+			case WsVideoMode::Monochrome: DrawScanline<WsVideoMode::Monochrome>(); break;
+			case WsVideoMode::Color2bpp: DrawScanline<WsVideoMode::Color2bpp>(); break;
+			case WsVideoMode::Color4bpp: DrawScanline<WsVideoMode::Color4bpp>(); break;
+			case WsVideoMode::Color4bppPacked: DrawScanline<WsVideoMode::Color4bppPacked>(); break;
 		}
 	}
 }
@@ -157,11 +157,9 @@ void WsPpu::DrawSprites()
 
 				if(x >= 224) {
 					continue;
-				}
-				else if(_rowData[rowIndex][x].Priority > 0) {
+				} else if(_rowData[rowIndex][x].Priority > 0) {
 					continue;
-				}
-				else if(_state.SpriteWindow.EnabledLatch && showOutsideWindow == _state.SpriteWindow.IsInsideWindow(x, scanline)) {
+				} else if(_state.SpriteWindow.EnabledLatch && showOutsideWindow == _state.SpriteWindow.IsInsideWindow(x, scanline)) {
 					//Don't draw this pixel, it's outside/inside the window and should only be drawn on the other side
 					continue;
 				}
@@ -257,40 +255,39 @@ template<WsVideoMode mode>
 uint16_t WsPpu::GetPixelColor(uint16_t tileAddr, uint8_t column)
 {
 	switch(mode) {
-	case WsVideoMode::Monochrome: {
-		uint8_t tileData = _vram[tileAddr];
-		uint8_t tileData2 = _vram[tileAddr + 1];
-		return (
-			((tileData << column) & 0x80) >> 7 |
-			((tileData2 << column) & 0x80) >> 6
+		case WsVideoMode::Monochrome: {
+			uint8_t tileData = _vram[tileAddr];
+			uint8_t tileData2 = _vram[tileAddr + 1];
+			return (
+				((tileData << column) & 0x80) >> 7 |
+				((tileData2 << column) & 0x80) >> 6
 			);
-	}
+		}
 
-	case WsVideoMode::Color2bpp: {
-		uint8_t tileData = _vram[tileAddr];
-		uint8_t tileData2 = _vram[tileAddr + 1];
-		return (
-			((tileData << column) & 0x80) >> 7 |
-			((tileData2 << column) & 0x80) >> 6
+		case WsVideoMode::Color2bpp: {
+			uint8_t tileData = _vram[tileAddr];
+			uint8_t tileData2 = _vram[tileAddr + 1];
+			return (
+				((tileData << column) & 0x80) >> 7 |
+				((tileData2 << column) & 0x80) >> 6
 			);
-	}
+		}
 
-	case WsVideoMode::Color4bpp: {
-		uint8_t tileData = _vram[tileAddr];
-		uint8_t tileData2 = _vram[tileAddr + 1];
-		uint8_t tileData3 = _vram[tileAddr + 2];
-		uint8_t tileData4 = _vram[tileAddr + 3];
-		return (
-			((tileData << column) & 0x80) >> 7 |
-			((tileData2 << column) & 0x80) >> 6 |
-			((tileData3 << column) & 0x80) >> 5 |
-			((tileData4 << column) & 0x80) >> 4
+		case WsVideoMode::Color4bpp: {
+			uint8_t tileData = _vram[tileAddr];
+			uint8_t tileData2 = _vram[tileAddr + 1];
+			uint8_t tileData3 = _vram[tileAddr + 2];
+			uint8_t tileData4 = _vram[tileAddr + 3];
+			return (
+				((tileData << column) & 0x80) >> 7 |
+				((tileData2 << column) & 0x80) >> 6 |
+				((tileData3 << column) & 0x80) >> 5 |
+				((tileData4 << column) & 0x80) >> 4
 			);
-	}
+		}
 
-	case WsVideoMode::Color4bppPacked: {
-		return (_vram[tileAddr + column / 2] >> (column & 0x01 ? 0 : 4)) & 0x0F;
-	}
+		case WsVideoMode::Color4bppPacked:
+			return (_vram[tileAddr + column / 2] >> (column & 0x01 ? 0 : 4)) & 0x0F;
 	}
 
 	return 0;
@@ -535,7 +532,7 @@ uint8_t WsPpu::ReadPort(uint16_t port)
 		return (
 			(_state.LcdEnabled ? 0x01 : 0) |
 			(_state.HighContrast ? 0x02 : 0)
-			);
+		);
 
 	case 0x15: return _state.Icons.Value;
 	case 0x16: return _state.LastScanline;
@@ -549,14 +546,14 @@ uint8_t WsPpu::ReadPort(uint16_t port)
 		return (
 			_state.BwShades[(port - 0x1C) * 2] |
 			(_state.BwShades[(port - 0x1C) * 2 + 1] << 4)
-			);
+		);
 
 	default:
 		if(port >= 0x20 && port <= 0x3F) {
 			return (
 				_state.BwPalettes[(port - 0x20) * 2] |
 				(_state.BwPalettes[(port - 0x20) * 2 + 1] << 4)
-				);
+			);
 		}
 		else {
 			LogDebug("[Debug] PPU Read - missing handler: $" + HexUtilities::ToHex(port));
@@ -647,8 +644,7 @@ void WsPpu::WritePort(uint16_t port, uint8_t value)
 		if(port >= 0x20 && port <= 0x3F) {
 			_state.BwPalettes[(port - 0x20) * 2] = value & 0x07;
 			_state.BwPalettes[(port - 0x20) * 2 + 1] = (value >> 4) & 0x07;
-		}
-		else {
+		} else {
 			LogDebug("[Debug] PPU Write - missing handler: $" + HexUtilities::ToHex(port) + "  = " + HexUtilities::ToHex(value));
 		}
 		break;
