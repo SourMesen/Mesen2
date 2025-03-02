@@ -26,6 +26,7 @@ public:
 	void InitCart() override
 	{
 		_memoryManager->MapRegisters(0x0000, 0x7FFF, RegisterAccess::Write);
+		_rtc.Init();
 	}
 
 	void RefreshMappings() override

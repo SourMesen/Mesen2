@@ -46,8 +46,11 @@ SuperGameboy::~SuperGameboy()
 
 void SuperGameboy::Reset()
 {
-	_control = 0;
+	_control = 0x01;
+	_effectiveClockRate = 0;
+	_clockOffset = 0;
 	_resetClock = 0;
+	UpdateClockRatio();
 
 	memset(_input, 0, sizeof(_input));
 	_inputIndex = 0;

@@ -26,13 +26,18 @@ public:
 	GbMbc3Rtc(Emulator* emu)
 	{
 		_emu = emu;
-		_lastMasterClock = 0;
-		LoadBattery();
+		Init();
 	}
 
 	~GbMbc3Rtc()
 	{
 		SaveBattery();
+	}
+
+	void Init()
+	{
+		_lastMasterClock = 0;
+		LoadBattery();
 	}
 
 	void LoadBattery()
