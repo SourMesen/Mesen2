@@ -315,7 +315,7 @@ namespace Mesen.Windows
 					if(!evtParams.IsPowerCycle) {
 						Dispatcher.UIThread.Post(() => {
 							_model.RecentGames.Visible = false;
-							if(IsKeyboardFocusWithin) {
+							if(IsKeyboardFocusWithin || IsActive) {
 								this.GetControl<Panel>("RendererPanel").Focus();
 							}
 
