@@ -54,7 +54,20 @@ namespace Mesen.Utilities
 						client.Connect(200);
 
 						foreach(string argument in args) {
-							writer.WriteLine(argument);
+							string absPath;
+							if(Path.IsPathRooted(argument)) {
+								absPath = argument;
+							} else {
+								absPath = Path.GetFullPath(argument, Program.OriginalFolder);
+							}
+
+							if(File.Exists(absPath)) {
+								//Send absolute path to the other instance, to ensure it can find
+								//the file even though its startup folder might have been different
+								writer.WriteLine(absPath);
+							} else {
+								writer.WriteLine(argument);
+							}
 						}
 					}
 				}
