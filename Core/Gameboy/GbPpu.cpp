@@ -179,6 +179,9 @@ void GbPpu::ExecCycle()
 			//Mode turns to hblank on the same cycle as the last pixel is output
 			_state.Mode = PpuMode::HBlank;
 			_state.IrqMode = PpuMode::HBlank;
+			if(_gameboy->IsSgb()) {
+				_gameboy->GetSgb()->ProcessHBlank();
+			}
 			_state.IdleCycles = 456 - _state.Cycle - 1;
 			
 			_oamReadBlocked = false;
@@ -219,6 +222,9 @@ void GbPpu::ProcessVblankScanline()
 				if(_state.Scanline == 144) {
 					_state.Mode = PpuMode::VBlank;
 					_state.IrqMode = PpuMode::VBlank;
+					if(_gameboy->IsSgb()) {
+						_gameboy->GetSgb()->ProcessVBlank();
+					}
 					_windowCounter = -1;
 					_memoryManager->RequestIrq(GbIrqSource::VerticalBlank);
 					SendFrame();

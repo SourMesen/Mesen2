@@ -30,6 +30,9 @@ private:
 	double _clockRatio = 0;
 	double _effectiveClockRate = 0;
 	uint64_t _clockOffset = 0;
+
+	uint8_t _row = 0;
+	uint8_t _bank = 0;
 	
 	uint8_t _input[4] = {};
 	uint8_t _inputIndex = 0;
@@ -49,8 +52,6 @@ private:
 	
 	HermiteResampler _resampler;
 
-	uint8_t GetLcdRow();
-	uint8_t GetLcdBufferRow();
 	uint8_t GetPlayerCount();
 
 	void SetInputIndex(uint8_t index);
@@ -70,6 +71,9 @@ public:
 	void ProcessInputPortWrite(uint8_t value);
 
 	void LogPacket();
+
+	void ProcessHBlank();
+	void ProcessVBlank();
 
 	void WriteLcdColor(uint8_t scanline, uint8_t pixel, uint8_t color);
 
