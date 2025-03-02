@@ -146,6 +146,7 @@ void SuperGameboy::ProcessInputPortWrite(uint8_t value)
 		_waitForHigh = true;
 		_packetByte = 0;
 		_packetBit = 0;
+		_packetBuffer = 0;
 	} else if(_waitForHigh) {
 		if(value == 0x10 || value == 0x20) {
 			//Invalid sequence (should be 0x00 -> 0x30 -> 0x10/0x20 -> 0x30 -> 0x10/0x20, etc.)
@@ -166,11 +167,13 @@ void SuperGameboy::ProcessInputPortWrite(uint8_t value)
 					LogPacket();
 				}
 			} else {
-				_packetData[_packetByte] &= ~(1 << _packetBit);
+				_packetBuffer &= ~(1 << _packetBit);
 			}
 			_packetBit++;
 			if(_packetBit == 8) {
 				_packetBit = 0;
+				_packetData[_packetByte] = _packetBuffer;
+				_packetBuffer = 0;
 				_packetByte++;
 			}
 		} else if(value == 0x10) {
@@ -179,10 +182,12 @@ void SuperGameboy::ProcessInputPortWrite(uint8_t value)
 				//Invalid bit
 				_listeningForPacket = false;
 			} else {
-				_packetData[_packetByte] |= (1 << _packetBit);
+				_packetBuffer |= (1 << _packetBit);
 				_packetBit++;
 				if(_packetBit == 8) {
 					_packetBit = 0;
+					_packetData[_packetByte] = _packetBuffer;
+					_packetBuffer = 0;
 					_packetByte++;
 				}
 			}
@@ -361,7 +366,7 @@ AddressInfo SuperGameboy::GetAbsoluteAddress(uint32_t address)
 void SuperGameboy::Serialize(Serializer& s)
 {
 	SV(_control); SV(_resetClock); SV(_input[0]); SV(_input[1]); SV(_input[2]); SV(_input[3]); SV(_inputIndex); SV(_listeningForPacket); SV(_packetReady);
-	SV(_inputWriteClock); SV(_inputValue); SV(_packetByte); SV(_packetBit); SV(_lcdRowSelect); SV(_readPosition); SV(_waitForHigh); SV(_clockRatio);
+	SV(_inputWriteClock); SV(_inputValue); SV(_packetByte); SV(_packetBuffer); SV(_packetBit); SV(_lcdRowSelect); SV(_readPosition); SV(_waitForHigh); SV(_clockRatio);
 	SV(_row);
 	SV(_bank);
 

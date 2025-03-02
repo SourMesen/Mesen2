@@ -45,6 +45,7 @@ private:
 	uint8_t _packetData[16] = {};
 	uint8_t _packetByte = 0;
 	uint8_t _packetBit = 0;
+	uint8_t _packetBuffer = 0;
 
 	uint8_t _lcdRowSelect = 0;
 	uint16_t _readPosition = 0;
