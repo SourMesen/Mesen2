@@ -232,11 +232,18 @@ void WsCpu::PopFlags()
 	Idle<2>();
 	uint16_t flags;
 	Pop(flags);
+	SetFlags(flags);
+}
+
+void WsCpu::SetFlags(uint16_t flags)
+{
 	bool irq = _state.Flags.Irq;
+	bool trace = _state.Flags.Trap;
 	_state.Flags.Set(flags);
-	if(!irq && _state.Flags.Irq) {
+	bool trapEnabled = !trace && _state.Flags.Trap;
+	if((!irq && _state.Flags.Irq) || trapEnabled) {
 		//Suppress IRQs for the next instruction when irq flag gets set
-		SuppressIrq(false);
+		SuppressIrq(trapEnabled);
 	}
 }
 
@@ -480,12 +487,7 @@ void WsCpu::RetInterrupt()
 	Pop(_state.CS);
 	uint16_t flags;
 	Pop(flags);
-	bool irq = _state.Flags.Irq;
-	_state.Flags.Set(flags);
-	if(!irq && _state.Flags.Irq) {
-		//Suppress IRQs for the next instruction when irq flag gets set
-		SuppressIrq(false);
-	}
+	SetFlags(flags);
 	ClearPrefetch();
 }
 

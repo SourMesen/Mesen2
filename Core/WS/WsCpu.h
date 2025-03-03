@@ -120,6 +120,7 @@ private:
 	void PopSegment(uint16_t& dst);
 	void PushFlags();
 	void PopFlags();
+	void SetFlags(uint16_t flags);
 	void PopMemory();
 	void PopAll();
 	void PushAll();
