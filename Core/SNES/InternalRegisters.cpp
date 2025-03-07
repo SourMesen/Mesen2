@@ -189,7 +189,7 @@ uint8_t InternalRegisters::Peek(uint16_t addr)
 {
 	//TODO controller data/_autoReadActive can be out of date because ProcessAutoJoypad() can't be called here
 	switch(addr) {
-		case 0x4210: return (_nmiFlag ? 0x80 : 0) | 0x02 | (_memoryManager->GetOpenBus() & 0x7F);
+		case 0x4210: return (_nmiFlag ? 0x80 : 0) | 0x02 | (_memoryManager->GetOpenBus() & 0x70);
 		case 0x4211: return (_irqFlag ? 0x80 : 0) | (_memoryManager->GetOpenBus() & 0x7F);
 
 		case 0x4212: {
