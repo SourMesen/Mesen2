@@ -52,7 +52,7 @@ public:
 
 	void WriteRegister(uint16_t addr, uint8_t value)
 	{
-		switch(addr) {
+		switch(addr & 0xF003) {
 			case 0x9000: case 0x9001: case 0x9002:
 				_pulse1.WriteReg(addr, value);
 				break;
