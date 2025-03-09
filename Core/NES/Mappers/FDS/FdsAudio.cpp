@@ -98,6 +98,9 @@ void FdsAudio::WriteRegister(uint16_t addr, uint8_t value)
 			case 0x4080:
 			case 0x4082:
 				_volume.WriteReg(addr, value);
+
+				//Update mod output (in case frequency was changed)
+				_mod.UpdateOutput(_volume.GetFrequency());
 				break;
 
 			case 0x4083:
@@ -108,6 +111,9 @@ void FdsAudio::WriteRegister(uint16_t addr, uint8_t value)
 					_mod.ResetTimer();
 				}
 				_volume.WriteReg(addr, value);
+
+				//Update mod output (in case frequency was changed)
+				_mod.UpdateOutput(_volume.GetFrequency());
 				break;
 
 			case 0x4086:
@@ -119,7 +125,7 @@ void FdsAudio::WriteRegister(uint16_t addr, uint8_t value)
 			case 0x4085:
 				_mod.WriteReg(addr, value);
 				
-				//Need to update mod output if gain/speed were changed
+				//Update mod output (in case gain/counter were changed)
 				_mod.UpdateOutput(_volume.GetFrequency());
 				break;
 
