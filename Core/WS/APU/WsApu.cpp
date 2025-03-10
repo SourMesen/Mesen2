@@ -86,9 +86,9 @@ uint8_t WsApu::ReadSample(uint8_t ch, uint8_t pos)
 	uint8_t value = _memoryManager->InternalRead(addr);
 	_emu->ProcessMemoryRead<CpuType::Ws>(addr, value, MemoryOperationType::Read);
 	if(pos & 0x01) {
-		return value & 0x0F;
-	} else {
 		return value >> 4;
+	} else {
+		return value & 0x0F;
 	}
 }
 

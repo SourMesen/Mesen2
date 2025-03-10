@@ -148,6 +148,7 @@ public class WsRegisterViewer
 		);
 
 		entries.AddRange(new List<RegEntry>() {
+			new RegEntry("$8F", "Wave Table Address", apu.WaveTableAddress, Format.X16),
 			new RegEntry("$91", "Sound Output Control"),
 			new RegEntry("$91.0", "Speaker Enabled", apu.SpeakerEnabled),
 			new RegEntry("$91.1-2", "Speaker Volume", apu.SpeakerVolume switch {
