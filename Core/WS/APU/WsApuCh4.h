@@ -38,6 +38,8 @@ public:
 	void UpdateOutput()
 	{
 		if(!_state->Enabled) {
+			_state->LeftOutput = 0;
+			_state->RightOutput = 0;
 			return;
 		}
 

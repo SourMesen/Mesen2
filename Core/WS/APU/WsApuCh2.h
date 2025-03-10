@@ -32,18 +32,17 @@ public:
 
 	void UpdateOutput()
 	{
-		if(!_state->Enabled) {
-			return;
-		}
-
 		if(_state->PcmEnabled) {
 			uint8_t sample = _state->GetVolume();
 			_state->LeftOutput = sample >> (_state->MaxPcmVolumeLeft ? 0 : (_state->HalfPcmVolumeLeft ? 1 : 8));
 			_state->RightOutput = sample >> (_state->MaxPcmVolumeRight ? 0 : (_state->HalfPcmVolumeRight ? 1 : 8));
-		} else {
+		} else if(_state->Enabled) {
 			uint8_t sample = _apu->ReadSample(1, _state->SamplePosition);
 			_state->LeftOutput = _state->LeftVolume * sample;
 			_state->RightOutput = _state->RightVolume * sample;
+		} else {
+			_state->LeftOutput = 0;
+			_state->RightOutput = 0;
 		}
 	}
 };
