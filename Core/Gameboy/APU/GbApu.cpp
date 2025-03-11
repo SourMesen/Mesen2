@@ -352,10 +352,8 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 	}
 }
 
-uint8_t GbApu::ReadCgbRegister(uint16_t addr)
+uint8_t GbApu::InternalReadCgbRegister(uint16_t addr)
 {
-	Run();
-
 	switch(addr) {
 		case 0xFF76: return _square1->GetRawOutput() | (_square2->GetRawOutput() << 4);
 		case 0xFF77: return _wave->GetRawOutput() | (_noise->GetRawOutput() << 4);
@@ -363,6 +361,17 @@ uint8_t GbApu::ReadCgbRegister(uint16_t addr)
 
 	//Should not be called
 	return 0;
+}
+
+uint8_t GbApu::PeekCgbRegister(uint16_t addr)
+{
+	return InternalReadCgbRegister(addr);
+}
+
+uint8_t GbApu::ReadCgbRegister(uint16_t addr)
+{
+	Run();
+	return InternalReadCgbRegister(addr);
 }
 
 template<typename T>

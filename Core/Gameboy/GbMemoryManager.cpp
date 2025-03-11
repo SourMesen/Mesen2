@@ -236,8 +236,11 @@ uint8_t GbMemoryManager::DebugRead(uint16_t addr)
 {
 	if(_state.IsReadRegister[addr >> 8]) {
 		return PeekRegister(addr);
-	} else if(_reads[addr >> 8]) {
-		return _reads[addr >> 8][(uint8_t)addr];
+	} else {
+		uint8_t* ptr = _reads[addr >> 8];
+		if(ptr) {
+			return ptr[(uint8_t)addr];
+		}
 	}
 	return 0;
 }
@@ -246,8 +249,11 @@ void GbMemoryManager::DebugWrite(uint16_t addr, uint8_t value)
 {
 	if(_state.IsWriteRegister[addr >> 8]) {
 		//Do not write to registers via debug tools
-	} else if(_writes[addr >> 8]) {
-		_writes[addr >> 8][(uint8_t)addr] = value;
+	} else {
+		uint8_t* ptr = _writes[addr >> 8];
+		if(ptr) {
+			ptr[(uint8_t)addr] = value;
+		}
 	}
 }
 
@@ -263,6 +269,10 @@ uint8_t GbMemoryManager::PeekRegister(uint16_t addr)
 {
 	//Peek on oam/vram to avoid triggering the invalid oam/vram access break options
 	if(addr >= 0xFF40) {
+		if(_gameboy->IsCgb() && (addr == 0xFF76 || addr == 0xFF77)) {
+			//Avoid calling Run() on APU when debugger reads CGB-only APU registers
+			return _apu->PeekCgbRegister(addr);
+		}
 		return ReadRegister(addr);
 	} else if(addr >= 0xFE00 && addr <= 0xFE9F) {
 		return _ppu->PeekOam((uint8_t)addr);
