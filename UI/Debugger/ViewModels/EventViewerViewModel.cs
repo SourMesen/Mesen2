@@ -463,7 +463,8 @@ namespace Mesen.Debugger.ViewModels
 				string dmaInfo = "";
 				if(cpuType == CpuType.Snes) {
 					bool indirectHdma = false;
-					if((evt.DmaChannel & EventViewerViewModel.HdmaChannelFlag) != 0) {
+					bool isHdma = (evt.DmaChannel & EventViewerViewModel.HdmaChannelFlag) != 0;
+					if(isHdma) {
 						indirectHdma = evt.DmaChannelInfo.HdmaIndirectAddressing;
 						dmaInfo += "HDMA #" + (evt.DmaChannel & 0x07);
 						dmaInfo += indirectHdma ? " (indirect)" : "";
@@ -479,7 +480,9 @@ namespace Mesen.Debugger.ViewModels
 
 					int aBusAddress;
 					if(indirectHdma) {
-						aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.TransferSize;
+						aBusAddress = (evt.DmaChannelInfo.HdmaBank << 16) | evt.DmaChannelInfo.TransferSize;
+					} else if(isHdma) {
+						aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.HdmaTableAddress;
 					} else {
 						aBusAddress = (evt.DmaChannelInfo.SrcBank << 16) | evt.DmaChannelInfo.SrcAddress;
 					}
