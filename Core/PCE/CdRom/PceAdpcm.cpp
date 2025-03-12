@@ -42,7 +42,7 @@ void PceAdpcm::Reset()
 	SetHalfReached(false);
 	_state.AdpcmLength = 0;
 	_state.Nibble = false;
-	_currentOutput = 0;
+	_currentOutput = 2048;
 	_magnitude = 0;
 }
 
@@ -307,6 +307,7 @@ void PceAdpcm::PlaySample()
 	if(!_state.Playing) {
 		_state.Playing = true;
 		_currentOutput = 2048;
+		_magnitude = 0;
 	}
 
 	uint8_t data;
@@ -324,7 +325,7 @@ void PceAdpcm::PlaySample()
 	int8_t sign = data & 0x08 ? -1 : 1;
 
 	int16_t adjustment = _stepSize[(_magnitude << 3) | value] * sign;
-	_currentOutput += adjustment;
+	_currentOutput = (_currentOutput + adjustment) & 0xFFF;
 	
 	_magnitude = std::clamp(_magnitude + _stepFactor[value], 0, 48);
 
@@ -333,7 +334,7 @@ void PceAdpcm::PlaySample()
 		SetEndReached(true);
 	}
 
-	int16_t out = (std::clamp<int16_t>(_currentOutput, 0, 4095) - 2048) * 10;
+	int16_t out = (_currentOutput - 2048) * 10;
 	_samplesToPlay.push_back(out);
 	_samplesToPlay.push_back(out);
 }
