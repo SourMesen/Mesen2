@@ -243,6 +243,7 @@
 #include "NES/Mappers/Unlicensed/Mapper60.h"
 #include "NES/Mappers/Unlicensed/Mapper62.h"
 #include "NES/Mappers/Unlicensed/Mapper83.h"
+#include "NES/Mappers/Unlicensed/Mapper487.h"
 #include "NES/Mappers/Unlicensed/Nanjing.h"
 #include "NES/Mappers/Unlicensed/Nina01.h"
 #include "NES/Mappers/Unlicensed/Nina03_06.h"
@@ -600,6 +601,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 350: break; //891227
 
 		case 366: return new BmcGn45();
+
+		case 487: return new Mapper487();
 
 		case 513: return new Sachen9602();
 		//514-517

@@ -22,6 +22,12 @@ protected:
 		UpdateState();
 	}
 
+	void Serialize(Serializer& s) override
+	{
+		BaseMapper::Serialize(s);
+		SVArray(_regs, 2);
+	}
+
 	void UpdateState()
 	{
 		if(_regs[0] & 0x40) {
@@ -63,6 +69,6 @@ protected:
 		} else {
 			_regs[1] = value & 0x71;
 			UpdateState();
-		}		
+		}
 	}
 };

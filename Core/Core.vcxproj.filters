@@ -2973,6 +2973,9 @@
     <ClInclude Include="SNES\Coprocessors\SufamiTurbo\SufamiTurbo.h">
       <Filter>SNES\Coprocessors\SufamiTurbo</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Unlicensed\Mapper487.h">
+      <Filter>NES\Mappers\Unlicensed</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

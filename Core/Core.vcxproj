@@ -25,6 +25,7 @@
     <ClInclude Include="NES\Mappers\Homebrew\RainbowAudio.h" />
     <ClInclude Include="NES\Debugger\IExtModeMapperDebug.h" />
     <ClInclude Include="NES\Mappers\Homebrew\FlashS29.h" />
+    <ClInclude Include="NES\Mappers\Unlicensed\Mapper487.h" />
     <ClInclude Include="NES\OpnInterface.h" />
     <ClInclude Include="SMS\Input\ColecoVisionController.h" />
     <ClInclude Include="Debugger\AddressInfo.h" />
