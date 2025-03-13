@@ -56,9 +56,12 @@ AssemblerSpecialCodes SnesAssembler::ResolveOpMode(AssemblerLineData& op, uint32
 		op.AddrMode = SnesAddrMode::BlkMov;
 	} else if(operand.IsImmediate) {
 		//Imm16, Imm8, Rel
-		if(operand.HasParenOrBracket() || operand.ByteCount > 2 || op.OperandCount > 1) {
+		if(operand.ByteCount > 2) {
+			return AssemblerSpecialCodes::OperandOutOfRange;
+		} else if(operand.HasParenOrBracket() || op.OperandCount > 1) {
 			return AssemblerSpecialCodes::ParsingError;
 		}
+
 		if(IsOpModeAvailable(op.OpCode, SnesAddrMode::Rel)) {
 			op.AddrMode = SnesAddrMode::Rel;
 		} else {

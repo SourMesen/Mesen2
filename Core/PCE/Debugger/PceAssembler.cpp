@@ -125,7 +125,7 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 			return AssemblerSpecialCodes::InvalidOperands;
 		} else if(operand.ByteCount > 1) {
 			//Can't be a 2-byte operand
-			return AssemblerSpecialCodes::InvalidOperands;
+			return AssemblerSpecialCodes::OperandOutOfRange;
 		}
 		op.AddrMode = IsOpModeAvailable(op.OpCode, PceAddrMode::Rel) ? PceAddrMode::Rel : PceAddrMode::Imm;
 	} else if(operand.HasOpeningParenthesis) {

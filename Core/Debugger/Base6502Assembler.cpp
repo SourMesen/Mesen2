@@ -97,20 +97,20 @@ AssemblerSpecialCodes Base6502Assembler<T>::ParseOperand(AssemblerLineData& line
 	}
 
 	//Check for operands that match
-	static const std::regex operandRegex = std::regex("^([(\\[]?)[\\s]*(((#?)[\\s]*([$%]?)(-?)([0-9a-f]{1,16}))|([@_a-zA-Z][@_a-zA-Z0-9+]*))[\\s]*([\\])]?)[\\s]*$", std::regex_constants::icase);
+	static const std::regex operandRegex = std::regex("^([(\\[]?)[\\s]*(((#?)[\\s]*([$%]?)(-?)([0-9a-f]{1,16}))|(#{0,1})([@_a-zA-Z][@_a-zA-Z0-9+]*))[\\s]*([\\])]?)[\\s]*$", std::regex_constants::icase);
 
 	std::smatch match;
 	if(std::regex_search(operandStr, match, operandRegex)) {
 		operand.HasOpeningBracket = !match.str(1).empty() && match.str(1) == "[";
 		operand.HasOpeningParenthesis = !match.str(1).empty() && match.str(1) == "(";
 
-		operand.HasClosingBracket = !match.str(9).empty() && match.str(9) == "]";
-		operand.HasClosingParenthesis = !match.str(9).empty() && match.str(9) == ")";
+		operand.HasClosingBracket = !match.str(10).empty() && match.str(10) == "]";
+		operand.HasClosingParenthesis = !match.str(10).empty() && match.str(10) == ")";
 
-		operand.IsImmediate = !match.str(4).empty();
+		operand.IsImmediate = !match.str(4).empty() || !match.str(8).empty();
 
 		bool hasNegativeSign = !match.str(6).empty();
-		string label = match.str(8);
+		string label = match.str(9);
 
 		if(!match.str(5).empty()) {
 			if(hasNegativeSign) {
@@ -221,8 +221,8 @@ AssemblerSpecialCodes Base6502Assembler<T>::ParseOperand(AssemblerLineData& line
 						//First pass, we couldn't find a matching label, so it might be defined later on
 						//Pretend it exists for now
 						_needSecondPass = true;
-						operand.Value = 0xFFFF;
-						operand.ByteCount = 2;
+						operand.Value = 0xFF;
+						operand.ByteCount = 1;
 					} else {
 						return AssemblerSpecialCodes::UnknownLabel;
 					}

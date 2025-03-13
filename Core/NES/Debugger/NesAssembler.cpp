@@ -51,7 +51,7 @@ AssemblerSpecialCodes NesAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 			return AssemblerSpecialCodes::ParsingError;
 		} else if(operand.ByteCount > 1) {
 			//Can't be a 2-byte operand
-			return AssemblerSpecialCodes::ParsingError;
+			return AssemblerSpecialCodes::OperandOutOfRange;
 		}
 		op.AddrMode = IsOpModeAvailable(op.OpCode, NesAddrMode::Rel) ? NesAddrMode::Rel : NesAddrMode::Imm;
 	} else if(operand.HasOpeningParenthesis) {
