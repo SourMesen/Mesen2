@@ -1188,8 +1188,8 @@ void GbaPpu::SetLayerEnabled(int layer, bool enabled)
 void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 {
 	if(_lastRenderCycle != _state.Cycle && (_state.Scanline < 160 || _state.Scanline == 227)) {
-		if(_state.Cycle < 1006 || addr <= 0x01 || addr == 0x4D) {
-			//Only run renderer during active rendering (< 1006), or if the write could affect sprites
+		if(_state.Cycle < 1006 || addr <= 0x01 || addr == 0x4D || addr >= 0x40 && addr <= 0x43) {
+			//Only run renderer during active rendering (< 1006), or if the write could affect sprites/window processing
 			RenderScanline(true);
 		}
 	}
