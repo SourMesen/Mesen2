@@ -34,26 +34,24 @@ void FdsAudio::ClockAudio()
 		_mod.UpdateOutput(frequency);
 	}
 
-	if(_haltWaveform) {
-		_wavePosition = 0;
-		UpdateOutput();
-	} else {
-		UpdateOutput();
+	UpdateOutput();
 
-		if(frequency + _mod.GetOutput() > 0 && !_waveWriteEnabled) {
-			_waveOverflowCounter += frequency + _mod.GetOutput();
-			if(_waveOverflowCounter < frequency + _mod.GetOutput()) {
-				_wavePosition = (_wavePosition + 1) & 0x3F;
-			}
+	if(!_haltWaveform && frequency + _mod.GetOutput() > 0) {
+		_waveOverflowCounter += frequency + _mod.GetOutput();
+		if(_waveOverflowCounter < frequency + _mod.GetOutput()) {
+			_wavePosition = (_wavePosition + 1) & 0x3F;
 		}
 	}
 }
 
 void FdsAudio::UpdateOutput()
 {
+	if(_waveWriteEnabled) {
+		return;
+	}
+
 	uint32_t level = std::min((int)_volume.GetGain(), 32) * WaveVolumeTable[_masterVolume];
 	uint8_t outputLevel = (_waveTable[_wavePosition] * level) / 1152;
-
 
 	if(_lastOutput != outputLevel) {
 		_console->GetApu()->AddExpansionAudioDelta(AudioChannel::FDS, outputLevel - _lastOutput);
@@ -106,6 +104,9 @@ void FdsAudio::WriteRegister(uint16_t addr, uint8_t value)
 			case 0x4083:
 				_disableEnvelopes = (value & 0x40) != 0;
 				_haltWaveform = (value & 0x80) != 0;
+				if(_haltWaveform) {
+					_wavePosition = 0;
+				}
 				if(_disableEnvelopes) {
 					_volume.ResetTimer();
 					_mod.ResetTimer();
@@ -155,9 +156,8 @@ void FdsAudio::GetMapperStateEntries(vector<MapperStateEntry>& entries)
 	entries.push_back(MapperStateEntry("$4080.7", "Envelope Disabled", _volume.IsEnvelopeDisabled(), MapperStateValueType::Bool));
 	entries.push_back(MapperStateEntry("$4082/3.0-11", "Frequency", _volume.GetFrequency(), MapperStateValueType::Number16));
 	entries.push_back(MapperStateEntry("$4083.6", "Volume/Mod Envelopes Disabled", _disableEnvelopes, MapperStateValueType::Bool));
-	
-	//todo emulation logic + this based on new info
-	//entries.push_back(MapperStateEntry("$4083.7", "Halt Wave Form", _haltWaveform, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4083.7", "Halt Waveform", _haltWaveform, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("", "Waveform position", _wavePosition, MapperStateValueType::Number8));
 
 	entries.push_back(MapperStateEntry("", "Gain", _volume.GetGain(), MapperStateValueType::Number8));
 
