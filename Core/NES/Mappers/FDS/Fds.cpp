@@ -470,10 +470,11 @@ uint8_t Fds::ReadRegister(uint16_t addr)
 		switch(addr) {
 			case 0x4030:
 				//These 3 pins are open bus
-				value &= 0x2C;
+				value &= 0x24;
 
 				value |= _cpu->HasIrqSource(IRQSource::External) ? 0x01 : 0x00;
 				value |= _transferComplete ? 0x02 : 0x00;
+				value |= GetMirroringType() == MirroringType::Horizontal ? 0x08 : 0;
 				value |= _useQdFormat && _badCrc ? 0x10 : 0x00;
 				//value |= _endOfHead ? 0x40 : 0x00;
 				//value |= _diskRegEnabled ? 0x80 : 0x00;
