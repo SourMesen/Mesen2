@@ -1493,6 +1493,9 @@
 			<Control ID="chkAutoStartScriptOnLoad">Auto-start script when loaded (or reloaded)</Control>
 			<Control ID="chkAutoReloadScriptWhenFileChanges">Auto-reload script from disk when file changes</Control>
 			<Control ID="chkAutoRestartScriptAfterPowerCycle">Auto-restart script after power cycling or reloading a game</Control>
+
+			<Control ID="lblDisplaySettings">Display settings</Control>
+			<Control ID="chkShowLineNumbers">Show line numbers</Control>
 			
 			<Control ID="lblRestrictions">Restrictions</Control>
 			<Control ID="lblMaxExecutionTime">Maximum execution time:</Control>

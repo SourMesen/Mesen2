@@ -45,6 +45,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<ContextMenuAction> HelpMenuActions { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> ToolbarActions { get; private set; } = new();
 
+		[Obsolete("For designer only")]
+		public ScriptWindowViewModel() : this(null) { }
+
 		public ScriptWindowViewModel(ScriptStartupBehavior? behavior = null)
 		{
 			this.WhenAnyValue(x => x.ScriptName).Select(x => {

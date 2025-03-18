@@ -95,6 +95,11 @@
 						<CheckBox IsChecked="{Binding Script.AutoRestartScriptAfterPowerCycle}" Content="{l:Translate chkAutoRestartScriptAfterPowerCycle}" />
 						<CheckBox IsChecked="{Binding Script.AutoReloadScriptWhenFileChanges}" Content="{l:Translate chkAutoReloadScriptWhenFileChanges}" />
 					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblDisplaySettings}">
+						<CheckBox IsChecked="{Binding Script.ShowLineNumbers}" Content="{l:Translate chkShowLineNumbers}" />
+					</c:OptionSection>
+					
 					<c:OptionSection Header="{l:Translate lblRestrictions}">
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="{l:Translate lblMaxExecutionTime}" />

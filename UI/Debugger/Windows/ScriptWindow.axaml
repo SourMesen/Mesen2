@@ -50,7 +50,7 @@
 			<Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Margin="1">
 				<dc:MesenTextEditor
 					Name="Editor"
-					ShowLineNumbers="False"
+					ShowLineNumbers="{Binding Config.ShowLineNumbers}"
 					TextBinding="{Binding Code}"
 					FontFamily="{DynamicResource MesenScriptWindowFont}"
 					FontSize="{DynamicResource MesenScriptWindowFontSize}"
