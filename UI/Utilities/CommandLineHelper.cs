@@ -137,7 +137,7 @@ public class CommandLineHelper
 					continue;
 				}
 
-				ScriptWindowViewModel model = new();
+				ScriptWindowViewModel model = new(null);
 				model.LoadScript(luaScript);
 				DebugWindowManager.OpenDebugWindow(() => new ScriptWindow(model));
 			}

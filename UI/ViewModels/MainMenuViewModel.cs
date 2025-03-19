@@ -1037,7 +1037,7 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.OpenScriptWindow,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenScriptWindow),
 					IsEnabled = () => IsGameRunning,
-					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new ScriptWindow(new ScriptWindowViewModel()))
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new ScriptWindow(new ScriptWindowViewModel(null)))
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.OpenWatchWindow,

@@ -48,7 +48,7 @@ namespace Mesen.Debugger.ViewModels
 		[Obsolete("For designer only")]
 		public ScriptWindowViewModel() : this(null) { }
 
-		public ScriptWindowViewModel(ScriptStartupBehavior? behavior = null)
+		public ScriptWindowViewModel(ScriptStartupBehavior? behavior)
 		{
 			this.WhenAnyValue(x => x.ScriptName).Select(x => {
 				string wndTitle = ResourceHelper.GetViewLabel(nameof(ScriptWindow), "wndTitle");

@@ -47,7 +47,7 @@ namespace Mesen.Debugger.Windows
 		}
 
 		[Obsolete("For designer only")]
-		public ScriptWindow() : this(new()) { }
+		public ScriptWindow() : this(new(null)) { }
 
 		public ScriptWindow(ScriptWindowViewModel model)
 		{
