@@ -50,9 +50,9 @@ protected:
 			case 3: SetMirroringType(MirroringType::ScreenAOnly); break;
 		}
 
-		if(_variant == Sachen8259Variant::Sachen8259D && simpleMode) {
+		if(simpleMode) {
 			//"Enable "simple" mode. (mirroring is fixed to H, and banks become weird)"
-			SetMirroringType(MirroringType::Horizontal);
+			SetMirroringType(_variant == Sachen8259Variant::Sachen8259D ? MirroringType::Horizontal : MirroringType::Vertical);
 		}
 
 		SelectPrgPage(0, _regs[5]);
