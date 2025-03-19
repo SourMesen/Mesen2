@@ -8,9 +8,10 @@ class Kaiser202 : public BaseMapper
 {
 	uint16_t _irqReloadValue = 0;
 	uint16_t _irqCounter = 0;
-	bool _irqEnabled = false;
+	uint8_t _irqControl = 0;
 	uint8_t _selectedReg = 0;
 	uint8_t _prgRegs[4] = {};
+	bool _useRom = false;
 
 protected:
 	uint16_t GetPrgPageSize() override { return 0x2000; }
@@ -21,7 +22,7 @@ protected:
 	{
 		_irqReloadValue = 0;
 		_irqCounter = 0;
-		_irqEnabled = 0;
+		_irqControl = 0;
 		_selectedReg = 0;
 		memset(_prgRegs, 0, sizeof(_prgRegs));
 		
@@ -33,23 +34,20 @@ protected:
 		BaseMapper::Serialize(s);
 		SV(_irqReloadValue);
 		SV(_irqCounter);
-		SV(_irqEnabled);
+		SV(_irqControl);
 		SV(_selectedReg);
 		SVArray(_prgRegs, 4);
-
-		if(!s.IsSaving()) {
-			SetCpuMemoryMapping(0x6000, 0x7FFF, _prgRegs[3], PrgMemoryType::PrgRom, MemoryAccessType::ReadWrite);
-		}
 	}
 
 	void ProcessCpuClock() override
 	{
 		BaseProcessCpuClock();
 
-		if(_irqEnabled) {
+		if(_irqControl & 0x02) {
 			_irqCounter++;
 			if(_irqCounter == 0xFFFF) {
 				_irqCounter = _irqReloadValue;
+				_irqControl &= ~0x02;
 				_console->GetCpu()->SetIrqSource(IRQSource::External);
 			}
 		}
@@ -64,41 +62,49 @@ protected:
 			case 0xB000: _irqReloadValue = (_irqReloadValue & 0x0FFF) | ((value & 0x0F) << 12); break;
 			
 			case 0xC000: 
-				_irqEnabled = (value != 0);
-				if(_irqEnabled) {
+				_irqControl = value;
+				if(_irqControl & 0x02) {
 					_irqCounter = _irqReloadValue;
 				}
 				_console->GetCpu()->ClearIrqSource(IRQSource::External);
 				break;
 
 			case 0xD000: _console->GetCpu()->ClearIrqSource(IRQSource::External); break;
-			case 0xE000: _selectedReg = (value & 0x0F) - 1; break;
+			case 0xE000: _selectedReg = (value & 0x07) - 1; break;
 
 			case 0xF000: 
-				if(_selectedReg < 3) {
-					_prgRegs[_selectedReg] = ((_prgRegs[_selectedReg]) & 0x10) | (value & 0x0F);
-				} else if(_selectedReg < 4) {
-					//For Kaiser7032 (Mapper 142)
-					_prgRegs[_selectedReg] = value;
-					SetCpuMemoryMapping(0x6000, 0x7FFF, value, PrgMemoryType::PrgRom, MemoryAccessType::ReadWrite);
+				switch(_selectedReg) {
+					case 0: case 1: case 2: case 3:
+						_prgRegs[_selectedReg] = ((_prgRegs[_selectedReg]) & 0x10) | (value & 0x0F);
+						break;
+
+					case 4:
+						_useRom = value & 0x04;
+						break;
 				}
 
-				switch(addr & 0xFC00) {
-					case 0xF000: {
-						uint8_t bank = addr & 0x03;
-						if(bank < 3) {
+				if(_romInfo.MapperID == 56) {
+					switch(addr & 0xFC00) {
+						case 0xF000: {
+							uint8_t bank = addr & 0x03;
 							_prgRegs[bank] = (value & 0x10) | (_prgRegs[bank] & 0x0F);
+							break;
 						}
-						break;
+
+						case 0xF800:
+							SetMirroringType(value & 0x01 ? MirroringType::Vertical : MirroringType::Horizontal);
+							break;
+
+						case 0xFC00:
+							SelectChrPage(addr & 0x07, value);
+							break;
 					}
+				}
 
-					case 0xF800:
-						SetMirroringType(value & 0x01 ? MirroringType::Vertical : MirroringType::Horizontal);
-						break;
-
-					case 0xFC00:
-						SelectChrPage(addr & 0x07, value);
-						break;
+				if(_useRom) {
+					SetCpuMemoryMapping(0x6000, 0x7FFF, _prgRegs[3], PrgMemoryType::PrgRom, MemoryAccessType::Read);
+				} else {
+					SetCpuMemoryMapping(0x6000, 0x7FFF, 0, PrgMemoryType::WorkRam, MemoryAccessType::ReadWrite);
 				}
 
 				SelectPrgPage(0, _prgRegs[0]);
