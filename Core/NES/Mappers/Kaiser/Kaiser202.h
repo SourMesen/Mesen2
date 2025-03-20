@@ -36,6 +36,7 @@ protected:
 		SV(_irqCounter);
 		SV(_irqControl);
 		SV(_selectedReg);
+		SV(_useRom);
 		SVArray(_prgRegs, 4);
 	}
 
