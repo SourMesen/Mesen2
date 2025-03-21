@@ -116,8 +116,13 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 			}
-			
-			SpritePreviewZoom = 32.0 / Math.Max(Width, Height);
+
+			if(Width == 0 && Height == 0) {
+				//Can happen when reloading rom while the UI is updating the sprite list (sprite list will be empty data - all 0s)
+				SpritePreviewZoom = 1.0;
+			} else {
+				SpritePreviewZoom = 32.0 / Math.Max(Width, Height);
+			}
 
 			Visibility = sprite.Visibility;
 			FadePreview = sprite.Visibility != SpriteVisibility.Visible;
