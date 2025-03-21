@@ -92,7 +92,15 @@ void GbSquareChannel::ClockLengthCounter()
 
 void GbSquareChannel::UpdateOutput()
 {
-	_state.Output = _dutySequences[_state.Duty][(_state.DutyPos - 1) & 0x07] * _state.Volume;
+	if(!_state.Enabled) {
+		return;
+	}
+
+	if(_state.FirstStep) {
+		_state.Output = 0;
+	} else {
+		_state.Output = _dutySequences[_state.Duty][(_state.DutyPos - 1) & 0x07] * _state.Volume;
+	}
 }
 
 void GbSquareChannel::ClockEnvelope()
@@ -147,6 +155,7 @@ void GbSquareChannel::Exec(uint32_t clocksToRun)
 	if(_state.Timer == 0) {
 		_state.Timer = (2048 - _state.Frequency) * 4;
 		_state.DutyPos = (_state.DutyPos + 1) & 0x07;
+		_state.FirstStep = false;
 		UpdateOutput();
 	}
 }
@@ -214,6 +223,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 4: {
+			bool prevEnabled = _state.Enabled;
 			_state.Frequency = (_state.Frequency & 0xFF) | ((value & 0x07) << 8);
 
 			if(value & 0x80) {
@@ -239,6 +249,11 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 
 				//"Channel is enabled, if volume is not 0 or raise volume flag is set"
 				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
+				if(_state.Enabled && !prevEnabled) {
+					//Don't update output until first timer tick
+					//This is needed to get the correct volume in Daiku no Gen-san
+					_state.FirstStep = true;
+				}
 
 				//"If length counter is zero, it is set to 64 (256 for wave channel)."
 				if(_state.Length == 0) {
@@ -274,6 +289,11 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 			}
 
 			_apu->ProcessLengthEnableFlag(value, _state.Length, _state.LengthEnabled, _state.Enabled);
+
+			if(!_state.Enabled && prevEnabled) {
+				_state.Output = 0;
+				UpdateOutput();
+			}
 			break;
 		}
 	}
@@ -286,5 +306,6 @@ void GbSquareChannel::Serialize(Serializer& s)
 	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.DutyPos); SV(_state.Output);
 	SV(_state.SweepNegateCalcDone); SV(_state.EnvStopped);
 	SV(_state.SweepUpdateDelay);
+	SV(_state.FirstStep);
 	SV(_dac);
 }

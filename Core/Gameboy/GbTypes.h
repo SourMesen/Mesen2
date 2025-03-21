@@ -270,6 +270,7 @@ struct GbSquareState
 	bool LengthEnabled;
 
 	bool Enabled;
+	bool FirstStep;
 	uint8_t DutyPos;
 	uint8_t Output;
 };

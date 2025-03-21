@@ -81,6 +81,10 @@ double GbWaveChannel::GetOutput()
 
 void GbWaveChannel::UpdateOutput()
 {
+	if(!_state.Enabled) {
+		return;
+	}
+
 	if(_state.Volume) {
 		_state.Output = _state.SampleBuffer >> (_state.Volume - 1);
 	} else {
@@ -159,6 +163,7 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 4: {
+			bool prevEnabled = _state.Enabled;
 			_state.Frequency = (_state.Frequency & 0xFF) | ((value & 0x07) << 8);
 
 			if(value & 0x80) {
@@ -189,6 +194,11 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 			}
 
 			_apu->ProcessLengthEnableFlag(value, _state.Length, _state.LengthEnabled, _state.Enabled);
+
+			if(!_state.Enabled && prevEnabled) {
+				_state.Output = 0;
+				UpdateOutput();
+			}
 			break;
 		}
 	}

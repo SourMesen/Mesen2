@@ -10,6 +10,7 @@ class Emulator;
 class Gameboy;
 class SoundMixer;
 class EmuSettings;
+struct GameboyConfig;
 
 class GbApu : public ISerializable
 {
@@ -45,6 +46,8 @@ private:
 
 	uint8_t InternalRead(uint16_t addr);
 	uint8_t InternalReadCgbRegister(uint16_t addr);
+
+	void UpdateOutput(GameboyConfig& cfg);
 
 public:
 	GbApu();

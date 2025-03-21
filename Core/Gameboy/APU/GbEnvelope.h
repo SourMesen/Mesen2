@@ -40,6 +40,7 @@ public:
 
 		if((value & 0xF8) == 0) {
 			state.Enabled = false;
+			state.Output = 0;
 		} else {
 			//This implementation of the Zombie mode behavior differs from the description
 			//found here: https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware

@@ -95,6 +95,10 @@ void GbaSquareChannel::ClockLengthCounter()
 
 void GbaSquareChannel::UpdateOutput()
 {
+	if(!_state.Enabled) {
+		return;
+	}
+
 	_state.Output = _dutySequences[_state.Duty][(_state.DutyPos - 1) & 0x07] * _state.Volume;
 }
 
@@ -217,6 +221,7 @@ void GbaSquareChannel::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 4: {
+			bool prevEnabled = _state.Enabled;
 			_state.Frequency = (_state.Frequency & 0xFF) | ((value & 0x07) << 8);
 
 			if(value & 0x80) {
@@ -278,6 +283,11 @@ void GbaSquareChannel::Write(uint16_t addr, uint8_t value)
 			}
 
 			_state.LengthEnabled = (value & 0x40);
+
+			if(!_state.Enabled && prevEnabled) {
+				_state.Output = 0;
+				UpdateOutput();
+			}
 			break;
 		}
 	}

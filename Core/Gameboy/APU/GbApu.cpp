@@ -105,35 +105,39 @@ void GbApu::Run()
 			_noise->Exec(minTimer);
 
 			_clockCounter += minTimer;
-
-			int16_t leftOutput = (
-				(_square1->GetOutput() * (int32_t)(cfg.Square1Vol & _state.EnableLeftSq1) / 100) +
-				(_square2->GetOutput() * (int32_t)(cfg.Square2Vol & _state.EnableLeftSq2) / 100) +
-				(_wave->GetOutput() * (int32_t)(cfg.WaveVol & _state.EnableLeftWave) / 100) +
-				(_noise->GetOutput() * (int32_t)(cfg.NoiseVol & _state.EnableLeftNoise) / 100)
-			) * (_state.LeftVolume + 1) * 40;
-
-			if(_prevLeftOutput != leftOutput) {
-				blip_add_delta(_leftChannel, _clockCounter, leftOutput - _prevLeftOutput);
-				_prevLeftOutput = leftOutput;
-			}
-
-			int16_t rightOutput = (
-				(_square1->GetOutput() * (int32_t)(cfg.Square1Vol & _state.EnableRightSq1) / 100) +
-				(_square2->GetOutput() * (int32_t)(cfg.Square2Vol & _state.EnableRightSq2) / 100) +
-				(_wave->GetOutput() * (int32_t)(cfg.WaveVol & _state.EnableRightWave) / 100) +
-				(_noise->GetOutput() * (int32_t)(cfg.NoiseVol & _state.EnableRightNoise) / 100)
-			) * (_state.RightVolume + 1) * 40;
-
-			if(_prevRightOutput != rightOutput) {
-				blip_add_delta(_rightChannel, _clockCounter, rightOutput - _prevRightOutput);
-				_prevRightOutput = rightOutput;
-			}
+			UpdateOutput(cfg);
 		}
 	}
 
 	if(!_gameboy->IsSgb() && _clockCounter >= 20000) {
 		PlayQueuedAudio();
+	}
+}
+
+void GbApu::UpdateOutput(GameboyConfig& cfg)
+{
+	int16_t leftOutput = (
+		(_square1->GetOutput() * (int32_t)(cfg.Square1Vol & _state.EnableLeftSq1) / 100) +
+		(_square2->GetOutput() * (int32_t)(cfg.Square2Vol & _state.EnableLeftSq2) / 100) +
+		(_wave->GetOutput() * (int32_t)(cfg.WaveVol & _state.EnableLeftWave) / 100) +
+		(_noise->GetOutput() * (int32_t)(cfg.NoiseVol & _state.EnableLeftNoise) / 100)
+	) * (_state.LeftVolume + 1) * 40;
+
+	if(_prevLeftOutput != leftOutput) {
+		blip_add_delta(_leftChannel, _clockCounter, leftOutput - _prevLeftOutput);
+		_prevLeftOutput = leftOutput;
+	}
+
+	int16_t rightOutput = (
+		(_square1->GetOutput() * (int32_t)(cfg.Square1Vol & _state.EnableRightSq1) / 100) +
+		(_square2->GetOutput() * (int32_t)(cfg.Square2Vol & _state.EnableRightSq2) / 100) +
+		(_wave->GetOutput() * (int32_t)(cfg.WaveVol & _state.EnableRightWave) / 100) +
+		(_noise->GetOutput() * (int32_t)(cfg.NoiseVol & _state.EnableRightNoise) / 100)
+	) * (_state.RightVolume + 1) * 40;
+
+	if(_prevRightOutput != rightOutput) {
+		blip_add_delta(_rightChannel, _clockCounter, rightOutput - _prevRightOutput);
+		_prevRightOutput = rightOutput;
 	}
 }
 
@@ -350,6 +354,9 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 			_wave->WriteRam(addr, value);
 			break;
 	}
+	
+	//Update APU output - some writes can immediately change the output
+	UpdateOutput(_settings->GetGameboyConfig());
 }
 
 uint8_t GbApu::InternalReadCgbRegister(uint16_t addr)

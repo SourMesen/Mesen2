@@ -232,6 +232,7 @@ public struct GbSquareState
 	[MarshalAs(UnmanagedType.I1)] public bool LengthEnabled;
 
 	[MarshalAs(UnmanagedType.I1)] public bool Enabled;
+	[MarshalAs(UnmanagedType.I1)] public bool FirstStep;
 	public byte DutyPos;
 	public byte Output;
 }

@@ -65,6 +65,10 @@ double GbaWaveChannel::GetOutput()
 
 void GbaWaveChannel::UpdateOutput()
 {
+	if(!_state.Enabled) {
+		return;
+	}
+
 	if(_state.OverrideVolume) {
 		_state.Output = _state.SampleBuffer * 3 / 4;
 	} else if(_state.Volume) {
@@ -160,6 +164,7 @@ void GbaWaveChannel::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 4: {
+			bool prevEnabled = _state.Enabled;
 			_state.Frequency = (_state.Frequency & 0xFF) | ((value & 0x07) << 8);
 
 			if(value & 0x80) {
@@ -186,6 +191,11 @@ void GbaWaveChannel::Write(uint16_t addr, uint8_t value)
 			}
 
 			_state.LengthEnabled = (value & 0x40);
+
+			if(!_state.Enabled && prevEnabled) {
+				_state.Output = 0;
+				UpdateOutput();
+			}
 			break;
 		}
 	}

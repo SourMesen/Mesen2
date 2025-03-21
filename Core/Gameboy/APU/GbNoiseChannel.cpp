@@ -45,7 +45,9 @@ void GbNoiseChannel::ClockLengthCounter()
 
 void GbNoiseChannel::UpdateOutput()
 {
-	_state.Output = ((_state.ShiftRegister & 0x01) ^ 0x01) * _state.Volume;
+	if(_state.Enabled) {
+		_state.Output = ((_state.ShiftRegister & 0x01) ^ 0x01) * _state.Volume;
+	}
 }
 
 void GbNoiseChannel::ClockEnvelope()
@@ -158,6 +160,7 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 4: {
+			bool prevEnabled = _state.Enabled;
 			if(value & 0x80) {
 				//Writing a value to NRx4 with bit 7 set causes the following things to occur :
 
@@ -189,6 +192,14 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 					_state.Timer += (_state.Divisor == 1) ? 4 : -4;
 				}
 
+				//Channel volume is reloaded from NRx2.
+				_state.Volume = _state.EnvVolume;
+
+				if(_state.Enabled) {
+					//Immediately update output if channel was enabled
+					UpdateOutput();
+				}
+
 				//Channel is enabled, if volume is not 0 or raise volume flag is set
 				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
 
@@ -204,12 +215,14 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 				//Volume envelope timer is reloaded with period.
 				_state.EnvTimer = _state.EnvPeriod;
 				_state.EnvStopped = false;
-
-				//Channel volume is reloaded from NRx2.
-				_state.Volume = _state.EnvVolume;
 			}
 
 			_apu->ProcessLengthEnableFlag(value, _state.Length, _state.LengthEnabled, _state.Enabled);
+
+			if(!_state.Enabled && prevEnabled) {
+				_state.Output = 0;
+				UpdateOutput();
+			}
 			break;
 		}
 	}

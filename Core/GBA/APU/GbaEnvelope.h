@@ -40,6 +40,7 @@ public:
 
 		if((value & 0xF8) == 0) {
 			state.Enabled = false;
+			state.Output = 0;
 		} else {
 			//No zombie mode for GBA? (or maybe it behaves differently.)
 			//Using the GB implementation of zombie mode causes sound issues in some games
