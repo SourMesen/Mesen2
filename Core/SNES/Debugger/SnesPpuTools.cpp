@@ -260,7 +260,7 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 		std::fill(outBuffer + size.Width * i + 256, outBuffer + size.Width * i + 512, bgColor);
 	}
 
-	int startIndex = state.EnableOamPriority ? (state.OamRamAddress >> 1) : 0;
+	int startIndex = state.EnableOamPriority ? ((state.InternalOamAddress & 0x1FC) >> 2) : 0;
 	for(int i = 0; i < 128; i++) {
 		int spriteIndex = startIndex - i - 1;
 		if(spriteIndex < 0) {
