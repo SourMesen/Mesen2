@@ -178,7 +178,7 @@ jobs:
 
       - name: Get brew prefix
         run: |
-          echo "brewPrefix=$(brew --prefix)"
+          echo "brewPrefix=$(brew --prefix)" >> "$GITHUB_ENV"
 
       - name: Setup CCache
         uses: ./.github/actions/setup-ccache-action
