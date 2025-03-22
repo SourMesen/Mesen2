@@ -2,14 +2,14 @@ name: 'Setup CCache'
 inputs:
   ccache-path:  # id of input
     required: true
-    default: '/usr/lib'
+    default: '/usr/lib/ccache'
 runs:
   using: "composite"
   steps:
       - name: Setup CCache
         shell: bash
         run: |
-          eval $(printf 'PATH=${{ inputs.ccache-path }}/ccache:%s\n' "$PATH" | tee -a "$GITHUB_ENV")
+          eval $(printf 'PATH=${{ inputs.ccache-path }}:%s\n' "$PATH" | tee -a "$GITHUB_ENV")
           cat <<EOF >>"$GITHUB_ENV"
           CCACHE_MAXSIZE=500M
           CCACHE_DIR=$HOME/.cache/ccache
