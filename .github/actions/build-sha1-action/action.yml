@@ -1,0 +1,10 @@
+name: 'Write commit SHA1 to file'
+runs:
+  using: "composite"
+  steps:
+      - name: Write commit SHA1 to file
+        uses: "DamianReeves/write-file-action@master"
+        with:
+          path: "UI/Dependencies/Internal/BuildSha.txt"
+          write-mode: overwrite
+          contents: ${{ github.sha }}

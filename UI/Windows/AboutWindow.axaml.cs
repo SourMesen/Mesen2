@@ -19,6 +19,8 @@ namespace Mesen.Windows
 		public string Version { get; }
 		public string BuildDate { get; }
 		public string RuntimeVersion { get; }
+		public string BuildSha { get; }
+		public string BuildShortSha { get; }
 		public List<AboutListEntry> LibraryList { get; }
 		public List<AboutListEntry> AcknowledgeList { get; }
 
@@ -28,6 +30,8 @@ namespace Mesen.Windows
 			BuildDate = EmuApi.GetMesenBuildDate();
 			RuntimeVersion = ".NET " + Environment.Version;
 			RuntimeVersion += RuntimeFeature.IsDynamicCodeSupported ? " (JIT)" : " (AOT)";
+			BuildSha = DependencyHelper.GetFileContent("BuildSha.txt") ?? "";
+			BuildShortSha = DependencyHelper.GetFileContent("BuildSha.txt")?.Substring(0, 7) ?? "";
 
 			LibraryList = new List<AboutListEntry>() {
 				new("Avalonia", "", "MIT", "https://github.com/AvaloniaUI/Avalonia"),
@@ -103,6 +107,11 @@ namespace Mesen.Windows
 		private void OnMesenLinkTapped(object? sender, TappedEventArgs e)
 		{
 			ApplicationHelper.OpenBrowser("https://www.mesen.ca");
+		}
+
+		private void OnCommitLinkTapped(object? sender, TappedEventArgs e)
+		{
+			ApplicationHelper.OpenBrowser("https://github.com/SourMesen/Mesen2/commit/" + BuildSha);
 		}
 	}
 

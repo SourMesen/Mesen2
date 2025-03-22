@@ -37,6 +37,9 @@ jobs:
       - name: Restore packages
         run: dotnet restore -p:TargetFramework="${{ matrix.platform.targetframework }}" -r win-x64 -p:PublishAot="${{ matrix.platform.aot }}"
 
+      - name: Write commit SHA1 to file
+        uses: ./.github/actions/build-sha1-action
+
       - name: Build Mesen
         run: msbuild -nologo -v:d -clp:ForceConsoleColor -m -p:Configuration=Release -p:Platform=x64 -t:Clean,UI -p:TargetFramework="${{ matrix.platform.targetframework }}"
 
@@ -55,14 +58,7 @@ jobs:
     strategy:
       matrix:
         compiler: [gcc, clang, clang_aot]
-        os: [ubuntu-22.04, ubuntu-20.04]
-        exclude:
-          # This currently fails to build.
-          - os: ubuntu-20.04
-            compiler: gcc
-          # Don't need 2 separate AoT builds
-          - os: ubuntu-22.04
-            compiler: clang_aot
+        os: [ubuntu-22.04]
         include:
           - compiler: gcc
             make_flags: "USE_GCC=true"
@@ -89,6 +85,9 @@ jobs:
           sudo apt-get update -qy
           sudo apt-get install -qy libsdl2-dev # The compilers are already installed on GitHub's runners.
 
+      - name: Write commit SHA1 to file
+        uses: ./.github/actions/build-sha1-action
+
       # stderr is not detected as a TTY, so diagnostics are by default printed without colours;
       # forcing colours makes the log a little nicer to read.
       - name: Build Mesen
@@ -102,7 +101,7 @@ jobs:
           path: bin/linux-x64/Release/linux-x64/publish/Mesen
 
   appimage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout repo
@@ -119,6 +118,9 @@ jobs:
         run: |
           sudo apt-get update -qy
           sudo apt-get install -qy libsdl2-dev libfuse2 # The compilers are already installed on GitHub's runners.
+
+      - name: Write commit SHA1 to file
+        uses: ./.github/actions/build-sha1-action
 
       - name: Build Mesen (AppImage)
         run: |
@@ -160,6 +162,9 @@ jobs:
       - name: Install dependencies
         run: |
           brew install sdl2
+
+      - name: Write commit SHA1 to file
+        uses: ./.github/actions/build-sha1-action
 
       # stderr is not detected as a TTY, so diagnostics are by default printed without colours;
       # forcing colours makes the log a little nicer to read.
