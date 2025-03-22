@@ -51,7 +51,7 @@ namespace Mesen.Config
 			} else {
 				homeFolder = DefaultDocumentsFolder;
 			}
-			Program.ExtractNativeDependencies(homeFolder);
+			DependencyHelper.ExtractNativeDependencies(homeFolder);
 			_homeFolder = homeFolder;
 			Config.Save();
 		}

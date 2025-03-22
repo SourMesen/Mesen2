@@ -32,16 +32,9 @@ namespace Mesen.ViewModels
 		{
 			CheatDatabase cheatDb = new();
 			try {
-				using Stream? depStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Dependencies.zip");
-				if(depStream != null) {
-					using ZipArchive zip = new(depStream);
-					foreach(ZipArchiveEntry entry in zip.Entries) {
-						if(entry.Name == "CheatDb." + consoleType.ToString() + ".json") {
-							using Stream entryStream = entry.Open();
-							using StreamReader reader = new StreamReader(entryStream);
-							cheatDb = (CheatDatabase?)JsonSerializer.Deserialize(reader.ReadToEnd(), typeof(CheatDatabase), MesenCamelCaseSerializerContext.Default) ?? new CheatDatabase();
-						}
-					}
+				string? dbContent = DependencyHelper.GetFileContent("CheatDb." + consoleType.ToString() + ".json");
+				if(dbContent != null) {
+					cheatDb = (CheatDatabase?)JsonSerializer.Deserialize(dbContent, typeof(CheatDatabase), MesenCamelCaseSerializerContext.Default) ?? new CheatDatabase();
 				}
 			} catch { }
 

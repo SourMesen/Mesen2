@@ -839,6 +839,7 @@
 			<Control ID="lblLink">www.mesen.ca</Control>
 			<Control ID="lblVersion">Version:</Control>
 			<Control ID="lblBuildDate">Build Date:</Control>
+			<Control ID="lblCommitId">Commit ID:</Control>
 			<Control ID="lblRuntimeVersion">Runtime:</Control>
 
 			<Control ID="grpAcknowledgements">Acknowledgements</Control>
