@@ -108,9 +108,8 @@ jobs:
   appimage:
     strategy:
       matrix:
-        platform: [
-          {os: ubuntu-22.04}
-        ]
+        compiler: [clang_appimage]
+        platform: [{os: ubuntu-22.04}]
     runs-on: ${{ matrix.platform.os }}
 
     steps:

@@ -19,6 +19,6 @@ runs:
         uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ matrix.compiler }}-${{ matrix.os }}
+          key: ccache-${{ matrix.compiler }}-${{ matrix.platform.os }}
           restore-keys: |
             ccache-${{ matrix.compiler }}

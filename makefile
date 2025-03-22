@@ -196,7 +196,7 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	rm -fr $(OUTFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(OUTFOLDER)/$(SHAREDLIB)
 	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
-	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) -r $(MESENPLATFORM)
 	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
