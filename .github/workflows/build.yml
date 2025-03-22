@@ -183,7 +183,7 @@ jobs:
       - name: Setup CCache
         uses: ./.github/actions/setup-ccache-action
         with:
-          ccache-path: ${{ env.brewPrefix }}
+          ccache-path: '${{ env.brewPrefix }}'
 
       - name: Write commit SHA1 to file
         uses: ./.github/actions/build-sha1-action
