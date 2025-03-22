@@ -179,7 +179,7 @@ jobs:
       - name: Setup CCache
         uses: ./.github/actions/setup-ccache-action
         with:
-          ccache-path: '$(brew --prefix)/opt'
+          ccache-path: $(brew --prefix)/opt
 
       - name: Write commit SHA1 to file
         uses: ./.github/actions/build-sha1-action
