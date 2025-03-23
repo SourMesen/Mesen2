@@ -18,11 +18,11 @@ private:
 	uint8_t _multCounter = 0;
 	uint8_t _divCounter = 0;
 	
+	void Run(bool isRead);
+
 public:
 	void Initialize(SnesCpu* cpu);
 	
-	void Run(bool isRead);
-
 	uint8_t Read(uint16_t addr);
 	uint8_t Peek(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);

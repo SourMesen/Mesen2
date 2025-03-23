@@ -77,18 +77,25 @@ uint8_t AluMulDiv::Peek(uint16_t addr)
 
 void AluMulDiv::Write(uint16_t addr, uint8_t value)
 {
+	Run(true);
+	//Check if a div/mul operation is running (if it just ended on this
+	//cycle, it still counts as running and blocks starting a new mul/div)
+	bool blockWrite = _divCounter > 0 || _multCounter > 0;
 	Run(false);
 
 	switch(addr) {
 		case 0x4202: _state.MultOperand1 = value; break;
 		case 0x4203:
 			_state.MultOrRemainderResult = 0;
-			if(!_divCounter && !_multCounter) {
+			if(!blockWrite) {
 				_multCounter = 8;
 
 				_state.MultOperand2 = value;
 				_state.DivResult = (value << 8) | _state.MultOperand1;
 				_shift = value;
+			} else if(blockWrite && _divCounter == 0 && _multCounter == 0) {
+				//Write on the last clock of multiply/div overwrites the value, but doesn't start the multiplication
+				_state.DivResult = (value << 8) | _state.MultOperand1;
 			}
 			break;
 
@@ -98,7 +105,7 @@ void AluMulDiv::Write(uint16_t addr, uint8_t value)
 		case 0x4206:
 			_state.MultOrRemainderResult = _state.Dividend;
 
-			if(!_divCounter && !_multCounter) {
+			if(!blockWrite) {
 				_divCounter = 16;
 				_state.Divisor = value;
 				_shift = (value << 16);
