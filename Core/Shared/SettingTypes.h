@@ -660,6 +660,7 @@ struct NesConfig
 	bool ReduceDmcPopping = false;
 	bool SilenceTriangleHighFreq = false;
 	bool SwapDutyCycles = false;
+	bool ReverseDpcmBitOrder = false;
 
 	bool BreakOnCrash = false;
 

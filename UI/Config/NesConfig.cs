@@ -92,6 +92,7 @@ namespace Mesen.Config
 		[Reactive] public bool ReduceDmcPopping { get; set; } = false;
 		[Reactive] public bool SilenceTriangleHighFreq { get; set; } = false;
 		[Reactive] public bool SwapDutyCycles { get; set; } = false;
+		[Reactive] public bool ReverseDpcmBitOrder { get; set; } = false;
 
 		[Reactive] [MinMax(0, 100)] public UInt32 Square1Volume { get; set; } = 100;
 		[Reactive] [MinMax(0, 100)] public UInt32 Square2Volume { get; set; } = 100;
@@ -210,6 +211,7 @@ namespace Mesen.Config
 				ReduceDmcPopping = ReduceDmcPopping,
 				SilenceTriangleHighFreq = SilenceTriangleHighFreq,
 				SwapDutyCycles = SwapDutyCycles,
+				ReverseDpcmBitOrder = ReverseDpcmBitOrder,
 
 				Square1Volume = Square1Volume,
 				Square2Volume = Square2Volume,
@@ -346,6 +348,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool ReduceDmcPopping;
 		[MarshalAs(UnmanagedType.I1)] public bool SilenceTriangleHighFreq;
 		[MarshalAs(UnmanagedType.I1)] public bool SwapDutyCycles;
+		[MarshalAs(UnmanagedType.I1)] public bool ReverseDpcmBitOrder;
 
 		[MarshalAs(UnmanagedType.I1)] public bool BreakOnCrash;
 

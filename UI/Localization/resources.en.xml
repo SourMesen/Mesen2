@@ -319,6 +319,7 @@
 			<Control ID="lblPanning">Channel panning</Control>
 			<Control ID="lblAdvanced">Advanced</Control>
 			<Control ID="chkSwapDutyCycles">Swap square channels duty cycles (mimics old clones)</Control>
+			<Control ID="chkReverseDpcmBitOrder">Reverse DPCM bit order (higher or lower quality, depends on game)</Control>
 			<Control ID="chkSilenceTriangleHighFreq">Mute ultrasonic frequencies on triangle channel (reduces popping)</Control>
 			<Control ID="chkReduceDmcPopping">Reduce popping sounds on the DMC channel</Control>
 			<Control ID="chkDisableNoiseModeFlag">Disable noise channel mode flag (mimics oldest Famicom models)</Control>

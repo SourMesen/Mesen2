@@ -106,6 +106,7 @@
 							<CheckBox IsChecked="{Binding Config.SilenceTriangleHighFreq}" Content="{l:Translate chkSilenceTriangleHighFreq}" />
 							<c:CheckBoxWarning IsChecked="{Binding Config.DisableNoiseModeFlag}" Text="{l:Translate chkDisableNoiseModeFlag}" />
 							<c:CheckBoxWarning IsChecked="{Binding Config.SwapDutyCycles}" Text="{l:Translate chkSwapDutyCycles}" />
+							<c:CheckBoxWarning IsChecked="{Binding Config.ReverseDpcmBitOrder}" Text="{l:Translate chkReverseDpcmBitOrder}" />
 						</StackPanel>
 					</c:OptionSection>
 
