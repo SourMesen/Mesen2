@@ -342,16 +342,20 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 		ScrollToLocation(History.GoForward(), false);
 	}
 
-	public void ScrollToTop()
+	public void ScrollToTop(bool extendSelection)
 	{
-		if(SelectedFile != null) {
+		if(extendSelection) {
+			ResizeSelectionTo(0);
+		} else if(SelectedFile != null) {
 			ScrollToLocation(new SourceCodeLocation(SelectedFile, 0), true);
 		}
 	}
 
-	public void ScrollToBottom()
+	public void ScrollToBottom(bool extendSelection)
 	{
-		if(SelectedFile != null) {
+		if(extendSelection) {
+			ResizeSelectionTo(MaxScrollPosition);
+		} else if(SelectedFile != null) {
 			ScrollToLocation(new SourceCodeLocation(SelectedFile, SelectedFile.Data.Length - 1), true);
 		}
 	}

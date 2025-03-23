@@ -277,7 +277,7 @@ namespace Mesen.Debugger.ViewModels
 				TraceLogLines = lines;
 
 				if(scrollToBottom) {
-					ScrollToBottom();
+					ScrollToBottom(false);
 				}
 			});
 		}
@@ -346,16 +346,24 @@ namespace Mesen.Debugger.ViewModels
 			ScrollPosition += offset;
 		}
 
-		public void ScrollToTop()
+		public void ScrollToTop(bool extendSelection)
 		{
-			ScrollPosition = 0;
-			SetSelectedRow(0);
+			if(extendSelection) {
+				ResizeSelectionTo(-ScrollPosition);
+			} else {
+				ScrollPosition = 0;
+				SetSelectedRow(0);
+			}
 		}
 
-		public void ScrollToBottom()
+		public void ScrollToBottom(bool extendSelection)
 		{
-			ScrollPosition = MaxScrollPosition;
-			SetSelectedRow(DebugApi.TraceLogBufferSize - 1);
+			if(extendSelection) {
+				ResizeSelectionTo(DebugApi.TraceLogBufferSize - 1 - ScrollPosition);
+			} else {
+				ScrollPosition = MaxScrollPosition;
+				SetSelectedRow(DebugApi.TraceLogBufferSize - 1);
+			}
 		}
 
 		public void SelectAll()

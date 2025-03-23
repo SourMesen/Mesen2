@@ -6,8 +6,8 @@ namespace Mesen.Debugger.Utilities
 	{
 		void ResizeSelectionTo(int rowNumber);
 		void MoveCursor(int rowOffset, bool extendSelection);
-		void ScrollToTop();
-		void ScrollToBottom();
+		void ScrollToTop(bool extendSelection);
+		void ScrollToBottom(bool extendSelection);
 		void SetSelectedRow(int rowNumber);
 		bool IsSelected(int rowNumber);
 		void Scroll(int offset);

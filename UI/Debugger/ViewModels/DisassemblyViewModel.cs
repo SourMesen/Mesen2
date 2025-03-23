@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using Dock.Model.Core;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
@@ -15,7 +14,6 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Linq;
 using System.Text;
-using Tmds.DBus.Protocol;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -127,17 +125,25 @@ namespace Mesen.Debugger.ViewModels
 			SetTopAddress(DataProvider.GetRowAddress(TopAddress, lineNumberOffset));
 		}
 
-		public void ScrollToTop()
+		public void ScrollToTop(bool extendSelection)
 		{
-			SetSelectedRow(0, false, true);
-			ScrollToAddress(0, ScrollDisplayPosition.Top);
+			if(extendSelection) {
+				ResizeSelectionTo(0);
+			} else {
+				SetSelectedRow(0, false, true);
+				ScrollToAddress(0, ScrollDisplayPosition.Top);
+			}
 		}
 
-		public void ScrollToBottom()
+		public void ScrollToBottom(bool extendSelection)
 		{
-			int address = DataProvider.GetLineCount() - 1;
-			SetSelectedRow(address, false, true);
-			ScrollToAddress((uint)address, ScrollDisplayPosition.Bottom);
+			if(extendSelection) {
+				ResizeSelectionTo(DataProvider.GetLineCount() - 1);
+			} else {
+				int address = DataProvider.GetLineCount() - 1;
+				SetSelectedRow(address, false, true);
+				ScrollToAddress((uint)address, ScrollDisplayPosition.Bottom);
+			}
 		}
 
 		public void InvalidateVisual()

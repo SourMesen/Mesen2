@@ -149,14 +149,15 @@ namespace Mesen.Debugger.Utilities
 
 		private void Viewer_KeyDown(object? sender, KeyEventArgs e)
 		{
+			bool shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
 			switch(e.Key) {
-				case Key.PageDown: _model.MoveCursor(_model.VisibleRowCount - 2, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
-				case Key.PageUp: _model.MoveCursor(-(_model.VisibleRowCount - 2), e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
-				case Key.Home: _model.ScrollToTop(); e.Handled = true; break;
-				case Key.End: _model.ScrollToBottom(); e.Handled = true; break;
+				case Key.PageDown: _model.MoveCursor(_model.VisibleRowCount - 2, shift); e.Handled = true; break;
+				case Key.PageUp: _model.MoveCursor(-(_model.VisibleRowCount - 2), shift); e.Handled = true; break;
+				case Key.Home: _model.ScrollToTop(shift); e.Handled = true; break;
+				case Key.End: _model.ScrollToBottom(shift); e.Handled = true; break;
 
-				case Key.Up: _model.MoveCursor(-1, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
-				case Key.Down: _model.MoveCursor(1, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
+				case Key.Up: _model.MoveCursor(-1, shift); e.Handled = true; break;
+				case Key.Down: _model.MoveCursor(1, shift); e.Handled = true; break;
 			}
 		}
 
