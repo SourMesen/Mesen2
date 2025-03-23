@@ -33,7 +33,12 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 
 		for(int column = 0; column < 32; column++) {
 			uint16_t addr = (baseOffset + column);
-			uint8_t tileIndex = vram[addr];
+			
+			//This is defined as an int to avoid a bug where MSVC calculates
+			//the tileStart value wrong. The issue doesn't seem to be caused
+			//by the technically undefined behavior of the uint8_t -> int8_t
+			//cast, either. This seems to be the simplest fix.
+			int tileIndex = vram[addr];
 
 			uint8_t attributes = isCgb ? vram[addr | 0x2000] : 0;
 
