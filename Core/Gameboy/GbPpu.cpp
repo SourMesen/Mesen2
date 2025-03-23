@@ -189,8 +189,8 @@ void GbPpu::ExecCycle()
 			_vramReadBlocked = false;
 			_vramWriteBlocked = false;
 
-			if(_state.Scanline < 143) {
-				//"This mode will transfer one block (16 bytes) during each H-Blank. No data is transferred during VBlank (LY = 143 - 153)"
+			if(_state.Scanline <= 143) {
+				//HDMA runs at the start of hblank on every visible scanline (0 to 143)
 				_dmaController->ProcessHdma();
 			}
 		}
