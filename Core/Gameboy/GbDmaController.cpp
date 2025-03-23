@@ -157,7 +157,8 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 
 void GbDmaController::ProcessHdma()
 {
-	if(_state.CgbHdmaRunning) {
+	//TODOGB what happens if the CPU resumes execution during hblank?
+	if(_state.CgbHdmaRunning && !_cpu->IsHalted()) {
 		//4 cycles for setup
 		_memoryManager->Exec();
 		_memoryManager->Exec();
