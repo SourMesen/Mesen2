@@ -74,36 +74,35 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 	if(prgSize == 0) {
 		MessageManager::Log("[iNes] Invalid file (PRG size is 0) - load operation cancelled.");
 		romData.Error = true;
-		return;
 	}
 
 	if(prgSize + chrSize > dataSize) {
 		//Invalid rom file
 		MessageManager::Log("[iNes] Invalid file (file length does not match header information) - load operation cancelled.");
 		romData.Error = true;
-		return;
 	} else if(prgSize + chrSize < dataSize) {
 		MessageManager::Log("[iNes] Warning: File is larger than excepted (based on the file header).");
 	}
 
-	romData.Info.Hash.PrgCrc32 = CRC32::GetCRC(buffer, prgSize);
+	if(!romData.Error) {
+		romData.Info.Hash.PrgCrc32 = CRC32::GetCRC(buffer, prgSize);
 
-	romData.PrgRom.insert(romData.PrgRom.end(), buffer, buffer + prgSize);
-	while(romData.PrgRom.size() < 256) {
-		//Ensure the PRG is at least 256 bytes in size by mirroring as needed (mapper code requires it to be 256 bytes at least)
-		romData.PrgRom.insert(romData.PrgRom.end(), buffer, buffer + std::min<int>(prgSize, 256 - (int)romData.PrgRom.size()));
+		romData.PrgRom.insert(romData.PrgRom.end(), buffer, buffer + prgSize);
+		while(romData.PrgRom.size() < 256) {
+			//Ensure the PRG is at least 256 bytes in size by mirroring as needed (mapper code requires it to be 256 bytes at least)
+			romData.PrgRom.insert(romData.PrgRom.end(), buffer, buffer + std::min<int>(prgSize, 256 - (int)romData.PrgRom.size()));
+		}
+		buffer += prgSize;
+		romData.ChrRom.insert(romData.ChrRom.end(), buffer, buffer + chrSize);
+
+		Log("PRG CRC32: 0x" + HexUtilities::ToHex(romData.Info.Hash.PrgCrc32, true));
+		Log("PRG+CHR CRC32: 0x" + HexUtilities::ToHex(romData.Info.Hash.PrgChrCrc32, true));
 	}
-	buffer += prgSize;
-	romData.ChrRom.insert(romData.ChrRom.end(), buffer, buffer + chrSize);
-
-
-	Log("PRG CRC32: 0x" + HexUtilities::ToHex(romData.Info.Hash.PrgCrc32, true));
-	Log("PRG+CHR CRC32: 0x" + HexUtilities::ToHex(romData.Info.Hash.PrgChrCrc32, true));
 
 	if(romData.Info.IsNes20Header) {
 		Log("[iNes] NES 2.0 file: Yes");
 	}
-	Log("[iNes] Mapper: " + std::to_string(romData.Info.MapperID) + " Sub:" + std::to_string(romData.Info.SubMapperID));
+	Log("[iNes] Mapper: " + std::to_string(romData.Info.MapperID) + " Sub: " + std::to_string(romData.Info.SubMapperID));
 	
 	if(romData.Info.System == GameSystem::VsSystem) {
 		string type = "Vs-UniSystem";
@@ -119,8 +118,8 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 		Log("[iNes] System: " + type);
 	}
 
-	Log("[iNes] PRG ROM: " + std::to_string(romData.PrgRom.size()/1024) + " KB");
-	Log("[iNes] CHR ROM: " + std::to_string(romData.ChrRom.size()/1024) + " KB");
+	Log("[iNes] PRG ROM: " + std::to_string(prgSize/1024) + " KB");
+	Log("[iNes] CHR ROM: " + std::to_string(chrSize/1024) + " KB");
 	if(romData.ChrRamSize > 0 || romData.Info.IsNes20Header) {
 		Log("[iNes] CHR RAM: " + std::to_string(romData.ChrRamSize / 1024) + " KB");
 	} else if(romData.ChrRom.size() == 0) {
