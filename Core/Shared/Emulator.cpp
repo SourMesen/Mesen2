@@ -238,7 +238,7 @@ void Emulator::OnBeforeSendFrame()
 {
 	if(!_isRunAheadFrame) {
 		if(_audioPlayerHud) {
-			_audioPlayerHud->Draw();
+			_audioPlayerHud->Draw(GetFrameCount(), GetFps());
 		}
 
 		if(_stats && _settings->GetPreferences().ShowDebugInfo) {

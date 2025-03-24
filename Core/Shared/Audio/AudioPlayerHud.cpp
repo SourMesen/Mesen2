@@ -28,7 +28,7 @@ string AudioPlayerHud::FormatSeconds(uint32_t s)
 	return std::to_string(s / 60) + ":" + seconds;
 }
 
-void AudioPlayerHud::Draw()
+void AudioPlayerHud::Draw(uint32_t frameCounter, double fps)
 {
 	AudioTrackInfo trackInfo = _emu->GetAudioTrackInfo();
 	if(trackInfo.Position <= 1) {
@@ -147,14 +147,22 @@ void AudioPlayerHud::Draw()
 			}
 		}
 
-		if(!silent) {
-			_silenceTimer.Reset();
+		if(_prevFrameCounter + 1 != frameCounter || _prevFps != fps || _lastAudioFrame > frameCounter) {
+			//Region changed, save state loaded, etc. - reset silence processing
+			_prevFrameCounter = frameCounter;
+			_lastAudioFrame = frameCounter;
+			_prevFps = fps;
 		} else {
-			AudioConfig audioCfg = _emu->GetSettings()->GetAudioConfig();
-			if(audioCfg.AudioPlayerAutoDetectSilence && _silenceTimer.GetElapsedMS() >= audioCfg.AudioPlayerSilenceDelay * 1000) {
-				//Silence detected, move to next track
-				_silenceTimer.Reset();
-				MoveToNextTrack();
+			_prevFrameCounter = frameCounter;
+			if(!silent) {
+				_lastAudioFrame = frameCounter;
+			} else {
+				AudioConfig audioCfg = _emu->GetSettings()->GetAudioConfig();
+				double silenceLength = (double)(frameCounter - _lastAudioFrame) / fps;
+				if(audioCfg.AudioPlayerAutoDetectSilence && silenceLength >= audioCfg.AudioPlayerSilenceDelay) {
+					//Silence detected, move to next track
+					MoveToNextTrack();
+				}
 			}
 		}
 	}

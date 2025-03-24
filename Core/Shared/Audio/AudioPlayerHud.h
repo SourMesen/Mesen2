@@ -21,7 +21,9 @@ private:
 	std::vector<double> _amplitudes;
 	std::deque<int16_t> _samples;
 	
-	Timer _silenceTimer;
+	uint32_t _prevFrameCounter = 0;
+	uint32_t _lastAudioFrame = 0;
+	double _prevFps = 0;
 	bool _changeTrackPending = false;
 
 	uint32_t _sampleRate = 48000;
@@ -35,7 +37,7 @@ private:
 public:
 	AudioPlayerHud(Emulator* emu);
 
-	void Draw();
+	void Draw(uint32_t frameCounter, double fps);
 	uint32_t GetVolume();
 	void ProcessSamples(int16_t* samples, size_t sampleCount, uint32_t sampleRate);
 };
