@@ -54,7 +54,7 @@
 			</StackPanel>
 		</ScrollViewer>
 			
-		<Border Background="#202020" BorderBrush="Gray" BorderThickness="1">
+		<Border Background="#202020" BorderBrush="Gray" BorderThickness="1" Focusable="True">
 			<ScrollViewer
 				VerticalScrollBarVisibility="Auto"
 				HorizontalScrollBarVisibility="Auto"
@@ -69,6 +69,7 @@
 					SelectionMode="SingleColor"
 					BlockSize="{Binding BlockSize}"
 					ShowIndexes="{Binding Config.ShowPaletteIndexes}"
+					Focusable="False"
 				/>
 			</ScrollViewer>
 		</Border>

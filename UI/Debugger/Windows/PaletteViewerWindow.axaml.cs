@@ -17,6 +17,7 @@ namespace Mesen.Debugger.Windows
 	public class PaletteViewerWindow : MesenWindow, INotificationHandler
 	{
 		private PaletteViewerViewModel _model;
+		private PaletteSelector _palSelector;
 
 		[Obsolete("For designer only")]
 		public PaletteViewerWindow() : this(CpuType.Snes) { }
@@ -29,6 +30,7 @@ namespace Mesen.Debugger.Windows
 #endif
 
 			PaletteSelector palSelector = this.GetControl<PaletteSelector>("palSelector");
+			_palSelector = palSelector;
 			_model = new PaletteViewerViewModel(cpuType);
 			_model.InitActions(this, palSelector);
 			DataContext = _model;
@@ -115,6 +117,15 @@ namespace Mesen.Debugger.Windows
 		public void ProcessNotification(NotificationEventArgs e)
 		{
 			ToolRefreshHelper.ProcessNotification(this, e, _model.RefreshTiming, _model, _model.RefreshData);
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if(FocusManager?.GetFocusedElement() is Border) {
+				//Only process keys if the border around the scrollviewer is focused
+				_palSelector.ProcessKeyDown(e);
+			}
 		}
 	}
 }

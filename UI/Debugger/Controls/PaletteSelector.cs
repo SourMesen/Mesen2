@@ -176,12 +176,12 @@ namespace Mesen.Debugger.Controls
 			return value;
 		}
 
-		protected override void OnKeyDown(KeyEventArgs e)
+		public void ProcessKeyDown(KeyEventArgs e)
 		{
 			switch(e.Key) {
 				case Key.Left: SelectedPalette--; break;
 				case Key.Right: SelectedPalette++; break;
-				
+
 				case Key.Up:
 					switch(SelectionMode) {
 						case PaletteSelectionMode.SingleColor: SelectedPalette -= ColumnCount; break;
@@ -202,6 +202,11 @@ namespace Mesen.Debugger.Controls
 					}
 					break;
 			}
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			this.ProcessKeyDown(e);
 		}
 
 		public override void Render(DrawingContext context)
