@@ -11,7 +11,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	x:Class="Mesen.Windows.CommandLineHelpWindow"
-	Width="800" Height="400"
+	Width="550" Height="400"
 	Title="{l:Translate wndTitle}"
 	CanResize="False"
 	Name="root"
