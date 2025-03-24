@@ -338,6 +338,12 @@ namespace Mesen.Windows
 					Dispatcher.UIThread.Post(() => {
 						ApplicationHelper.GetExistingWindow<HdPackBuilderWindow>()?.Close();
 					});
+
+					LoadRomHelper.ResetReloadCounter();
+					break;
+
+				case ConsoleNotificationType.GameLoadFailed:
+					LoadRomHelper.ResetReloadCounter();
 					break;
 
 				case ConsoleNotificationType.DebuggerResumed:

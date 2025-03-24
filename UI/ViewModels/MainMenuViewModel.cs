@@ -1265,7 +1265,7 @@ namespace Mesen.ViewModels
 
 					if(await MesenMsgBox.Show(wnd, "InstallHdPackConfirmReset", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
 						//Power cycle game if the user agrees
-						EmuApi.PowerCycle();
+						LoadRomHelper.PowerCycle();
 					}
 				}
 			} catch {

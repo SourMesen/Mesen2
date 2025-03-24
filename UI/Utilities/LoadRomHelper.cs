@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
 using Mesen.Config;
+using Mesen.Config.Shortcuts;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.ViewModels;
@@ -150,5 +151,26 @@ namespace Mesen.Utilities
 				DisplayMessageHelper.DisplayMessage("Error", ResourceHelper.GetMessage("FileNotFound", filename));
 			}
 		}
+
+		private static int _reloadRequestCounter = 0;
+		public static void ResetReloadCounter()
+		{
+			//Reload/etc. operation is done, allow other calls
+			Interlocked.Exchange(ref _reloadRequestCounter, 0);
+		}
+
+		private static void RunReloadShortcut(EmulatorShortcut shortcut)
+		{
+			//Block power cycle/power off/reload rom operations until the previous operation is done
+			//This helps prevent a lot of edge cases that could happen in the UI when e.g spamming reload rom
+			if(Interlocked.Increment(ref _reloadRequestCounter) == 1) {
+				Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = shortcut }));
+			}
+		}
+
+		public static void Reset() { Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.ExecReset })); }
+		public static void PowerCycle() { RunReloadShortcut(EmulatorShortcut.ExecPowerCycle); }
+		public static void PowerOff() { RunReloadShortcut(EmulatorShortcut.ExecPowerOff); }
+		public static void ReloadRom() { RunReloadShortcut(EmulatorShortcut.ExecReloadRom); }
 	}
 }

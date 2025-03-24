@@ -526,28 +526,28 @@ namespace Mesen.Utilities
 		public static async void Reset()
 		{
 			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmReset", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-				EmuApi.Reset();
+				LoadRomHelper.Reset();
 			}
 		}
 
 		public static async void PowerCycle()
 		{
 			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmPowerCycle", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-				EmuApi.PowerCycle();
+				LoadRomHelper.PowerCycle();
 			}
 		}
 
 		public static async void ReloadRom()
 		{
 			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmReloadRom", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-				EmuApi.ReloadRom();
+				LoadRomHelper.ReloadRom();
 			}
 		}
 
 		public static async void PowerOff()
 		{
 			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmPowerOff", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-				EmuApi.PowerOff();
+				LoadRomHelper.PowerOff();
 			}
 		}
 	}

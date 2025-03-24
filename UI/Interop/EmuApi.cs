@@ -48,11 +48,6 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void Stop();
 		[DllImport(DllPath)] public static extern Int32 GetStopCode();
 
-		public static void Reset() { Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.ExecReset })); }
-		public static void PowerCycle() { Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.ExecPowerCycle })); }
-		public static void PowerOff() { Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.ExecPowerOff })); }
-		public static void ReloadRom() { Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.ExecReloadRom })); }
-
 		[DllImport(DllPath)] public static extern void Pause();
 		[DllImport(DllPath)] public static extern void Resume();
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsPaused();
