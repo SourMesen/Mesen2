@@ -273,7 +273,10 @@ uint8_t SnesMemoryManager::Read(uint32_t addr, MemoryOperationType type)
 	if(handler) {
 		value = handler->Read(addr);
 		_memTypeBusA = handler->GetMemoryType();
-		_openBus = value;
+		if(handler != _registerHandlerA.get()) {
+			//Reading from the internal CPU bus does not update the external bus
+			_openBus = value;
+		}
 	} else {
 		//open bus
 		value = _openBus;
@@ -351,7 +354,6 @@ void SnesMemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType 
 		} else {
 			LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 		}
-		_openBus = value;
 	}
 }
 

@@ -97,6 +97,11 @@ uint8_t SnesControlManager::Read(uint16_t addr, bool forAutoRead)
 		value |= device->ReadRam(addr);
 	}
 
+	if(addr == 0x4017) {
+		//These bits are always set to 1 for 4017
+		value |= 0x1C;
+	}
+
 	return value;
 }
 

@@ -269,8 +269,8 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		}
 
 		case 0x4213:
-			//TODO  RDIO - Programmable I/O port (in-port)
-			return 0;
+			//RDIO - Programmable I/O port (in-port)
+			return _state.IoPortOutput;
 						 
 		case 0x4214:
 		case 0x4215:
