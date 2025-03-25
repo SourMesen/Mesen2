@@ -108,6 +108,9 @@ protected:
 		entries.push_back(MapperStateEntry("$C000.0-4", "CHR Bank ($1000)", _chrReg1, MapperStateValueType::Number8));
 		entries.push_back(MapperStateEntry("$E000.0-3", "PRG Bank", _prgReg, MapperStateValueType::Number8));
 		entries.push_back(MapperStateEntry("$E000.4", "WRAM Disabled", _wramDisable));
+		
+		entries.push_back(MapperStateEntry("", "Shift Register", _writeBuffer, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("", "Write Count", _shiftCount, MapperStateValueType::Number8));
 		return entries;
 	}
 
