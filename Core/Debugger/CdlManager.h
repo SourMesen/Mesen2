@@ -29,7 +29,7 @@ public:
 	void SaveCdlFile(MemoryType memType, char* cdlFile);
 	void RegisterCdl(MemoryType memType, CodeDataLogger* cdl);
 
-	void RefreshCodeCache();
+	void RefreshCodeCache(bool resetPrgCache = true);
 
 	CodeDataLogger* GetCodeDataLogger(MemoryType memType);
 };

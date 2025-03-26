@@ -70,9 +70,11 @@ void CdlManager::RegisterCdl(MemoryType memType, CodeDataLogger* cdl)
 	_codeDataLoggers[(int)memType] = cdl;
 }
 
-void CdlManager::RefreshCodeCache()
+void CdlManager::RefreshCodeCache(bool resetPrgCache)
 {
-	_disassembler->ResetPrgCache();
+	if(resetPrgCache) {
+		_disassembler->ResetPrgCache();
+	}
 
 	for(CodeDataLogger* cdl : _codeDataLoggers) {
 		if(cdl) {

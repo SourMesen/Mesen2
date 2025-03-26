@@ -15,9 +15,8 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 
 	for(int i = (int)DebugUtilities::GetLastCpuMemoryType() + 1; i < DebugUtilities::GetMemoryTypeCount(); i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((MemoryType)i);
-		_counters[i].reserve(memSize);
-		for(uint32_t j = 0; j < memSize; j++) {
-			_counters[i].push_back({});
+		if(memSize > 0) {
+			_counters[i] = vector<AddressCounters>(memSize);
 		}
 	}
 }

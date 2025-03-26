@@ -235,6 +235,12 @@ void VirtualFile::InitChunks()
 	}
 }
 
+vector<uint8_t>& VirtualFile::GetData()
+{
+	LoadFile();
+	return _data;
+}
+
 bool VirtualFile::ReadFile(vector<uint8_t>& out)
 {
 	LoadFile();

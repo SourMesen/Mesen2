@@ -114,7 +114,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 
-	_cdlManager->RefreshCodeCache();
+	_cdlManager->RefreshCodeCache(false);
 
 	if(_emu->IsPaused()) {
 		//Break on the current instruction if emulation was already paused

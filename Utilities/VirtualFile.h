@@ -44,6 +44,8 @@ public:
 	bool CheckFileSignature(vector<string> signatures, bool loadArchives = false);
 	void InitChunks();
 
+	vector<uint8_t>& GetData();
+
 	bool ReadFile(vector<uint8_t> &out);
 	bool ReadFile(std::stringstream &out);
 	bool ReadFile(uint8_t* out, uint32_t expectedSize);

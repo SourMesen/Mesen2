@@ -51,8 +51,7 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl)
 	VirtualFile cdlFile = cdlFilepath;
 	if(cdlFile.IsValid()) {
 		uint32_t fileSize = (uint32_t)cdlFile.GetSize();
-		vector<uint8_t> cdlData;
-		cdlFile.ReadFile(cdlData);
+		vector<uint8_t>& cdlData = cdlFile.GetData();
 
 		if(fileSize >= _memSize) {
 			Reset();
