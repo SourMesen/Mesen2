@@ -1349,6 +1349,8 @@
 			<Control ID="chkBreakOnCop">COP</Control>
 			<Control ID="chkBreakOnWdm">WDM</Control>
 			<Control ID="chkBreakOnStp">STP</Control>
+			<Control ID="chkBreakOnInvalidPpuAccess">Invalid PPU memory access</Control>
+			<Control ID="chkBreakOnReadDuringAutoJoy">Controller read during auto-read</Control>
 			<Control ID="chkBreakOnUninitRead">Uninitialized memory read</Control>
 			<Control ID="chkBreakOnOpen">Debugger opened</Control>
 			<Control ID="chkBreakOnPowerCycleReset">Power/reset</Control>
@@ -2964,6 +2966,9 @@ E
 			<Value ID="GbaNopLoad">MOV R11, R11 (NOP)</Value>
 			<Value ID="GbaInvalidOpCode">Invalid instruction</Value>
 			<Value ID="GbaUnalignedMemoryAccess">Unaligned memory access</Value>
+
+			<Value ID="SnesReadDuringAutoJoy">Controller read during auto-read</Value>
+			<Value ID="SnesInvalidPpuAccess">Invalid PPU memory access</Value>
 
 			<Value ID="BreakOnUndefinedOpCode">Undefined OP</Value>
 		</Enum>

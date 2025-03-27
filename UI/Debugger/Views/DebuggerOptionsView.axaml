@@ -91,6 +91,15 @@
 					IsChecked="{Binding Config.Snes.BreakOnStp}"
 					Content="{l:Translate chkBreakOnStp}"
 				/>
+				<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
+				<CheckBox
+					IsChecked="{Binding Config.Snes.BreakOnInvalidPpuAccess}"
+					Content="{l:Translate chkBreakOnInvalidPpuAccess}"
+				/>
+				<CheckBox
+					IsChecked="{Binding Config.Snes.BreakOnReadDuringAutoJoy}"
+					Content="{l:Translate chkBreakOnReadDuringAutoJoy}"
+				/>
 			</StackPanel>
 			<StackPanel IsVisible="{Binding IsGameboy}">
 				<CheckBox

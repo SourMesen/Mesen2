@@ -343,6 +343,9 @@ enum class BreakSource
 	GbaNopLoad,
 	GbaUnalignedMemoryAccess,
 
+	SnesInvalidPpuAccess,
+	SnesReadDuringAutoJoy,
+
 	BreakOnUndefinedOpCode
 };
 

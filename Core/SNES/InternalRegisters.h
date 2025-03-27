@@ -14,6 +14,7 @@ class SnesControlManager;
 class InternalRegisters final : public ISerializable
 {
 private:
+	Emulator* _emu = nullptr;
 	SnesConsole* _console = nullptr;
 	SnesCpu* _cpu = nullptr;
 	SnesPpu* _ppu = nullptr;
@@ -62,6 +63,7 @@ public:
 	bool IsVerticalIrqEnabled() { return _state.EnableVerticalIrq; }
 	bool IsHorizontalIrqEnabled() { return _state.EnableHorizontalIrq; }
 	bool IsNmiEnabled() { return _state.EnableNmi; }
+	bool IsAutoReadActive() { return _autoReadActive; }
 	bool IsFastRomEnabled() { return _state.EnableFastRom; }
 	uint16_t GetHorizontalTimer() { return _state.HorizontalTimer; }
 	uint16_t GetVerticalTimer() { return _state.VerticalTimer; }

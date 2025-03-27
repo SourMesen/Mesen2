@@ -1,10 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Media;
-using Mesen.Debugger;
-using Mesen.Interop;
-using ReactiveUI.Fody.Helpers;
-using System.Reactive.Linq;
-using System.Reactive;
+﻿using ReactiveUI.Fody.Helpers;
 using Mesen.ViewModels;
 
 namespace Mesen.Config
@@ -15,6 +9,8 @@ namespace Mesen.Config
 		[Reactive] public bool BreakOnCop { get; set; } = false;
 		[Reactive] public bool BreakOnWdm { get; set; } = false;
 		[Reactive] public bool BreakOnStp { get; set; } = false;
+		[Reactive] public bool BreakOnInvalidPpuAccess { get; set; } = false;
+		[Reactive] public bool BreakOnReadDuringAutoJoy { get; set; } = false;
 
 		[Reactive] public bool UseAltSpcOpNames { get; set; } = false;
 		[Reactive] public bool IgnoreDspReadWrites { get; set; } = true;

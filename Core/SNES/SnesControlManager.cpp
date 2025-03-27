@@ -88,6 +88,9 @@ void SnesControlManager::UpdateControlDevices()
 uint8_t SnesControlManager::Read(uint16_t addr, bool forAutoRead)
 {
 	if(!forAutoRead) {
+		if(_console->GetInternalRegisters()->IsAutoReadActive()) {
+			_emu->BreakIfDebugging(CpuType::Snes, BreakSource::SnesReadDuringAutoJoy);
+		}
 		_console->GetInternalRegisters()->ProcessAutoJoypad();
 		SetInputReadFlag();
 	}

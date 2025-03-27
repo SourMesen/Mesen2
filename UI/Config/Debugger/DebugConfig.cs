@@ -61,6 +61,8 @@ namespace Mesen.Config
 				SnesBreakOnCop = Debugger.Snes.BreakOnCop,
 				SnesBreakOnWdm = Debugger.Snes.BreakOnWdm,
 				SnesBreakOnStp = Debugger.Snes.BreakOnStp,
+				SnesBreakOnInvalidPpuAccess = Debugger.Snes.BreakOnInvalidPpuAccess,
+				SnesBreakOnReadDuringAutoJoy = Debugger.Snes.BreakOnReadDuringAutoJoy,
 				SnesUseAltSpcOpNames = Debugger.Snes.UseAltSpcOpNames,
 				SnesIgnoreDspReadWrites = Debugger.Snes.IgnoreDspReadWrites,
 
@@ -127,6 +129,8 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool SnesBreakOnCop;
 		[MarshalAs(UnmanagedType.I1)] public bool SnesBreakOnWdm;
 		[MarshalAs(UnmanagedType.I1)] public bool SnesBreakOnStp;
+		[MarshalAs(UnmanagedType.I1)] public bool SnesBreakOnInvalidPpuAccess;
+		[MarshalAs(UnmanagedType.I1)] public bool SnesBreakOnReadDuringAutoJoy;
 		[MarshalAs(UnmanagedType.I1)] public bool SnesUseAltSpcOpNames;
 		[MarshalAs(UnmanagedType.I1)] public bool SnesIgnoreDspReadWrites;
 

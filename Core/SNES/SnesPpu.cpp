@@ -6,7 +6,6 @@
 #include "SNES/Spc.h"
 #include "SNES/InternalRegisters.h"
 #include "SNES/SnesControlManager.h"
-#include "SNES/InternalRegisters.h"
 #include "SNES/SnesDmaController.h"
 #include "SNES/Debugger/SnesPpuTools.h"
 #include "Debugger/Debugger.h"
@@ -1624,12 +1623,20 @@ bool SnesPpu::IsDoubleWidth()
 
 bool SnesPpu::CanAccessCgram()
 {
-	return _scanline >= _nmiScanline || _scanline == 0 || _state.ForcedBlank || _memoryManager->GetHClock() < 88 || _memoryManager->GetHClock() >= 1096;
+	bool allowAccess = _scanline >= _nmiScanline || _scanline == 0 || _state.ForcedBlank || _memoryManager->GetHClock() < 88 || _memoryManager->GetHClock() >= 1096;
+	if(!allowAccess) {
+		_emu->BreakIfDebugging(CpuType::Snes, BreakSource::SnesInvalidPpuAccess);
+	}
+	return allowAccess;
 }
 
 bool SnesPpu::CanAccessVram()
 {
-	return _scanline >= _nmiScanline || _state.ForcedBlank;
+	bool allowAccess = _scanline >= _nmiScanline || _state.ForcedBlank;
+	if(!allowAccess) {
+		_emu->BreakIfDebugging(CpuType::Snes, BreakSource::SnesInvalidPpuAccess);
+	}
+	return allowAccess;
 }
 
 void SnesPpu::SetLocationLatchRequest(uint16_t x, uint16_t y)
@@ -1672,6 +1679,7 @@ uint16_t SnesPpu::GetOamAddress()
 	if(_state.ForcedBlank || _scanline >= _vblankStartScanline) {
 		return _state.InternalOamAddress;
 	} else {
+		_emu->BreakIfDebugging(CpuType::Snes, BreakSource::SnesInvalidPpuAccess);
 		if(_memoryManager->GetHClock() <= 255 * 4) {
 			return _oamEvaluationIndex << 2;
 		} else {

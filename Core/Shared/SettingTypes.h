@@ -800,6 +800,8 @@ struct DebugConfig
 	bool SnesBreakOnCop = false;
 	bool SnesBreakOnWdm = false;
 	bool SnesBreakOnStp = false;
+	bool SnesBreakOnInvalidPpuAccess = false;
+	bool SnesBreakOnReadDuringAutoJoy = false;
 	bool SnesUseAltSpcOpNames = false;
 	bool SnesIgnoreDspReadWrites = false;
 

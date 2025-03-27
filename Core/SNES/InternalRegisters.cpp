@@ -17,6 +17,7 @@ InternalRegisters::InternalRegisters()
 
 void InternalRegisters::Initialize(SnesConsole* console)
 {
+	_emu = console->GetEmulator();
 	_cpu = console->GetCpu();
 	_aluMulDiv.Initialize(_cpu);
 	_console = console;
@@ -160,8 +161,7 @@ uint8_t InternalRegisters::ReadControllerData(uint8_t port, bool getMsb)
 	}
 
 	if(_autoReadActive) {
-		//TODO add a break option for this?
-		_console->GetEmulator()->DebugLog("[Input] Read input during auto-read - results may be invalid.");
+		_emu->BreakIfDebugging(CpuType::Snes, BreakSource::SnesReadDuringAutoJoy);
 	}
 
 	return value;

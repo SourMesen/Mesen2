@@ -805,6 +805,8 @@ bool Debugger::IsBreakOptionEnabled(BreakSource src)
 		case BreakSource::PceBreakOnInvalidVramAddress: return cfg.PceBreakOnInvalidVramAddress;
 		case BreakSource::GbaInvalidOpCode: return cfg.GbaBreakOnInvalidOpCode;
 		case BreakSource::GbaUnalignedMemoryAccess: return cfg.GbaBreakOnUnalignedMemAccess;
+		case BreakSource::SnesInvalidPpuAccess: return cfg.SnesBreakOnInvalidPpuAccess;
+		case BreakSource::SnesReadDuringAutoJoy: return cfg.SnesBreakOnReadDuringAutoJoy;
 	}
 	return true;
 }

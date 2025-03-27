@@ -1547,6 +1547,7 @@ namespace Mesen.Interop
 		BreakOnCop,
 		BreakOnWdm,
 		BreakOnStp,
+
 		BreakOnUninitMemoryRead,
 
 		GbInvalidOamAccess,
@@ -1574,7 +1575,10 @@ namespace Mesen.Interop
 		GbaInvalidOpCode,
 		GbaNopLoad,
 		GbaUnalignedMemoryAccess,
-		
+
+		SnesInvalidPpuAccess,
+		SnesReadDuringAutoJoy,
+
 		BreakOnUndefinedOpCode
 	}
 
