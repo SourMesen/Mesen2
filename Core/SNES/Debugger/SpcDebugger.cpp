@@ -87,9 +87,9 @@ void SpcDebugger::ProcessInstruction()
 
 	if(_debuggerEnabled) {
 		//Break on BRK/STP
-		if(value == 0x0F && _settings->GetDebugConfig().SnesBreakOnBrk) {
+		if(value == 0x0F && _settings->GetDebugConfig().SpcBreakOnBrk) {
 			_step->Break(BreakSource::BreakOnBrk);
-		} else if(value == 0xFF && _settings->GetDebugConfig().SnesBreakOnStp) {
+		} else if((value == 0xFF || value == 0xEF) && _settings->GetDebugConfig().SpcBreakOnStpSleep) {
 			_step->Break(BreakSource::BreakOnStp);
 		}
 	}

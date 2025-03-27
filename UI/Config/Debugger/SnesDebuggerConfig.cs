@@ -12,6 +12,9 @@ namespace Mesen.Config
 		[Reactive] public bool BreakOnInvalidPpuAccess { get; set; } = false;
 		[Reactive] public bool BreakOnReadDuringAutoJoy { get; set; } = false;
 
+		[Reactive] public bool SpcBreakOnBrk { get; set; } = false;
+		[Reactive] public bool SpcBreakOnStpSleep { get; set; } = false;
+		
 		[Reactive] public bool UseAltSpcOpNames { get; set; } = false;
 		[Reactive] public bool IgnoreDspReadWrites { get; set; } = true;
 	}

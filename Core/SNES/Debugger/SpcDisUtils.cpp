@@ -217,7 +217,9 @@ bool SpcDisUtils::IsUnconditionalJump(uint8_t opCode)
 		case 0xC1: //TCALLC
 		case 0xD1: //TCALLD
 		case 0xE1: //TCALLE
+		case 0xEF: //SLEEP
 		case 0xF1: //TCALLF
+		case 0xFF: //STOP
 			return true;
 
 		default:

@@ -1351,6 +1351,9 @@
 			<Control ID="chkBreakOnStp">STP</Control>
 			<Control ID="chkBreakOnInvalidPpuAccess">Invalid PPU memory access</Control>
 			<Control ID="chkBreakOnReadDuringAutoJoy">Controller read during auto-read</Control>
+			
+			<Control ID="chkSpcBreakOnStpSleep">STOP / SLEEP</Control>
+			
 			<Control ID="chkBreakOnUninitRead">Uninitialized memory read</Control>
 			<Control ID="chkBreakOnOpen">Debugger opened</Control>
 			<Control ID="chkBreakOnPowerCycleReset">Power/reset</Control>

@@ -805,6 +805,9 @@ struct DebugConfig
 	bool SnesUseAltSpcOpNames = false;
 	bool SnesIgnoreDspReadWrites = false;
 
+	bool SpcBreakOnBrk = false;
+	bool SpcBreakOnStpSleep = false;
+
 	bool GbBreakOnInvalidOamAccess = false;
 	bool GbBreakOnInvalidVramAccess = false;
 	bool GbBreakOnDisableLcdOutsideVblank = false;

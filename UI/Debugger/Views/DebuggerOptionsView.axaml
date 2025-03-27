@@ -101,6 +101,16 @@
 					Content="{l:Translate chkBreakOnReadDuringAutoJoy}"
 				/>
 			</StackPanel>
+			<StackPanel IsVisible="{Binding IsSpc}">
+				<CheckBox
+					IsChecked="{Binding Config.Snes.SpcBreakOnBrk}"
+					Content="{l:Translate chkBreakOnBrk}"
+				/>
+				<CheckBox
+					IsChecked="{Binding Config.Snes.SpcBreakOnStpSleep}"
+					Content="{l:Translate chkSpcBreakOnStpSleep}"
+				/>
+			</StackPanel>
 			<StackPanel IsVisible="{Binding IsGameboy}">
 				<CheckBox
 					IsChecked="{Binding Config.Gameboy.GbBreakOnInvalidOamAccess}"
@@ -218,7 +228,7 @@
 					Content="{l:Translate chkBreakOnUndefinedOpCode}"
 				/>
 			</StackPanel>
-			<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
+			<Rectangle  IsVisible="{Binding HasSpecificBreakOptions}" Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
 			<CheckBox
 				IsChecked="{Binding Config.BreakOnUninitRead}"
 				Content="{l:Translate chkBreakOnUninitRead}"
