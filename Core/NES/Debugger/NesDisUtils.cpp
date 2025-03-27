@@ -239,6 +239,11 @@ bool NesDisUtils::IsOpUnofficial(uint8_t opCode)
 	return _isUnofficial[opCode];
 }
 
+bool NesDisUtils::IsOpUnstable(uint8_t opCode)
+{
+	return opCode == 0xAB || opCode == 0x8B;
+}
+
 bool NesDisUtils::IsUnconditionalJump(uint8_t opCode)
 {
 	switch(opCode) {

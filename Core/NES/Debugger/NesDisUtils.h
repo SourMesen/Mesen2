@@ -22,6 +22,7 @@ public:
 	static char const* const GetOpName(uint8_t opCode);
 	static NesAddrMode GetOpMode(uint8_t opCode);
 	static bool IsOpUnofficial(uint8_t opCode);
+	static bool IsOpUnstable(uint8_t opCode);
 	static bool IsUnconditionalJump(uint8_t opCode);
 	static bool IsConditionalJump(uint8_t opCode);
 	static CdlFlags::CdlFlags GetOpFlags(uint8_t opCode, uint16_t pc, uint16_t prevPc);

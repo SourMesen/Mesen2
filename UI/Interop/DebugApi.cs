@@ -1557,12 +1557,15 @@ namespace Mesen.Interop
 		GbOamCorruption,
 
 		NesBreakOnDecayedOamRead,
-		NesBreakOnPpu2000ScrollGlitch,
-		NesBreakOnPpu2006ScrollGlitch,
+		NesBreakOnPpuScrollGlitch,
 		BreakOnUnofficialOpCode,
+		BreakOnUnstableOpCode,
 		NesBusConflict,
 		NesBreakOnCpuCrash,
 		NesBreakOnExtOutputMode,
+		NesInvalidVramAccess,
+		NesInvalidOamWrite,
+		NesDmaInputRead,
 
 		PceBreakOnInvalidVramAddress,
 

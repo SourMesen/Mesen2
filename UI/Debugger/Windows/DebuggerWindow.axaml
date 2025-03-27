@@ -154,7 +154,7 @@
 			</StackPanel>
 		</DockPanel>
 		<DockPanel>
-			<Panel DockPanel.Dock="Right" IsVisible="{Binding Config.ShowSettingsPanel}" Margin="3 0">
+			<Panel DockPanel.Dock="Right" IsVisible="{Binding Config.ShowSettingsPanel}">
 				<ScrollViewer>
 					<v:DebuggerOptionsView DataContext="{Binding Options}" />
 				</ScrollViewer>

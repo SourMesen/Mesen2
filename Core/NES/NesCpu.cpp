@@ -433,7 +433,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 				assert(_needHalt || _needDummyRead);
 				processCycle();
 				if(!skipDummyReads) {
-					_memoryManager->Read(readAddress, MemoryOperationType::DummyRead);
+					_memoryManager->Read(readAddress, MemoryOperationType::DmaRead);
 				}
 				EndCpuCycle(true);
 			}
@@ -451,7 +451,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 				//Align to read cycle before starting sprite DMA (or align to perform DMC read)
 				processCycle();
 				if(!skipDummyReads) {
-					_memoryManager->Read(readAddress, MemoryOperationType::DummyRead);
+					_memoryManager->Read(readAddress, MemoryOperationType::DmaRead);
 				}
 				EndCpuCycle(true);
 			}

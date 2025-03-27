@@ -73,12 +73,15 @@ namespace Mesen.Config
 
 				NesBreakOnBrk = Debugger.Nes.BreakOnBrk,
 				NesBreakOnUnofficialOpCode = Debugger.Nes.BreakOnUnofficialOpCode,
+				NesBreakOnUnstableOpCode = Debugger.Nes.BreakOnUnstableOpCode,
 				NesBreakOnCpuCrash = Debugger.Nes.BreakOnCpuCrash,
 				NesBreakOnBusConflict = Debugger.Nes.BreakOnBusConflict,
 				NesBreakOnDecayedOamRead = Debugger.Nes.BreakOnDecayedOamRead,
-				NesBreakOnPpu2000ScrollGlitch = Debugger.Nes.BreakOnPpu2000ScrollGlitch,
-				NesBreakOnPpu2006ScrollGlitch = Debugger.Nes.BreakOnPpu2006ScrollGlitch,
-				NesBreakOnExtOutputMode = Debugger.Nes.NesBreakOnExtOutputMode,
+				NesBreakOnPpuScrollGlitch = Debugger.Nes.BreakOnPpuScrollGlitch,
+				NesBreakOnExtOutputMode = Debugger.Nes.BreakOnExtOutputMode,
+				NesBreakOnInvalidVramAccess = Debugger.Nes.BreakOnInvalidVramAccess,
+				NesBreakOnInvalidOamWrite = Debugger.Nes.BreakOnInvalidOamWrite,
+				NesBreakOnDmaInputRead = Debugger.Nes.BreakOnDmaInputRead,
 
 				PceBreakOnBrk = Debugger.Pce.BreakOnBrk,
 				PceBreakOnUnofficialOpCode = Debugger.Pce.BreakOnUnofficialOpCode,
@@ -136,12 +139,15 @@ namespace Mesen.Config
 
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnBrk;
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnUnofficialOpCode;
+		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnUnstableOpCode;
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnCpuCrash;
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnBusConflict;
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnDecayedOamRead;
-		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnPpu2000ScrollGlitch;
-		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnPpu2006ScrollGlitch;
+		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnPpuScrollGlitch;
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnExtOutputMode;
+		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnInvalidVramAccess;
+		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnInvalidOamWrite;
+		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnDmaInputRead;
 
 		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnBrk;
 		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnUnofficialOpCode;

@@ -789,19 +789,22 @@ bool Debugger::IsDebugWindowOpened(CpuType cpuType)
 
 bool Debugger::IsBreakOptionEnabled(BreakSource src)
 {
+	DebugConfig& cfg = _settings->GetDebugConfig();
 	switch(src) {
-		case BreakSource::GbDisableLcdOutsideVblank: return _settings->GetDebugConfig().GbBreakOnDisableLcdOutsideVblank;
-		case BreakSource::GbInvalidVramAccess: return _settings->GetDebugConfig().GbBreakOnInvalidVramAccess;
-		case BreakSource::GbInvalidOamAccess: return _settings->GetDebugConfig().GbBreakOnInvalidOamAccess;
-		case BreakSource::NesBreakOnDecayedOamRead: return _settings->GetDebugConfig().NesBreakOnDecayedOamRead;
-		case BreakSource::NesBreakOnPpu2000ScrollGlitch: return _settings->GetDebugConfig().NesBreakOnPpu2000ScrollGlitch;
-		case BreakSource::NesBreakOnPpu2006ScrollGlitch: return _settings->GetDebugConfig().NesBreakOnPpu2006ScrollGlitch;
-		case BreakSource::NesBusConflict: return _settings->GetDebugConfig().NesBreakOnBusConflict;
-		case BreakSource::NesBreakOnCpuCrash: return _settings->GetDebugConfig().NesBreakOnCpuCrash;
-		case BreakSource::NesBreakOnExtOutputMode: return _settings->GetDebugConfig().NesBreakOnExtOutputMode;
-		case BreakSource::PceBreakOnInvalidVramAddress: return _settings->GetDebugConfig().PceBreakOnInvalidVramAddress;
-		case BreakSource::GbaInvalidOpCode: return _settings->GetDebugConfig().GbaBreakOnInvalidOpCode;
-		case BreakSource::GbaUnalignedMemoryAccess: return _settings->GetDebugConfig().GbaBreakOnUnalignedMemAccess;
+		case BreakSource::GbDisableLcdOutsideVblank: return cfg.GbBreakOnDisableLcdOutsideVblank;
+		case BreakSource::GbInvalidVramAccess: return cfg.GbBreakOnInvalidVramAccess;
+		case BreakSource::GbInvalidOamAccess: return cfg.GbBreakOnInvalidOamAccess;
+		case BreakSource::NesBreakOnDecayedOamRead: return cfg.NesBreakOnDecayedOamRead;
+		case BreakSource::NesBreakOnPpuScrollGlitch: return cfg.NesBreakOnPpuScrollGlitch;
+		case BreakSource::NesBusConflict: return cfg.NesBreakOnBusConflict;
+		case BreakSource::NesBreakOnCpuCrash: return cfg.NesBreakOnCpuCrash;
+		case BreakSource::NesBreakOnExtOutputMode: return cfg.NesBreakOnExtOutputMode;
+		case BreakSource::NesInvalidVramAccess: return cfg.NesBreakOnInvalidVramAccess;
+		case BreakSource::NesInvalidOamWrite: return cfg.NesBreakOnInvalidOamWrite;
+		case BreakSource::NesDmaInputRead: return cfg.NesBreakOnDmaInputRead;
+		case BreakSource::PceBreakOnInvalidVramAddress: return cfg.PceBreakOnInvalidVramAddress;
+		case BreakSource::GbaInvalidOpCode: return cfg.GbaBreakOnInvalidOpCode;
+		case BreakSource::GbaUnalignedMemoryAccess: return cfg.GbaBreakOnUnalignedMemAccess;
 	}
 	return true;
 }

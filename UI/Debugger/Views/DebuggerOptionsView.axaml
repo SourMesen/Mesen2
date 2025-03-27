@@ -22,9 +22,12 @@
 		<Style Selector="WrapPanel > CheckBox">
 			<Setter Property="Margin" Value="0 0 7 0" />
 		</Style>
+		<Style Selector="CheckBox">
+			<Setter Property="ToolTip.ShowDelay" Value="100" />
+		</Style>
 	</UserControl.Styles>
 
-	<StackPanel>
+	<StackPanel Margin="3 0">
 		<c:OptionSection Header="{l:Translate lblDisassemblyOptions}" Margin="0">
 			<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
 				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblVerifiedData}" />
@@ -128,6 +131,11 @@
 					Content="{l:Translate chkBreakOnUnofficialOpCode}"
 				/>
 				<CheckBox
+					IsChecked="{Binding Config.Nes.BreakOnUnstableOpCode}"
+					Content="{l:Translate chkBreakOnUnstableOpCode}"
+					ToolTip.Tip="{l:Translate chkBreakOnUnstableOpCodeHint}"
+				/>
+				<CheckBox
 					IsChecked="{Binding Config.Nes.BreakOnCpuCrash}"
 					Content="{l:Translate chkBreakOnCpuCrash}"
 				/>
@@ -141,15 +149,23 @@
 					Content="{l:Translate chkBreakOnDecayedOamRead}"
 				/>
 				<CheckBox
-					IsChecked="{Binding Config.Nes.BreakOnPpu2000ScrollGlitch}"
-					Content="{l:Translate chkBreakOnPpu2000ScrollGlitch}"
+					IsChecked="{Binding Config.Nes.BreakOnDmaInputRead}"
+					Content="{l:Translate chkNesDmaInputRead}"
 				/>
 				<CheckBox
-					IsChecked="{Binding Config.Nes.BreakOnPpu2006ScrollGlitch}"
-					Content="{l:Translate chkBreakOnPpu2006ScrollGlitch}"
+					IsChecked="{Binding Config.Nes.BreakOnInvalidOamWrite}"
+					Content="{l:Translate chkNesInvalidOamWrite}"
 				/>
 				<CheckBox
-					IsChecked="{Binding Config.Nes.NesBreakOnExtOutputMode}"
+					IsChecked="{Binding Config.Nes.BreakOnInvalidVramAccess}"
+					Content="{l:Translate chkNesInvalidVramAccess}"
+				/>
+				<CheckBox
+					IsChecked="{Binding Config.Nes.BreakOnPpuScrollGlitch}"
+					Content="{l:Translate chkBreakOnPpuScrollGlitch}"
+				/>
+				<CheckBox
+					IsChecked="{Binding Config.Nes.BreakOnExtOutputMode}"
 					Content="{l:Translate chkNesBreakOnExtOutputMode}"
 				/>
 			</StackPanel>

@@ -1354,21 +1354,25 @@
 			<Control ID="chkBreakOnPowerCycleReset">Power/reset</Control>
 
 			<Control ID="chkBreakOnUnofficialOpCode">Unofficial opcodes</Control>
+			<Control ID="chkBreakOnUnstableOpCode">Unstable opcodes</Control>
+			<Control ID="chkBreakOnUnstableOpCodeHint">Breaks on "ANE #imm" ($8B) and "LAX #imm" ($AB)&#10;Both opcodes are unstable on hardware and their results are usually unreliable.</Control>
 			<Control ID="chkBreakOnCpuCrash">CPU crash</Control>
 			<Control ID="chkBreakOnBusConflict">Bus conflict</Control>
 			<Control ID="chkBreakOnDecayedOamRead">Decayed OAM read</Control>
-			<Control ID="chkBreakOnPpu2000ScrollGlitch">PPU $2000/5/6 scroll glitch</Control>
-			<Control ID="chkBreakOnPpu2006ScrollGlitch">PPU $2006 scroll glitch</Control>
+			<Control ID="chkBreakOnPpuScrollGlitch">PPU scroll glitch</Control>
+			<Control ID="chkNesInvalidVramAccess">Invalid VRAM access</Control>
+			<Control ID="chkNesInvalidOamWrite">Invalid OAM write</Control>
+			<Control ID="chkNesDmaInputRead">DMA controller read</Control>
 			<Control ID="chkNesBreakOnExtOutputMode">PPU EXT output mode</Control>
 
-			<Control ID="chkGbBreakOnInvalidOamAccess">Break on invalid OAM access</Control>
-			<Control ID="chkGbBreakOnInvalidVramAccess">Break on invalid VRAM access</Control>
-			<Control ID="chkGbBreakOnDisableLcdOutsideVblank">Break on LCD disable outside vblank</Control>
-			<Control ID="chkGbBreakOnInvalidOpCode">Break on invalid instructions</Control>
-			<Control ID="chkGbBreakOnNopLoad">Break on LD B, B (nop)</Control>
-			<Control ID="chkGbBreakOnOamCorruption">Break on OAM corruption</Control>
+			<Control ID="chkGbBreakOnInvalidOamAccess">Invalid OAM access</Control>
+			<Control ID="chkGbBreakOnInvalidVramAccess">Invalid VRAM access</Control>
+			<Control ID="chkGbBreakOnDisableLcdOutsideVblank">LCD disable outside vblank</Control>
+			<Control ID="chkGbBreakOnInvalidOpCode">Invalid instructions</Control>
+			<Control ID="chkGbBreakOnNopLoad">LD B, B (nop)</Control>
+			<Control ID="chkGbBreakOnOamCorruption">OAM corruption</Control>
 
-			<Control ID="chkPceBreakOnInvalidVramAddress">Break on invalid VRAM address</Control>
+			<Control ID="chkPceBreakOnInvalidVramAddress">Invalid VRAM address</Control>
 
 			<Control ID="chkGbaBreakOnInvalidOpCode">Break on invalid instructions</Control>
 			<Control ID="chkGbaBreakOnNopLoad">Break on MOV R11, R11 (nop)</Control>
@@ -2945,9 +2949,13 @@ E
 			<Value ID="NesBreakOnPpu2000ScrollGlitch">$2000/5/6 scroll glitch</Value>
 			<Value ID="NesBreakOnPpu2006ScrollGlitch">$2006 scroll glitch</Value>
 			<Value ID="BreakOnUnofficialOpCode">Unofficial OP</Value>
+			<Value ID="BreakOnUnstableOpCode">Unstable OP</Value>
 			<Value ID="NesBusConflict">Bus conflict</Value>
 			<Value ID="NesBreakOnCpuCrash">CPU crashed</Value>
 			<Value ID="NesBreakOnExtOutputMode">PPU EXT output mode</Value>
+			<Value ID="NesInvalidVramAccess">Invalid VRAM access</Value>
+			<Value ID="NesInvalidOamWrite">Invalid OAM access</Value>
+			<Value ID="NesDmaInputRead">DMA controller read</Value>
 			
 			<Value ID="PceBreakOnInvalidVramAddress">Invalid VRAM address (>= $8000)</Value>
 

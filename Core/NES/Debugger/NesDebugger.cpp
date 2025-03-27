@@ -10,7 +10,6 @@
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
-#include "Debugger/CodeDataLogger.h"
 #include "NES/NesHeader.h"
 #include "NES/NesConsole.h"
 #include "NES/NesCpu.h"
@@ -135,6 +134,8 @@ void NesDebugger::ProcessInstruction()
 			_step->Break(BreakSource::BreakOnBrk);
 		} else if(_settings->GetDebugConfig().NesBreakOnUnofficialOpCode && NesDisUtils::IsOpUnofficial(opCode)) {
 			_step->Break(BreakSource::BreakOnUnofficialOpCode);
+		} else if(_settings->GetDebugConfig().NesBreakOnUnstableOpCode && NesDisUtils::IsOpUnstable(opCode)) {
+			_step->Break(BreakSource::BreakOnUnstableOpCode);
 		}
 	}
 
@@ -189,7 +190,9 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(operation.Type == MemoryOperationType::DmaRead) {
 			bool isDmcDma = _cpu->IsDmcDma();
 			_eventManager->AddEvent(isDmcDma ? DebugEventType::DmcDmaRead : DebugEventType::DmaRead, operation);
-			if(isDmcDma && addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
+			if((addr == 0x4016 || addr == 0x4017) && _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled) && _settings->GetDebugConfig().NesBreakOnDmaInputRead) {
+				_debugger->BreakImmediately(CpuType::Nes, BreakSource::NesDmaInputRead);
+			} else if(isDmcDma && addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
 				_codeDataLogger->SetData<NesCdlFlags::PcmData>(addressInfo.Address);
 			}
 		} else if(operation.Type != MemoryOperationType::DummyRead && addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {

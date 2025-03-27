@@ -812,12 +812,15 @@ struct DebugConfig
 
 	bool NesBreakOnBrk = false;
 	bool NesBreakOnUnofficialOpCode = false;
+	bool NesBreakOnUnstableOpCode = false;
 	bool NesBreakOnCpuCrash = false;
 	bool NesBreakOnBusConflict = false;
 	bool NesBreakOnDecayedOamRead = false;
-	bool NesBreakOnPpu2000ScrollGlitch = false;
-	bool NesBreakOnPpu2006ScrollGlitch = false;
+	bool NesBreakOnPpuScrollGlitch = false;
 	bool NesBreakOnExtOutputMode = false;
+	bool NesBreakOnInvalidVramAccess = false;
+	bool NesBreakOnInvalidOamWrite = false;
+	bool NesBreakOnDmaInputRead = false;
 
 	bool PceBreakOnBrk = false;
 	bool PceBreakOnUnofficialOpCode = false;

@@ -389,6 +389,10 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 					openBusMask = 0x00;
 				}
 
+				if(_scanline < 240 && IsRenderingEnabled()) {
+					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesInvalidVramAccess);
+				}
+
 				_ignoreVramRead = 6;
 				_needStateUpdate = true;
 				_needVideoRamIncrement = true;
@@ -441,6 +445,7 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 				//"Writes to OAMDATA during rendering (on the pre-render line and the visible lines 0-239, provided either sprite or background rendering is enabled) do not modify values in OAM, 
 				//but do perform a glitchy increment of OAMADDR, bumping only the high 6 bits"
 				_spriteRamAddr = (_spriteRamAddr + 4) & 0xFF;
+				_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesInvalidOamWrite);
 			}
 			break;
 
@@ -489,6 +494,7 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 				} else {
 					//During rendering, the value written is ignored, and instead the address' LSB is used (not confirmed, based on Visual NES)
 					_mapper->WriteVram(_ppuBusAddress & 0x3FFF, _ppuBusAddress & 0xFF);
+					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesInvalidVramAccess);
 				}
 			}
 			_needStateUpdate = true;
@@ -510,7 +516,7 @@ template<class T> void NesPpu<T>::ProcessTmpAddrScrollGlitch(uint16_t normalAddr
 	if(_cycle == 257 && _console->GetNesConfig().EnablePpu2000ScrollGlitch && _scanline < 240 && IsRenderingEnabled()) {
 		//Use open bus to set some parts of V (glitch that occurs when writing to $2000/$2005/$2006 on cycle 257)
 		_videoRamAddr = (_videoRamAddr & ~mask) | (value & mask);
-		_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpu2000ScrollGlitch);
+		_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpuScrollGlitch);
 	}
 }
 
@@ -1461,10 +1467,10 @@ template<class T> void NesPpu<T>::UpdateState()
 				//When a $2006 address update lands on the Y or X increment, the written value is bugged and is ANDed with the incremented value
 				if(_cycle == 257) {
 					_videoRamAddr &= _updateVramAddr;
-					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpu2006ScrollGlitch);
+					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpuScrollGlitch);
 				} else if(_cycle > 0 && (_cycle & 0x07) == 0 && (_cycle <= 256 || _cycle > 320)) {
 					_videoRamAddr = (_updateVramAddr & ~0x41F) | (_videoRamAddr & _updateVramAddr & 0x41F);
-					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpu2006ScrollGlitch);
+					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpuScrollGlitch);
 				} else {
 					_videoRamAddr = _updateVramAddr;
 				}
