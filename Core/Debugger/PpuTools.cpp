@@ -403,7 +403,9 @@ void PpuTools::UpdateViewers(uint16_t scanline, uint16_t cycle)
 	for(auto updateTiming : _updateTimings) {
 		ViewerRefreshConfig cfg = updateTiming.second;
 		if(cfg.Cycle == cycle && cfg.Scanline == scanline) {
-			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
+			if(!_emu->IsDebuggerBlocked()) {
+				_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ViewerRefresh, (void*)(uint64_t)updateTiming.first);
+			}
 		}
 	}
 }

@@ -415,7 +415,9 @@ namespace Mesen.Debugger.ViewModels
 
 		private void Config_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			RefreshTab();
+			if(!_inGameLoaded) {
+				RefreshTab();
+			}
 		}
 
 		[MemberNotNull(nameof(ViewerBitmap))]
@@ -487,7 +489,7 @@ namespace Mesen.Debugger.ViewModels
 				_coreData.CopyTo(_data);
 			}
 
-			if(_data.PpuState == null || _data.PpuToolsState == null) {
+			if(_data.PpuState == null || _data.PpuToolsState == null || _data.RgbPalette.Length == 0) {
 				_refreshPending = false;
 				return;
 			}

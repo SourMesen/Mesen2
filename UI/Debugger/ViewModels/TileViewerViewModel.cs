@@ -72,6 +72,7 @@ namespace Mesen.Debugger.ViewModels
 		private byte[] _coreSourceData = Array.Empty<byte>();
 		private byte[] _sourceData = Array.Empty<byte>();
 		private bool _refreshPending;
+		private bool _inGameLoaded;
 
 		[Obsolete("For designer only")]
 		public TileViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
@@ -409,7 +410,9 @@ namespace Mesen.Debugger.ViewModels
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			RefreshTab();
+			if(!_inGameLoaded) {
+				RefreshTab();
+			}
 		}
 
 		public void RefreshData()
@@ -460,7 +463,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void InternalRefreshTab()
 		{
-			if(Disposed) {
+			if(Disposed || PaletteColors.Length == 0) {
 				return;
 			}
 
@@ -650,8 +653,10 @@ namespace Mesen.Debugger.ViewModels
 		public void OnGameLoaded()
 		{
 			Dispatcher.UIThread.Post(() => {
+				_inGameLoaded = true;
 				InitForCpuType();
 				RefreshData();
+				_inGameLoaded = false;
 			});
 		}
 

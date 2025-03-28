@@ -180,6 +180,7 @@ public:
 	void Unlock();
 	bool IsThreadPaused();
 
+	bool IsDebuggerBlocked() { return _blockDebuggerRequestCount > 0; }
 	void SuspendDebugger(bool release);
 
 	void Serialize(ostream& out, bool includeSettings, int compressionLevel = 1);

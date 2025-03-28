@@ -528,7 +528,8 @@ namespace Mesen.Debugger.ViewModels
 					});
 				}
 
-				_coreData.Palette = DebugApi.GetPaletteInfo(CpuType);
+				DebugPaletteInfo palette = DebugApi.GetPaletteInfo(CpuType);
+				_coreData.Palette = palette.ColorCount > 0 ? palette : null;
 			}
 			RefreshTab();
 		}

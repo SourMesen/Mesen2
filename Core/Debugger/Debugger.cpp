@@ -588,7 +588,9 @@ void Debugger::ProcessEvent(EventType type, std::optional<CpuType> cpuTypeOpt)
 			break;
 
 		case EventType::StartFrame: {
-			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)evtCpuType);
+			if(!_emu->IsDebuggerBlocked()) {
+				_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)evtCpuType);
+			}
 			BaseEventManager* evtMgr = GetEventManager(evtCpuType);
 			if(evtMgr) {
 				evtMgr->ClearFrameEvents();
