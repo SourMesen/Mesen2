@@ -490,7 +490,7 @@ bool Emulator::InternalLoadRom(VirtualFile romFile, VirtualFile patchFile, bool 
 
 	_rewindManager->InitHistory();
 
-	if(debuggerActive) {
+	if(debuggerActive || _settings->CheckFlag(EmulationFlags::ConsoleMode)) {
 		InitDebugger();
 	}
 

@@ -31,6 +31,8 @@ namespace Mesen.Utilities
 			EmuApi.InitializeEmu(ConfigManager.HomeFolder, IntPtr.Zero, IntPtr.Zero, true, true, true, true);
 			EmuApi.Pause();
 
+			ConfigApi.SetEmulationFlag(EmulationFlags.ConsoleMode, true);
+
 			if(!EmuApi.LoadRom(commandLineHelper.FilesToLoad[0], string.Empty)) {
 				return -1;
 			}
@@ -44,7 +46,6 @@ namespace Mesen.Utilities
 				} catch { }
 			}
 
-			ConfigApi.SetEmulationFlag(EmulationFlags.ConsoleMode, true);
 			ConfigApi.SetEmulationFlag(EmulationFlags.MaximumSpeed, true);
 			EmuApi.Resume();
 
