@@ -16,6 +16,7 @@ private:
 	GbaDmaControllerState _state = {};
 	int8_t _dmaActiveChannel = -1;
 	bool _dmaPending = false;
+	bool _dmaRunning = false;
 	uint8_t _dmaStartDelay = 0;
 
 	void RunDma(GbaDmaChannel& ch, uint8_t chIndex);

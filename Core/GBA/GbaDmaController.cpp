@@ -58,6 +58,13 @@ void GbaDmaController::TriggerDma(GbaDmaTrigger trigger)
 
 void GbaDmaController::RunPendingDma(bool allowStartDma)
 {
+	if(_dmaRunning) {
+		//Prevent re-entry while DMA is already running
+		//This caused unexpected crashes in Sonic Advance 3 because
+		//the same DMA was incorrectly running two times in a row.
+		return;
+	}
+
 	if(_dmaStartDelay) {
 		_dmaStartDelay--;
 		if(_dmaStartDelay) {
@@ -73,6 +80,7 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 		return;
 	}
 
+	_dmaRunning = true;
 	//Before starting DMA, an additional idle cycle executes (CPU is blocked during this)
 	_memoryManager->ProcessInternalCycle();
 
@@ -84,6 +92,7 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 
 	//After stopping DMA, an additional idle cycle executes (CPU is blocked during this)
 	_memoryManager->ProcessInternalCycle();
+	_dmaRunning = false;
 }
 
 void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
@@ -349,6 +358,7 @@ void GbaDmaController::Serialize(Serializer& s)
 		SVI(_state.Ch[i].Pending);
 	}
 
+	SV(_dmaRunning);
 	SV(_dmaPending);
 	SV(_dmaActiveChannel);
 	SV(_dmaStartDelay);
