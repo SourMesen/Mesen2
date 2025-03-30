@@ -97,6 +97,7 @@ namespace Mesen.Config
 				GbaBreakOnInvalidOpCode = Debugger.Gba.BreakOnInvalidOpCode,
 				GbaBreakOnNopLoad = Debugger.Gba.BreakOnNopLoad,
 				GbaBreakOnUnalignedMemAccess = Debugger.Gba.BreakOnUnalignedMemAccess,
+				GbaDisMode = Debugger.Gba.DisassemblyMode,
 
 				WsBreakOnUndefinedOpCode = Debugger.Ws.BreakOnUndefinedOpCode,
 
@@ -168,6 +169,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool GbaBreakOnNopLoad;
 		[MarshalAs(UnmanagedType.I1)] public bool GbaBreakOnInvalidOpCode;
 		[MarshalAs(UnmanagedType.I1)] public bool GbaBreakOnUnalignedMemAccess;
+		public GbaDisassemblyMode GbaDisMode;
 		
 		[MarshalAs(UnmanagedType.I1)] public bool WsBreakOnUndefinedOpCode;
 

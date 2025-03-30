@@ -1,18 +1,20 @@
-﻿using Avalonia;
-using Avalonia.Media;
-using Mesen.Debugger;
-using Mesen.Interop;
-using ReactiveUI.Fody.Helpers;
-using System.Reactive.Linq;
-using System.Reactive;
+﻿using ReactiveUI.Fody.Helpers;
 using Mesen.ViewModels;
 
-namespace Mesen.Config
+namespace Mesen.Config;
+
+public class GbaDebuggerConfig : ViewModelBase
 {
-	public class GbaDebuggerConfig : ViewModelBase
-	{
-		[Reactive] public bool BreakOnInvalidOpCode { get; set; } = false;
-		[Reactive] public bool BreakOnNopLoad { get; set; } = false;
-		[Reactive] public bool BreakOnUnalignedMemAccess { get; set; } = false;
-	}
+	[Reactive] public bool BreakOnInvalidOpCode { get; set; } = false;
+	[Reactive] public bool BreakOnNopLoad { get; set; } = false;
+	[Reactive] public bool BreakOnUnalignedMemAccess { get; set; } = false;
+	
+	[Reactive] public GbaDisassemblyMode DisassemblyMode { get; set; } = GbaDisassemblyMode.Default;
+}
+
+public enum GbaDisassemblyMode : byte
+{
+	Default,
+	Arm,
+	Thumb
 }

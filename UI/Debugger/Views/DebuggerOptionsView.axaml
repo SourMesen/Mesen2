@@ -29,7 +29,7 @@
 
 	<StackPanel Margin="3 0">
 		<c:OptionSection Header="{l:Translate lblDisassemblyOptions}" Margin="0">
-			<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
+			<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblVerifiedData}" />
 				<c:EnumComboBox
 					Grid.Column="1"
@@ -43,8 +43,34 @@
 					Width="105"
 					SelectedItem="{Binding Config.UnidentifiedBlockDisplay}"
 				/>
+
+				<TextBlock
+					IsVisible="{Binding IsGba}"
+					Grid.Row="2"
+					VerticalAlignment="Center"
+					Text="{l:Translate lblDisassemblyMode}"
+				/>
+				<DockPanel Grid.Row="2" Grid.Column="1" IsVisible="{Binding IsGba}">
+					<Image
+						Source="/Assets/Help.png"
+						Stretch="None"
+						Margin="4 4"
+						DockPanel.Dock="Right"
+						VerticalAlignment="Top"
+						HorizontalAlignment="Right"
+						ToolTip.Tip="{l:Translate lblDisassemblyModeHint}"
+						ToolTip.ShowDelay="0"
+						ToolTip.HorizontalOffset="10"
+						ToolTip.Placement="Bottom"
+					/>
+					<c:EnumComboBox
+						Grid.Row="2"
+						Grid.Column="1"
+						SelectedItem="{Binding Config.Gba.DisassemblyMode}"
+					/>
+				</DockPanel>
 				
-				<DockPanel Grid.Row="2" Grid.ColumnSpan="2">
+				<DockPanel Grid.Row="3" Grid.ColumnSpan="2">
 					<TextBlock VerticalAlignment="Center" Text="{l:Translate lblAddressDisplay}" />
 					<c:EnumComboBox SelectedItem="{Binding Config.AddressDisplayType}" />
 				</DockPanel>

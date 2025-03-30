@@ -775,6 +775,13 @@ struct AudioPlayerConfig
 	bool Shuffle = false;
 };
 
+enum class GbaDisassemblyMode : uint8_t
+{
+	Default,
+	Arm,
+	Thumb
+};
+
 struct DebugConfig
 {
 	bool BreakOnUninitRead = false;
@@ -836,6 +843,7 @@ struct DebugConfig
 	bool GbaBreakOnNopLoad = false;
 	bool GbaBreakOnInvalidOpCode = false;
 	bool GbaBreakOnUnalignedMemAccess = false;
+	GbaDisassemblyMode GbaDisMode;
 	
 	bool WsBreakOnInvalidOpCode = false;
 

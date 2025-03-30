@@ -9,6 +9,7 @@
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/DebugUtilities.h"
+#include "Debugger/IDebugger.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
@@ -571,7 +572,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 
 					CodeDataLogger* cdl = cdlManager->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
-						disInfo = DisassemblyInfo(row.Address.Address, state.CPSR.ToInt32(), CpuType::Gba, row.Address.Type, _memoryDumper);
+						disInfo = DisassemblyInfo(row.Address.Address, _debugger->GetMainDebugger()->GetCpuFlags(), CpuType::Gba, row.Address.Type, _memoryDumper);
 					} else {
 						data.Flags |= (!cdl || cdl->IsCode(data.AbsoluteAddress.Address)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}

@@ -1343,7 +1343,9 @@
 			<Control ID="chkUseLowerCaseDisassembly">Use lower case</Control>
 			<Control ID="chkShowJumpLabels">Show jump/sub labels</Control>
 			<Control ID="chkSnesUseAltSpcOpNames">Use 6502-like mnemonics</Control>
-			
+			<Control ID="lblDisassemblyMode">CPU mode:</Control>
+			<Control ID="lblDisassemblyModeHint">Controls whether unidentified code is disassembled as ARM or Thumb.</Control>
+
 			<Control ID="lblBreakOptions">Break on...</Control>
 			<Control ID="chkBreakOnBrk">BRK</Control>
 			<Control ID="chkBreakOnCop">COP</Control>
@@ -2554,6 +2556,11 @@ E
 			<Value ID="AutoDetect">Auto-detect</Value>
 			<Value ID="Enabled">Enabled</Value>
 			<Value ID="Disabled">Disabled</Value>
+		</Enum>
+		<Enum ID="GbaDisassemblyMode">
+			<Value ID="Default">Auto</Value>
+			<Value ID="Arm">ARM</Value>
+			<Value ID="Thumb">Thumb</Value>
 		</Enum>
 
 		<Enum ID="MemorySizes">
