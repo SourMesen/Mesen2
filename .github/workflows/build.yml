@@ -59,8 +59,13 @@ jobs:
       matrix:
         compiler: [gcc, clang, clang_aot]
         platform: [
-          {os: ubuntu-22.04}
+          {os: ubuntu-22.04, path: x64},
+          {os: ubuntu-22.04-arm, path: arm64}
         ]
+        exclude:
+          # ARM64 AOT build doesn't seem to work properly (crashes when launched)
+          - platform: { os: ubuntu-22.04-arm, path: arm64 }
+            compiler: clang_aot
         include:
           - compiler: gcc
             make_flags: "USE_GCC=true"
@@ -103,13 +108,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Mesen (Linux - ${{ matrix.platform.os }} - ${{ matrix.compiler }})
-          path: bin/linux-x64/Release/linux-x64/publish/Mesen
+          path: bin/linux-${{ matrix.platform.path }}/Release/linux-${{ matrix.platform.path }}/publish/Mesen
 
   appimage:
     strategy:
       matrix:
         compiler: [clang_appimage]
-        platform: [{os: ubuntu-22.04}]
+        platform: [
+          {os: ubuntu-22.04, name: x64, script: Linux/appimage/appimage.sh},
+          {os: ubuntu-22.04-arm, name: ARM64, script: Linux/appimage/appimage-arm64.sh}
+        ]
     runs-on: ${{ matrix.platform.os }}
 
     steps:
@@ -136,11 +144,11 @@ jobs:
 
       - name: Build Mesen (AppImage)
         run: |
-          Linux/appimage/appimage.sh
+          ${{ matrix.platform.script }}
       - name: Upload Mesen (AppImage)
         uses: actions/upload-artifact@v4
         with:
-          name: Mesen (Linux x64 - AppImage)
+          name: Mesen (Linux ${{ matrix.platform.name }} - AppImage)
           path: Mesen.AppImage
 
 
