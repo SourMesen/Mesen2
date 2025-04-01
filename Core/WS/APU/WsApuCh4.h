@@ -26,7 +26,7 @@ public:
 			_state->Timer = 2047 - _state->Frequency;
 			_state->SamplePosition = (_state->SamplePosition + 1) & 0x1F; //todows does this happen even when lfsr is enabled?
 
-			if(_state->LfsrEnabled && _state->NoiseEnabled) {
+			if(_state->LfsrEnabled) {
 				uint8_t newBit = ((_state->Lfsr >> 7) ^ (_state->Lfsr >> _state->TapShift) ^ 0x01) & 0x01;
 				_state->Lfsr = ((_state->Lfsr << 1) | newBit) & 0x7FFF;
 			}
