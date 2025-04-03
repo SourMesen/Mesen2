@@ -19,7 +19,6 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
-#include "Debugger/MemoryDumper.h"
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/BaseEventManager.h"
 #include "Debugger/StepBackManager.h"

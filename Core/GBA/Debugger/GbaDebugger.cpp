@@ -3,6 +3,7 @@
 #include "GBA/GbaMemoryManager.h"
 #include "GBA/GbaPpu.h"
 #include "GBA/GbaCpu.h"
+#include "GBA/APU/GbaApu.h"
 #include "GBA/Input/GbaController.h"
 #include "GBA/Debugger/DummyGbaCpu.h"
 #include "GBA/Debugger/GbaDebugger.h"
@@ -67,6 +68,11 @@ GbaDebugger::GbaDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 GbaDebugger::~GbaDebugger()
 {
 	_codeDataLogger->SaveCdlFile(_cdlFile);
+}
+
+void GbaDebugger::OnBeforeBreak()
+{
+	_console->GetApu()->Run();
 }
 
 void GbaDebugger::Reset()

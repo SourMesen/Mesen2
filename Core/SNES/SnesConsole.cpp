@@ -430,6 +430,14 @@ bool SnesConsole::IsRunning()
 	return _cpu != nullptr;
 }
 
+void SnesConsole::RunAudio()
+{
+	_spc->Run();
+	if(_cart->GetGameboy()) {
+		_cart->GetGameboy()->RunApu();
+	}
+}
+
 AddressInfo SnesConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 {
 	static AddressInfo unmapped = { -1, MemoryType::None };

@@ -63,6 +63,8 @@ public:
 	NesDebugger(Debugger* debugger);
 	~NesDebugger();
 
+	void OnBeforeBreak() override;
+
 	void Reset() override;
 
 	uint64_t GetCpuCycleCount(bool forProfiler = false) override;

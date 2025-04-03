@@ -481,6 +481,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 	bool notificationSent = false;
 	if(source != BreakSource::Unspecified || _breakRequestCount == 0) {
 		_emu->OnBeforePause(false);
+		GetMainDebugger()->OnBeforeBreak();
 
 		if(_settings->GetDebugConfig().SingleBreakpointPerInstruction) {
 			_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints = true;

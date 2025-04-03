@@ -107,6 +107,8 @@ public:
 	
 	void ProcessEndOfFrame();
 
+	void RunApu();
+
 	void Serialize(Serializer& s) override;
 	SaveStateCompatInfo ValidateSaveStateCompatibility(ConsoleType stateConsoleType) override;
 

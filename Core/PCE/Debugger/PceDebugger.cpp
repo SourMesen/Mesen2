@@ -9,13 +9,13 @@
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
-#include "Debugger/CodeDataLogger.h"
 #include "Debugger/StepBackManager.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PceVdc.h"
 #include "PCE/PceVce.h"
 #include "PCE/PceVpc.h"
+#include "PCE/PcePsg.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/Input/PceController.h"
 #include "PCE/Debugger/PceDebugger.h"
@@ -71,6 +71,11 @@ PceDebugger::PceDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 PceDebugger::~PceDebugger()
 {
 	_codeDataLogger->SaveCdlFile(_cdlFile);
+}
+
+void PceDebugger::OnBeforeBreak()
+{
+	_console->GetPsg()->Run();
 }
 
 void PceDebugger::Reset()

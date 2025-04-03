@@ -55,6 +55,7 @@ public:
 	GbDebugger(Debugger* debugger);
 	~GbDebugger();
 
+	void OnBeforeBreak() override;
 	void Reset() override;
 
 	void ProcessInstruction();

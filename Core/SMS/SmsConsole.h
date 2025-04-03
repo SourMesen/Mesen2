@@ -44,6 +44,7 @@ public:
 	Emulator* GetEmulator() { return _emu; }
 	SmsCpu* GetCpu() { return _cpu.get(); }
 	SmsVdp* GetVdp() { return _vdp.get(); }
+	SmsPsg* GetPsg() { return _psg.get(); }
 	SmsMemoryManager* GetMemoryManager() { return _memoryManager.get(); }
 
 	SmsModel GetModel() { return _model; }

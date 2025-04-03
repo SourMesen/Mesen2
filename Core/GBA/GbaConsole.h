@@ -83,6 +83,7 @@ public:
 
 	GbaCpu* GetCpu();
 	GbaPpu* GetPpu();
+	GbaApu* GetApu();
 	GbaDmaController* GetDmaController();
 	GbaState GetState();
 	void GetConsoleState(BaseState& state, ConsoleType consoleType) override;

@@ -8,6 +8,7 @@
 #include "SMS/Debugger/SmsVdpTools.h"
 #include "SMS/Input/SmsController.h"
 #include "SMS/SmsCpu.h"
+#include "SMS/SmsPsg.h"
 #include "SMS/SmsVdp.h"
 #include "SMS/SmsConsole.h"
 #include "SMS/SmsMemoryManager.h"
@@ -66,6 +67,11 @@ SmsDebugger::SmsDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 SmsDebugger::~SmsDebugger()
 {
 	_codeDataLogger->SaveCdlFile(_cdlFile);
+}
+
+void SmsDebugger::OnBeforeBreak()
+{
+	_console->GetPsg()->Run();
 }
 
 void SmsDebugger::Reset()

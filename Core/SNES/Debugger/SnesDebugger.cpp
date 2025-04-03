@@ -100,6 +100,11 @@ void SnesDebugger::Init()
 	_dspTraceLogger = _debugger->GetTraceLogger(CpuType::NecDsp);
 }
 
+void SnesDebugger::OnBeforeBreak()
+{
+	_console->RunAudio();
+}
+
 void SnesDebugger::Reset()
 {
 	_callstackManager->Clear();

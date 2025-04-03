@@ -57,6 +57,7 @@ public:
 	GbaDebugger(Debugger* debugger);
 	~GbaDebugger();
 
+	void OnBeforeBreak() override;
 	void Reset() override;
 
 	void ProcessInstruction();

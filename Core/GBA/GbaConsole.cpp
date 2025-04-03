@@ -302,6 +302,11 @@ GbaPpu* GbaConsole::GetPpu()
 	return _ppu.get();
 }
 
+GbaApu* GbaConsole::GetApu()
+{
+	return _apu.get();
+}
+
 GbaDmaController* GbaConsole::GetDmaController()
 {
 	return _dmaController.get();

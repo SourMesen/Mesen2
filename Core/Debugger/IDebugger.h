@@ -46,6 +46,8 @@ public:
 
 	virtual void ResetPrevOpCode() {}
 
+	virtual void OnBeforeBreak() {}
+
 	virtual void Step(int32_t stepCount, StepType type) = 0;
 	virtual void Reset() = 0;
 	virtual void Run() = 0;

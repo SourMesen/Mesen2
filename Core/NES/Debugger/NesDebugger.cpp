@@ -13,6 +13,7 @@
 #include "NES/NesHeader.h"
 #include "NES/NesConsole.h"
 #include "NES/NesCpu.h"
+#include "NES/APU/NesApu.h"
 #include "NES/NesPpu.h"
 #include "NES/BaseMapper.h"
 #include "NES/NesMemoryManager.h"
@@ -83,6 +84,11 @@ NesDebugger::NesDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 NesDebugger::~NesDebugger()
 {
 	_codeDataLogger->SaveCdlFile(_cdlFile);
+}
+
+void NesDebugger::OnBeforeBreak()
+{
+	_console->GetApu()->Run();
 }
 
 void NesDebugger::Reset()

@@ -57,6 +57,7 @@ public:
 	SmsDebugger(Debugger* debugger);
 	~SmsDebugger();
 
+	void OnBeforeBreak() override;
 	void Reset() override;
 
 	void ProcessInstruction();

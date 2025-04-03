@@ -559,6 +559,11 @@ void Gameboy::ProcessEndOfFrame()
 	_controlManager->UpdateInputState();
 }
 
+void Gameboy::RunApu()
+{
+	_apu->Run();
+}
+
 BaseControlManager* Gameboy::GetControlManager()
 {
 	return _controlManager.get();

@@ -513,17 +513,26 @@ public class SnesRegisterViewer
 			new RegEntry("$F8", "RAM Reg 0", spc.RamReg[0], Format.X8),
 			new RegEntry("$F9", "RAM Reg 1", spc.RamReg[1], Format.X8),
 
-			new RegEntry("$FA - $FF", "Timers"),
-			new RegEntry("$FA", "Timer 0 Divider", spc.Timer0.Target, Format.X8),
-			new RegEntry("$FA", "Timer 0 Frequency", GetTimerFrequency(8000, spc.Timer0.Target), spc.Timer0.Target),
-			new RegEntry("$FB", "Timer 1 Divider", spc.Timer1.Target, Format.X8),
-			new RegEntry("$FB", "Timer 1 Frequency", GetTimerFrequency(8000, spc.Timer1.Target), spc.Timer1.Target),
-			new RegEntry("$FC", "Timer 2 Divider", spc.Timer2.Target, Format.X8),
-			new RegEntry("$FC", "Timer 2 Frequency", GetTimerFrequency(64000, spc.Timer2.Target), spc.Timer2.Target),
+			new RegEntry("", "Timer 0"),
+			new RegEntry("$F1.0", "Enabled", spc.Timer0.Enabled),
+			new RegEntry("$FA", "Divider", spc.Timer0.Target, Format.X8),
+			new RegEntry("$FD", "Output", spc.Timer0.Output, Format.X8),
+			new RegEntry("", "Timer", spc.Timer0.Stage2, Format.X8),
+			new RegEntry("", "Frequency", GetTimerFrequency(8000, spc.Timer0.Target), spc.Timer0.Target),
 
-			new RegEntry("$FD", "Timer 0 Output", spc.Timer0.Output, Format.X8),
-			new RegEntry("$FE", "Timer 1 Output", spc.Timer1.Output, Format.X8),
-			new RegEntry("$FF", "Timer 2 Output", spc.Timer2.Output, Format.X8),
+			new RegEntry("", "Timer 1"),
+			new RegEntry("$F1.1", "Enabled", spc.Timer1.Enabled),
+			new RegEntry("$FB", "Divider", spc.Timer1.Target, Format.X8),
+			new RegEntry("$FE", "Output", spc.Timer1.Output, Format.X8),
+			new RegEntry("", "Timer", spc.Timer1.Stage2, Format.X8),
+			new RegEntry("", "Frequency", GetTimerFrequency(8000, spc.Timer1.Target), spc.Timer1.Target),
+
+			new RegEntry("", "Timer 2"),
+			new RegEntry("$F1.2", "Enabled", spc.Timer2.Enabled),
+			new RegEntry("$FC", "Divider", spc.Timer2.Target, Format.X8),
+			new RegEntry("$FF", "Output", spc.Timer2.Output, Format.X8),
+			new RegEntry("", "Timer", spc.Timer2.Stage2, Format.X8),
+			new RegEntry("", "Frequency", GetTimerFrequency(64000, spc.Timer2.Target), spc.Timer2.Target),
 		};
 
 		return new RegisterViewerTab("SPC", entries, CpuType.Spc, MemoryType.SpcMemory);
