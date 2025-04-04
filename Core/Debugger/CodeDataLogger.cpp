@@ -50,10 +50,10 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl)
 {
 	VirtualFile cdlFile = cdlFilepath;
 	if(cdlFile.IsValid()) {
-		uint32_t fileSize = (uint32_t)cdlFile.GetSize();
 		vector<uint8_t>& cdlData = cdlFile.GetData();
+		uint32_t fileSize = (uint32_t)cdlData.size();
 
-		if(fileSize >= _memSize) {
+		if(fileSize >= _memSize && fileSize >= CodeDataLogger::HeaderSize) {
 			Reset();
 
 			if(memcmp(cdlData.data(), "CDLv2", 5) == 0) {

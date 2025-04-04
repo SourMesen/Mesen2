@@ -261,7 +261,7 @@ bool SaveStateManager::LoadState(int stateIndex)
 
 void SaveStateManager::SaveRecentGame(string romName, string romPath, string patchPath)
 {
-	if(_emu->GetSettings()->CheckFlag(EmulationFlags::ConsoleMode)) {
+	if(_emu->GetSettings()->CheckFlag(EmulationFlags::ConsoleMode) || _emu->GetSettings()->CheckFlag(EmulationFlags::TestMode)) {
 		//Skip saving the recent game file when running in testrunner/CLI console mode
 		return;
 	}

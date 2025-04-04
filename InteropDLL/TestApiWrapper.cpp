@@ -13,7 +13,7 @@ extern "C"
 		if(inBackground) {
 			unique_ptr<Emulator> emu(new Emulator());
 			emu->Initialize(false);
-			emu->GetSettings()->SetFlag(EmulationFlags::ConsoleMode);
+			emu->GetSettings()->SetFlag(EmulationFlags::TestMode);
 			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(emu.get(), true));
 			RomTestResult result = romTest->Run(filename);
 			emu->Release();
@@ -28,7 +28,7 @@ extern "C"
 	{
 		unique_ptr<Emulator> emu(new Emulator());
 		emu->Initialize();
-		emu->GetSettings()->SetFlag(EmulationFlags::ConsoleMode);
+		emu->GetSettings()->SetFlag(EmulationFlags::TestMode);
 		emu->GetSettings()->GetGameboyConfig().Model = GameboyModel::Gameboy;
 		emu->GetSettings()->GetGameboyConfig().RamPowerOnState = RamState::AllZeros;
 		emu->LoadRom((VirtualFile)filename, VirtualFile());
