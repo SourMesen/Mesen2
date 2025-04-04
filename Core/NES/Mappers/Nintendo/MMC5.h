@@ -83,7 +83,8 @@ private:
 				accessType |= MemoryAccessType::Write;
 			}
 
-			if(IsNes20() && (_workRamSize == 0x20000 || _saveRamSize == 0x20000)) {
+			if(IsNes20() && (_workRamSize >= 0x10000 || _saveRamSize >= 0x10000)) {
+				//Allow a single block of 64kb/128kb of either save or work ram (licensed games don't do this)
 				bankNumber &= 0x0F;
 				memoryType = HasBattery() ? PrgMemoryType::SaveRam : PrgMemoryType::WorkRam;
 			} else {
