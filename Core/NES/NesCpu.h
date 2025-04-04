@@ -63,7 +63,7 @@ private:
 	bool _isDmcDmaRead = false;
 
 	__forceinline void StartCpuCycle(bool forRead);
-	__forceinline void ProcessPendingDma(uint16_t readAddress);
+	__forceinline void ProcessPendingDma(uint16_t readAddress, MemoryOperationType opType);
 	uint8_t ProcessDmaRead(uint16_t addr, uint16_t& prevReadAddress, bool enableInternalRegReads, bool isNesBehavior);
 	__forceinline uint16_t FetchOperand();
 	__forceinline void EndCpuCycle(bool forRead);

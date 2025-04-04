@@ -186,6 +186,11 @@ void NesCpu::IRQ()
 	uint16_t originalPc = PC();
 #endif
 
+	if(_console->GetRegion() == ConsoleRegion::Pal) {
+		//On PAL, IRQ/NMI sequence also checks for DMA on the first read
+		ProcessPendingDma(_state.PC, MemoryOperationType::ExecOpCode);
+	}
+
 	DummyRead();  //fetch opcode (and discard it - $00 (BRK) is forced into the opcode register instead)
 	DummyRead();  //read next instruction byte (actually the same as above, since PC increment is suppressed. Also discarded.)
 	Push((uint16_t)(PC()));
@@ -253,7 +258,7 @@ uint8_t NesCpu::MemoryRead(uint16_t addr, MemoryOperationType operationType)
 	LogMemoryOperation(addr, value, operationType);
 	return value;
 #else 
-	ProcessPendingDma(addr);
+	ProcessPendingDma(addr, operationType);
 
 	StartCpuCycle(true);
 	uint8_t value = _memoryManager->Read(addr, operationType);
@@ -335,9 +340,15 @@ void NesCpu::StartCpuCycle(bool forRead)
 	_console->ProcessCpuClock();
 }
 
-void NesCpu::ProcessPendingDma(uint16_t readAddress)
+void NesCpu::ProcessPendingDma(uint16_t readAddress, MemoryOperationType opType)
 {
 	if(!_needHalt) {
+		return;
+	}
+
+	if(_console->GetRegion() == ConsoleRegion::Pal && opType != MemoryOperationType::ExecOpCode) {
+		//On PAL, DMA can only start when the CPU attempts to read the opcode for the next instruction
+		//This also avoids the bit deletions that can happen because of DMA reads on NTSC
 		return;
 	}
 
@@ -353,15 +364,10 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 		}
 	}
 
-	//On PAL, the dummy/idle reads done by the DMA don't appear to be done on the
-	//address that the CPU was about to read. This prevents the 2+x reads on registers issues.
-	//The exact specifics of where the CPU reads instead aren't known yet - so just disable read side-effects entirely on PAL
-	bool isNtscInputBehavior = _console->GetRegion() != ConsoleRegion::Pal;
-
 	//On Famicom, each dummy/idle read to 4016/4017 is intepreted as a read of the joypad registers
 	//On NES (or AV Famicom), only the first dummy/idle read causes side effects (e.g only a single bit is lost)
 	bool isNesBehavior = _console->GetNesConfig().ConsoleType != NesConsoleType::Hvc001;
-	bool skipDummyReads = !isNtscInputBehavior || (isNesBehavior && (readAddress == 0x4016 || readAddress == 0x4017));
+	bool skipDummyReads = isNesBehavior && (readAddress == 0x4016 || readAddress == 0x4017);
 
 	_needHalt = false;
 
@@ -371,7 +377,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 		//The DMA was aborted, and the CPU will read 4016/4017 next
 		//If 4016/4017 is read here, the controllers will see 2 separate reads
 		//even though they would only see a single read on hardware (except the original Famicom)
-	} else if(isNtscInputBehavior && !skipFirstInputClock) {
+	} else if(!skipFirstInputClock) {
 		_memoryManager->Read(readAddress, MemoryOperationType::DmaRead);
 	}
 	EndCpuCycle(true);
