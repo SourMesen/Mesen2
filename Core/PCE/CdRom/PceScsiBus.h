@@ -47,7 +47,7 @@ enum class ScsiUpdateType
 	SetReqSignal,
 	ClearReqSignal,
 	SetDataInPhase,
-	SetTransferDoneIrq,
+	SetTransferDoneIrq, //unused (kept for save state compatibility)
 	SetGoodStatus
 };
 
@@ -73,8 +73,17 @@ private:
 	vector<uint8_t> _cmdBuffer;
 	deque<uint8_t> _dataBuffer;
 
-	void SetSignals() {}
-	void ClearSignals() {}
+	void UpdateIrqState();
+
+	void SetSignals()
+	{
+		UpdateIrqState();
+	}
+	
+	void ClearSignals()
+	{
+		UpdateIrqState();
+	}
 
 	template<typename T, typename... T2>
 	void SetSignals(T signal, T2... signals)

@@ -103,9 +103,8 @@ uint32_t PceCdRom::GetCurrentSector()
 	}
 }
 
-void PceCdRom::ProcessAudioPlaybackStart()
+void PceCdRom::SetScsiGoodStatus()
 {
-	SetIrqSource(PceCdRomIrqSource::DataTransferDone);
 	_scsi.SetStatusMessage(ScsiStatus::Good, 0);
 }
 
@@ -169,7 +168,7 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 			_scsi.SetSignalValue(Rst, reset);
 			_scsi.UpdateState();
 			if(reset) {
-				//Clear enabled IRQs flags for SCSI drive (SubChannel + DataTransferDone + DataTransferReady)
+				//Clear enabled IRQs flags for SCSI drive (SubChannel? + StatusMsgIn + DataIn)
 				_state.EnabledIrqs &= 0x8F;
 				UpdateIrqState();
 			}

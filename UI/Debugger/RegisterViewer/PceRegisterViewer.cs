@@ -281,14 +281,14 @@ public class PceRegisterViewer
 			new RegEntry("$1802", "Enabled IRQs", cdrom.EnabledIrqs),
 			new RegEntry("$1802.2", "ADPCM - Half Reached IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.Adpcm) != 0),
 			new RegEntry("$1802.3", "ADPCM - End Reached IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.Stop) != 0),
-			new RegEntry("$1802.5", "Transfer Done IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.DataTransferDone) != 0),
-			new RegEntry("$1802.6", "Transfer Ready IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.DataTransferReady) != 0),
+			new RegEntry("$1802.5", "Status/Message In IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.StatusMsgIn) != 0),
+			new RegEntry("$1802.6", "Data In IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.DataIn) != 0),
 
 			new RegEntry("", "Active IRQs"),
 			new RegEntry("", "ADPCM - Half Reached IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.Adpcm) != 0),
 			new RegEntry("", "ADPCM - End Reached IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.Stop) != 0),
-			new RegEntry("", "Transfer Done IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataTransferDone) != 0),
-			new RegEntry("", "Transfer Ready IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataTransferReady) != 0),
+			new RegEntry("", "Status/Message In IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.StatusMsgIn) != 0),
+			new RegEntry("", "Data In IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataIn) != 0),
 
 			new RegEntry("", "SCSI Drive"),
 			new RegEntry("", "Current Sector", scsi.Sector),

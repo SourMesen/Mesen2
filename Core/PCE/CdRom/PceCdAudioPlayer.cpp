@@ -70,12 +70,9 @@ void PceCdAudioPlayer::PlaySample()
 
 					case CdPlayEndBehavior::Irq:
 						_state.Status = CdAudioStatus::Stopped;
-						_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
-						_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
+						_cdrom->SetScsiGoodStatus();
 						break;
-
 				}
-
 			}
 		}
 	} else {
@@ -86,7 +83,7 @@ void PceCdAudioPlayer::PlaySample()
 
 void PceCdAudioPlayer::ProcessAudioPlaybackStart()
 {
-	_cdrom->ProcessAudioPlaybackStart();
+	_cdrom->SetScsiGoodStatus();
 }
 
 void PceCdAudioPlayer::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)

@@ -279,8 +279,8 @@ public enum PceCdRomIrqSource
 {
 	Adpcm = 0x04,
 	Stop = 0x08,
-	DataTransferDone = 0x20,
-	DataTransferReady = 0x40
+	StatusMsgIn = 0x20,
+	DataIn = 0x40
 }
 
 public struct PceCdRomState
@@ -356,7 +356,8 @@ public enum ScsiPhase
 	DataOut,
 	MessageIn,
 	MessageOut,
-	Status
+	Status,
+	Busy
 }
 
 public struct PceScsiBusState
