@@ -75,9 +75,9 @@ namespace Mesen.Debugger.ViewModels
 		private bool _inGameLoaded;
 
 		[Obsolete("For designer only")]
-		public TileViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
+		public TileViewerViewModel() : this(CpuType.Snes, new(), new(), null) { }
 
-		public TileViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
+		public TileViewerViewModel(CpuType cpuType, PictureViewer picViewer, ScrollPictureViewer scrollViewer, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.TileViewer.Clone();
 			CpuType = cpuType;
@@ -139,7 +139,7 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 
-			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, scrollViewer, new List<object> {
 				new ContextMenuAction() {
 					ActionType = ActionType.EditTile,
 					HintText = () => $"{GridSizeX}px x {GridSizeY}px",

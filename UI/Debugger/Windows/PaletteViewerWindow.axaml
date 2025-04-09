@@ -54,7 +54,7 @@
 			</StackPanel>
 		</ScrollViewer>
 			
-		<Border Background="#202020" BorderBrush="Gray" BorderThickness="1" Focusable="True">
+		<Border Name="selectorBorder" Background="#202020" BorderBrush="Gray" BorderThickness="1" Focusable="True">
 			<ScrollViewer
 				VerticalScrollBarVisibility="Auto"
 				HorizontalScrollBarVisibility="Auto"

@@ -73,9 +73,9 @@ namespace Mesen.Debugger.ViewModels
 		private bool _refreshPending;
 
 		[Obsolete("For designer only")]
-		public SpriteViewerViewModel() : this(CpuType.Snes, new PictureViewer(), new Grid(), new Control(), null) { }
+		public SpriteViewerViewModel() : this(CpuType.Snes, new(), new(), new(), new(), null) { }
 
-		public SpriteViewerViewModel(CpuType cpuType, PictureViewer picViewer, Grid spriteGrid, Control listView, Window? wnd)
+		public SpriteViewerViewModel(CpuType cpuType, PictureViewer picViewer, ScrollPictureViewer scrollViewer, Grid spriteGrid, Control listView, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.SpriteViewer.Clone();
 
@@ -147,7 +147,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, scrollViewer, new List<object> {
 				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
 				GetViewInTileViewerAction(),

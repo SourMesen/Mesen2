@@ -57,7 +57,7 @@ namespace Mesen.Debugger.ViewModels
 			AddDisposable(this.WhenAnyValue(x => x.SelectedPalette).Subscribe(x => UpdatePreviewPanel()));
 		}
 
-		public void InitActions(Window wnd, PaletteSelector palSelector)
+		public void InitActions(Window wnd, PaletteSelector palSelector, Border selectorBorder)
 		{
 			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
@@ -106,7 +106,7 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 
-			AddDisposables(DebugShortcutManager.CreateContextMenu(palSelector, new List<object> {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(palSelector, selectorBorder, new List<object> {
 				new ContextMenuAction() {
 					ActionType = ActionType.EditColor,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.PaletteViewer_EditColor),

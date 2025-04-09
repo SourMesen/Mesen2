@@ -65,9 +65,9 @@ namespace Mesen.Debugger.ViewModels
 		private bool _refreshPending;
 
 		[Obsolete("For designer only")]
-		public TilemapViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
+		public TilemapViewerViewModel() : this(CpuType.Snes, new(), new(), null) { }
 
-		public TilemapViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
+		public TilemapViewerViewModel(CpuType cpuType, PictureViewer picViewer, ScrollPictureViewer scrollViewer, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.TilemapViewer.Clone();
 			CpuType = cpuType;
@@ -134,7 +134,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
+			AddDisposables(DebugShortcutManager.CreateContextMenu(picViewer, scrollViewer, new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
 					HintText = () => {

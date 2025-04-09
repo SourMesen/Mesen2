@@ -30,9 +30,10 @@ namespace Mesen.Debugger.Windows
 #endif
 
 			PaletteSelector palSelector = this.GetControl<PaletteSelector>("palSelector");
+			Border border = this.GetControl<Border>("selectorBorder");
 			_palSelector = palSelector;
 			_model = new PaletteViewerViewModel(cpuType);
-			_model.InitActions(this, palSelector);
+			_model.InitActions(this, palSelector, border);
 			DataContext = _model;
 
 			_model.Config.LoadWindowSettings(this);
