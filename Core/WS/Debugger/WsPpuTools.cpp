@@ -380,7 +380,10 @@ void WsPpuTools::SetPaletteColor(int32_t colorIndex, uint32_t color)
 	_debugger->GetPpuState(state, CpuType::Ws);
 
 	if(state.Mode == WsVideoMode::Monochrome) {
-		_console->GetPpu()->GetState().BwPalettes[colorIndex] = color;
+		//Color 0 on palette 4-7, 12-15 is always 0, can't modify it
+		if((colorIndex & 0x13) != 0x10) {
+			_console->GetPpu()->GetState().BwPalettes[colorIndex] = color;
+		}
 	} else {
 		uint8_t r = (color >> 20) & 0x0F;
 		uint8_t g = (color >> 12) & 0x0F;

@@ -642,8 +642,14 @@ void WsPpu::WritePort(uint16_t port, uint8_t value)
 
 	default:
 		if(port >= 0x20 && port <= 0x3F) {
-			_state.BwPalettes[(port - 0x20) * 2] = value & 0x07;
-			_state.BwPalettes[(port - 0x20) * 2 + 1] = (value >> 4) & 0x07;
+			int index = port - 0x20;
+
+			//Color 0 only exists on palettes 0-3 and 8-11
+			//For other palettes, this is always read as 0 (writes have no effect)
+			if((index & 0x09) != 0x08) {
+				_state.BwPalettes[index * 2] = value & 0x07;
+			}
+			_state.BwPalettes[index * 2 + 1] = (value >> 4) & 0x07;
 		} else {
 			LogDebug("[Debug] PPU Write - missing handler: $" + HexUtilities::ToHex(port) + "  = " + HexUtilities::ToHex(value));
 		}
