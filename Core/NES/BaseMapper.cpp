@@ -144,7 +144,7 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, PrgMe
 	int firstSlot = startAddr >> 8;
 	int slotCount = (endAddr - startAddr + 1) >> 8;
 	for(int i = 0; i < slotCount; i++) {
-		if(sourceSize == 0) {
+		if(sourceSize == 0 || accessType == 0) {
 			_prgPages[i] = nullptr;
 			_prgMemoryAccess[i] = MemoryAccessType::NoAccess;
 		} else {
@@ -170,7 +170,7 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8
 	startAddr >>= 8;
 	endAddr >>= 8;
 	for(uint16_t i = startAddr; i <= endAddr; i++) {
-		if(source && sourceSize > 0 && sourceOffset <= sourceSize - 0x100) {
+		if(accessType != 0 && source && sourceSize > 0 && sourceOffset <= sourceSize - 0x100) {
 			_prgPages[i] = source + sourceOffset;
 			_prgMemoryAccess[i] = accessType != -1 ? (MemoryAccessType)accessType : MemoryAccessType::ReadWrite;
 		} else {
@@ -308,7 +308,7 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, ChrMe
 	int firstSlot = startAddr >> 8;
 	int slotCount = (endAddr - startAddr + 1) >> 8;
 	for(int i = 0; i < slotCount; i++) {
-		if(sourceSize == 0) {
+		if(sourceSize == 0 || accessType == 0) {
 			_chrPages[i] = nullptr;
 			_chrMemoryAccess[i] = MemoryAccessType::NoAccess;
 		} else {
@@ -333,7 +333,7 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8
 	startAddr >>= 8;
 	endAddr >>= 8;
 	for(uint16_t i = startAddr; i <= endAddr; i++) {
-		if(sourceMemory && sourceSize > 0 && sourceOffset <= sourceSize - 0x100) {
+		if(accessType != 0 && sourceMemory && sourceSize > 0 && sourceOffset <= sourceSize - 0x100) {
 			_chrPages[i] = sourceMemory + sourceOffset;
 			_chrMemoryAccess[i] = accessType != -1 ? (MemoryAccessType)accessType : MemoryAccessType::ReadWrite;
 		} else {
