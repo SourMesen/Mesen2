@@ -108,6 +108,8 @@ namespace Mesen.Windows
 			_mainMenu = this.GetControl<MainMenuView>("MainMenu");
 			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
 
+			Console.CancelKeyPress += Console_CancelKeyPress;
+
 #if DEBUG
 			this.AttachDevTools();
 #endif
@@ -145,27 +147,35 @@ namespace Mesen.Windows
 				e.Cancel = true;
 				ValidateExit();
 			} else {
-				//Close all other windows first
-				DebugWindowManager.CloseAllWindows();
-				foreach(Window wnd in ApplicationHelper.GetOpenedWindows()) {
-					if(wnd != this) {
-						wnd.Close();
-					}
-				}
-
-				if(ApplicationHelper.GetOpenedWindows().Count > 1) {
+				if(!CloseEmu(false)) {
 					e.Cancel = true;
-					return;
 				}
-
-				_timerBackgroundFlag.Stop();
-				EmuApi.Stop();
-				_listener?.Dispose();
-				EmuApi.Release();
-				ConfigManager.Config.MainWindow.SaveWindowSettings(this);
-				ConfigManager.Config.Save();
-				_isClosing = true;
 			}
+		}
+
+		private bool CloseEmu(bool force)
+		{
+			//Close all other windows first
+			DebugWindowManager.CloseAllWindows();
+			foreach(Window wnd in ApplicationHelper.GetOpenedWindows()) {
+				if(wnd != this) {
+					wnd.Close();
+				}
+			}
+
+			if(!force && ApplicationHelper.GetOpenedWindows().Count > 1) {
+				return false;
+			}
+
+			_timerBackgroundFlag.Stop();
+			EmuApi.Stop();
+			_listener?.Dispose();
+			EmuApi.Release();
+			ConfigManager.Config.MainWindow.SaveWindowSettings(this);
+			ConfigManager.Config.Save();
+			_isClosing = true;
+
+			return true;
 		}
 
 		private async void ValidateExit()
@@ -180,6 +190,14 @@ namespace Mesen.Windows
 		{
 			base.OnClosed(e);
 			_mouseManager?.Dispose();
+		}
+
+		private void Console_CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
+		{
+			_needCloseValidation = false;
+			Dispatcher.UIThread.Post(() => {
+				CloseEmu(true);
+			});
 		}
 
 		private void OnDrop(object? sender, DragEventArgs e)
