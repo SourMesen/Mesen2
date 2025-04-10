@@ -1046,6 +1046,10 @@ void Debugger::Log(string message)
 		_debuggerLog.pop_front();
 	}
 	_debuggerLog.push_back(message);
+
+#ifndef WIN32
+	std::cout << message << std::endl;
+#endif
 }
 
 string Debugger::GetLog()
