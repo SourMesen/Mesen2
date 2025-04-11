@@ -176,9 +176,7 @@ void MessageManager::Log(string message)
 	}
 	_log.push_back(message);
 
-#ifndef WIN32
 	std::cout << message << std::endl;
-#endif
 }
 
 void MessageManager::ClearLog()
