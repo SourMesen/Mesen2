@@ -8,7 +8,6 @@ class TaitoTc0690 : public MMC3
 {
 private:
 	uint8_t _irqDelay = 0;
-	bool _isFlintstones = false;
 
 protected:
 	bool EnableCpuClockHook() override { return true; }
@@ -18,10 +17,6 @@ protected:
 		_irqDelay = 0;
 		SelectPrgPage(2, -2);
 		SelectPrgPage(3, -1);
-
-		//This cart appears to behave differently (maybe not an identical mapper?)
-		//IRQ seems to be triggered at a different timing (approx 100 cpu cycles before regular mapper 48 timings)
-		_isFlintstones = _romInfo.SubMapperID == 255;
 	}
 
 	void Serialize(Serializer& s) override
@@ -33,8 +28,8 @@ protected:
 	void TriggerIrq() override
 	{
 		//"The IRQ seems to trip a little later than it does on MMC3.  It looks like about a 4 CPU cycle delay from the normal MMC3 IRQ time."
-		//A value of 6 removes the shaking from The Jetsons
-		_irqDelay = _isFlintstones ? 19 : 6;
+		//A value of 6 removes the shaking from The Jetsons, 19 works for the Flintstones
+		_irqDelay = _romInfo.SubMapperID == 1 ? 6 : 19;
 	}
 
 	void ProcessCpuClock() override
@@ -74,7 +69,7 @@ protected:
 				//Flintstones expects either $C000 or $C001 to clear the irq flag
 				_console->GetCpu()->ClearIrqSource(IRQSource::External);
 
-				_irqReloadValue = (value ^ 0xFF) + (_isFlintstones ? 0 : 1);
+				_irqReloadValue = (value ^ 0xFF) + (_romInfo.SubMapperID == 1 ? 1 : 0);
 				break;
 			case 0xC001:
 				//Flintstones expects either $C000 or $C001 to clear the irq flag

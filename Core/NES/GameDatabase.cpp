@@ -219,7 +219,6 @@ void GameDatabase::SetGameInfo(uint32_t romCrc, RomData &romData, bool updateRom
 		info = result->second;
 		MessageManager::Log("[DB] Game found in database");
 
-		MessageManager::Log("[DB] Mapper: " + std::to_string(info.MapperID) + "  Sub: " + std::to_string(GetSubMapper(info)));
 		if(info.MapperID < UnifBoards::UnknownBoard) {
 			MessageManager::Log("[DB] Mapper: " + std::to_string(info.MapperID) + "  Sub: " + std::to_string(GetSubMapper(info)));
 		} else if(info.MapperID == UnifBoards::UnknownBoard) {
