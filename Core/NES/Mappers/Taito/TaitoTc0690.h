@@ -28,8 +28,8 @@ protected:
 	void TriggerIrq() override
 	{
 		//"The IRQ seems to trip a little later than it does on MMC3.  It looks like about a 4 CPU cycle delay from the normal MMC3 IRQ time."
-		//A value of 6 removes the shaking from The Jetsons, 19 works for the Flintstones
-		_irqDelay = _romInfo.SubMapperID == 1 ? 6 : 19;
+		//6 removes the shaking from The Jetsons, 21-22 seems to work for the Flintstones+Captain Saver
+		_irqDelay = _romInfo.SubMapperID == 1 ? 6 : 22;
 	}
 
 	void ProcessCpuClock() override
