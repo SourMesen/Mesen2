@@ -699,7 +699,7 @@ int LuaApi::GetPixel(lua_State *lua)
 	errorCond(x < 0 || x >= (int)frameSize.Width || y < 0 || y >= (int)frameSize.Height, "invalid x,y coordinates");
 
 	uint32_t* rgbBuffer = filter->GetOutputBuffer();
-	l.Return(rgbBuffer[y * frameSize.Width + x]);
+	l.Return(rgbBuffer[y * frameSize.Width + x] & 0xFFFFFF);
 	return l.ReturnCount();
 }
 
