@@ -45,6 +45,7 @@ namespace Mesen.Debugger.Utilities
 		{
 			string processText(string text)
 			{
+				text = text.Replace("ARGB", "<a href=\"#ColorFormat\">ARGB</a>");
 				return _linkRegex.Replace(text, (match) => "<a href=\"#" + match.Groups[2].Value + "\">emu." + match.Groups[1].Value + "</a>").Replace("\n", "<br/>");
 			}
 
@@ -238,6 +239,22 @@ namespace Mesen.Debugger.Utilities
 					sb.AppendLine($"<h1 id=\"{entry.Category}\">{ResourceHelper.GetEnumText(entry.Category)}</h1>");
 					category = entry.Category;
 					subcategory = null;
+
+					if(category == DocEntryCategory.Drawing) {
+						sb.AppendLine(@"
+							<h3 id=""ColorFormat""><strong>Color format for APIs</strong></h3>
+							<p>Colors are integers in ARGB format, but the alpha value is inverted: 0 is opaque, 255 is fully transparent.</p>
+							<ul>
+								<li>White: 0xFFFFFF</li>
+								<li>Black: 0x000000</li>
+								<li>Transparent: 0xFF000000</li>
+								<li>Semi-transparent black: 0x7F000000</li>
+								<li>Red: 0xFF0000</li>
+								<li>Green: 0x00FF00</li>
+								<li>Blue: 0x0000FF</li>
+							</ul>
+						");
+					}
 				}
 
 				if(entry.Subcategory != subcategory && entry.Subcategory != null) {
@@ -272,7 +289,7 @@ namespace Mesen.Debugger.Utilities
 							if(param.Type.ToLowerInvariant() == "enum") {
 								sb.AppendLine($"<a href=\"#{param.EnumName}\">{param.CalculatedType}</a>");
 							} else {
-								sb.AppendLine($"{param.CalculatedType}");
+								sb.AppendLine($"{processText(param.CalculatedType)}");
 							}
 							sb.AppendLine($"</em>{(param.DefaultValue.Length > 0 ? $" <span class=\"defaultvalue\">(default: {param.DefaultValue})</span>" : "")}");
 							sb.AppendLine($"<div class=\"fieldDesc\">{processText(param.Description)}</div>");
@@ -331,6 +348,11 @@ namespace Mesen.Debugger.Utilities
 		public DocReturnValue ReturnValue { get; set; } = new();
 		
 		public List<DocEnumValue> EnumValues { get; set; } = new();
+
+		public int MaxWidth => SplitView ? 1000 : 550;
+		public bool SplitView => EnumValues.Count >= 30;
+		public List<DocEnumValue> Column1Values => SplitView ? EnumValues.GetRange(0, EnumValues.Count / 2 + (EnumValues.Count % 2 == 0 ? 0 : 1)) : EnumValues;
+		public List<DocEnumValue> Column2Values => SplitView ? EnumValues.GetRange(Column1Values.Count, EnumValues.Count - Column1Values.Count) : new();
 
 		public string Syntax
 		{
