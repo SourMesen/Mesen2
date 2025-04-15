@@ -140,16 +140,22 @@ void GbaTimer::Serialize(Serializer& s)
 {
 	for(int i = 0; i < 4; i++) {
 		SVI(_state.Timer[i].ReloadValue);
-		SVI(_state.Timer[i].NewReloadValue);
 		SVI(_state.Timer[i].Control);
-		SVI(_state.Timer[i].PrescaleMask);
 		SVI(_state.Timer[i].Timer);
-		SVI(_state.Timer[i].EnableDelay);
-		SVI(_state.Timer[i].WritePending);
-		SVI(_state.Timer[i].Mode);
-		SVI(_state.Timer[i].IrqEnabled);
-		SVI(_state.Timer[i].Enabled);
-		SVI(_state.Timer[i].ProcessTimer);
+
+		if(s.GetFormat() != SerializeFormat::Map) {
+			SVI(_state.Timer[i].PrescaleMask);
+			SVI(_state.Timer[i].Mode);
+			SVI(_state.Timer[i].IrqEnabled);
+			SVI(_state.Timer[i].Enabled);
+			SVI(_state.Timer[i].ProcessTimer);
+			SVI(_state.Timer[i].NewReloadValue);
+			SVI(_state.Timer[i].WritePending);
+			SVI(_state.Timer[i].EnableDelay);
+		}
 	}
-	SV(_hasPendingTimers);
+
+	if(s.GetFormat() != SerializeFormat::Map) {
+		SV(_hasPendingTimers);
+	}
 }

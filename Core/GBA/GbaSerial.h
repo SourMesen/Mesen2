@@ -177,18 +177,8 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		SV(_state.StartMasterClock);
-		SV(_state.EndMasterClock);
-		SV(_state.IrqMasterClock);
-
-		SVArray(_state.Data, 4);
-
 		SV(_state.Control);
-		SV(_state.InternalShiftClock);
-		SV(_state.InternalShiftClockSpeed2MHz);
-		SV(_state.Active);
-		SV(_state.TransferWord);
-		SV(_state.IrqEnabled);
+		SVArray(_state.Data, 4);
 
 		SV(_state.SendData);
 		SV(_state.Mode);
@@ -196,5 +186,17 @@ public:
 		SV(_state.JoyReceive);
 		SV(_state.JoySend);
 		SV(_state.JoyStatus);
+
+		if(s.GetFormat() != SerializeFormat::Map) {
+			SV(_state.StartMasterClock);
+			SV(_state.EndMasterClock);
+			SV(_state.IrqMasterClock);
+
+			SV(_state.InternalShiftClock);
+			SV(_state.InternalShiftClockSpeed2MHz);
+			SV(_state.Active);
+			SV(_state.TransferWord);
+			SV(_state.IrqEnabled);
+		}
 	}
 };

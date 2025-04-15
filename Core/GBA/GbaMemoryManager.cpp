@@ -867,36 +867,42 @@ int64_t GbaMemoryManager::GetRelativeAddress(AddressInfo& absAddress)
 void GbaMemoryManager::Serialize(Serializer& s)
 {
 	SV(_masterClock);
-	SV(_hasPendingUpdates);
-	SV(_hasPendingLateUpdates);
-	SV(_pendingIrqSource);
-	SV(_pendingIrqSourceDelay);
-	SV(_haltModeUsed);
-	SV(_biosLocked);
 
 	SV(_state.IE);
 	SV(_state.IF);
+	SV(_state.IME);
+
 	SV(_state.NewIE);
 	SV(_state.NewIF);
 	SV(_state.NewIME);
 
 	SV(_state.WaitControl);
-	SVArray(_state.PrgWaitStates0, 2);
-	SVArray(_state.PrgWaitStates1, 2);
-	SVArray(_state.PrgWaitStates2, 2);
-	SV(_state.SramWaitStates);
 	SV(_state.PrefetchEnabled);
-	SV(_state.IME);
-	SV(_state.IrqUpdateCounter);
-	SV(_state.IrqPending);
-	SV(_state.IrqLine);
-	SV(_state.BusLocked);
-	SV(_state.StopMode);
-	SV(_state.PostBootFlag);
 
-	SVArray(_state.BootRomOpenBus, 4);
-	SVArray(_state.InternalOpenBus, 4);
-	SVArray(_state.IwramOpenBus, 4);
+	if(s.GetFormat() != SerializeFormat::Map) {
+		SV(_hasPendingUpdates);
+		SV(_hasPendingLateUpdates);
+		SV(_pendingIrqSource);
+		SV(_pendingIrqSourceDelay);
+		SV(_haltModeUsed);
+		SV(_biosLocked);
+
+		SVArray(_state.BootRomOpenBus, 4);
+		SVArray(_state.InternalOpenBus, 4);
+		SVArray(_state.IwramOpenBus, 4);
+
+		SVArray(_state.PrgWaitStates0, 2);
+		SVArray(_state.PrgWaitStates1, 2);
+		SVArray(_state.PrgWaitStates2, 2);
+		SV(_state.SramWaitStates);
+
+		SV(_state.IrqUpdateCounter);
+		SV(_state.IrqPending);
+		SV(_state.IrqLine);
+		SV(_state.BusLocked);
+		SV(_state.StopMode);
+		SV(_state.PostBootFlag);
+	}
 
 	if(!s.IsSaving()) {
 		GenerateWaitStateLut();

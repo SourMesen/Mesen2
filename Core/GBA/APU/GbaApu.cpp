@@ -552,17 +552,19 @@ void GbaApu::Serialize(Serializer& s)
 	SV(_state.Bias);
 	SV(_state.SamplingRate);
 
-	SV(_prevClockCount);
-	SV(_enabledChannels);
-	SV(_leftSample);
-	SV(_rightSample);
+	if(s.GetFormat() != SerializeFormat::Map) {
+		SV(_prevClockCount);
+		SV(_enabledChannels);
+		SV(_leftSample);
+		SV(_rightSample);
 
-	SV(_fifo[0]);
-	SV(_fifo[1]);
-	SV(_filterL);
-	SV(_filterR);
+		SV(_fifo[0]);
+		SV(_fifo[1]);
+		SV(_filterL);
+		SV(_filterR);
 
-	SV(_powerOnCycle);
+		SV(_powerOnCycle);
+	}
 
 	SV(_square1);
 	SV(_square2);

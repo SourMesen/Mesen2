@@ -1075,7 +1075,7 @@ int LuaApi::GetState(lua_State *lua)
 
 	Serializer s(0, true, SerializeFormat::Map);
 	s.Stream(*_emu->GetConsole().get(), "", -1);
-	
+
 	//Add some more Lua-specific values
 	uint32_t frameCount = _emu->GetFrameCount();
 	uint32_t masterClock = _emu->GetMasterClock();
@@ -1093,12 +1093,12 @@ int LuaApi::GetState(lua_State *lua)
 
 	lua_newtable(lua);
 	for(auto& kvp : values) {
-		lua_pushstring(lua, kvp.first.c_str());
+		lua_pushlstring(lua, kvp.first.c_str(), kvp.first.size());
 		switch(kvp.second.Format) {
 			case SerializeMapValueFormat::Integer: lua_pushinteger(lua, kvp.second.Value.Integer); break;
 			case SerializeMapValueFormat::Double: lua_pushnumber(lua, kvp.second.Value.Double); break;
 			case SerializeMapValueFormat::Bool: lua_pushboolean(lua, kvp.second.Value.Bool); break;
-			case SerializeMapValueFormat::String: lua_pushstring(lua, kvp.second.StringValue.c_str()); break;
+			case SerializeMapValueFormat::String: lua_pushlstring(lua, kvp.second.StringValue.c_str(), kvp.second.StringValue.size()); break;
 		}
 		lua_settable(lua, -3);
 	}
@@ -1107,7 +1107,6 @@ int LuaApi::GetState(lua_State *lua)
 
 int LuaApi::SetState(lua_State* lua)
 {
-	LuaCallHelper l(lua);
 	lua_settop(lua, 1);
 	luaL_checktype(lua, -1, LUA_TTABLE);
 
@@ -1146,17 +1145,5 @@ int LuaApi::SetState(lua_State* lua)
 	s.LoadFromMap(map);
 
 	s.Stream(*_emu->GetConsole().get(), "", -1);
-	unordered_map<string, SerializeMapValue>& values = s.GetMapValues();
-
-	lua_newtable(lua);
-	for(auto& kvp : values) {
-		lua_pushstring(lua, kvp.first.c_str());
-		switch(kvp.second.Format) {
-			case SerializeMapValueFormat::Integer: lua_pushinteger(lua, kvp.second.Value.Integer); break;
-			case SerializeMapValueFormat::Double: lua_pushnumber(lua, kvp.second.Value.Double); break;
-			case SerializeMapValueFormat::Bool: lua_pushboolean(lua, kvp.second.Value.Bool); break;
-		}
-		lua_settable(lua, -3);
-	}
-	return 1;
+	return 0;
 }

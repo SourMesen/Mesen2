@@ -331,35 +331,39 @@ void GbaDmaController::WriteRegister(uint32_t addr, uint8_t value)
 void GbaDmaController::Serialize(Serializer& s)
 {
 	for(int i = 0; i < 4; i++) {
-		SVI(_state.Ch[i].ReadValue);
+		SVI(_state.Ch[i].Control);
 
 		SVI(_state.Ch[i].Destination);
 		SVI(_state.Ch[i].Source);
 		SVI(_state.Ch[i].Length);
 
-		SVI(_state.Ch[i].DestLatch);
-		SVI(_state.Ch[i].SrcLatch);
-		SVI(_state.Ch[i].LenLatch);
+		if(s.GetFormat() != SerializeFormat::Map) {
+			SVI(_state.Ch[i].DestLatch);
+			SVI(_state.Ch[i].SrcLatch);
+			SVI(_state.Ch[i].LenLatch);
 
-		SVI(_state.Ch[i].Control);
+			SVI(_state.Ch[i].ReadValue);
 
-		SVI(_state.Ch[i].DestMode);
-		SVI(_state.Ch[i].SrcMode);
+			SVI(_state.Ch[i].DestMode);
+			SVI(_state.Ch[i].SrcMode);
 
-		SVI(_state.Ch[i].Repeat);
-		SVI(_state.Ch[i].WordTransfer);
-		SVI(_state.Ch[i].DrqMode);
+			SVI(_state.Ch[i].Repeat);
+			SVI(_state.Ch[i].WordTransfer);
+			SVI(_state.Ch[i].DrqMode);
 
-		SVI(_state.Ch[i].Trigger);
-		SVI(_state.Ch[i].IrqEnabled);
-		SVI(_state.Ch[i].Enabled);
-		SVI(_state.Ch[i].Active);
+			SVI(_state.Ch[i].Trigger);
+			SVI(_state.Ch[i].IrqEnabled);
+			SVI(_state.Ch[i].Enabled);
+			SVI(_state.Ch[i].Active);
 
-		SVI(_state.Ch[i].Pending);
+			SVI(_state.Ch[i].Pending);
+		}
 	}
 
-	SV(_dmaRunning);
-	SV(_dmaPending);
-	SV(_dmaActiveChannel);
-	SV(_dmaStartDelay);
+	if(s.GetFormat() != SerializeFormat::Map) {
+		SV(_dmaRunning);
+		SV(_dmaPending);
+		SV(_dmaActiveChannel);
+		SV(_dmaStartDelay);
+	}
 }

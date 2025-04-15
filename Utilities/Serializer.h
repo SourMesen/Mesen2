@@ -134,7 +134,7 @@ private:
 			_mapValues.try_emplace(key, SerializeMapValueFormat::Double, (double)value);
 		} else if constexpr(std::is_same<T, string>::value) {
 			_mapValues.try_emplace(key, value);
-		}	
+		}
 	}
 
 	template<typename T>
@@ -206,7 +206,7 @@ private:
 
 	__forceinline void CheckDuplicateKey(string& key)
 	{
-#ifndef MESENRELEASE
+#ifdef DEBUG
 		if(!_usedKeys.emplace(key).second) {
 			throw std::runtime_error("Duplicate key");
 		}
@@ -345,13 +345,24 @@ public:
 
 	template<typename T> void StreamArray(T* arrayValues, uint32_t elementCount, const char* name)
 	{
-		if(_format == SerializeFormat::Map) {
-			return;
-		}
-
 		string key = GetKey(name, -1);
 
 		CheckDuplicateKey(key);
+
+		if(_format == SerializeFormat::Map) {
+			if(elementCount <= 64) {
+				//Only save/load small arrays (otherwise this would end up serializing work/save ram, etc.)
+				for(uint32_t i = 0; i < elementCount; i++) {
+					string elemKey = key + std::to_string(i);
+					if(_saving) {
+						WriteMapFormat(elemKey, arrayValues[i]);
+					} else {
+						ReadMapFormat(elemKey, arrayValues[i]);
+					}
+				}
+			}
+			return;
+		}
 
 		//TODO detect big vs little endian
 		constexpr bool isBigEndian = false;

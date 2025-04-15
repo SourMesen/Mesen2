@@ -226,6 +226,10 @@ public:
 	
 	void Serialize(Serializer& s) override
 	{
+		if(s.GetFormat() == SerializeFormat::Map) {
+			return;
+		}
+
 		SV(_state.ClockCounter);
 		SV(_state.ReadAddr);
 		SV(_state.PrefetchAddr);
