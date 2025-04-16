@@ -557,10 +557,12 @@ void PceScsiBus::SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val)
 
 void PceScsiBus::SetAckWithAutoClear()
 {
-	//Set the Ack signal for 45 master clocks (and then clear it again)
+	//Set the Ack signal for 21 master clocks (and then clear it again)
 	//Used after manually reading a byte of data (or after ADPCM DMA reads one)
+	//The 21 master clocks is based on hardware measurements that
+	//show that ACK is cleared ~1 microsecond after being set
 	SetSignals(Ack);
-	_ackClearCounter = 15*3;
+	_ackClearCounter = 7*3;
 	_needExec = true;
 }
 

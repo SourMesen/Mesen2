@@ -168,9 +168,9 @@ void PceAdpcm::ProcessDmaRequest()
 			}
 		}
 	} else if(!_scsi->CheckSignal(Ack) && !_scsi->CheckSignal(Cd) && _scsi->CheckSignal(Io) && _scsi->CheckSignal(Req)) {
-		//Some delay is required here according to test rom
-		//Valid range is 10-14 (higher or lower fails the test)
-		_dmaWriteCounter = 12;
+		//Some delay is required here according to "verificator" test rom ("cdd dma timings" test)
+		//Values between 18 to 22 pass the test (higher or lower fails)
+		_dmaWriteCounter = 20;
 	}
 }
 
