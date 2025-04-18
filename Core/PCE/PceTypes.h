@@ -331,6 +331,7 @@ struct PceAdpcmState
 	bool HalfReached;
 
 	bool Playing;
+	bool PlayRequest;
 
 	uint8_t ReadBuffer;
 	uint8_t ReadClockCounter;

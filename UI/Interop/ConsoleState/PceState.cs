@@ -310,6 +310,7 @@ public struct PceAdpcmState
 	[MarshalAs(UnmanagedType.I1)] public bool HalfReached;
 
 	[MarshalAs(UnmanagedType.I1)] public bool Playing;
+	[MarshalAs(UnmanagedType.I1)] public bool PlayRequest;
 
 	public byte ReadBuffer;
 	public byte ReadClockCounter;
