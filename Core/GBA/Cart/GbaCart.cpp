@@ -181,6 +181,16 @@ void GbaCart::SaveBattery()
 	}
 }
 
+GbaCartState GbaCart::GetState()
+{
+	GbaCartState state = {};
+	if(_gpio) {
+		state.HasGpio = true;
+		state.Gpio = _gpio->GetState();
+	}
+	return state;
+}
+
 void GbaCart::Serialize(Serializer& s)
 {
 	if(_eeprom) {

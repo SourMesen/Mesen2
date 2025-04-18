@@ -496,6 +496,19 @@ struct GbaApuDebugState
 	GbaNoiseState Noise;
 };
 
+struct GbaGpioState
+{
+	uint8_t Data;
+	uint8_t WritablePins;
+	bool ReadWrite;
+};
+
+struct GbaCartState
+{
+	bool HasGpio;
+	GbaGpioState Gpio;
+};
+
 struct GbaState
 {
 	GbaCpuState Cpu;
@@ -506,6 +519,7 @@ struct GbaState
 	GbaTimersState Timer;
 	GbaRomPrefetchState Prefetch;
 	GbaControlManagerState ControlManager;
+	GbaCartState Cart;
 };
 
 enum class GbaThumbOpCategory

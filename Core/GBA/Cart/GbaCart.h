@@ -42,6 +42,8 @@ public:
 	GbaCart();
 	~GbaCart();
 
+	GbaCartState GetState();
+
 	void Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryManager, GbaSaveType saveType, GbaRtcType rtcType, GbaCartridgeType cartType);
 
 	template<bool checkEeprom>

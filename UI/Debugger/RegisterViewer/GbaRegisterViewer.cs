@@ -24,6 +24,8 @@ public class GbaRegisterViewer
 		List<RegEntry> entries = new List<RegEntry>();
 
 		GbaMemoryManagerState memManager = gbaState.MemoryManager;
+		GbaGpioState gpio = gbaState.Cart.Gpio;
+
 		entries.AddRange(new List<RegEntry>() {
 			/*new RegEntry("", "Prefetch"),
 			new RegEntry("", "Read Address", gbaState.Prefetch.ReadAddr, Format.X32),
@@ -97,8 +99,22 @@ public class GbaRegisterViewer
 			new RegEntry("$4000205.6", "Prefetch Enabled", memManager.PrefetchEnabled),
 		});
 
-		return new RegisterViewerTab("Misc", entries, CpuType.Gba, MemoryType.GbaMemory);
+		if(gbaState.Cart.HasGpio) {
+			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("", "Cart - GPIO"),
+				new RegEntry("$80000C4.0", "SCK (RTC)", (gpio.Data & 0x01) != 0),
+				new RegEntry("$80000C4.1", "SIO (RTC)", (gpio.Data & 0x02) != 0),
+				new RegEntry("$80000C4.2", "CS (RTC)", (gpio.Data & 0x04) != 0),
+				new RegEntry("$80000C4.3", "Unused (RTC)", (gpio.Data & 0x04) != 0),
+				new RegEntry("$80000C6.0", "Pin 0 direction", (gpio.WritablePins & 0x01) != 0 ? "Out" : "In", (gpio.WritablePins & 0x01) != 0),
+				new RegEntry("$80000C6.1", "Pin 1 direction", (gpio.WritablePins & 0x02) != 0 ? "Out" : "In", (gpio.WritablePins & 0x02) != 0),
+				new RegEntry("$80000C6.2", "Pin 2 direction", (gpio.WritablePins & 0x04) != 0 ? "Out" : "In", (gpio.WritablePins & 0x04) != 0),
+				new RegEntry("$80000C6.3", "Pin 3 direction", (gpio.WritablePins & 0x08) != 0 ? "Out" : "In", (gpio.WritablePins & 0x08) != 0),
+				new RegEntry("$80000C8.0", "Allow GPIO read", gpio.ReadWrite),
+			});
+		}
 
+		return new RegisterViewerTab("Misc", entries, CpuType.Gba, MemoryType.GbaMemory);
 	}
 
 	private static RegisterViewerTab GetGbaPpuTab(ref GbaState gbaState)

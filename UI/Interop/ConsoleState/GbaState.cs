@@ -209,6 +209,19 @@ public struct GbaControlManagerState
 	public UInt16 ActiveKeys;
 }
 
+public struct GbaGpioState
+{
+	public byte Data;
+	public byte WritablePins;
+	[MarshalAs(UnmanagedType.I1)] public bool ReadWrite;
+}
+
+public struct GbaCartState
+{
+	[MarshalAs(UnmanagedType.I1)] public bool HasGpio;
+	public GbaGpioState Gpio;
+}
+
 public struct GbaState : BaseState
 {
 	public GbaCpuState Cpu;
@@ -219,6 +232,7 @@ public struct GbaState : BaseState
 	public GbaTimersState Timer;
 	public GbaRomPrefetchState Prefetch;
 	public GbaControlManagerState ControlManager;
+	public GbaCartState Cart;
 }
 
 public enum GbaCpuMode : byte

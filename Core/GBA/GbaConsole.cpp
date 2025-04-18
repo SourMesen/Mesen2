@@ -274,6 +274,7 @@ GbaState GbaConsole::GetState()
 	state.Timer = _timer->GetState();
 	state.Prefetch = _prefetch->GetState();
 	state.ControlManager = _controlManager->GetState();
+	state.Cart = _cart->GetState();
 	return state;
 }
 

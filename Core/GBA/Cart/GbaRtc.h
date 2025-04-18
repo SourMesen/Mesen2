@@ -44,6 +44,7 @@ private:
 	uint8_t _bitCounter = 0;
 	uint8_t _command = 0;
 	uint8_t _clk = 0;
+	uint8_t _prevValue = 0;
 
 	uint64_t _dataOut = 0;
 	uint8_t _dataOutSize = 0;

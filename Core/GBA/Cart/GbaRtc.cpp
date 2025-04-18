@@ -73,12 +73,12 @@ uint8_t GbaRtc::GetCommandLength(Command cmd)
 	}
 }
 
-void GbaRtc::ProcessDataIn(uint8_t value)
+void GbaRtc::ProcessDataIn(uint8_t bit)
 {
-	uint64_t bit = (value & 0x02) >> 1;
 	Command cmd = (Command)((_command & 0x0F) >> 1);
 
-	_dataIn |= (bit << (GetCommandLength(cmd) - _dataInSize));
+	uint8_t length = GetCommandLength(cmd);
+	_dataIn |= ((uint64_t)bit << (length - _dataInSize));
 	_dataInSize--;
 
 	if(_dataInSize == 0) {
@@ -95,7 +95,12 @@ void GbaRtc::ProcessDataIn(uint8_t value)
 				//TODOGBA not implemented
 				break;
 		}
-		_command = 0;
+
+		for(int i = 0; i < 8; i++) {
+			//Re-write over the last byte if written beyond the expected length
+			_dataInSize++;
+			_dataIn &= ~((uint64_t)1 << (length - _dataInSize));
+		}
 	}
 }
 
@@ -105,7 +110,8 @@ void GbaRtc::ProcessDataOut()
 	_dataOut >>= 1;
 	_dataOutSize--;
 	if(_dataOutSize == 0) {
-		_command = 0;
+		//Repeat command output if read beyond expected length
+		ProcessCommand();
 	}
 }
 
@@ -287,13 +293,17 @@ uint8_t GbaRtc::Read()
 	if(_chipSelect) {
 		return (_chipSelect << 2) | (_bitOut << 1) | _clk;
 	} else {
-		return 0;
+		return 0x07;
 	}
 }
 
 void GbaRtc::Write(uint8_t value)
 {
 	uint8_t clk = value & 0x01;
+
+	//Writes use the data that was set in bit 1 on the previous write
+	uint8_t data = (_prevValue & 0x02) >> 1;
+	_prevValue = value;
 
 	bool chipSelect = value & 0x04;
 
@@ -305,19 +315,19 @@ void GbaRtc::Write(uint8_t value)
 		_dataOutSize = 0;
 		_dataIn = 0;
 		_dataInSize = 0;
-		_bitOut = 0;
+		_bitOut = 1;
 		_chipSelect = chipSelect;
 		return;
 	}
 
 	if(clk && !_clk) {
 		if(_dataOutSize) {
-			ProcessDataOut();
+			//Data output is updated on falling edge of clock
 		} else if(_dataInSize) {
-			ProcessDataIn(value);
+			ProcessDataIn(data);
 		} else {
 			_command <<= 1;
-			_command |= (value & 0x02) >> 1;
+			_command |= data;
 			_bitCounter++;
 
 			if(_bitCounter == 8) {
@@ -330,6 +340,12 @@ void GbaRtc::Write(uint8_t value)
 
 				_bitCounter = 0;
 			}
+		}
+	} else if(!clk && _clk) {
+		if(_dataOutSize) {
+			ProcessDataOut();
+		} else {
+			_bitOut = 1;
 		}
 	}
 	_clk = clk;
@@ -347,6 +363,7 @@ void GbaRtc::Serialize(Serializer& s)
 	SV(_bitOut);
 	SV(_chipSelect);
 	SV(_lastUpdateTime);
+	SV(_prevValue);
 
 	SV(_state.Year);
 	SV(_state.Month);
