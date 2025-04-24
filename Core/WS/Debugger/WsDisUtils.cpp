@@ -403,6 +403,7 @@ EffectiveAddressInfo WsDisUtils::GetEffectiveAddress(DisassemblyInfo& info, WsCo
 				if(dummyCpu.IsWordAccess(i - 1) && prevOpInfo.Type == opInfo.Type && prevOpInfo.Address == opInfo.Address - 2) {
 					result.Address = prevOpInfo.Address;
 					result.Type = prevOpInfo.MemType;
+					result.ValueSize = 4;
 				} else {
 					result.Address = opInfo.Address;
 					result.Type = opInfo.MemType;
