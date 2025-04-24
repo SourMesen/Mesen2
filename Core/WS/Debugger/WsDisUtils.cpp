@@ -178,9 +178,9 @@ void WsDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t mem
 			}
 
 			//Relative jumps
-			case 'r': GetJmpDestination(str, byteCode, 1); break;
-			case 's': GetJmpDestination(str, byteCode, 2); break;
-			case 't': GetJmpDestination(str, byteCode, 4); break;
+			case 'r': GetJmpDestination(str, byteCode+1, 1); break;
+			case 's': GetJmpDestination(str, byteCode+1, 2); break;
+			case 't': GetJmpDestination(str, byteCode+1, 4); break;
 
 			case 'v': //GRP1
 				switch((byteCode[1] >> 3) & 0x07) {
@@ -273,14 +273,22 @@ void WsDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t mem
 void WsDisUtils::GetJmpDestination(FastString& str, uint8_t* byteCode, uint8_t size)
 {
 	if(size == 4) {
-		str.WriteAll("$", HexUtilities::ToHex((uint16_t)(byteCode[3] | (byteCode[4] << 8))));
-		str.WriteAll(":$", HexUtilities::ToHex((uint16_t)(byteCode[1] | (byteCode[2] << 8))));
+		str.WriteAll("$", HexUtilities::ToHex((uint16_t)(byteCode[2] | (byteCode[3] << 8))));
+		str.WriteAll(":$", HexUtilities::ToHex((uint16_t)(byteCode[0] | (byteCode[1] << 8))));
 	} else if(size == 2) {
-		uint16_t jmpOffset = (uint16_t)(byteCode[1] | (byteCode[2] << 8));
-		str.WriteAll("+$", HexUtilities::ToHex(jmpOffset));
+		int16_t jmpOffset = (int16_t)(byteCode[0] | (byteCode[1] << 8));
+		if(jmpOffset < 0) {
+			str.WriteAll("-$", HexUtilities::ToHex((uint16_t)-jmpOffset));
+		} else {
+			str.WriteAll("+$", HexUtilities::ToHex((uint16_t)jmpOffset));
+		}
 	} else if(size == 1) {
-		uint8_t jmpOffset = (uint8_t)byteCode[1];
-		str.WriteAll("+$", HexUtilities::ToHex(jmpOffset));
+		int8_t jmpOffset = (int8_t)byteCode[0];
+		if(jmpOffset < 0) {
+			str.WriteAll("-$", HexUtilities::ToHex((uint8_t)-jmpOffset));
+		} else {
+			str.WriteAll("+$", HexUtilities::ToHex((uint8_t)jmpOffset));
+		}
 	}
 }
 
@@ -351,10 +359,12 @@ int WsDisUtils::GetModRmParam(FastString& str, uint8_t* byteCode, WsSegment segm
 		}
 
 		if(mode == 1) {
-			str.WriteAll("+$", HexUtilities::ToHex((uint8_t)byteCode[2]), ']');
+			GetJmpDestination(str, byteCode + 2, 1);
+			str.Write(']');
 			len++;
 		} else if(mode == 2) {
-			str.WriteAll("+$", HexUtilities::ToHex((uint16_t)(byteCode[2] | (byteCode[3] << 8))), ']');
+			GetJmpDestination(str, byteCode + 2, 2);
+			str.Write(']');
 			len += 2;
 		} else {
 			str.Write(']');
