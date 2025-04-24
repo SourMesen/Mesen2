@@ -73,6 +73,13 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 			romData.erase(romData.begin(), romData.begin() + 512);
 		}
 
+		uint32_t power = (uint32_t)std::log2(romData.size());
+		if(romData.size() > ((uint64_t)1 << power)) {
+			//If size isn't a power of 2, pad the end of the ROM to the next power of 2
+			uint32_t newSize = 1 << (power + 1);
+			romData.insert(romData.end(), newSize - romData.size(), 0);
+		}
+
 		if(consoleType == PceConsoleType::Auto && (romFile.GetFileExtension() == ".sgx" || IsSuperGrafxCard(crc32))) {
 			consoleType = PceConsoleType::SuperGrafx;
 		}

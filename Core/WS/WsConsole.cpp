@@ -41,6 +41,13 @@ LoadRomResult WsConsole::LoadRom(VirtualFile& romFile)
 		return LoadRomResult::Failure;
 	}
 
+	uint32_t power = (uint32_t)std::log2(romData.size());
+	if(romData.size() > ((uint64_t)1 << power)) {
+		//If size isn't a power of 2, pad the beginning of the ROM to the next power of 2
+		uint32_t newSize = 1 << (power + 1);
+		romData.insert(romData.begin(), newSize - romData.size(), 0);
+	}
+
 	MessageManager::Log("------------------------------");
 
 	_prgRomSize = (uint32_t)romData.size();

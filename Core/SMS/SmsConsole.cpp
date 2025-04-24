@@ -137,6 +137,13 @@ void SmsConsole::InitCart(vector<uint8_t>& romData)
 				break;
 		}
 	}
+
+	uint32_t power = (uint32_t)std::log2(romData.size());
+	if(romData.size() > ((uint64_t)1 << power)) {
+		//If size isn't a power of 2, pad the end of the ROM to the next power of 2
+		uint32_t newSize = 1 << (power + 1);
+		romData.insert(romData.end(), newSize - romData.size(), 0);
+	}
 }
 
 void SmsConsole::Reset()
