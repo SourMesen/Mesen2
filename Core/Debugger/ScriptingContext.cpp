@@ -120,6 +120,7 @@ void ScriptingContext::ProcessLuaError()
 	} else {
 		Log(errorMsg);
 	}
+	lua_pop(_lua, 1);
 }
 
 void ScriptingContext::ExecutionCountHook(lua_State* lua)
