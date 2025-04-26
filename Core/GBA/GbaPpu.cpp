@@ -353,7 +353,7 @@ void GbaPpu::ProcessColorMath()
 		}
 	}
 
-	if(_state.GreenSwapEnabled) {
+	if(_state.StereoscopicEnabled) {
 		for(int x = start & ~1; x + 1 <= end; x+=2) {
 			uint16_t gLeft = dst[x] & 0x3E0;
 			uint16_t gRight = dst[x+1] & 0x3E0;
@@ -1046,7 +1046,7 @@ void GbaPpu::RenderSprites()
 			spr.DoubleSize = sprData & 0x0200;
 			spr.HideSprite = !spr.TransformEnabled && spr.DoubleSize;
 			spr.Mode = (GbaPpuObjMode)((sprData >> 10) & 0x03);
-			if(!spr.HideSprite && spr.Mode != GbaPpuObjMode::Invalid) {
+			if(!spr.HideSprite) {
 				spr.SpriteY = sprData & 0xFF;
 				spr.Shape = (sprData >> 14) & 0x03;
 				spr.Size = (sprData >> 30) & 0x03;
@@ -1226,7 +1226,7 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 			break;
 		}
 
-		case 0x02: _state.GreenSwapEnabled = value & 0x01; break;
+		case 0x02: _state.StereoscopicEnabled = value & 0x01; break;
 		case 0x03: break;
 
 		case 0x04:
@@ -1253,7 +1253,7 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 			BitUtilities::SetBits<0>(cfg.Control, value);
 			cfg.Priority = value & 0x03;
 			cfg.TilesetAddr = ((value >> 2) & 0x03) * 0x4000;
-			//Bits 4-5 unused
+			cfg.StereoMode = (GbaBgStereoMode)((value >> 4) & 0x03);
 			cfg.Mosaic = value & 0x40;
 			cfg.Bpp8Mode = value & 0x80;
 			break;
@@ -1374,7 +1374,7 @@ uint8_t GbaPpu::ReadRegister(uint32_t addr)
 		case 0x00: return _state.Control;
 		case 0x01: return _state.Control2;
 
-		case 0x02: return (uint8_t)_state.GreenSwapEnabled;
+		case 0x02: return (uint8_t)_state.StereoscopicEnabled;
 		case 0x03: return 0;
 
 		case 0x04:
@@ -1433,7 +1433,7 @@ void GbaPpu::Serialize(Serializer& s)
 	SV(_state.AllowHblankOamAccess);
 	SV(_state.ObjVramMappingOneDimension);
 	SV(_state.ForcedBlank);
-	SV(_state.GreenSwapEnabled);
+	SV(_state.StereoscopicEnabled);
 
 	SV(_state.Control2);
 	SV(_state.ObjEnableTimer);
@@ -1473,6 +1473,7 @@ void GbaPpu::Serialize(Serializer& s)
 		SVI(_state.BgLayers[i].Bpp8Mode);
 		SVI(_state.BgLayers[i].Enabled);
 		SVI(_state.BgLayers[i].EnableTimer);
+		SVI(_state.BgLayers[i].StereoMode);
 	}
 	
 	for(int i = 0; i < 2; i++) {

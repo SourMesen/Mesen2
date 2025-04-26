@@ -27,7 +27,7 @@ enum class NullableBoolean : int8_t
 	True = 1
 };
 
-enum class DebugSpritePriority
+enum class DebugSpritePriority : int8_t
 {
 	Undefined = -1,
 	Number0 = 0,
@@ -36,6 +36,15 @@ enum class DebugSpritePriority
 	Number3 = 3,
 	Foreground = 4,
 	Background = 5
+};
+
+enum class DebugSpriteMode : int8_t
+{
+	Undefined = -1,
+	Normal = 0,
+	Blending,
+	Window,
+	Stereoscopic
 };
 
 struct DebugSpriteInfo
@@ -55,13 +64,12 @@ struct DebugSpriteInfo
 	int16_t Bpp;
 	int16_t Palette;
 	DebugSpritePriority Priority;
+	DebugSpriteMode Mode;
 	uint16_t Width;
 	uint16_t Height;
 	NullableBoolean HorizontalMirror;
 	NullableBoolean VerticalMirror;
 	NullableBoolean MosaicEnabled;
-	NullableBoolean BlendingEnabled;
-	NullableBoolean WindowMode;
 	NullableBoolean TransformEnabled;
 	NullableBoolean DoubleSize;
 	int8_t TransformParamIndex;
@@ -93,8 +101,7 @@ public:
 		VerticalMirror = NullableBoolean::Undefined;
 		MosaicEnabled = NullableBoolean::Undefined;
 		TransformEnabled = NullableBoolean::Undefined;
-		BlendingEnabled = NullableBoolean::Undefined;
-		WindowMode = NullableBoolean::Undefined;
+		Mode = DebugSpriteMode::Undefined;
 		DoubleSize = NullableBoolean::Undefined;
 		TransformParamIndex = -1;
 		Visibility = SpriteVisibility::Offscreen;

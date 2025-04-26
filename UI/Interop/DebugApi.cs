@@ -1240,7 +1240,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool WrapRightToLeft;
 	}
 
-	public enum DebugSpritePriority
+	public enum DebugSpritePriority : sbyte
 	{
 		Undefined = -1,
 		Number0 = 0,
@@ -1249,6 +1249,15 @@ namespace Mesen.Interop
 		Number3 = 3,
 		Foreground = 4,
 		Background = 5
+	}
+
+	public enum DebugSpriteMode : sbyte
+	{
+		Undefined = -1,
+		Normal = 0,
+		Blending,
+		Window,
+		Stereoscopic
 	}
 
 	public unsafe struct DebugSpriteInfo
@@ -1268,13 +1277,12 @@ namespace Mesen.Interop
 		public Int16 Bpp;
 		public Int16 Palette;
 		public DebugSpritePriority Priority;
+		public DebugSpriteMode Mode;
 		public UInt16 Width;
 		public UInt16 Height;
 		public NullableBoolean HorizontalMirror;
 		public NullableBoolean VerticalMirror;
 		public NullableBoolean MosaicEnabled;
-		public NullableBoolean BlendingEnabled;
-		public NullableBoolean WindowMode;
 		public NullableBoolean TransformEnabled;
 		public NullableBoolean DoubleSize;
 		public sbyte TransformParamIndex;

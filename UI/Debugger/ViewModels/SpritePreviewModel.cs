@@ -23,6 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int TileIndex { get; set; }
 		[Reactive] public int TileAddress { get; set; }
 		[Reactive] public DebugSpritePriority Priority { get; set; }
+		[Reactive] public DebugSpriteMode Mode { get; set; }
 		[Reactive] public int Bpp { get; set; }
 		[Reactive] public TileFormat Format { get; set; }
 		[Reactive] public int Palette { get; set; }
@@ -33,8 +34,6 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public NullableBoolean HorizontalMirror { get; set; }
 		[Reactive] public NullableBoolean VerticalMirror { get; set; }
 		[Reactive] public NullableBoolean MosaicEnabled { get; set; }
-		[Reactive] public NullableBoolean BlendingEnabled { get; set; }
-		[Reactive] public NullableBoolean WindowMode { get; set; }
 		[Reactive] public NullableBoolean TransformEnabled { get; set; }
 		[Reactive] public NullableBoolean DoubleSize { get; set; }
 		[Reactive] public sbyte TransformParamIndex { get; set; }
@@ -70,6 +69,7 @@ namespace Mesen.Debugger.ViewModels
 			Height = sprite.Height;
 			TileIndex = sprite.TileIndex;
 			Priority = sprite.Priority;
+			Mode = sprite.Mode;
 			Bpp = sprite.Bpp;
 			Format = sprite.Format;
 			Palette = sprite.Palette;
@@ -130,8 +130,6 @@ namespace Mesen.Debugger.ViewModels
 			HorizontalMirror = sprite.HorizontalMirror;
 			VerticalMirror = sprite.VerticalMirror;
 			MosaicEnabled = sprite.MosaicEnabled;
-			BlendingEnabled = sprite.BlendingEnabled;
-			WindowMode = sprite.WindowMode;
 			TransformEnabled = sprite.TransformEnabled;
 			DoubleSize = sprite.DoubleSize;
 			TransformParamIndex = sprite.TransformParamIndex;
@@ -140,8 +138,8 @@ namespace Mesen.Debugger.ViewModels
 			flags += sprite.VerticalMirror == NullableBoolean.True ? "V" : "";
 			flags += sprite.Visibility == SpriteVisibility.Disabled ? "D" : "";
 			flags += sprite.TransformEnabled == NullableBoolean.True ? "T" : "";
-			flags += sprite.BlendingEnabled == NullableBoolean.True ? "B" : "";
-			flags += sprite.WindowMode == NullableBoolean.True ? "W" : "";
+			flags += sprite.Mode == DebugSpriteMode.Blending ? "B" : "";
+			flags += sprite.Mode == DebugSpriteMode.Window ? "W" : "";
 			flags += sprite.MosaicEnabled == NullableBoolean.True ? "M" : "";
 			flags += sprite.UseSecondTable == NullableBoolean.True ? "N" : "";
 			Flags = flags;
@@ -195,6 +193,7 @@ namespace Mesen.Debugger.ViewModels
 			dst.TileIndex = TileIndex;
 			dst.TileAddress = TileAddress;
 			dst.Priority = Priority;
+			dst.Mode = Mode;
 			dst.Bpp = Bpp;
 			dst.Format = Format;
 			dst.Palette = Palette;
@@ -206,8 +205,6 @@ namespace Mesen.Debugger.ViewModels
 			dst.FadePreview = FadePreview;
 
 			dst.MosaicEnabled = MosaicEnabled;
-			dst.BlendingEnabled = BlendingEnabled;
-			dst.WindowMode = WindowMode;
 			dst.TransformEnabled = TransformEnabled;
 			dst.DoubleSize = DoubleSize;
 			dst.TransformParamIndex = TransformParamIndex;

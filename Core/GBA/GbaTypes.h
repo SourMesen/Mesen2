@@ -110,6 +110,14 @@ struct GbaCpuState : BaseState
 	uint64_t CycleCount;
 };
 
+enum class GbaBgStereoMode : uint8_t
+{
+	Disabled,
+	EvenColumns,
+	OddColumns,
+	Both
+};
+
 struct GbaBgConfig
 {
 	uint16_t Control;
@@ -127,6 +135,7 @@ struct GbaBgConfig
 	bool Bpp8Mode;
 	bool Enabled;
 	uint8_t EnableTimer;
+	GbaBgStereoMode StereoMode;
 };
 
 struct GbaTransformConfig
@@ -164,7 +173,7 @@ enum class GbaPpuObjMode : uint8_t
 	Normal,
 	Blending,
 	Window,
-	Invalid
+	Stereoscopic
 };
 
 namespace GbaPpuMemAccess
@@ -191,7 +200,7 @@ struct GbaPpuState : BaseState
 	bool AllowHblankOamAccess;
 	bool ObjVramMappingOneDimension;
 	bool ForcedBlank;
-	bool GreenSwapEnabled;
+	bool StereoscopicEnabled;
 
 	uint8_t Control2;
 	uint8_t ObjEnableTimer;

@@ -3079,6 +3079,19 @@ E
 			<Value ID="Foreground">Foreground</Value>
 			<Value ID="Background">Background</Value>
 		</Enum>
+		<Enum ID="GbaBgStereoMode">
+			<Value ID="Disabled">Disabled</Value>
+			<Value ID="EvenColumns">Even columns</Value>
+			<Value ID="OddColumns">Odd columns</Value>
+			<Value ID="Both">Both (odd)</Value>
+		</Enum>
+		<Enum ID="DebugSpriteMode">
+			<Value ID="Undefined">-</Value>
+			<Value ID="Normal">Normal</Value>
+			<Value ID="Blending">Blending</Value>
+			<Value ID="Window">Window</Value>
+			<Value ID="Stereoscopic">Stereoscopic</Value>
+		</Enum>
 		<Enum ID="SpriteVisibility">
 			<Value ID="Visible">Visible</Value>
 			<Value ID="Offscreen">Offscreen</Value>

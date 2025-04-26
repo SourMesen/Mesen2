@@ -139,6 +139,8 @@ public class GbaRegisterViewer
 			new RegEntry($"$4000001.6", "Window 1 Enabled", ppu.Window1Enabled),
 			new RegEntry($"$4000001.7", "OBJ Window Enabled", ppu.ObjWindowEnabled),
 
+			new RegEntry($"$4000002.0", "Stereoscopic (\"Greenswap\")", ppu.StereoscopicEnabled),
+
 			new RegEntry($"$4000004", "Status", ppu.DispStat, Format.X8),
 
 			//TODOGBA fix this to always match real value
@@ -164,6 +166,7 @@ public class GbaRegisterViewer
 
 				new RegEntry($"${baseAddr:X}.0-1", "Priority", layer.Priority),
 				new RegEntry($"${baseAddr:X}.2-3", "Tileset Address", layer.TilesetAddr),
+				new RegEntry($"${baseAddr:X}.4-5", "Stereoscopic Mode", layer.StereoMode),
 				new RegEntry($"${baseAddr:X}.6", "Mosaic Enabled", layer.Mosaic),
 				new RegEntry($"${baseAddr:X}.7", "BPP Select", layer.Bpp8Mode ? "8 BPP" : "4 BPP", layer.Bpp8Mode),
 

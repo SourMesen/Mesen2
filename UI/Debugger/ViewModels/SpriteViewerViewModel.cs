@@ -341,6 +341,9 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddSeparator("MiscSeparator");
 
 			entries.AddEntry("Visibility", ResourceHelper.GetEnumText(sprite.Visibility));
+			if(sprite.Mode != DebugSpriteMode.Undefined) {
+				entries.AddEntry("Mode", sprite.Mode);
+			}
 			entries.AddEntry("Horizontal mirror", sprite.HorizontalMirror);
 			entries.AddEntry("Vertical mirror", sprite.VerticalMirror);
 			if(sprite.TransformEnabled != NullableBoolean.Undefined) {
@@ -349,8 +352,6 @@ namespace Mesen.Debugger.ViewModels
 					entries.AddEntry("Transform Param Index", sprite.TransformParamIndex);
 				}
 			}
-			entries.AddEntry("Blending", sprite.BlendingEnabled);
-			entries.AddEntry("Window", sprite.WindowMode);
 			entries.AddEntry("Mosaic", sprite.MosaicEnabled);
 			entries.AddEntry("Second table", sprite.UseSecondTable);
 
