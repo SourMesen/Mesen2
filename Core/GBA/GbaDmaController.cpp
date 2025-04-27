@@ -42,8 +42,13 @@ void GbaDmaController::TriggerDmaChannel(GbaDmaTrigger trigger, uint8_t channel,
 		_dmaPending = true;
 
 		if(_dmaActiveChannel < 0 && !_dmaStartDelay) {
-			//CPU runs for 2 more cycles before pausing for DMA
+			//CPU runs for a few more cycles before pausing for DMA
+			if(trigger == GbaDmaTrigger::Special) {
+				//Audio DMA triggers slightly later (4 passes fifo_dma_2 test rom)
+				_dmaStartDelay = 4;
+			} else {
 			_dmaStartDelay = 3;
+			}
 			_memoryManager->SetPendingUpdateFlag();
 		}
 	}
