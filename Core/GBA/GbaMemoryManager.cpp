@@ -543,7 +543,7 @@ uint32_t GbaMemoryManager::ReadRegister(uint32_t addr)
 				}
 
 				LogDebug("Read unimplemented register: " + HexUtilities::ToHex32(addr));
-				return _state.InternalOpenBus[addr & 0x01];
+				return _state.InternalOpenBus[addr & 0x03];
 		}
 	}
 }
