@@ -133,6 +133,7 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 	uint8_t srcBank = ch.SrcLatch >> 24;
 	bool isRomSrc = srcBank >= 0x08 && srcBank <= 0x0D;
 	uint32_t srcAddr = ch.SrcLatch;
+	bool forceNonSeq = false;
 
 	_dmaActiveChannel = chIndex;
 
@@ -144,11 +145,26 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 				_prefetcher->SetSuspendState(true);
 			}
 
-			value = ch.ReadValue = _memoryManager->Read(mode, srcAddr);
-			if(isRomSrc) {
+			if(!isRomSrc) {
+				value = ch.ReadValue = _memoryManager->Read(mode, srcAddr);
+			} else {
+				if(forceNonSeq) {
+					mode &= ~GbaAccessMode::Sequential;
+					forceNonSeq = false;
+				}
+
+				if((ch.SrcLatch & 0x1FFFF) == 0x20000 - offset) {
+					//If the next ROM access is a 0x20000 boundary, non-sequential timing is used
+					//(passes 128kb-boundary & DMA_ROM_Fixed tests)
+					forceNonSeq = true;
+				}
+
+				value = ch.ReadValue = _memoryManager->Read(mode, srcAddr);
+
 				//If a DMA reads from ROM (cart) and writes to ROM (cart), the first ROM write will be sequential
 				mode |= GbaAccessMode::Sequential;
 			}
+
 			if(!wordTransfer) {
 				//Value kept in buffer is mirrored across both half-words when transfering half-words
 				//Needed to pass mgba suite tests that perform a half-word transfer before performing
@@ -194,11 +210,6 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 				//Passes "burst-into-tears" test (but might be incorrect?)
 				srcAddr = ch.Destination;
 				isRomSrc = true;
-			}
-
-			if((srcMode == GbaDmaAddrMode::Decrement || srcMode == GbaDmaAddrMode::Fixed) && (srcAddr & 0x1FFFF) == 0) {
-				//When on a 0x20000 boundary non-sequential timing is used (passes 128kb-boundary test)
-				mode &= ~GbaAccessMode::Sequential;
 			}
 
 			//While the address is in the ROM region, all reads are sequential
