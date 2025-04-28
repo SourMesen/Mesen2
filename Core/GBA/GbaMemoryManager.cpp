@@ -57,6 +57,7 @@ GbaMemoryManager::GbaMemoryManager(Emulator* emu, GbaConsole* console, GbaPpu* p
 		_state.BootRomOpenBus[1] = 0xF0;
 		_state.BootRomOpenBus[2] = 0x29;
 		_state.BootRomOpenBus[3] = 0xE1;
+		_state.PostBootFlag = true;
 	}
 }
 
