@@ -273,7 +273,6 @@ struct GbaRomPrefetchState
 	uint32_t PrefetchAddr;
 	uint8_t ClockCounter;
 	uint8_t BoundaryCyclePenalty;
-	bool Suspended;
 	bool WasFilled;
 	bool Started;
 	bool Sequential;

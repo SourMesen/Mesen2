@@ -188,6 +188,11 @@ uint8_t GbaMemoryManager::GetWaitStates(GbaAccessModeVal mode, uint32_t addr)
 void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 {
 	uint8_t waitStates;
+
+	//Process first cycle before checking prefetch
+	//If DMA is triggered by this cycle, the prefetch's state can change, which needs to be taken into account
+	ProcessInternalCycle<true>();
+
 	if(addr < 0x8000000 || addr >= 0x10000000) {
 		waitStates = GetWaitStates(mode, addr);
 		_prefetch->Exec(waitStates, _state.PrefetchEnabled);
@@ -198,8 +203,6 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 	} else {
 		waitStates = _state.PrefetchEnabled ? _prefetch->Read<true>(mode, addr) : _prefetch->Read<false>(mode, addr);
 	}
-
-	ProcessInternalCycle<true>();
 	waitStates--;
 
 	while(waitStates >= 3) {

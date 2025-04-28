@@ -87,7 +87,7 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 
 	_dmaRunning = true;
 	//Before starting DMA, an additional idle cycle executes (CPU is blocked during this)
-	_memoryManager->ProcessInternalCycle();
+	_memoryManager->ProcessIdleCycle();
 
 	for(int i = 0; i < 4; i++) {
 		if(_state.Ch[i].Pending) {
@@ -96,7 +96,7 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 	}
 
 	//After stopping DMA, an additional idle cycle executes (CPU is blocked during this)
-	_memoryManager->ProcessInternalCycle();
+	_memoryManager->ProcessIdleCycle();
 	_dmaRunning = false;
 }
 
@@ -145,11 +145,6 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 	while(length-- > 0) {
 		uint32_t value;
 		if(srcAddr >= 0x2000000) {
-			if(srcAddr & 0x8000000) {
-				//DMA accessed ROM, suspend the prefetcher
-				_prefetcher->SetSuspendState(true);
-			}
-
 			if(!isRomSrc) {
 				value = ch.ReadValue = _memoryManager->Read(mode, srcAddr);
 			} else {
@@ -185,11 +180,6 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 				//For half-word transfers, the value written depends on the destination address
 				value = ch.ReadValue >> ((ch.DestLatch & 0x02) << 3);
 			}
-		}
-
-		if(ch.DestLatch & 0x8000000) {
-			//DMA accessed ROM, suspend the prefetcher
-			_prefetcher->SetSuspendState(true);
 		}
 
 		_memoryManager->Write(mode, ch.DestLatch, value);
@@ -239,7 +229,6 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 	}
 
 	_dmaActiveChannel = -1;
-	_prefetcher->SetSuspendState(false);
 
 	ch.Active = false;
 	ch.Pending = false;
