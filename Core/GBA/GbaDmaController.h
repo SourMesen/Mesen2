@@ -18,6 +18,7 @@ private:
 	bool _dmaPending = false;
 	bool _dmaRunning = false;
 	uint8_t _dmaStartDelay = 0;
+	uint32_t _idleCycleCounter = 0;
 
 	void RunDma(GbaDmaChannel& ch, uint8_t chIndex);
 
@@ -35,6 +36,9 @@ public:
 
 	__forceinline bool HasPendingDma() { return _dmaStartDelay > 0; }
 	__noinline void RunPendingDma(bool allowStartDma);
+
+	__forceinline void ResetIdleCounter() { _idleCycleCounter = 0; }
+	bool CanRunInParallelWithDma();
 
 	uint8_t ReadRegister(uint32_t addr);
 	void WriteRegister(uint32_t addr, uint8_t value);

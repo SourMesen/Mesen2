@@ -67,6 +67,17 @@ GbaMemoryManager::~GbaMemoryManager()
 
 void GbaMemoryManager::ProcessIdleCycle()
 {
+	if(_dmaController->HasPendingDma()) {
+		_dmaController->RunPendingDma(true);
+	}
+
+	if(_dmaController->CanRunInParallelWithDma()) {
+		//When DMA is running, CPU idle cycles (e.g from MUL or other instructions) can run in parallel
+		//with the DMA. The CPU only stops once it tries to read or write to the bus.
+		//This allows this idle cycle to run in "parallel" with the DMA
+		return;
+	}
+
 	_prefetch->Exec(1, _state.PrefetchEnabled);
 	ProcessInternalCycle<true>();
 }
@@ -192,6 +203,7 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 	//Process first cycle before checking prefetch
 	//If DMA is triggered by this cycle, the prefetch's state can change, which needs to be taken into account
 	ProcessInternalCycle<true>();
+	_dmaController->ResetIdleCounter();
 
 	if(addr < 0x8000000 || addr >= 0x10000000) {
 		waitStates = GetWaitStates(mode, addr);

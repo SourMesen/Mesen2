@@ -47,7 +47,7 @@ void GbaDmaController::TriggerDmaChannel(GbaDmaTrigger trigger, uint8_t channel,
 				//Audio DMA triggers slightly later (4 passes fifo_dma_2 test rom)
 				_dmaStartDelay = 4;
 			} else {
-			_dmaStartDelay = 3;
+				_dmaStartDelay = 3;
 			}
 			_memoryManager->SetPendingUpdateFlag();
 		}
@@ -85,6 +85,7 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 		return;
 	}
 
+	uint64_t start = _memoryManager->GetMasterClock();
 	_dmaRunning = true;
 	//Before starting DMA, an additional idle cycle executes (CPU is blocked during this)
 	_memoryManager->ProcessIdleCycle();
@@ -98,6 +99,9 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 	//After stopping DMA, an additional idle cycle executes (CPU is blocked during this)
 	_memoryManager->ProcessIdleCycle();
 	_dmaRunning = false;
+
+	//Determine how many CPU idle cycles could have run during DMA
+	_idleCycleCounter = _memoryManager->GetMasterClock() - start;
 }
 
 void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
@@ -153,7 +157,7 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 					forceNonSeq = false;
 				}
 
-				if((ch.SrcLatch & 0x1FFFF) == 0x20000 - offset) {
+				if((ch.SrcLatch & 0x1FFFF) == 0x20000u - offset) {
 					//If the next ROM access is a 0x20000 boundary, non-sequential timing is used
 					//(passes 128kb-boundary & DMA_ROM_Fixed tests)
 					forceNonSeq = true;
@@ -253,6 +257,15 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 	if(ch.IrqEnabled) {
 		_memoryManager->SetIrqSource((GbaIrqSource)((int)GbaIrqSource::DmaChannel0 << chIndex));
 	}
+}
+
+bool GbaDmaController::CanRunInParallelWithDma()
+{
+	if(_idleCycleCounter) {
+		_idleCycleCounter--;
+		return true;
+	}
+	return false;
 }
 
 uint8_t GbaDmaController::ReadRegister(uint32_t addr)
@@ -370,5 +383,6 @@ void GbaDmaController::Serialize(Serializer& s)
 		SV(_dmaPending);
 		SV(_dmaActiveChannel);
 		SV(_dmaStartDelay);
+		SV(_idleCycleCounter);
 	}
 }
