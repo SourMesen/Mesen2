@@ -72,11 +72,18 @@ void GbaTimer::ProcessPendingTimers()
 		if(timer.EnableDelay) {
 			timer.EnableDelay--;
 			if(timer.EnableDelay == 1) {
-				timer.Timer = timer.ReloadValue;
 				if(timer.Mode) {
 					timer.EnableDelay = 0;
 					timer.ProcessTimer = false;
+				} else {
+					//When the timer gets enabled, the timer is clocked for a single cycle before its timer is reset
+					//to the reload value. If the timer was disabled with its internal timer at 0xFFFF, this can be
+					//enough to cause the timer roll over to 0, and trigger an IRQ (if enabled), etc.
+					if(timer.Timer == 0xFFFF && (_memoryManager->GetMasterClock() & _state.Timer[i].PrescaleMask) == 0) {
+						ClockTimer(i);
+					}
 				}
+				timer.Timer = timer.ReloadValue;
 			} else if(timer.EnableDelay == 0) {
 				timer.ProcessTimer = true;
 			}
