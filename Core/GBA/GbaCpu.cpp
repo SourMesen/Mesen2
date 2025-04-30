@@ -124,6 +124,7 @@ void GbaCpu::CheckForIrqs()
 	if(thumb) {
 		_state.R[14] += 2;
 	}
+	ReloadPipeline();
 	ProcessPipeline();
 	_emu->ProcessInterrupt<CpuType::Gba>(originalPc, _state.Pipeline.Execute.Address, false);
 }
@@ -307,6 +308,7 @@ uint32_t GbaCpu::ShiftRrx(uint32_t value, bool& carry)
 
 void GbaCpu::PowerOn()
 {
+	ReloadPipeline();
 	ProcessPipeline();
 }
 

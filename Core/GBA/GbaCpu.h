@@ -102,10 +102,6 @@ private:
 	{
 		GbaCpuPipeline& pipe = _state.Pipeline;
 
-		if(pipe.ReloadRequested) {
-			ReloadPipeline();
-		}
-
 		pipe.Execute = pipe.Decode;
 		pipe.Decode = pipe.Fetch;
 
@@ -204,6 +200,10 @@ public:
 		}
 
 #ifndef DUMMYCPU
+		if(_state.Pipeline.ReloadRequested) {
+			ReloadPipeline();
+		}
+
 		bool checkIrq = !_state.CPSR.IrqDisable && _memoryManager->ProcessIrq();
 		ProcessPipeline();
 		if(checkIrq) {
