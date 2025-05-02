@@ -54,6 +54,7 @@ private:
 	
 	GbaIrqSource _pendingIrqSource = {};
 	uint8_t _pendingIrqSourceDelay = 0;
+	bool _pendingScanlineMatchIrq = false;
 	bool _haltModeUsed = false;
 	bool _biosLocked = false;
 

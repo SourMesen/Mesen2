@@ -41,15 +41,25 @@ void GbaDmaController::TriggerDmaChannel(GbaDmaTrigger trigger, uint8_t channel,
 		ch.Pending = true;
 		_dmaPending = true;
 
-		if(_dmaActiveChannel < 0 && !_dmaStartDelay) {
-			//CPU runs for a few more cycles before pausing for DMA
-			if(trigger == GbaDmaTrigger::Special) {
+		uint8_t delay = 2;
+		if(trigger == GbaDmaTrigger::Special) {
+			if(channel < 3) {
 				//Audio DMA triggers slightly later (4 passes fifo_dma_2 test rom)
-				_dmaStartDelay = 4;
+				delay = 3;
 			} else {
-				_dmaStartDelay = 3;
+				//Video capture DMA
+				delay = 5;
 			}
+		} else if(trigger == GbaDmaTrigger::HBlank) {
+			delay = 3;
+		}
+
+		//CPU runs for a few more cycles before pausing for DMA
+		ch.StartClock = _memoryManager->GetMasterClock() + delay;
+
+		if(_dmaActiveChannel < 0) {
 			_memoryManager->SetPendingUpdateFlag();
+			_needStart = true;
 		}
 	}
 }
@@ -70,28 +80,36 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 		return;
 	}
 
-	if(_dmaStartDelay) {
-		_dmaStartDelay--;
-		if(_dmaStartDelay) {
-			return;
-		}
-	}
-
 	if(!allowStartDma || _memoryManager->IsBusLocked()) {
 		//DMA can only start between cpu read/write cycles
 		//and can't start if the bus is locked by the cpu (swap instruction)
 		//Delay until DMA can start
-		_dmaStartDelay++;
 		return;
 	}
 
 	uint64_t start = _memoryManager->GetMasterClock();
+	
+	bool canStart = false;
+	for(int i = 0; i < 4; i++) {
+		if(_state.Ch[i].Pending && start >= _state.Ch[i].StartClock) {
+			canStart = true;
+			break;
+		}
+	}
+
+	if(!canStart) {
+		//Too early to start DMA
+		return;
+	}
+
 	_dmaRunning = true;
+	_needStart = false;
+
 	//Before starting DMA, an additional idle cycle executes (CPU is blocked during this)
 	_memoryManager->ProcessIdleCycle();
 
 	for(int i = 0; i < 4; i++) {
-		if(_state.Ch[i].Pending) {
+		if(_state.Ch[i].Pending && start >= _state.Ch[i].StartClock) {
 			RunDma(_state.Ch[i], i);
 		}
 	}
@@ -99,6 +117,7 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 	//After stopping DMA, an additional idle cycle executes (CPU is blocked during this)
 	_memoryManager->ProcessIdleCycle();
 	_dmaRunning = false;
+	_needStart = _dmaPending;
 
 	//Determine how many CPU idle cycles could have run during DMA
 	_idleCycleCounter = _memoryManager->GetMasterClock() - start;
@@ -221,7 +240,7 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 		if(_dmaPending) {
 			//Check if channels with higher priority need to run
 			for(int i = 0; i < chIndex; i++) {
-				if(_state.Ch[i].Pending) {
+				if(_state.Ch[i].Pending && _memoryManager->GetMasterClock() >= _state.Ch[i].StartClock) {
 					RunDma(_state.Ch[i], i);
 
 					//Mark next access as non-sequential?
@@ -236,6 +255,7 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 
 	ch.Active = false;
 	ch.Pending = false;
+	ch.StartClock = 0;
 	
 	_dmaPending = false;
 	for(int i = 0; i < 4; i++) {
@@ -356,6 +376,8 @@ void GbaDmaController::Serialize(Serializer& s)
 		SVI(_state.Ch[i].Length);
 
 		if(s.GetFormat() != SerializeFormat::Map) {
+			SVI(_state.Ch[i].StartClock);
+
 			SVI(_state.Ch[i].DestLatch);
 			SVI(_state.Ch[i].SrcLatch);
 			SVI(_state.Ch[i].LenLatch);
@@ -382,7 +404,7 @@ void GbaDmaController::Serialize(Serializer& s)
 		SV(_dmaRunning);
 		SV(_dmaPending);
 		SV(_dmaActiveChannel);
-		SV(_dmaStartDelay);
+		SV(_needStart);
 		SV(_idleCycleCounter);
 	}
 }

@@ -27,7 +27,9 @@ void GbaPpu::Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryMa
 	_memoryManager = memoryManager;
 
 	_state = {};
-
+	_state.Scanline = 225;
+	_state.Cycle = 0;
+	
 	_paletteRam = (uint16_t*)_emu->GetMemory(MemoryType::GbaPaletteRam).Memory;
 	_vram = (uint8_t*)_emu->GetMemory(MemoryType::GbaVideoRam).Memory;
 	_vram16 = (uint16_t*)_emu->GetMemory(MemoryType::GbaVideoRam).Memory;
@@ -86,7 +88,7 @@ void GbaPpu::ProcessHBlank()
 	}
 
 	if(_state.HblankIrqEnabled) {
-		_console->GetMemoryManager()->SetDelayedIrqSource(GbaIrqSource::LcdHblank, 4);
+		_console->GetMemoryManager()->SetDelayedIrqSource(GbaIrqSource::LcdHblank, 2);
 	}
 }
 
@@ -142,7 +144,7 @@ void GbaPpu::ProcessEndOfScanline()
 		_state.ObjEnableTimer = 0;
 		SendFrame();
 		if(_state.VblankIrqEnabled) {
-			_console->GetMemoryManager()->SetIrqSource(GbaIrqSource::LcdVblank);
+			_console->GetMemoryManager()->SetDelayedIrqSource(GbaIrqSource::LcdVblank, 1);
 		}
 		_console->GetDmaController()->TriggerDma(GbaDmaTrigger::VBlank);
 	} else if(_state.Scanline == 228) {
@@ -175,7 +177,7 @@ void GbaPpu::ProcessEndOfScanline()
 	}
 
 	if(_state.ScanlineIrqEnabled && _state.Scanline == _state.Lyc) {
-		_console->GetMemoryManager()->SetIrqSource(GbaIrqSource::LcdScanlineMatch);
+		_console->GetMemoryManager()->SetDelayedIrqSource(GbaIrqSource::LcdScanlineMatch, 2);
 	}
 
 	InitializeWindows();
@@ -1368,6 +1370,15 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 	}
 }
 
+bool GbaPpu::IsScanlineMatch()
+{
+	if(_state.Cycle == 0) {
+		return (_state.Scanline == 0 ? 227 : (_state.Scanline - 1)) == _state.Lyc;
+	} else {
+		return _state.Scanline == _state.Lyc;
+	}
+}
+
 uint8_t GbaPpu::ReadRegister(uint32_t addr)
 {
 	switch(addr) {
@@ -1380,8 +1391,8 @@ uint8_t GbaPpu::ReadRegister(uint32_t addr)
 		case 0x04:
 			return (
 				(_state.Scanline >= 160 && _state.Scanline != 227 ? 0x01 : 0) |
-				((_state.Cycle > 1007 || _state.Cycle == 0) ? 0x02 : 0) |
-				(_state.Scanline == _state.Lyc ? 0x04 : 0) |
+				(_state.Cycle >= 1007 ? 0x02 : 0) |
+				(IsScanlineMatch() ? 0x04 : 0) |
 				_state.DispStat
 			);
 

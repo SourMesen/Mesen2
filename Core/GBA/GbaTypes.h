@@ -317,6 +317,7 @@ enum class GbaDmaAddrMode : uint8_t
 
 struct GbaDmaChannel
 {
+	uint64_t StartClock;
 	uint32_t ReadValue;
 
 	uint32_t Destination;

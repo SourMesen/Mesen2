@@ -210,6 +210,7 @@ private:
 	void ProcessHBlank();
 
 	void DebugProcessMemoryAccessView();
+	bool IsScanlineMatch();
 
 public:
 	void Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryManager);

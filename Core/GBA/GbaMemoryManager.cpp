@@ -50,7 +50,7 @@ GbaMemoryManager::GbaMemoryManager(Emulator* emu, GbaConsole* console, GbaPpu* p
 	GenerateWaitStateLut();
 
 	//Used to get the correct timing for the timer prescaler, based on the "timer" test
-	_masterClock = 48;
+	_masterClock = -1;
 
 	if(_emu->GetSettings()->GetGbaConfig().SkipBootScreen) {
 		_biosLocked = true;
@@ -116,6 +116,14 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 
 	if(_pendingIrqSourceDelay && --_pendingIrqSourceDelay == 0) {
 		_state.NewIF |= (int)_pendingIrqSource;
+		
+		if(_pendingScanlineMatchIrq) {
+			//Scanline match IRQ is pending - will trigger on the next tick
+			_pendingScanlineMatchIrq = false;
+			_pendingIrqSourceDelay = 1;
+			_pendingIrqSource = GbaIrqSource::LcdScanlineMatch;
+		}
+
 		TriggerIrqUpdate();
 	}
 
@@ -649,8 +657,12 @@ void GbaMemoryManager::TriggerIrqUpdate()
 
 void GbaMemoryManager::SetDelayedIrqSource(GbaIrqSource source, uint8_t delay)
 {
-	_pendingIrqSource = source;
-	_pendingIrqSourceDelay = delay;
+	if(source == GbaIrqSource::LcdScanlineMatch && _pendingIrqSourceDelay) {
+		_pendingScanlineMatchIrq = true;
+	} else {
+		_pendingIrqSource = source;
+		_pendingIrqSourceDelay = delay;
+	}
 	SetPendingUpdateFlag();
 }
 
@@ -900,6 +912,7 @@ void GbaMemoryManager::Serialize(Serializer& s)
 		SV(_hasPendingLateUpdates);
 		SV(_pendingIrqSource);
 		SV(_pendingIrqSourceDelay);
+		SV(_pendingScanlineMatchIrq);
 		SV(_haltModeUsed);
 		SV(_biosLocked);
 

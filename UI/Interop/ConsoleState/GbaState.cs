@@ -43,6 +43,7 @@ public enum GbaDmaAddrMode : byte
 
 public struct GbaDmaChannel
 {
+	public UInt64 StartClock;
 	public UInt32 ReadValue;
 
 	public UInt32 Destination;

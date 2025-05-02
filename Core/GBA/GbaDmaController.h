@@ -17,7 +17,7 @@ private:
 	int8_t _dmaActiveChannel = -1;
 	bool _dmaPending = false;
 	bool _dmaRunning = false;
-	uint8_t _dmaStartDelay = 0;
+	bool _needStart = false;
 	uint32_t _idleCycleCounter = 0;
 
 	void RunDma(GbaDmaChannel& ch, uint8_t chIndex);
@@ -34,7 +34,7 @@ public:
 	void TriggerDmaChannel(GbaDmaTrigger trigger, uint8_t channel, bool forceStop = false);
 	void TriggerDma(GbaDmaTrigger trigger);
 
-	__forceinline bool HasPendingDma() { return _dmaStartDelay > 0; }
+	__forceinline bool HasPendingDma() { return _needStart; }
 	__noinline void RunPendingDma(bool allowStartDma);
 
 	__forceinline void ResetIdleCounter() { _idleCycleCounter = 0; }
