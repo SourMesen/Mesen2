@@ -28,6 +28,7 @@ public:
 	GbaDmaControllerState& GetState();
 
 	bool IsVideoCaptureDmaEnabled();
+	bool IsRunning() { return _dmaRunning; }
 
 	int8_t DebugGetActiveChannel();
 

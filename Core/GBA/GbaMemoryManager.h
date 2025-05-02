@@ -59,6 +59,7 @@ private:
 	bool _haltModeUsed = false;
 	bool _biosLocked = false;
 	uint8_t _haltDelay = 0;
+	uint8_t _suppressIrqDelay = 0;
 
 	uint8_t* _waitStatesLut = nullptr;
 
