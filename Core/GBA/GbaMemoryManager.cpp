@@ -253,19 +253,36 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 	}
 }
 
-void GbaMemoryManager::ProcessVramStalling(uint32_t addr)
+void GbaMemoryManager::ProcessVramAccess(GbaAccessModeVal mode, uint32_t addr)
 {
-	//TODOGBA 32-bit vram/palette writes should be split across 2 clocks (and stalled independently)
 	uint8_t memType = (addr - 0x4000000) >> 24;
 	if(memType == 3) {
+		//TODOGBA what about byte accesses? don't stall?
 		memType = GbaPpuMemAccess::Oam;
 	} else if(memType == GbaPpuMemAccess::Vram && addr & 0x10000) {
+		//TODOGBA what about blocked accesses when in bitmap mode? don't stall?
 		memType = GbaPpuMemAccess::VramObj;
 	}
+
+	ProcessInternalCycle<true>();
+	ProcessVramStalling(memType);
+
+	if(addr < 0x7000000 && (mode & GbaAccessMode::Word)) {
+		ProcessInternalCycle<false>();
+		ProcessVramStalling(memType);
+	}
+}
+
+void GbaMemoryManager::ProcessVramStalling(uint8_t memType)
+{
+	_prefetch->Exec(1, _state.PrefetchEnabled);
+	_dmaController->ResetIdleCounter();
+
 	_ppu->RenderScanline(true);
 	while(_ppu->IsAccessingMemory(memType)) {
 		//Block CPU until PPU is done accessing ram
 		ProcessInternalCycle();
+		_prefetch->Exec(1, _state.PrefetchEnabled);
 		_ppu->RenderScanline(true);
 	}
 }
@@ -300,9 +317,10 @@ void GbaMemoryManager::UpdateOpenBus(uint32_t addr, uint32_t value)
 
 uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 {
-	ProcessWaitStates(mode, addr);
-	if(addr >= 0x5000000 && addr <= 0x7000000) {
-		ProcessVramStalling(addr);
+	if(addr < 0x8000000 && addr >= 0x5000000) {
+		ProcessVramAccess(mode, addr);
+	} else {
+		ProcessWaitStates(mode, addr);
 	}
 
 	uint32_t value;
@@ -362,9 +380,10 @@ uint32_t GbaMemoryManager::RotateValue(GbaAccessModeVal mode, uint32_t addr, uin
 
 void GbaMemoryManager::Write(GbaAccessModeVal mode, uint32_t addr, uint32_t value)
 {
-	ProcessWaitStates(mode, addr);
-	if(addr >= 0x5000000 && addr <= 0x7000000) {
-		ProcessVramStalling(addr);
+	if(addr >= 0x5000000 && addr < 0x8000000) {
+		ProcessVramAccess(mode, addr);
+	} else {
+		ProcessWaitStates(mode, addr);
 	}
 
 	if(mode & GbaAccessMode::Byte) {

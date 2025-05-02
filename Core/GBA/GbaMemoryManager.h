@@ -65,7 +65,8 @@ private:
 
 	__forceinline void ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr);
 
-	__noinline void ProcessVramStalling(uint32_t addr);
+	__noinline void ProcessVramAccess(GbaAccessModeVal mode, uint32_t addr);
+	__noinline void ProcessVramStalling(uint8_t memType);
 
 	template<uint8_t width>
 	void UpdateOpenBus(uint32_t addr, uint32_t value);
