@@ -138,11 +138,16 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 		_serial->CheckForIrq(_masterClock);
 	}
 
+	if(_haltDelay && --_haltDelay == 0) {
+		_console->GetCpu()->SetStopFlag();
+	}
+
 	_hasPendingUpdates = (
 		_dmaController->HasPendingDma() ||
 		_timer->HasPendingTimers() ||
 		_state.IrqUpdateCounter ||
 		_pendingIrqSourceDelay ||
+		_haltDelay ||
 		_serial->HasPendingIrq()
 	);
 }
@@ -624,7 +629,10 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 		case 0x301:
 			if(!_biosLocked) {
 				_haltModeUsed = true;
-				_console->GetCpu()->SetStopFlag();
+				//The CPU executes for one more clock before getting halted
+				//This is needed to pass the 4 halt_pc tests
+				_haltDelay = 1;
+				SetPendingUpdateFlag();
 				_state.StopMode = value & 0x80;
 			}
 			break;
@@ -915,6 +923,7 @@ void GbaMemoryManager::Serialize(Serializer& s)
 		SV(_pendingScanlineMatchIrq);
 		SV(_haltModeUsed);
 		SV(_biosLocked);
+		SV(_haltDelay);
 
 		SVArray(_state.BootRomOpenBus, 4);
 		SVArray(_state.InternalOpenBus, 4);

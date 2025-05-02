@@ -3,6 +3,7 @@
 #include "GBA/GbaTypes.h"
 #include "GBA/GbaPpu.h"
 #include "GBA/GbaTimer.h"
+#include "GBA/GbaDmaController.h"
 #include "Debugger/AddressInfo.h"
 #include "Utilities/ISerializable.h"
 
@@ -57,6 +58,7 @@ private:
 	bool _pendingScanlineMatchIrq = false;
 	bool _haltModeUsed = false;
 	bool _biosLocked = false;
+	uint8_t _haltDelay = 0;
 
 	uint8_t* _waitStatesLut = nullptr;
 
@@ -104,6 +106,13 @@ public:
 
 		if(_hasPendingLateUpdates) {
 			ProcessPendingLateUpdates();
+		}
+	}
+	
+	__forceinline void ProcessDma()
+	{
+		if(_dmaController->HasPendingDma()) {
+			_dmaController->RunPendingDma(true);
 		}
 	}
 

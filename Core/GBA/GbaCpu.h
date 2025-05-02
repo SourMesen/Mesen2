@@ -146,7 +146,6 @@ public:
 		}
 		
 		bool isHaltOver = _memoryManager->IsHaltOver();
-		bool processIrq = !_state.CPSR.IrqDisable && _memoryManager->ProcessIrq();
 
 		if(_memoryManager->IsSystemStopped()) {
 			_memoryManager->ProcessStoppedCycle();
@@ -157,9 +156,6 @@ public:
 		if(isHaltOver) {
 			_memoryManager->ProcessInternalCycle<true>();
 			_state.Stopped = false;
-			if(processIrq) {
-				CheckForIrqs();
-			}
 			return false;
 		} else {
 			return true;
@@ -170,6 +166,16 @@ public:
 	__forceinline void Exec()
 	{
 #ifndef DUMMYCPU
+		//Check if DMA needs to be executed before running the next	instruction.
+		//If a DMA is pending, it needs to start before the CPU tries to run the
+		//next instruction instruction. This can impact the timing at which the IRQ is checked
+		//(before the DMA vs after the DMA), which affects test results.
+		//Additionally, it's possible for the DMA to turn on halt mode, so DMA needs to be
+		//processed here, to ensure the CPU immediately enters halt mode after DMA is over,
+		//instead of running the next instruction before halting.
+		//This fixes the haltcnt test rom and the DMA Prefetch test in the mGBA Suite test rom
+		_memoryManager->ProcessDma();
+
 		if constexpr(inlineHalt) {
 			if(_state.Stopped && InlineProcessHaltMode<debuggerEnabled>()) {
 				return;
