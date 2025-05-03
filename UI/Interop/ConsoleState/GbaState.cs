@@ -378,6 +378,7 @@ public struct GbaPpuState : BaseState
 	[MarshalAs(UnmanagedType.I1)] public bool AllowHblankOamAccess;
 	[MarshalAs(UnmanagedType.I1)] public bool ObjVramMappingOneDimension;
 	[MarshalAs(UnmanagedType.I1)] public bool ForcedBlank;
+	public byte ForcedBlankDisableTimer;
 	[MarshalAs(UnmanagedType.I1)] public bool StereoscopicEnabled;
 
 	public byte Control2;

@@ -200,6 +200,7 @@ struct GbaPpuState : BaseState
 	bool AllowHblankOamAccess;
 	bool ObjVramMappingOneDimension;
 	bool ForcedBlank;
+	uint8_t ForcedBlankDisableTimer;
 	bool StereoscopicEnabled;
 
 	uint8_t Control2;

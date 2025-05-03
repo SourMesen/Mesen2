@@ -87,6 +87,10 @@ void GbaPpu::ProcessHBlank()
 		}
 	}
 
+	if(_state.ForcedBlankDisableTimer) {
+		_state.ForcedBlankDisableTimer--;
+	}
+
 	if(_state.HblankIrqEnabled) {
 		_console->GetMemoryManager()->SetDelayedIrqSource(GbaIrqSource::LcdHblank, 2);
 	}
@@ -231,7 +235,7 @@ void GbaPpu::RenderScanline(bool forceRender)
 		return;
 	}
 
-	if(_state.ForcedBlank) {
+	if(_state.ForcedBlank || _state.ForcedBlankDisableTimer) {
 		uint16_t* rowStart = _currentBuffer + (_state.Scanline * GbaConstants::ScreenWidth);
 		std::fill(rowStart, rowStart + GbaConstants::ScreenWidth, 0x7FFF);
 		return;
@@ -1198,14 +1202,21 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 	}
 
 	switch(addr) {
-		case 0x00:
+		case 0x00: {
 			_state.Control = value & ~0x08;
 			_state.BgMode = value & 0x07;
 			_state.DisplayFrameSelect = value & 0x10;
 			_state.AllowHblankOamAccess = value & 0x20;
 			_state.ObjVramMappingOneDimension = value & 0x40;
-			_state.ForcedBlank = value & 0x80;
+			bool forcedBlank = value & 0x80;
+			if(!forcedBlank && _state.ForcedBlank) {
+				//dispcnt-latch test implies that re-enabling video output after
+				//disabling it takes ~2 scanlines
+				_state.ForcedBlankDisableTimer = _state.Scanline >= 160 ? 0 : 2;
+			}
+			_state.ForcedBlank = forcedBlank;
 			break;
+		}
 
 		case 0x01: {
 			_state.Control2 = value;
@@ -1445,6 +1456,7 @@ void GbaPpu::Serialize(Serializer& s)
 	SV(_state.AllowHblankOamAccess);
 	SV(_state.ObjVramMappingOneDimension);
 	SV(_state.ForcedBlank);
+	SV(_state.ForcedBlankDisableTimer);
 	SV(_state.StereoscopicEnabled);
 
 	SV(_state.Control2);
