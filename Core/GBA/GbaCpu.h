@@ -189,6 +189,9 @@ public:
 		if constexpr(debuggerEnabled) {
 			_emu->ProcessInstruction<CpuType::Gba>();
 		}
+
+		uint64_t startClock = _memoryManager->GetMasterClock();
+		bool irqDisable = _state.CPSR.IrqDisable;
 #endif
 
 		_opCode = _state.Pipeline.Execute.OpCode;
@@ -210,9 +213,16 @@ public:
 			ReloadPipeline();
 		}
 
-		bool checkIrq = !_state.CPSR.IrqDisable && _memoryManager->ProcessIrq();
+		bool checkIrq = _memoryManager->ProcessIrq();
+		if(checkIrq && startClock != _memoryManager->GetMasterClock()) {
+			//TST, TEQ, CMP, CMN can modify the I flag without any fetch/idle cycles.
+			//In that case, the IRQ handling is done using the original I flag before the instruction was executed. (Passes "psr" test)
+			//Otherwise, use the current I flag.
+			irqDisable = _state.CPSR.IrqDisable;
+		}
+
 		ProcessPipeline();
-		if(checkIrq) {
+		if(!irqDisable && checkIrq) {
 			CheckForIrqs();
 		}
 #endif
