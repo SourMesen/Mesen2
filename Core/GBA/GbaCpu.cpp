@@ -308,6 +308,12 @@ uint32_t GbaCpu::ShiftRrx(uint32_t value, bool& carry)
 
 void GbaCpu::PowerOn()
 {
+	//"After nRESET has been taken HIGH, the ARM core does two further internal cycles
+	//before the first instruction is fetched from the reset vector"
+	//Fixes the "timer_reset" test
+	_memoryManager->ProcessIdleCycle();
+	_memoryManager->ProcessIdleCycle();
+
 	ReloadPipeline();
 	ProcessPipeline();
 }

@@ -38,15 +38,19 @@ void GbaApu::Init(Emulator* emu, GbaConsole* console, GbaDmaController* dmaContr
 	_sampleCount = 0;
 	_prevClockCount = 0;
 
-	_state = {};
-	_state.Bias = 0x200;
-
 	UpdateSampleRate();
 
 	_emu = emu;
 	_console = console;
 	_settings = emu->GetSettings();
 	_soundMixer = emu->GetSoundMixer();
+
+	//Bias appears to be 0 on power on, and the boot rom sets it to 0x200
+	//Needed to pass the "timer_reset" test
+	_state = {};
+	if(_settings->GetGbaConfig().SkipBootScreen) {
+		_state.Bias = 0x200;
+	}
 
 	StaticFor<0, 16>::Apply([=](auto i) {
 		_runFunc[i] = &GbaApu::InternalRun<(bool)(i & 0x01), (bool)(i & 0x02), (bool)(i & 0x04), (bool)(i & 0x08)>;
