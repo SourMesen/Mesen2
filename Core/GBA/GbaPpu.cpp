@@ -371,7 +371,7 @@ uint16_t GbaPpu::ReadColor(int x, uint16_t addr)
 	if(addr & GbaPpu::DirectColorFlag) {
 		return addr & 0x7FFF;
 	} else {
-		_memoryAccess[(x << 2) + (isSubColor ? 48 : 46)] |= GbaPpuMemAccess::Palette;
+		_memoryAccess[(x << 2) + (isSubColor ? 49 : 47)] |= GbaPpuMemAccess::Palette;
 		return _paletteRam[(addr >> 1) & 0x1FF] & 0x7FFF;
 	}
 }
@@ -594,9 +594,9 @@ void GbaPpu::RenderTilemap()
 	}
 
 	//MessageManager::Log(std::to_string(_state.Scanline) + " render " + std::to_string(_lastRenderCycle+1) + " to " + std::to_string(_state.Cycle));
-	int gap = (31 + i - (layer.ScrollXLatch & 0x07) * 4);
+	int gap = (32 + i - (layer.ScrollXLatch & 0x07) * 4);
 	int cycle = std::max(0, _lastRenderCycle + 1 - gap);
-	int end = std::min<int>(_state.Cycle, 1005) - gap;
+	int end = std::min<int>(_state.Cycle, 1006) - gap;
 
 	for(; cycle <= end; cycle++) {
 		//MessageManager::Log(std::to_string(_state.Scanline) + " fetch cycle " + std::to_string(fetchCycle));
@@ -689,9 +689,9 @@ void GbaPpu::RenderTransformTilemap()
 	}
 	
 	//MessageManager::Log(std::to_string(_state.Scanline) + " render " + std::to_string(_lastRenderCycle+1) + " to " + std::to_string(_state.Cycle));
-	constexpr int gap = (37 - i * 2);
+	constexpr int gap = (38 - i * 2);
 	int cycle = std::max(0, _lastRenderCycle + 1 - gap);
-	int end = std::min<int>(_state.Cycle, 1005) - gap;
+	int end = std::min<int>(_state.Cycle, 1006) - gap;
 
 	for(; cycle <= end; cycle++) {
 		switch(cycle & 0x03) {
@@ -771,9 +771,9 @@ void GbaPpu::RenderBitmapMode()
 
 	uint32_t base = (_state.DisplayFrameSelect && (mode == 4 || mode == 5)) ? 0xA000 : 0;
 
-	constexpr int gap = 34;
+	constexpr int gap = 35;
 	int cycle = std::max(0, _lastRenderCycle + 1 - gap);
-	int end = std::min<int>(_state.Cycle, 1005) - gap;
+	int end = std::min<int>(_state.Cycle, 1006) - gap;
 
 	for(; cycle <= end; cycle++) {
 		if(!(cycle & 0x03)) {
@@ -962,25 +962,25 @@ void GbaPpu::RenderSprites()
 	}
 
 	uint16_t ppuCycle = _state.Cycle >= 308 * 4 ? (308 * 4) - 1 : _state.Cycle;
-	if(_state.AllowHblankOamAccess && ppuCycle > 996) {
+	if(_state.AllowHblankOamAccess && ppuCycle > 999) {
 		//Evaluation stops just before hblank when this is enabled
-		ppuCycle = 996;
+		ppuCycle = 999;
 	}
 	int cycle = _oamLastCycle + 1;
 
-	if(cycle < 40 && (_state.AllowHblankOamAccess || _evalOamIndex >= 128 || _state.ObjEnableTimer > 0)) {
+	if(cycle < 41 && (_state.AllowHblankOamAccess || _evalOamIndex >= 128 || _state.ObjEnableTimer > 0)) {
 		//Evaluation in hblank is disabled, jump to cycle 40 (eval start)
-		cycle = 40;
-	} else if(cycle >= 40 && _state.ObjEnableTimer > 0) {
+		cycle = 41;
+	} else if(cycle >= 41 && _state.ObjEnableTimer > 0) {
 		return;
 	}
 
-	if(cycle & 0x01) {
+	if(!(cycle & 0x01)) {
 		cycle++;
 	}
 	GbaSpriteRendererData& spr = _objData[0];
 	for(; cycle <= ppuCycle; cycle+=2) {
-		if(cycle == 40) {
+		if(cycle == 41) {
 			//start oam evaluation/fetching
 			InitSpriteEvaluation();
 			if(_oamScanline == 160 || _state.ObjEnableTimer > 0) {
@@ -1000,8 +1000,9 @@ void GbaPpu::RenderSprites()
 				_loadOamTileCounter--;
 				_memoryAccess[cycle] |= GbaPpuMemAccess::VramObj;
 
-				//Last cycle (39) doesn't actually draw, but cycle 38 does read from VRAM anyway
-				if(cycle != 38) {
+				//Last cycle (40) doesn't actually draw, but cycle 39 does read from VRAM anyway (Sprite_Last_VRAM_Access test)
+				//When hblank access flag is set, pixel output stops on cycle 998 (and last read is on cycle 999)  (Sprite_Last_VRAM_Access_Free test)
+				if((!_state.AllowHblankOamAccess && cycle != 39) || (_state.AllowHblankOamAccess && cycle < 999)) {
 					if(_objData[1].TransformEnabled) {
 						RenderSprite<true, blockFirst16k>(_objData[1]);
 					} else {
@@ -1011,9 +1012,9 @@ void GbaPpu::RenderSprites()
 
 				if(_evalOamIndex >= 128 && _loadOamTileCounter == 0) {
 					//Finished loading last sprite
-					if(cycle < 40) {
+					if(cycle < 41) {
 						//Jump to the start of the next evaluation cycle (cycle 40)
-						cycle = 38;
+						cycle = 39;
 						continue;
 					} else {
 						break;
@@ -1028,9 +1029,9 @@ void GbaPpu::RenderSprites()
 			if(_evalOamIndex >= 128) {
 				if(_loadOamTileCounter == 0) {
 					//Finished loading last sprite
-					if(cycle < 40) {
+					if(cycle < 41) {
 						//Jump to the start of the next evaluation cycle (cycle 40)
-						cycle = 38;
+						cycle = 39;
 						continue;
 					} else {
 						break;
