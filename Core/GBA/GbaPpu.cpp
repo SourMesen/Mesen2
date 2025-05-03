@@ -398,14 +398,14 @@ void GbaPpu::InitializeWindows()
 	//Windows are enabled/disabled when the scanline reaches the start/end scanlines
 	//See window_midframe test - unsure about behavior when top==bottom
 	if(_state.Scanline == _state.Window[0].TopY) {
-		_window0ActiveY = _state.Window0Enabled;
+		_window0ActiveY = true;
 	}
 	if(_state.Scanline == _state.Window[0].BottomY) {
 		_window0ActiveY = false;
 	}
 
 	if(_state.Scanline == _state.Window[1].TopY) {
-		_window1ActiveY = _state.Window1Enabled;
+		_window1ActiveY = true;
 	}
 	if(_state.Scanline == _state.Window[1].BottomY) {
 		_window1ActiveY = false;
@@ -451,9 +451,9 @@ void GbaPpu::ProcessWindow()
 			}
 
 			int length = std::min(nextChange - x, end - x);
-			if(_window0ActiveX && _window0ActiveY) {
+			if(_window0ActiveX && _window0ActiveY && _state.Window0Enabled) {
 				memset(_activeWindow + x, GbaPpu::Window0, length);
-			} else if(_window1ActiveX && _window1ActiveY) {
+			} else if(_window1ActiveX && _window1ActiveY && _state.Window1Enabled) {
 				memset(_activeWindow + x, GbaPpu::Window1, length);
 			}
 
