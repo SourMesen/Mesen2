@@ -150,6 +150,7 @@ struct GbaTransformConfig
 
 	bool PendingUpdateX;
 	bool PendingUpdateY;
+	bool NeedInit;
 };
 
 struct GbaWindowConfig

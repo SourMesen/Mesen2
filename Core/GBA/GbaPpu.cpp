@@ -154,11 +154,10 @@ void GbaPpu::ProcessEndOfScanline()
 	} else if(_state.Scanline == 228) {
 		_state.Scanline = 0;
 
-		//Transform values latched at the start of the frame
-		_state.Transform[0].LatchOriginX = (int32_t)_state.Transform[0].OriginX;
-		_state.Transform[0].LatchOriginY = (int32_t)_state.Transform[0].OriginY;
-		_state.Transform[1].LatchOriginX = (int32_t)_state.Transform[1].OriginX;
-		_state.Transform[1].LatchOriginY = (int32_t)_state.Transform[1].OriginY;
+		//Transform values are latched on the first scanline where the layer is enabled
+		//(unverified - needed to pass both bgpd test and get the correct result in Pinball Tycoon)
+		_state.Transform[0].NeedInit = true;
+		_state.Transform[1].NeedInit = true;
 
 		if(_emu->GetSettings()->GetGbaConfig().DisableSprites) {
 			std::fill(_oamOutputBuffers[0], _oamOutputBuffers[0] + 240, GbaPixelData {});
@@ -178,6 +177,12 @@ void GbaPpu::ProcessEndOfScanline()
 		if(!_skipRender) {
 			_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 		}
+	}
+
+	if(_state.Scanline < 160) {
+		_transformUpdateDelay = 6;
+		_hasPendingUpdates = true;
+		_memoryManager->SetPendingUpdateFlag();
 	}
 
 	if(_state.ScanlineIrqEnabled && _state.Scanline == _state.Lyc) {
@@ -685,12 +690,6 @@ void GbaPpu::RenderTransformTilemap()
 	}
 
 	uint16_t screenSize = 128 << layer.ScreenSize;
-
-	if(_lastRenderCycle == -1) {
-		_layerData[i].TransformX = (cfg.LatchOriginX << 4) >> 4; //sign extend
-		_layerData[i].TransformY = (cfg.LatchOriginY << 4) >> 4;
-		_layerData[i].RenderX = 0;
-	}
 	
 	//MessageManager::Log(std::to_string(_state.Scanline) + " render " + std::to_string(_lastRenderCycle+1) + " to " + std::to_string(_state.Cycle));
 	constexpr int gap = (38 - i * 2);
@@ -741,17 +740,6 @@ void GbaPpu::RenderTransformTilemap()
 			}
 		}
 	}
-
-	if(_state.Cycle == 1006) {
-		//Update x/y values for next scanline
-		if(!layer.Mosaic) {
-			cfg.LatchOriginX += cfg.Matrix[1];
-			cfg.LatchOriginY += cfg.Matrix[3];
-		} else if(_state.Scanline % (_state.BgMosaicSizeY + 1) == _state.BgMosaicSizeY) {
-			cfg.LatchOriginX += cfg.Matrix[1] * (_state.BgMosaicSizeY + 1);
-			cfg.LatchOriginY += cfg.Matrix[3] * (_state.BgMosaicSizeY + 1);
-		}
-	}
 }
 
 template<int mode>
@@ -763,12 +751,6 @@ void GbaPpu::RenderBitmapMode()
 	}
 
 	GbaTransformConfig& cfg = _state.Transform[0];
-
-	if(_lastRenderCycle == -1) {
-		_layerData[2].TransformX = (cfg.LatchOriginX << 4) >> 4; //sign extend
-		_layerData[2].TransformY = (cfg.LatchOriginY << 4) >> 4;
-		_layerData[2].RenderX = 0;
-	}
 
 	uint16_t screenWidth = mode == 5 ? 160 : 240;
 	uint16_t screenHeight = mode == 5 ? 128 : 160;
@@ -807,17 +789,6 @@ void GbaPpu::RenderBitmapMode()
 			_layerData[2].TransformY += cfg.Matrix[2];
 			_layerData[2].RenderX++;
 			cycle += 2;
-		}
-	}
-
-	if(_state.Cycle == 1006) {
-		//Update x/y values for next scanline
-		if(!layer.Mosaic) {
-			cfg.LatchOriginX += cfg.Matrix[1];
-			cfg.LatchOriginY += cfg.Matrix[3];
-		} else if(_state.Scanline % (_state.BgMosaicSizeY + 1) == _state.BgMosaicSizeY) {
-			cfg.LatchOriginX += cfg.Matrix[1] * (_state.BgMosaicSizeY + 1);
-			cfg.LatchOriginY += cfg.Matrix[3] * (_state.BgMosaicSizeY + 1);
 		}
 	}
 }
@@ -1182,6 +1153,47 @@ void GbaPpu::SetTransformOrigin(uint8_t i, uint8_t value, bool setY)
 	}
 }
 
+template<int i>
+inline void GbaPpu::UpdateLayerTransform()
+{
+	GbaTransformConfig& cfg = _state.Transform[i - 2];
+	GbaBgConfig& layer = _state.BgLayers[i];
+
+	if(layer.Enabled) {
+		//Update x/y values for next scanline for transform layers
+		if(cfg.NeedInit) {
+			cfg.LatchOriginX = (int32_t)cfg.OriginX;
+			cfg.LatchOriginY = (int32_t)cfg.OriginY;
+			cfg.NeedInit = false;
+		} else if(!layer.Mosaic) {
+			cfg.LatchOriginX += cfg.Matrix[1];
+			cfg.LatchOriginY += cfg.Matrix[3];
+		} else if(_state.Scanline % (_state.BgMosaicSizeY + 1) == _state.BgMosaicSizeY) {
+			cfg.LatchOriginX += cfg.Matrix[1] * (_state.BgMosaicSizeY + 1);
+			cfg.LatchOriginY += cfg.Matrix[3] * (_state.BgMosaicSizeY + 1);
+		}
+	}
+
+	//Init transform start position
+	_layerData[i].TransformX = (cfg.LatchOriginX << 4) >> 4; //sign extend
+	_layerData[i].TransformY = (cfg.LatchOriginY << 4) >> 4;
+	_layerData[i].RenderX = 0;
+}
+
+void GbaPpu::ProcessPendingUpdates()
+{
+	if(_transformUpdateDelay && --_transformUpdateDelay == 0) {
+		if(_state.BgMode >= 1) {
+			UpdateLayerTransform<2>();
+		}
+		if(_state.BgMode == 2) {
+			UpdateLayerTransform<3>();
+		}
+	}
+
+	_hasPendingUpdates = _transformUpdateDelay > 0;
+}
+
 void GbaPpu::SetLayerEnabled(int layer, bool enabled)
 {
 	if(_state.BgLayers[layer].Enabled || !enabled) {
@@ -1507,6 +1519,7 @@ void GbaPpu::Serialize(Serializer& s)
 		SVI(_state.Transform[i].LatchOriginY);
 		SVI(_state.Transform[i].PendingUpdateX);
 		SVI(_state.Transform[i].PendingUpdateY);
+		SVI(_state.Transform[i].NeedInit);
 		SVI(_state.Transform[i].Matrix[0]);
 		SVI(_state.Transform[i].Matrix[1]);
 		SVI(_state.Transform[i].Matrix[2]);
@@ -1587,6 +1600,9 @@ void GbaPpu::Serialize(Serializer& s)
 		SV(_loadObjMatrix);
 		SV(_oamScanline);
 		SV(_oamMosaicY);
+
+		SV(_hasPendingUpdates);
+		SV(_transformUpdateDelay);
 
 		for(int i = 0; i < 4; i++) {
 			SVI(_layerData[i].TilemapData);

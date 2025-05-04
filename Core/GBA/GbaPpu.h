@@ -145,6 +145,9 @@ private:
 	uint8_t _oamScanline = 0;
 	uint8_t _oamMosaicY = 0;
 
+	bool _hasPendingUpdates = false;
+	uint8_t _transformUpdateDelay = 0;
+
 	uint8_t _memoryAccess[308 * 4] = {};
 	
 	typedef void(GbaPpu::*Func)();
@@ -212,6 +215,8 @@ private:
 	void DebugProcessMemoryAccessView();
 	bool IsScanlineMatch();
 
+	template<int i> void UpdateLayerTransform();
+
 public:
 	void Init(Emulator* emu, GbaConsole* console, GbaMemoryManager* memoryManager);
 	~GbaPpu();
@@ -249,6 +254,9 @@ public:
 	int32_t GetScanline() { return _state.Scanline; }
 	uint32_t GetCycle() { return _state.Cycle; }
 	bool IsBitmapMode() { return _state.BgMode >= 3; }
+
+	bool HasPendingUpdates() { return _hasPendingUpdates; }
+	void ProcessPendingUpdates();
 	
 	void Serialize(Serializer& s) override;
 };

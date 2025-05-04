@@ -348,6 +348,7 @@ public struct GbaTransformConfig
 
 	[MarshalAs(UnmanagedType.I1)] public bool PendingUpdateX;
 	[MarshalAs(UnmanagedType.I1)] public bool PendingUpdateY;
+	[MarshalAs(UnmanagedType.I1)] public bool NeedInit;
 }
 
 public enum GbaPpuBlendEffect : byte
