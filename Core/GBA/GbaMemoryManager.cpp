@@ -289,6 +289,13 @@ void GbaMemoryManager::ProcessVramStalling(uint8_t memType)
 template<uint8_t width>
 void GbaMemoryManager::UpdateOpenBus(uint32_t addr, uint32_t value)
 {
+	if(addr >= 0x10000000) {
+		//Accessing open bus addresses should probably not update the current open bus value
+		//This is needed to pass the test rom that dumps the bios to save ram by abusing open bus (See: https://gist.github.com/profi200/c7fef99003fa5d07235d97296da23db3)
+		//TODOGBA reading other open bus addresses probably should behave the same? (e.g registers that don't exist, etc.)
+		return;
+	}
+
 	if((addr & 0xFF000000) == 0x03000000) {
 		//IWRAM appears to have its own open bus value, which overwrites
 		//the main bus' open bus value whenever IWRAM is read
