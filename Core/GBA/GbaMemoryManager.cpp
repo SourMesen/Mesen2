@@ -101,21 +101,15 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 	_masterClock++;
 
 	if(_state.IrqUpdateCounter) {
+		//The IRQ line updates appear to be paused while the CPU is paused for DMA
+		//This is needed to pass the Internal_Cycle_DMA_IRQ test
 		if(!_dmaController->IsRunning()) {
-			if(_suppressIrqDelay == 0) {
 				_state.IrqUpdateCounter--;
 				_state.IrqPending <<= 1;
 				_state.IrqPending |= (uint8_t)(bool)(_state.IE & _state.IF);
 
 				_state.IrqLine <<= 1;
 				_state.IrqLine |= (uint8_t)((bool)(_state.IE & _state.IF) && _state.IME);
-			} else {
-				_suppressIrqDelay--;
-			}
-		} else {
-			//IRQ flags are apparently also not updated for a few cycles
-			//after DMA ends (Internal_Cycle_DMA_IRQ test)
-			_suppressIrqDelay = 3;
 		}
 
 		_state.IE = _state.NewIE;
@@ -723,7 +717,7 @@ bool GbaMemoryManager::ProcessIrq()
 {
 	//Keep track of the IRQ line used by the CPU to decide if the IRQ handler should be executed
 	//(requires the IF+IE IRQ flags and IME to all be set)
-	return _state.IrqLine & 0x02;
+	return _irqFirstAccessCycle & 0x02;
 }
 
 bool GbaMemoryManager::IsHaltOver()
@@ -956,7 +950,7 @@ void GbaMemoryManager::Serialize(Serializer& s)
 		SV(_pendingScanlineMatchIrq);
 		SV(_haltModeUsed);
 		SV(_biosLocked);
-		SV(_suppressIrqDelay);
+		SV(_irqFirstAccessCycle);
 		SV(_haltDelay);
 
 		SVArray(_state.BootRomOpenBus, 4);
