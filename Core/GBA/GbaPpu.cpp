@@ -119,17 +119,6 @@ void GbaPpu::ProcessEndOfScanline()
 	std::fill(_layerOutput[2], _layerOutput[2] + 240, GbaPixelData {});
 	std::fill(_layerOutput[3], _layerOutput[3] + 240, GbaPixelData {});
 
-	for(int i = 0; i < 2; i++) {
-		if(_state.Transform[i].PendingUpdateX) {
-			_state.Transform[i].LatchOriginX = (_state.Transform[i].OriginX << 4) >> 4; //sign extend
-			_state.Transform[i].PendingUpdateX = false;
-		}
-		if(_state.Transform[i].PendingUpdateY) {
-			_state.Transform[i].LatchOriginY = (_state.Transform[i].OriginY << 4) >> 4; //sign extend
-			_state.Transform[i].PendingUpdateY = false;
-		}
-	}
-
 	for(int i = 0; i < 4; i++) {
 		//Unverified: Latch X scroll value at the start of each scanline
 		//This fixes display issues in the Fire Emblem Sacred Stones menu
@@ -690,7 +679,7 @@ void GbaPpu::RenderTransformTilemap()
 	}
 
 	uint16_t screenSize = 128 << layer.ScreenSize;
-	
+
 	//MessageManager::Log(std::to_string(_state.Scanline) + " render " + std::to_string(_lastRenderCycle+1) + " to " + std::to_string(_state.Cycle));
 	constexpr int gap = (38 - i * 2);
 	int cycle = std::max(0, _lastRenderCycle + 1 - gap);
@@ -1168,10 +1157,20 @@ inline void GbaPpu::UpdateLayerTransform()
 		} else if(!layer.Mosaic) {
 			cfg.LatchOriginX += cfg.Matrix[1];
 			cfg.LatchOriginY += cfg.Matrix[3];
-		} else if(_state.Scanline % (_state.BgMosaicSizeY + 1) == _state.BgMosaicSizeY) {
+		} else if((_state.Scanline - 1) % (_state.BgMosaicSizeY + 1) == _state.BgMosaicSizeY) {
 			cfg.LatchOriginX += cfg.Matrix[1] * (_state.BgMosaicSizeY + 1);
 			cfg.LatchOriginY += cfg.Matrix[3] * (_state.BgMosaicSizeY + 1);
 		}
+	}
+
+	if(cfg.PendingUpdateX) {
+		cfg.LatchOriginX = (cfg.OriginX << 4) >> 4; //sign extend
+		cfg.PendingUpdateX = false;
+	}
+
+	if(cfg.PendingUpdateY) {
+		cfg.LatchOriginY = (cfg.OriginY << 4) >> 4; //sign extend
+		cfg.PendingUpdateY = false;
 	}
 
 	//Init transform start position
