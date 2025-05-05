@@ -463,9 +463,9 @@ void GbaPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePreview
 
 	static constexpr uint8_t sprSize[4][4][2] = {
 		{ { 8, 8 }, { 16, 8 }, { 8, 16 }, { 8, 8 } },
-		{ { 16, 16 }, { 32, 8 }, { 8, 32 }, { 16, 16 } },
-		{ { 32, 32 }, { 32, 16 }, { 16, 32 }, { 32, 32 } },
-		{ { 64, 64 }, { 64, 32 }, { 32, 64 }, { 64, 64 } }
+		{ { 16, 16 }, { 32, 8 }, { 8, 32 }, { 8, 8 } },
+		{ { 32, 32 }, { 32, 16 }, { 16, 32 }, { 8, 8 } },
+		{ { 64, 64 }, { 64, 32 }, { 32, 64 }, { 8, 8 } }
 	};
 
 	uint8_t width = sprSize[size][shape][0];

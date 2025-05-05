@@ -782,12 +782,14 @@ void GbaPpu::RenderBitmapMode()
 	}
 }
 
-//TODOGBA behavior for shape == 3? current behaves like shape == 0
+//TODOGBA What should shape "3" do?
+//Making shape 3 behave like shape 0 causes glitches in Gauntlet (because unused sprites have all of their attributes set to 0xFF)
+//Making all sizes for shape 3 be 8x8 fixes the glitches in Gauntlet (but this hasn't been verified on hardware)
 static constexpr uint8_t _sprSize[4][4][2] = {
 	{ { 8, 8 }, { 16, 8 }, { 8, 16 }, { 8, 8 } },
-	{ { 16, 16 }, { 32, 8 }, { 8, 32 }, { 16, 16 } },
-	{ { 32, 32 }, { 32, 16 }, { 16, 32 }, { 32, 32 } },
-	{ { 64, 64 }, { 64, 32 }, { 32, 64 }, { 64, 64 } }
+	{ { 16, 16 }, { 32, 8 }, { 8, 32 }, { 8, 8 } },
+	{ { 32, 32 }, { 32, 16 }, { 16, 32 }, { 8, 8 } },
+	{ { 64, 64 }, { 64, 32 }, { 32, 64 }, { 8, 8 } }
 };
 
 void GbaPpu::ProcessSprites()
