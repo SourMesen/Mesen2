@@ -39,6 +39,10 @@ public:
 	{
 	}
 
+	virtual void SaveBattery()
+	{
+	}
+
 	virtual void RefreshMappings()
 	{
 		Map(0x0000, 0x7FFF, GbMemoryType::PrgRom, 0, true);

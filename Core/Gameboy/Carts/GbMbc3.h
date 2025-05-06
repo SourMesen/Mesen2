@@ -29,6 +29,11 @@ public:
 		_rtc.Init();
 	}
 
+	void SaveBattery() override
+	{
+		_rtc.SaveBattery();
+	}
+
 	void RefreshMappings() override
 	{
 		constexpr int prgBankSize = 0x4000;
