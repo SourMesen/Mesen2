@@ -82,7 +82,7 @@ public:
 	~SnesDebugger();
 
 	void Init() override;
-	void OnBeforeBreak() override;
+	void OnBeforeBreak(CpuType cpuType) override;
 	void Reset() override;
 
 	void ProcessConfigChange() override;

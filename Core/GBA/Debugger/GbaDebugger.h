@@ -57,7 +57,7 @@ public:
 	GbaDebugger(Debugger* debugger);
 	~GbaDebugger();
 
-	void OnBeforeBreak() override;
+	void OnBeforeBreak(CpuType cpuType) override;
 	void Reset() override;
 
 	void ProcessInstruction();

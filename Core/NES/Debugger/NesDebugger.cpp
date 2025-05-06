@@ -86,7 +86,7 @@ NesDebugger::~NesDebugger()
 	_codeDataLogger->SaveCdlFile(_cdlFile);
 }
 
-void NesDebugger::OnBeforeBreak()
+void NesDebugger::OnBeforeBreak(CpuType cpuType)
 {
 	_console->GetApu()->Run();
 }

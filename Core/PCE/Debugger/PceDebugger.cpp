@@ -73,7 +73,7 @@ PceDebugger::~PceDebugger()
 	_codeDataLogger->SaveCdlFile(_cdlFile);
 }
 
-void PceDebugger::OnBeforeBreak()
+void PceDebugger::OnBeforeBreak(CpuType cpuType)
 {
 	_console->GetPsg()->Run();
 }

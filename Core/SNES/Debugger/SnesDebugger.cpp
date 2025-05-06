@@ -100,9 +100,12 @@ void SnesDebugger::Init()
 	_dspTraceLogger = _debugger->GetTraceLogger(CpuType::NecDsp);
 }
 
-void SnesDebugger::OnBeforeBreak()
+void SnesDebugger::OnBeforeBreak(CpuType cpuType)
 {
-	_console->RunAudio();
+	//Don't catch up audio when the SPC debugger pauses - this causes a stack overflow
+	if(cpuType != CpuType::Spc) {
+		_console->RunAudio();
+	}
 }
 
 void SnesDebugger::Reset()

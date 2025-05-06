@@ -65,7 +65,7 @@ public:
 	PceDebugger(Debugger* debugger);
 	~PceDebugger();
 
-	void OnBeforeBreak() override;
+	void OnBeforeBreak(CpuType cpuType) override;
 	void Reset() override;
 
 	uint64_t GetCpuCycleCount(bool forProfiler) override;

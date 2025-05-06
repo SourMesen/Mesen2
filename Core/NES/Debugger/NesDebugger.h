@@ -63,7 +63,7 @@ public:
 	NesDebugger(Debugger* debugger);
 	~NesDebugger();
 
-	void OnBeforeBreak() override;
+	void OnBeforeBreak(CpuType cpuType) override;
 
 	void Reset() override;
 
