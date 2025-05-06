@@ -185,15 +185,14 @@ void GbaCpu::ArmMultiply()
 
 	MultiplicationOutput output;
 	if(multAndAcc) {
-		output = GbaCpuMultiply::mla(R(rm), R(rs), R(rn));
+		uint32_t acc = R(rn);
+		Idle();
+		output = GbaCpuMultiply::mla(R(rm), R(rs), acc);
 	} else {
 		output = GbaCpuMultiply::mul(R(rm), R(rs));
 	}
 
 	Idle(output.CycleCount);
-	if(multAndAcc) {
-		Idle();
-	}
 
 	uint32_t result = output.Output;
 	SetR(rd, result);
@@ -218,27 +217,32 @@ void GbaCpu::ArmMultiplyLong()
 	bool multAndAcc = (_opCode & (1 << 21)) != 0;
 	bool sign = (_opCode & (1 << 22)) != 0;
 
+	uint32_t accLo = 0;
+	uint32_t accHi = 0;
+	if(multAndAcc) {
+		accLo = R(rl);
+		accHi = R(rh);
+		Idle();
+	}
+
 	Idle();
 
 	MultiplicationOutput output;
 	if(sign) {
 		if(multAndAcc) {
-			output = GbaCpuMultiply::smlal(R(rl), R(rh), R(rm), R(rs));
+			output = GbaCpuMultiply::smlal(accLo, accHi, R(rm), R(rs));
 		} else {
 			output = GbaCpuMultiply::smull(R(rm), R(rs));
 		}
 	} else {
 		if(multAndAcc) {
-			output = GbaCpuMultiply::umlal(R(rl), R(rh), R(rm), R(rs));
+			output = GbaCpuMultiply::umlal(accLo, accHi, R(rm), R(rs));
 		} else {
 			output = GbaCpuMultiply::umull(R(rm), R(rs));
 		}
 	}
 
 	Idle(output.CycleCount);
-	if(multAndAcc) {
-		Idle();
-	}
 
 	uint64_t result = output.Output;
 
@@ -447,10 +451,17 @@ void GbaCpu::ArmBlockDataTransfer()
 
 	SwitchMode(orgMode);
 
-	if(psrForceUser && load && (regMask & 0x8000)) {
-		GbaCpuFlags spsr = GetSpsr();
-		SwitchMode(spsr.Mode);
-		_state.CPSR = spsr;
+	if(psrForceUser && load) {
+		if(regMask & 0x8000) {
+			GbaCpuFlags spsr = GetSpsr();
+			SwitchMode(spsr.Mode);
+			_state.CPSR = spsr;
+		}
+
+		//When LDM^ is used, if registers 8-14 are accessed on the next cycle,
+		//the result is ORed with the equivalent register in the user mode registers.
+		//This is a CPU bug that requires e.g a NOP after using LDM^ to avoid the issue.
+		_ldmGlitch = 2;
 	}
 }
 
@@ -467,9 +478,10 @@ void GbaCpu::ArmSingleDataSwap()
 #ifndef DUMMYCPU
 	_memoryManager->LockBus();
 #endif
-	uint32_t val = Read(mode, R(rn));
+	uint32_t src = R(rn);
+	uint32_t val = Read(mode, src);
 	Idle();
-	Write(mode, R(rn), R(rm));
+	Write(mode, src, R(rm));
 #ifndef DUMMYCPU
 	_memoryManager->UnlockBus();
 #endif

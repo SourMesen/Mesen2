@@ -21,9 +21,9 @@ void GbaCpu::ThumbMoveShiftedRegister()
 	bool carry = _state.CPSR.Carry;
 	switch(op) {
 		default:
-		case 0: SetR(rd, ShiftLsl(R(rs), shift, carry)); break;
-		case 1: SetR(rd, ShiftLsr(R(rs), shift ? shift : 32, carry)); break;
-		case 2: SetR(rd, ShiftAsr(R(rs), shift ? shift : 32, carry)); break;
+		case 0: SetR(rd, ShiftLsl(RT(rs), shift, carry)); break;
+		case 1: SetR(rd, ShiftLsr(RT(rs), shift ? shift : 32, carry)); break;
+		case 2: SetR(rd, ShiftAsr(RT(rs), shift ? shift : 32, carry)); break;
 	}
 
 	LogicalOp(_state.R[rd], carry, true);
@@ -37,11 +37,11 @@ void GbaCpu::ThumbAddSubtract()
 	uint8_t rs = (_opCode >> 3) & 0x07;
 	uint8_t rd = _opCode & 0x07;
 
-	uint32_t op2 = immediate ? rnImmediate : R(rnImmediate);
+	uint32_t op2 = immediate ? rnImmediate : RT(rnImmediate);
 	if(sub) {
-		SetR(rd, Sub(R(rs), op2, true, true));
+		SetR(rd, Sub(RT(rs), op2, true, true));
 	} else {
-		SetR(rd, Add(R(rs), op2, false, true));
+		SetR(rd, Add(RT(rs), op2, false, true));
 	}
 }
 
@@ -56,8 +56,8 @@ void GbaCpu::ThumbMoveCmpAddSub()
 		default:
 		case 0: SetR(rd, LogicalOp(imm, carry, true)); break; //MOV
 		case 1: Sub(_state.R[rd], imm, true, true); break; //CMP
-		case 2: SetR(rd, Add(R(rd), imm, false, true)); break; //ADD
-		case 3: SetR(rd, Sub(R(rd), imm, true, true)); break; //SUB
+		case 2: SetR(rd, Add(RT(rd), imm, false, true)); break; //ADD
+		case 3: SetR(rd, Sub(RT(rd), imm, true, true)); break; //SUB
 	}
 }
 
@@ -67,8 +67,8 @@ void GbaCpu::ThumbAluOperation()
 	uint8_t rs = (_opCode >> 3) & 0x07;
 	uint8_t rd = _opCode & 0x07;
 
-	uint32_t op1 = R(rd);
-	uint32_t op2 = R(rs);
+	uint32_t op1 = RT(rd);
+	uint32_t op2 = RT(rs);
 
 	bool carry = _state.CPSR.Carry;
 	switch(op) {
@@ -134,13 +134,13 @@ void GbaCpu::ThumbHiRegBranchExch()
 	bool carry = _state.CPSR.Carry;
 	switch(op) {
 		default:
-		case 0: SetR(rd, Add(R(rd), R(rs), false, false)); break; //ADD
-		case 1: Sub(R(rd), R(rs), true, true); break; //CMP
-		case 2: SetR(rd, LogicalOp(R(rs), carry, false)); break; //MOV
+		case 0: SetR(rd, Add(RT(rd), RT(rs), false, false)); break; //ADD
+		case 1: Sub(RT(rd), RT(rs), true, true); break; //CMP
+		case 2: SetR(rd, LogicalOp(RT(rs), carry, false)); break; //MOV
 		
 		case 3:
 			//BX
-			uint32_t value = R(rs);
+			uint32_t value = RT(rs);
 			_state.CPSR.Thumb = (value & 0x01) != 0;
 			SetR(15, value);
 			break;
@@ -152,7 +152,7 @@ void GbaCpu::ThumbPcRelLoad()
 	uint8_t rd = (_opCode >> 8) & 0x07;
 	uint8_t immValue = _opCode & 0xFF;
 
-	SetR(rd, Read(GbaAccessMode::Word, (R(15) & ~0x03) + (immValue << 2)));
+	SetR(rd, Read(GbaAccessMode::Word, (RT(15) & ~0x03) + (immValue << 2)));
 	Idle();
 }
 
@@ -166,10 +166,10 @@ void GbaCpu::ThumbLoadStoreRegOffset()
 
 	GbaAccessModeVal mode = byte ? GbaAccessMode::Byte : GbaAccessMode::Word;
 	if(load) {
-		SetR(rd, Read(mode, R(rb) + R(ro)));
+		SetR(rd, Read(mode, RT(rb) + RT(ro)));
 		Idle();
 	} else {
-		Write(mode, R(rb) + R(ro), R(rd));
+		Write(mode, RT(rb) + RT(ro), RT(rd));
 	}
 }
 
@@ -182,14 +182,14 @@ void GbaCpu::ThumbLoadStoreSignExtended()
 	bool half = _opCode & (1 << 11);
 
 	if(!sign && !half) {
-		Write(GbaAccessMode::HalfWord, R(rb) + R(ro), R(rd));
+		Write(GbaAccessMode::HalfWord, RT(rb) + RT(ro), RT(rd));
 	} else {
 		GbaAccessModeVal mode = half ? GbaAccessMode::HalfWord : GbaAccessMode::Byte;
 		if(sign) {
 			mode |= GbaAccessMode::Signed;
 		}
 
-		SetR(rd, Read(mode, R(rb) + R(ro)));
+		SetR(rd, Read(mode, RT(rb) + RT(ro)));
 		Idle();
 	}
 }
@@ -208,10 +208,10 @@ void GbaCpu::ThumbLoadStoreImmOffset()
 
 	GbaAccessModeVal mode = byte ? GbaAccessMode::Byte : GbaAccessMode::Word;
 	if(load) {
-		SetR(rd, Read(mode, R(rb) + offset));
+		SetR(rd, Read(mode, RT(rb) + offset));
 		Idle();
 	} else {
-		Write(mode, _state.R[rb] + offset, R(rd));
+		Write(mode, _state.R[rb] + offset, RT(rd));
 	}
 }
 
@@ -223,10 +223,10 @@ void GbaCpu::ThumbLoadStoreHalfWord()
 	bool load = _opCode & (1 << 11);
 
 	if(load) {
-		SetR(rd, Read(GbaAccessMode::HalfWord, R(rb) + offset));
+		SetR(rd, Read(GbaAccessMode::HalfWord, RT(rb) + offset));
 		Idle();
 	} else {
-		Write(GbaAccessMode::HalfWord, R(rb) + offset, R(rd));
+		Write(GbaAccessMode::HalfWord, RT(rb) + offset, RT(rd));
 	}
 }
 
@@ -240,7 +240,7 @@ void GbaCpu::ThumbSpRelLoadStore()
 		SetR(rd, Read(GbaAccessMode::Word, _state.R[13] + immValue));
 		Idle();
 	} else {
-		Write(GbaAccessMode::Word, _state.R[13] + immValue, R(rd));
+		Write(GbaAccessMode::Word, _state.R[13] + immValue, RT(rd));
 	}
 }
 
@@ -253,7 +253,7 @@ void GbaCpu::ThumbLoadAddress()
 	if(useSp) {
 		SetR(rd, _state.R[13] + immValue);
 	} else {
-		SetR(rd, (R(15) & ~0x02) + immValue);
+		SetR(rd, (RT(15) & ~0x02) + immValue);
 	}
 }
 
@@ -288,7 +288,7 @@ void GbaCpu::ThumbPushPopReg()
 			if(load) {
 				SetR(i, Read(GbaAccessMode::Word | GbaAccessMode::NoRotate, sp));
 			} else {
-				Write(GbaAccessMode::Word, sp, R(i));
+				Write(GbaAccessMode::Word, sp, RT(i));
 			}
 			sp += 4;
 		}
@@ -315,7 +315,7 @@ void GbaCpu::ThumbMultipleLoadStore()
 	uint8_t rb = (_opCode >> 8) & 0x07;
 	bool load = _opCode & (1 << 11);
 
-	uint32_t base = R(rb);
+	uint32_t base = RT(rb);
 	uint32_t addr = base;
 	
 	uint8_t regCount = 0;
@@ -336,7 +336,7 @@ void GbaCpu::ThumbMultipleLoadStore()
 	for(int i = 0; i < 16; i++) {
 		if(regMask & (1 << i)) {
 			if(!load) {
-				Write(mode, addr, R(i) + (i == 15 ? 2 : 0));
+				Write(mode, addr, RT(i) + (i == 15 ? 2 : 0));
 			}
 
 			if(firstReg) {
@@ -386,7 +386,7 @@ void GbaCpu::ThumbLongBranchLink()
 	bool high = _opCode & (1 << 11);
 	if(!high) {
 		int32_t relOffset = ((int32_t)offset << 21) >> 9;
-		_state.R[14] = R(15) + relOffset;
+		_state.R[14] = RT(15) + relOffset;
 	} else {
 		uint32_t addr = _state.R[14] + (offset << 1);
 		_state.R[14] = (_state.R[15] - 2) | 0x01;

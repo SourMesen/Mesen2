@@ -21,6 +21,7 @@ class GbaCpu : public ISerializable
 private:
 	uint32_t _opCode = 0;
 	GbaCpuState _state = {};
+	uint8_t _ldmGlitch = 0;
 
 	GbaMemoryManager* _memoryManager = nullptr;
 	GbaRomPrefetch* _prefetch = nullptr;
@@ -45,7 +46,22 @@ private:
 	uint32_t ShiftRor(uint32_t value, uint8_t shift, bool& carry);
 	uint32_t ShiftRrx(uint32_t value, bool& carry);
 
-	uint32_t R(uint8_t reg);
+	__forceinline uint32_t R(uint8_t reg)
+	{
+		//Used for ARM mode, which can trigger the LDM^ glitch
+		if(_ldmGlitch == 0 || reg == 15 || reg < 8) {
+			return _state.R[reg];
+		}
+
+		return _state.R[reg] | _state.UserRegs[reg - 8];
+	}
+
+	__forceinline uint32_t RT(uint8_t reg)
+	{
+		//Thumb mode can't trigger the LDM glitch
+		return _state.R[reg];
+	}
+
 	void SetR(uint8_t reg, uint32_t value)
 	{
 		_state.R[reg] = value;
