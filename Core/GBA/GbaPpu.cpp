@@ -100,6 +100,7 @@ void GbaPpu::ProcessEndOfScanline()
 {
 	ProcessSprites();
 	ProcessWindow();
+	_renderSprPixel = {};
 
 	if(!_skipRender && _emu->IsDebugging()) {
 		DebugProcessMemoryAccessView();
@@ -290,10 +291,7 @@ void GbaPpu::ProcessColorMath()
 	int start = _lastRenderCycle < 46 ? 0 : std::max(0, ((_lastRenderCycle - 46) / 4) + 1);
 	int end = std::min((_state.Cycle - 46) / 4, 239);
 
-	GbaPixelData sprPixel = {};
-
 	for(int x = start; x <= end; x++) {
-
 		if constexpr(windowEnabled) {
 			wnd = _activeWindow[x];
 			if(_state.WindowActiveLayers[wnd][GbaPpu::SpriteLayerIndex]) {
@@ -306,10 +304,10 @@ void GbaPpu::ProcessColorMath()
 			main = _oamReadOutput[x];
 		}
 		
-		if(!(main.Color & GbaPpu::SpriteMosaicFlag) || !(sprPixel.Color & GbaPpu::SpriteMosaicFlag) || x % (_state.ObjMosaicSizeX + 1) == 0) {
-			sprPixel = main;
+		if(!(main.Color & GbaPpu::SpriteMosaicFlag) || !(_renderSprPixel.Color & GbaPpu::SpriteMosaicFlag) || x % (_state.ObjMosaicSizeX + 1) == 0) {
+			_renderSprPixel = main;
 		} else {
-			main = sprPixel;
+			main = _renderSprPixel;
 		}
 
 		sub = {};

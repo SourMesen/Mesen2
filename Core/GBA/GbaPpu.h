@@ -111,6 +111,7 @@ private:
 
 	GbaPixelData* _oamWriteOutput = nullptr;
 	GbaPixelData* _oamReadOutput = nullptr;
+	GbaPixelData _renderSprPixel = {};
 
 	GbaPixelData _oamOutputBuffers[2][GbaConstants::ScreenWidth] = {};
 	GbaPixelData _layerOutput[4][GbaConstants::ScreenWidth] = {};
