@@ -143,6 +143,7 @@ private:
 	bool _isFirstOamTileLoad = false;
 	uint8_t _loadObjMatrix = 0;
 	uint8_t _oamScanline = 0;
+	uint8_t _oamMosaicScanline = 0;
 	uint8_t _oamMosaicY = 0;
 
 	bool _hasPendingUpdates = false;

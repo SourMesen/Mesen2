@@ -808,10 +808,14 @@ void GbaPpu::InitSpriteEvaluation()
 	_oamScanline = _state.Scanline == 227 ? 0 : (_state.Scanline + 1);
 	if(_oamScanline == 0) {
 		_oamMosaicY = 0;
+		_oamMosaicScanline = 0;
 	} else {
 		if(_oamMosaicY == _state.ObjMosaicSizeY) {
 			_oamMosaicY = 0;
+			_oamMosaicScanline = _oamScanline;
 		} else {
+			//Counter wrapping back to 0 apparently does not update the scanline number used for Y mosaic calculations.
+			//This is needed to get the correct result in the sprite-vmosaic test rom
 			_oamMosaicY = (_oamMosaicY + 1) & 0x0F;
 		}
 	}
@@ -849,7 +853,11 @@ void GbaPpu::AddVisibleSprite(uint32_t sprData)
 	spr.Width = _sprSize[spr.Size][spr.Shape][0];
 	spr.Mosaic = sprData & 0x1000;
 	if(spr.Mosaic) {
-		spr.YOffset = std::max(0, (int)spr.YOffset - (int)_oamMosaicY);
+		spr.YOffset = _oamMosaicScanline - spr.SpriteY;
+		uint8_t sprHeight = (spr.Height << (uint8_t)spr.DoubleSize);
+		if(spr.YOffset >= sprHeight) {
+			spr.YOffset = 0;
+		}
 	}
 
 	spr.Bpp8Mode = sprData & 0x2000;
@@ -1601,6 +1609,7 @@ void GbaPpu::Serialize(Serializer& s)
 		SV(_loadObjMatrix);
 		SV(_oamScanline);
 		SV(_oamMosaicY);
+		SV(_oamMosaicScanline);
 
 		SV(_hasPendingUpdates);
 		SV(_transformUpdateDelay);
