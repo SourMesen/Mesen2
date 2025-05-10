@@ -417,6 +417,10 @@
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 			<Control ID="chkEnableMgbaLogApi">Enable mGBA log API</Control>
 
+			<Control ID="grpOverclocking">Overclocking</Control>
+			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, increase the value below.</Control>
+			<Control ID="lblOverclockScanlineCount">Additional scanlines:</Control>
+
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblLcdSettings">LCD Settings</Control>
 			<Control ID="chkGbBlendFrames">Enable LCD frame blending</Control>

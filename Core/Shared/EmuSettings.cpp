@@ -119,6 +119,7 @@ void EmuSettings::Serialize(Serializer& s)
 
 		case ConsoleType::Gba:
 			SV(_gba.RamPowerOnState);
+			SV(_gba.OverclockScanlineCount);
 			SV(_gba.Controller.Type);
 			break;
 

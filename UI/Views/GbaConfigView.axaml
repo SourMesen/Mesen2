@@ -9,7 +9,7 @@
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:cfg="using:Mesen.Config"
 	xmlns:l="using:Mesen.Localization"
-	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="250"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="vm:GbaConfigViewModel"
@@ -66,6 +66,20 @@
 						<c:EnumComboBox SelectedItem="{Binding Config.RtcType}" MinWidth="150" Grid.Row="1" Grid.Column="1" />
 					</Grid>
 					<c:CheckBoxWarning IsChecked="{Binding Config.EnableMgbaLogApi}" Text="{l:Translate chkEnableMgbaLogApi}" />
+
+					<c:OptionSection Header="{l:Translate grpOverclocking}">
+						<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">
+							<Panel>
+								<Image Source="/Assets/Help.png" Margin="0" Width="16" Height="16" HorizontalAlignment="Left" />
+								<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
+							</Panel>
+						</Border>
+
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="0 10">
+							<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblOverclockScanlineCount}" />
+							<c:MesenNumericUpDown Grid.Column="1" Grid.Row="0" Value="{Binding Config.OverclockScanlineCount}" Minimum="0" Maximum="1000" />
+						</Grid>
+					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>

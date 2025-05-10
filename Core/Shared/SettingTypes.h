@@ -463,6 +463,8 @@ struct GbaConfig
 
 	bool HideBgLayers[4] = {};
 	bool DisableSprites = false;
+	
+	uint32_t OverclockScanlineCount = 0;
 
 	RamState RamPowerOnState = RamState::AllZeros;
 	GbaSaveType SaveType = GbaSaveType::AutoDetect;

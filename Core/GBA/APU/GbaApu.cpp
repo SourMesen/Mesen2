@@ -72,6 +72,9 @@ void GbaApu::InternalRun()
 	uint64_t clockCount = _console->GetMasterClock() / 4;
 	if(clockCount == _prevClockCount) {
 		return;
+	} else if(_console->GetPpu()->IsOverclockScanline()) {
+		_prevClockCount = clockCount;
+		return;
 	}
 	
 	uint32_t clocksToRun = (uint32_t)(clockCount - _prevClockCount);
@@ -443,7 +446,7 @@ void GbaApu::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8_t value)
 
 void GbaApu::ClockFifo(uint8_t timerIndex)
 {
-	if(!_state.ApuEnabled) {
+	if(!_state.ApuEnabled || _console->GetPpu()->IsOverclockScanline()) {
 		return;
 	}
 

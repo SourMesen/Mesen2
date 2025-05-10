@@ -97,6 +97,11 @@ private:
 
 	GbaPpuState _state = {};
 
+	uint16_t _vblankStartScanline = 160;
+	uint16_t _lastScanline = 227;
+
+	bool _inOverclock = false;
+
 	Emulator* _emu = nullptr;
 	GbaConsole* _console = nullptr;
 	GbaMemoryManager* _memoryManager = nullptr;
@@ -213,6 +218,7 @@ private:
 	void ProcessLayerToggleDelay();
 
 	void DebugProcessMemoryAccessView();
+	uint16_t GetCurrentScanline();
 	bool IsScanlineMatch();
 
 	template<int i> void UpdateLayerTransform();
@@ -252,8 +258,10 @@ public:
 	GbaPpuState& GetState() { return _state; }
 	uint32_t GetFrameCount() { return _state.FrameCount; }
 	int32_t GetScanline() { return _state.Scanline; }
+	uint32_t GetScanlineCount() { return _lastScanline + 1; }
 	uint32_t GetCycle() { return _state.Cycle; }
 	bool IsBitmapMode() { return _state.BgMode >= 3; }
+	bool IsOverclockScanline() { return _inOverclock; }
 
 	void Serialize(Serializer& s) override;
 };

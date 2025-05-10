@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GBA/GbaPpu.h"
+#include "GBA/APU/GbaApu.h"
 #include "GBA/GbaTypes.h"
 #include "GBA/GbaConsole.h"
 #include "GBA/GbaMemoryManager.h"
@@ -125,7 +126,18 @@ void GbaPpu::ProcessEndOfScanline()
 		_triggerSpecialDma = _console->GetDmaController()->IsVideoCaptureDmaEnabled();
 	}
 
-	if(_state.Scanline == 160) {
+	if(_state.Scanline == 160 && _vblankStartScanline != 160) {
+		//Catch up and pause APU at the start of the overclock scanlines
+		_console->GetApu()->Run();
+		_console->GetApu()->PlayQueuedAudio();
+		_inOverclock = true;
+	} else if(_inOverclock && _state.Scanline == _vblankStartScanline) {
+		//Catch up APU again to update its clock counter before ending overclock
+		_console->GetApu()->Run();
+		_inOverclock = false;
+	}
+
+	if(_state.Scanline == _vblankStartScanline) {
 		_oamScanline = 0;
 		_state.ObjEnableTimer = 0;
 		SendFrame();
@@ -133,24 +145,28 @@ void GbaPpu::ProcessEndOfScanline()
 			_console->GetMemoryManager()->SetDelayedIrqSource(GbaIrqSource::LcdVblank, 1);
 		}
 		_console->GetDmaController()->TriggerDma(GbaDmaTrigger::VBlank);
-	} else if(_state.Scanline == 228) {
+	} else if(_state.Scanline >= _lastScanline + 1) {
+		EmuSettings* settings = _emu->GetSettings();
+		GbaConfig& cfg = settings->GetGbaConfig();
 		_state.Scanline = 0;
+
+		_vblankStartScanline = 160 + cfg.OverclockScanlineCount;
+		_lastScanline = 227 + cfg.OverclockScanlineCount;
 
 		//Transform values are latched on the first scanline where the layer is enabled
 		//(unverified - needed to pass both bgpd test and get the correct result in Pinball Tycoon)
 		_state.Transform[0].NeedInit = true;
 		_state.Transform[1].NeedInit = true;
 
-		if(_emu->GetSettings()->GetGbaConfig().DisableSprites) {
+		if(cfg.DisableSprites) {
 			std::fill(_oamOutputBuffers[0], _oamOutputBuffers[0] + 240, GbaPixelData {});
 			std::fill(_oamOutputBuffers[1], _oamOutputBuffers[1] + 240, GbaPixelData {});
 		}
 
 		_emu->ProcessEvent(EventType::StartFrame, CpuType::Gba);
 
-		EmuSettings* settings = _emu->GetSettings();
 		_skipRender = (
-			!settings->GetGbaConfig().DisableFrameSkipping &&
+			!cfg.DisableFrameSkipping &&
 			!_emu->GetRewindManager()->IsRewinding() &&
 			!_emu->GetVideoRenderer()->IsRecording() &&
 			(settings->GetEmulationSpeed() == 0 || settings->GetEmulationSpeed() > 150) &&
@@ -784,7 +800,7 @@ static constexpr uint8_t _sprSize[4][4][2] = {
 
 void GbaPpu::ProcessSprites()
 {
-	if(!_emu->GetSettings()->GetGbaConfig().DisableSprites && _state.ObjLayerEnabled && (_state.Scanline <= 159 || _state.Scanline == 227)) {
+	if(!_emu->GetSettings()->GetGbaConfig().DisableSprites && _state.ObjLayerEnabled && (_state.Scanline <= 159 || _state.Scanline == _lastScanline)) {
 		if(_state.BgMode >= 3) {
 			RenderSprites<true>();
 		} else {
@@ -795,7 +811,7 @@ void GbaPpu::ProcessSprites()
 
 void GbaPpu::InitSpriteEvaluation()
 {
-	_oamScanline = _state.Scanline == 227 ? 0 : (_state.Scanline + 1);
+	_oamScanline = _state.Scanline == _lastScanline ? 0 : (_state.Scanline + 1);
 	if(_oamScanline == 0) {
 		_oamMosaicY = 0;
 		_oamMosaicScanline = 0;
@@ -1225,7 +1241,7 @@ void GbaPpu::SetLayerEnabled(int layer, bool enabled)
 
 void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 {
-	if(_lastRenderCycle != _state.Cycle && (_state.Scanline < 160 || _state.Scanline == 227)) {
+	if(_lastRenderCycle != _state.Cycle && (_state.Scanline < 160 || _state.Scanline == _lastScanline)) {
 		if(_state.Cycle < 1006 || addr <= 0x01 || addr == 0x4D || addr >= 0x40 && addr <= 0x43) {
 			//Only run renderer during active rendering (< 1006), or if the write could affect sprites/window processing
 			RenderScanline(true);
@@ -1415,12 +1431,28 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 	}
 }
 
+uint16_t GbaPpu::GetCurrentScanline()
+{
+	if(_vblankStartScanline == 160) {
+		//No overclocking
+		return _state.Scanline;
+	} else if(_state.Scanline < 160) {
+		return _state.Scanline;
+	} else if(_state.Scanline < _vblankStartScanline) {
+		//Pretend to be on scanline 159 for all overclock scanlines
+		return 159;
+	} else {
+		return _state.Scanline - _vblankStartScanline + 160;
+	}
+}
+
 bool GbaPpu::IsScanlineMatch()
 {
+	uint32_t scanline = GetCurrentScanline();
 	if(_state.Cycle == 0) {
-		return (_state.Scanline == 0 ? 227 : (_state.Scanline - 1)) == _state.Lyc;
+		return (scanline == 0 ? 227 : (scanline - 1)) == _state.Lyc;
 	} else {
-		return _state.Scanline == _state.Lyc;
+		return scanline == _state.Lyc;
 	}
 }
 
@@ -1433,17 +1465,18 @@ uint8_t GbaPpu::ReadRegister(uint32_t addr)
 		case 0x02: return (uint8_t)_state.StereoscopicEnabled;
 		case 0x03: return 0;
 
-		case 0x04:
+		case 0x04: {
+			uint16_t scanline = GetCurrentScanline();
 			return (
-				(_state.Scanline >= 160 && _state.Scanline != 227 ? 0x01 : 0) |
+				(scanline >= 160 && scanline != _lastScanline ? 0x01 : 0) |
 				(_state.Cycle >= 1007 ? 0x02 : 0) |
 				(IsScanlineMatch() ? 0x04 : 0) |
 				_state.DispStat
 			);
+		}
 
 		case 0x05: return _state.Lyc;
-
-		case 0x06: return _state.Scanline;
+		case 0x06: return GetCurrentScanline();
 		case 0x07: return 0;
 
 		case 0x08: case 0x0A: case 0x0C: case 0x0E:
@@ -1474,7 +1507,12 @@ void GbaPpu::DebugProcessMemoryAccessView()
 {
 	//Store memory access buffer in ppu tools to display in tilemap viewer
 	GbaPpuTools* ppuTools = ((GbaPpuTools*)_emu->InternalGetDebugger()->GetPpuTools(CpuType::Gba));
-	ppuTools->SetMemoryAccessData(_state.Scanline, _memoryAccess);
+	//Skip vblank scanlines (except last scanline) to avoid issues with overclock
+	if(_state.Scanline < 160) {
+		ppuTools->SetMemoryAccessData(_state.Scanline, _memoryAccess);
+	} else  if(_state.Scanline == _lastScanline) {
+		ppuTools->SetMemoryAccessData(227, _memoryAccess);
+	}
 }
 
 void GbaPpu::Serialize(Serializer& s)

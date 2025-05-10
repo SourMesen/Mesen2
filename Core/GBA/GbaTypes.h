@@ -588,4 +588,6 @@ public:
 	static constexpr uint32_t ScreenWidth = 240;
 	static constexpr uint32_t ScreenHeight = 160;
 	static constexpr uint32_t PixelCount = GbaConstants::ScreenWidth * GbaConstants::ScreenHeight;
+	
+	static constexpr uint32_t ScanlineCount = 228;
 };
