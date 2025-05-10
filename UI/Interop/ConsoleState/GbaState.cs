@@ -332,6 +332,7 @@ public struct GbaBgConfig
 	[MarshalAs(UnmanagedType.I1)] public bool Bpp8Mode;
 	[MarshalAs(UnmanagedType.I1)] public bool Enabled;
 	public byte EnableTimer;
+	public byte DisableTimer;
 	public GbaBgStereoMode StereoMode;
 }
 

@@ -75,16 +75,8 @@ void GbaPpu::ProcessHBlank()
 	if(_state.Scanline < 160) {
 		RenderScanline();
 		_console->GetDmaController()->TriggerDma(GbaDmaTrigger::HBlank);
-	}
-
-	for(int i = 0; i < 4; i++) {
-		if(_state.BgLayers[i].EnableTimer && --_state.BgLayers[i].EnableTimer == 0) {
-			//Exact timing hasn't been verified
-			//The mGBA Suite test writes on H=1065 and expects the layer to be enabled 3 scanlines later (write on scanline 101, starts rendering on scanline 104, so just over 2 scanlines)
-			//Spyro - Season of Ice writes on H=30, and expects the layer to be enabled 2 scanlines later
-			//Doing this at the start of hblank allows both scenarios the work
-			_state.BgLayers[i].Enabled = true;
-		}
+	} else {
+		ProcessLayerToggleDelay();
 	}
 
 	if(_state.ForcedBlankDisableTimer) {
@@ -169,12 +161,6 @@ void GbaPpu::ProcessEndOfScanline()
 		}
 	}
 
-	if(_state.Scanline < 160) {
-		_transformUpdateDelay = 6;
-		_hasPendingUpdates = true;
-		_memoryManager->SetPendingUpdateFlag();
-	}
-
 	if(_state.ScanlineIrqEnabled && _state.Scanline == _state.Lyc) {
 		_console->GetMemoryManager()->SetDelayedIrqSource(GbaIrqSource::LcdScanlineMatch, 2);
 	}
@@ -219,6 +205,8 @@ void GbaPpu::DebugSendFrame()
 
 void GbaPpu::RenderScanline(bool forceRender)
 {
+	ProcessLayerToggleDelay();
+
 	if(_skipRender && !forceRender) {
 		return;
 	}
@@ -676,6 +664,8 @@ void GbaPpu::RenderTransformTilemap()
 		return;
 	}
 
+	UpdateLayerTransform<i>();
+
 	uint16_t screenSize = 128 << layer.ScreenSize;
 
 	//MessageManager::Log(std::to_string(_state.Scanline) + " render " + std::to_string(_lastRenderCycle+1) + " to " + std::to_string(_state.Cycle));
@@ -736,6 +726,8 @@ void GbaPpu::RenderBitmapMode()
 	if(!layer.Enabled || _emu->GetSettings()->GetGbaConfig().HideBgLayers[2]) {
 		return;
 	}
+
+	UpdateLayerTransform<2>();
 
 	GbaTransformConfig& cfg = _state.Transform[0];
 
@@ -1153,22 +1145,25 @@ void GbaPpu::SetTransformOrigin(uint8_t i, uint8_t value, bool setY)
 template<int i>
 inline void GbaPpu::UpdateLayerTransform()
 {
+	//This appears to run on or around cycle 6, based on the "bgpd" test
+	if(_lastRenderCycle >= 6 || _state.Cycle < 6) {
+		return;
+	}
+
 	GbaTransformConfig& cfg = _state.Transform[i - 2];
 	GbaBgConfig& layer = _state.BgLayers[i];
 
-	if(layer.Enabled) {
-		//Update x/y values for next scanline for transform layers
-		if(cfg.NeedInit) {
-			cfg.LatchOriginX = (int32_t)cfg.OriginX;
-			cfg.LatchOriginY = (int32_t)cfg.OriginY;
-			cfg.NeedInit = false;
-		} else if(!layer.Mosaic) {
-			cfg.LatchOriginX += cfg.Matrix[1];
-			cfg.LatchOriginY += cfg.Matrix[3];
-		} else if((_state.Scanline - 1) % (_state.BgMosaicSizeY + 1) == _state.BgMosaicSizeY) {
-			cfg.LatchOriginX += cfg.Matrix[1] * (_state.BgMosaicSizeY + 1);
-			cfg.LatchOriginY += cfg.Matrix[3] * (_state.BgMosaicSizeY + 1);
-		}
+	//Update x/y values for next scanline for transform layers
+	if(cfg.NeedInit) {
+		cfg.LatchOriginX = (int32_t)cfg.OriginX;
+		cfg.LatchOriginY = (int32_t)cfg.OriginY;
+		cfg.NeedInit = false;
+	} else if(!layer.Mosaic) {
+		cfg.LatchOriginX += cfg.Matrix[1];
+		cfg.LatchOriginY += cfg.Matrix[3];
+	} else if((_state.Scanline - 1) % (_state.BgMosaicSizeY + 1) == _state.BgMosaicSizeY) {
+		cfg.LatchOriginX += cfg.Matrix[1] * (_state.BgMosaicSizeY + 1);
+		cfg.LatchOriginY += cfg.Matrix[3] * (_state.BgMosaicSizeY + 1);
 	}
 
 	if(cfg.PendingUpdateX) {
@@ -1187,27 +1182,44 @@ inline void GbaPpu::UpdateLayerTransform()
 	_layerData[i].RenderX = 0;
 }
 
-void GbaPpu::ProcessPendingUpdates()
+void GbaPpu::ProcessLayerToggleDelay()
 {
-	if(_transformUpdateDelay && --_transformUpdateDelay == 0) {
-		if(_state.BgMode >= 1) {
-			UpdateLayerTransform<2>();
-		}
-		if(_state.BgMode == 2) {
-			UpdateLayerTransform<3>();
-		}
+	//NOTE: Exact timing hasn't been verified
+	//The mGBA Suite "Layer toggle 2" test works properly between cycles 31-40
+	//The mGBA Suite "Layer toggle" test is a lot more lenient (writes around H=1065)
+	//"Spyro - Season of Ice" disables all layers on H=29 and enables layers 0+1 on H=32 , and expects the layer to be enabled 2 scanlines later
+	//So values between 33 and 40 currently work for all 3 test cases above
+	if(_lastRenderCycle >= 37 || _state.Cycle < 37) {
+		return;
 	}
 
-	_hasPendingUpdates = _transformUpdateDelay > 0;
+	for(int i = 0; i < 4; i++) {
+		if(_state.BgLayers[i].EnableTimer && --_state.BgLayers[i].EnableTimer == 0) {
+			_state.BgLayers[i].Enabled = true;
+		}
+
+		if(_state.BgLayers[i].DisableTimer && --_state.BgLayers[i].DisableTimer == 0) {
+			_state.BgLayers[i].Enabled = false;
+		}
+	}
 }
 
 void GbaPpu::SetLayerEnabled(int layer, bool enabled)
 {
-	if(_state.BgLayers[layer].Enabled || !enabled) {
-		_state.BgLayers[layer].Enabled = enabled;
-		_state.BgLayers[layer].EnableTimer = 0;
-	} else if(_state.BgLayers[layer].EnableTimer == 0) {
-		_state.BgLayers[layer].EnableTimer = 2;
+	//"Layer toggle 2" test seems to imply that fully disabling a layer has a delay and that
+	//re-enabling the layer after disabling it can cause rendering for that layer to resume
+	//mid-scanline, until the layer gets fully disabled (and then re-enabled again after
+	//a delay because it was re-enabled)
+	if(enabled && _state.BgLayers[layer].EnableTimer == 0) {
+		_state.BgLayers[layer].EnableTimer = 3;
+		if(_state.BgLayers[layer].DisableTimer == 3) {
+			_state.BgLayers[layer].DisableTimer = 0;
+		}
+	} else if(!enabled && _state.BgLayers[layer].DisableTimer == 0) {
+		_state.BgLayers[layer].DisableTimer = 3;
+		if(_state.BgLayers[layer].EnableTimer == 3) {
+			_state.BgLayers[layer].EnableTimer = 0;
+		}
 	}
 }
 
@@ -1218,6 +1230,8 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 			//Only run renderer during active rendering (< 1006), or if the write could affect sprites/window processing
 			RenderScanline(true);
 		}
+	} else {
+		_lastRenderCycle = _state.Cycle;
 	}
 
 	switch(addr) {
@@ -1516,6 +1530,7 @@ void GbaPpu::Serialize(Serializer& s)
 		SVI(_state.BgLayers[i].Bpp8Mode);
 		SVI(_state.BgLayers[i].Enabled);
 		SVI(_state.BgLayers[i].EnableTimer);
+		SVI(_state.BgLayers[i].DisableTimer);
 		SVI(_state.BgLayers[i].StereoMode);
 	}
 	
@@ -1608,9 +1623,6 @@ void GbaPpu::Serialize(Serializer& s)
 		SV(_oamScanline);
 		SV(_oamMosaicY);
 		SV(_oamMosaicScanline);
-
-		SV(_hasPendingUpdates);
-		SV(_transformUpdateDelay);
 
 		for(int i = 0; i < 4; i++) {
 			SVI(_layerData[i].TilemapData);

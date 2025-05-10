@@ -137,10 +137,6 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 	_ppu->Exec();
 	_timer->Exec(_masterClock);
 
-	if(_ppu->HasPendingUpdates()) {
-		_ppu->ProcessPendingUpdates();
-	}
-
 	if(_serial->HasPendingIrq()) {
 		_serial->CheckForIrq(_masterClock);
 	}
@@ -155,8 +151,7 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 		_state.IrqUpdateCounter ||
 		_pendingIrqSourceDelay ||
 		_haltDelay ||
-		_serial->HasPendingIrq() ||
-		_ppu->HasPendingUpdates()
+		_serial->HasPendingIrq()
 	);
 }
 

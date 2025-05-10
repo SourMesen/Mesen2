@@ -135,6 +135,7 @@ struct GbaBgConfig
 	bool Bpp8Mode;
 	bool Enabled;
 	uint8_t EnableTimer;
+	uint8_t DisableTimer;
 	GbaBgStereoMode StereoMode;
 };
 

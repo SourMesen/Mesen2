@@ -147,9 +147,6 @@ private:
 	uint8_t _oamMosaicScanline = 0;
 	uint8_t _oamMosaicY = 0;
 
-	bool _hasPendingUpdates = false;
-	uint8_t _transformUpdateDelay = 0;
-
 	uint8_t _memoryAccess[308 * 4] = {};
 	
 	typedef void(GbaPpu::*Func)();
@@ -213,6 +210,7 @@ private:
 
 	void ProcessEndOfScanline();
 	void ProcessHBlank();
+	void ProcessLayerToggleDelay();
 
 	void DebugProcessMemoryAccessView();
 	bool IsScanlineMatch();
@@ -257,8 +255,5 @@ public:
 	uint32_t GetCycle() { return _state.Cycle; }
 	bool IsBitmapMode() { return _state.BgMode >= 3; }
 
-	bool HasPendingUpdates() { return _hasPendingUpdates; }
-	void ProcessPendingUpdates();
-	
 	void Serialize(Serializer& s) override;
 };
