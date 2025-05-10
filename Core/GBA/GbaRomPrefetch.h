@@ -102,12 +102,13 @@ public:
 		}
 	}
 
+	__forceinline bool NeedExec(bool prefetchEnabled)
+	{
+		return _state.ReadAddr > 0 && !IsFull() && (prefetchEnabled || _state.ClockCounter > 0);
+	}
+
 	void Exec(uint8_t clocks, bool prefetchEnabled)
 	{
-		if(_state.ReadAddr == 0 || IsFull() || (!prefetchEnabled && _state.ClockCounter == 0)) {
-			return;
-		}
-
 		_state.Started = true;
 
 		if(_state.WasFilled) {
@@ -197,7 +198,9 @@ public:
 			if(!IsEmpty()) {
 				//Data is already available, return it without any additional delay
 				_state.ReadAddr += 2;
-				Exec(1, prefetchEnabled);
+				if(NeedExec(prefetchEnabled)) {
+					Exec(1, prefetchEnabled);
+				}
 				return 1;
 			} else {
 				//Prefetch in progress, wait until it ends
@@ -213,7 +216,9 @@ public:
 				return WaitForPendingRead();
 			}
 		} else {
-			Exec(1, prefetchEnabled);
+			if(NeedExec(prefetchEnabled)) {
+				Exec(1, prefetchEnabled);
+			}
 			return 1;
 		}
 	}

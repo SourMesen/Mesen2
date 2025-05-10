@@ -79,7 +79,9 @@ void GbaMemoryManager::ProcessIdleCycle()
 		return;
 	}
 
-	_prefetch->Exec(1, _state.PrefetchEnabled);
+	if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
+		_prefetch->Exec(1, _state.PrefetchEnabled);
+	}
 	ProcessInternalCycle<true>();
 }
 
@@ -224,7 +226,9 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 
 	if(addr < 0x8000000 || addr >= 0x10000000) {
 		waitStates = GetWaitStates(mode, addr);
-		_prefetch->Exec(waitStates, _state.PrefetchEnabled);
+		if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
+			_prefetch->Exec(waitStates, _state.PrefetchEnabled);
+		}
 	} else if((mode & GbaAccessMode::Dma) || !(mode & GbaAccessMode::Prefetch)) {
 		//Accesses to ROM from DMA or reads not caused by the CPU loading opcodes will reset the cartridge prefetcher
 		//When the prefetch is reset on its last cycle, the ROM access takes an extra cycle to complete
@@ -269,14 +273,18 @@ void GbaMemoryManager::ProcessVramAccess(GbaAccessModeVal mode, uint32_t addr)
 
 void GbaMemoryManager::ProcessVramStalling(uint8_t memType)
 {
-	_prefetch->Exec(1, _state.PrefetchEnabled);
+	if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
+		_prefetch->Exec(1, _state.PrefetchEnabled);
+	}
 	_dmaController->ResetIdleCounter();
 
 	_ppu->RenderScanline(true);
 	while(_ppu->IsAccessingMemory(memType)) {
 		//Block CPU until PPU is done accessing ram
 		ProcessInternalCycle();
-		_prefetch->Exec(1, _state.PrefetchEnabled);
+		if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
+			_prefetch->Exec(1, _state.PrefetchEnabled);
+		}
 		_ppu->RenderScanline(true);
 	}
 }
@@ -342,7 +350,7 @@ uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 		value = b0 | (b1 << 8);
 		UpdateOpenBus<2>(addr, value);
 		value = isSigned ? (uint32_t)(int16_t)value : (uint16_t)value;
-		if(!(mode & GbaAccessMode::NoRotate)) {
+		if(!(mode & GbaAccessMode::NoRotate) && (addr & 0x01)) {
 			value = RotateValue(mode, addr, value, isSigned);
 		}
 		_emu->ProcessMemoryRead<CpuType::Gba, 2>(addr & ~0x01, value, mode & GbaAccessMode::Prefetch ? MemoryOperationType::ExecOpCode : MemoryOperationType::Read);
@@ -353,7 +361,7 @@ uint32_t GbaMemoryManager::Read(GbaAccessModeVal mode, uint32_t addr)
 		uint8_t b3 = InternalRead(mode, addr | 3, addr);
 		value = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
 		UpdateOpenBus<4>(addr, value);
-		if(!(mode & GbaAccessMode::NoRotate)) {
+		if(!(mode & GbaAccessMode::NoRotate) && (addr & 0x03)) {
 			value = RotateValue(mode, addr, value, isSigned);
 		}
 		_emu->ProcessMemoryRead<CpuType::Gba, 4>(addr & ~0x03, value, mode & GbaAccessMode::Prefetch ? MemoryOperationType::ExecOpCode : MemoryOperationType::Read);

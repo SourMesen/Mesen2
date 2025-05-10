@@ -87,8 +87,6 @@ private:
 	void ArmSoftwareInterrupt();
 	void ArmInvalidOp();
 
-	bool CheckConditions(uint32_t condCode);
-
 	static void InitThumbOpTable();
 	void ThumbMoveShiftedRegister();
 	void ThumbAddSubtract();
@@ -133,6 +131,47 @@ private:
 
 	void ProcessException(GbaCpuMode mode, GbaCpuVector vector);
 	void CheckForIrqs();
+
+	__forceinline bool CheckConditions(uint32_t condCode)
+	{
+		/*Code Suffix Flags Meaning
+		0000 EQ Z set equal
+		0001 NE Z clear not equal
+		0010 CS C set unsigned higher or same
+		0011 CC C clear unsigned lower
+		0100 MI N set negative
+		0101 PL N clear positive or zero
+		0110 VS V set overflow
+		0111 VC V clear no overflow
+		1000 HI C set and Z clear unsigned higher
+		1001 LS C clear or Z set unsigned lower or same
+		1010 GE N equals V greater or equal
+		1011 LT N not equal to V less than
+		1100 GT Z clear AND(N equals V) greater than
+		1101 LE Z set OR(N not equal to V) less than or equal
+		1110 AL(ignored) always
+		*/
+		switch(condCode) {
+			case 0: return _state.CPSR.Zero;
+			case 1: return !_state.CPSR.Zero;
+			case 2: return _state.CPSR.Carry;
+			case 3: return !_state.CPSR.Carry;
+			case 4: return _state.CPSR.Negative;
+			case 5: return !_state.CPSR.Negative;
+			case 6: return _state.CPSR.Overflow;
+			case 7: return !_state.CPSR.Overflow;
+			case 8: return _state.CPSR.Carry && !_state.CPSR.Zero;
+			case 9: return !_state.CPSR.Carry || _state.CPSR.Zero;
+			case 10: return _state.CPSR.Negative == _state.CPSR.Overflow;
+			case 11: return _state.CPSR.Negative != _state.CPSR.Overflow;
+			case 12: return !_state.CPSR.Zero && (_state.CPSR.Negative == _state.CPSR.Overflow);
+			case 13: return _state.CPSR.Zero || (_state.CPSR.Negative != _state.CPSR.Overflow);
+			case 14: return true;
+			case 15: return false;
+		}
+
+		return true;
+	}
 
 public:
 	virtual ~GbaCpu();
