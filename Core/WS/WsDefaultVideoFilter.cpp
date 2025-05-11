@@ -37,12 +37,23 @@ void WsDefaultVideoFilter::InitLookupTable()
 		uint8_t b = rgb444 & 0xF;
 
 		if(_adjustColors) {
-			uint8_t r2 = r * 13 + g * 2 + b;
-			uint8_t g2 = g * 12 + b * 4;
-			uint8_t b2 = r * 3 + g * 2 + b * 11;
-			r = r2;
-			g = g2;
-			b = b2;
+			if(_console->GetModel() == WsModel::Monochrome) {
+				//Same formula as what asie recently implemented for ares
+				auto applyGamma = [](uint32_t color, uint32_t min, uint32_t max) {
+					return min + (uint32_t)(pow(color / 15.0, 1 / 2.2) * (max - min));
+				};
+
+				r = applyGamma(r, 0x2B, 0xE0);
+				g = applyGamma(g, 0x2B, 0xDB);
+				b = applyGamma(b, 0x26, 0xCD);
+			} else {
+				uint8_t r2 = r * 13 + g * 2 + b;
+				uint8_t g2 = g * 12 + b * 4;
+				uint8_t b2 = r * 3 + g * 2 + b * 11;
+				r = r2;
+				g = g2;
+				b = b2;
+			}
 		} else {
 			r = ColorUtilities::Convert4BitTo8Bit(r);
 			g = ColorUtilities::Convert4BitTo8Bit(g);
