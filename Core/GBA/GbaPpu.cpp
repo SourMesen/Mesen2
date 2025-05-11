@@ -113,12 +113,6 @@ void GbaPpu::ProcessEndOfScanline()
 	std::fill(_layerOutput[2], _layerOutput[2] + 240, GbaPixelData {});
 	std::fill(_layerOutput[3], _layerOutput[3] + 240, GbaPixelData {});
 
-	for(int i = 0; i < 4; i++) {
-		//Unverified: Latch X scroll value at the start of each scanline
-		//This fixes display issues in the Fire Emblem Sacred Stones menu
-		_state.BgLayers[i].ScrollXLatch = _state.BgLayers[i].ScrollX;
-	}
-
 	if(_state.Scanline >= 2 && _state.Scanline < 162 && _triggerSpecialDma) {
 		//"Video Capture Mode" dma, channel 3 only - auto-stops on scanline 161
 		_console->GetDmaController()->TriggerDmaChannel(GbaDmaTrigger::Special, 3, _state.Scanline == 161);
@@ -497,21 +491,21 @@ void GbaPpu::SetPixelData(GbaPixelData& pixel, uint16_t color, uint8_t priority,
 }
 
 template<int i, bool mosaic, bool bpp8>
-void GbaPpu::PushBgPixels()
+void GbaPpu::PushBgPixels(int renderX)
 {
 	if(_layerData[i].HoriMirror) {
-		PushBgPixels<i, mosaic, bpp8, true>();
+		PushBgPixels<i, mosaic, bpp8, true>(renderX);
 	} else {
-		PushBgPixels<i, mosaic, bpp8, false>();
+		PushBgPixels<i, mosaic, bpp8, false>(renderX);
 	}
 }
 
 template<int i, bool mosaic, bool bpp8, bool mirror>
-void GbaPpu::PushBgPixels()
+void GbaPpu::PushBgPixels(int renderX)
 {
 	GbaLayerRendererData& data = _layerData[i];
 
-	uint16_t tileData = _vram16[data.FetchAddr >> 1];
+	uint16_t tileData = data.TileData;
 	if constexpr(mirror) {
 		if constexpr(bpp8) {
 			tileData = ((tileData & 0xFF00) >> 8) | ((tileData & 0x00FF) << 8);
@@ -525,7 +519,6 @@ void GbaPpu::PushBgPixels()
 		}
 	}
 
-	int16_t renderX = data.RenderX;
 	constexpr int len = bpp8 ? 2 : 4;
 	for(int x = 0; x < len; x++) {
 		if(renderX >= 0 && renderX < 240) {
@@ -546,7 +539,6 @@ void GbaPpu::PushBgPixels()
 	}
 
 	data.FetchAddr += (mirror ? -2 : 2);
-	data.RenderX = renderX;
 };
 
 template<int i>
@@ -590,83 +582,44 @@ void GbaPpu::RenderTilemap()
 	yPos &= 0xFF;
 
 	if(_lastRenderCycle == -1) {
-		_layerData[i].RenderX = -(layer.ScrollXLatch & 0x07);
+		_layerData[i].NextLoad = -1;
 	}
 
-	//MessageManager::Log(std::to_string(_state.Scanline) + " render " + std::to_string(_lastRenderCycle+1) + " to " + std::to_string(_state.Cycle));
-	int gap = (32 + i - (layer.ScrollXLatch & 0x07) * 4);
-	int cycle = std::max(0, _lastRenderCycle + 1 - gap);
+	int gap = 4 + i;
+	int cycle = std::max(0, _lastRenderCycle + 1 - gap) & ~0x03;
 	int end = std::min<int>(_state.Cycle, 1006) - gap;
-
-	for(; cycle <= end; cycle++) {
-		//MessageManager::Log(std::to_string(_state.Scanline) + " fetch cycle " + std::to_string(fetchCycle));
-		switch(cycle & 0x1F) {
-			case 0: {
-				//Fetch tilemap data
-				uint16_t xPos = layer.ScrollXLatch + _layerData[i].RenderX;
-				uint16_t addr = baseAddr;
-				if(layer.DoubleWidth && (xPos & 0x100)) {
-					addr += 0x400;
-				}
-				xPos &= 0xFF;
-				
-				uint16_t vramAddr = addr + yPos / 8 * 32 + xPos / 8;
-				uint16_t tilemapData = _vram16[vramAddr];
-				_memoryAccess[cycle + gap] |= GbaPpuMemAccess::Vram;
-
-				_layerData[i].TileIndex = tilemapData & 0x3FF;
-				_layerData[i].HoriMirror = tilemapData & (1 << 10);
-				_layerData[i].VertMirror = tilemapData & (1 << 11);
-				_layerData[i].PaletteIndex = bpp8 ? 0 : (tilemapData >> 12) & 0x0F;
-
-				_layerData[i].TileRow = _layerData[i].VertMirror ? (~yPos & 0x07) : (yPos & 0x07);
-				_layerData[i].TileColumn = _layerData[i].HoriMirror ? (bpp8 ? 6 : 2) : 0;
-				_layerData[i].FetchAddr = layer.TilesetAddr + _layerData[i].TileIndex * (bpp8 ? 64 : 32) + _layerData[i].TileRow * (bpp8 ? 8 : 4) + _layerData[i].TileColumn;
-
-				//MessageManager::Log(std::to_string(_state.Scanline) + "," + std::to_string(cycle) + " fetch tilemap");
-				cycle += 3;
-				break;
+	for(; cycle <= end; cycle += 4) {
+		int pixelOffset = (cycle >> 2) - 7;
+		if(((pixelOffset + layer.ScrollX) & 0x07) == 0) {
+			//Fetch tilemap data
+			uint16_t xPos = layer.ScrollX + pixelOffset;
+			uint16_t addr = baseAddr;
+			if(layer.DoubleWidth && (xPos & 0x100)) {
+				addr += 0x400;
 			}
+			xPos &= 0xFF;
 
-			case 4: {
-				//Fetch tile data (4bpp & 8bpp)
-				PushBgPixels<i, mosaic, bpp8>();
-				_memoryAccess[cycle + gap] |= GbaPpuMemAccess::Vram;
+			uint16_t vramAddr = addr + yPos / 8 * 32 + xPos / 8;
+			uint16_t tilemapData = _vram16[vramAddr];
+			_memoryAccess[cycle + gap] |= GbaPpuMemAccess::Vram;
 
-				//MessageManager::Log(std::to_string(_state.Scanline) + "," + std::to_string(cycle) + " fetch tile data 0");
-				cycle += bpp8 ? 7 : 15;
-				break;
-			}
+			_layerData[i].TileIndex = tilemapData & 0x3FF;
+			_layerData[i].HoriMirror = tilemapData & (1 << 10);
+			_layerData[i].VertMirror = tilemapData & (1 << 11);
+			_layerData[i].PaletteIndex = bpp8 ? 0 : (tilemapData >> 12) & 0x0F;
 
-			case 12: {
-				//Fetch tile data (8bpp only)
-				if constexpr(bpp8) {
-					PushBgPixels<i, mosaic, bpp8>();
-					_memoryAccess[cycle + gap] |= GbaPpuMemAccess::Vram;
-				}
-				cycle += 7;
-				break;
-			}
+			_layerData[i].TileRow = _layerData[i].VertMirror ? (~yPos & 0x07) : (yPos & 0x07);
+			_layerData[i].TileColumn = _layerData[i].HoriMirror ? (bpp8 ? 6 : 2) : 0;
+			_layerData[i].FetchAddr = layer.TilesetAddr + _layerData[i].TileIndex * (bpp8 ? 64 : 32) + _layerData[i].TileRow * (bpp8 ? 8 : 4) + _layerData[i].TileColumn;
 
-			case 20: {
-				//Fetch tile data (4bpp & 8bpp)
-				PushBgPixels<i, mosaic, bpp8>();
-				_memoryAccess[cycle + gap] |= GbaPpuMemAccess::Vram;
+			_layerData[i].NextLoad = cycle + 4;
+		} else if(_layerData[i].NextLoad == cycle) {
+			//Fetch tile data (4bpp & 8bpp)
+			_layerData[i].TileData = _vram16[_layerData[i].FetchAddr >> 1];
+			PushBgPixels<i, mosaic, bpp8>(((cycle - 4) >> 2) - 7);
+			_memoryAccess[cycle + gap] |= GbaPpuMemAccess::Vram;
 
-				//MessageManager::Log(std::to_string(_state.Scanline) + "," + std::to_string(cycle) + " fetch tile data 2");
-				cycle += bpp8 ? 7 : (11 - i);
-				break;
-			}
-						
-			case 28: {
-				//Fetch tile data (8bpp only)
-				if constexpr(bpp8) {
-					PushBgPixels<i, mosaic, bpp8>();
-					_memoryAccess[cycle + gap] |= GbaPpuMemAccess::Vram;
-				}
-				cycle += 3 - i;
-				break;
-			}
+			_layerData[i].NextLoad = cycle + (bpp8 ? 8 : 16);
 		}
 	}
 }
@@ -1557,7 +1510,6 @@ void GbaPpu::Serialize(Serializer& s)
 		SVI(_state.BgLayers[i].TilemapAddr);
 		SVI(_state.BgLayers[i].TilesetAddr);
 		SVI(_state.BgLayers[i].ScrollX);
-		SVI(_state.BgLayers[i].ScrollXLatch);
 		SVI(_state.BgLayers[i].ScrollY);
 		SVI(_state.BgLayers[i].ScreenSize);
 		SVI(_state.BgLayers[i].DoubleWidth);
@@ -1668,6 +1620,7 @@ void GbaPpu::Serialize(Serializer& s)
 			SVI(_layerData[i].FetchAddr);
 			SVI(_layerData[i].TileIndex);
 			SVI(_layerData[i].RenderX);
+			SVI(_layerData[i].NextLoad);
 			SVI(_layerData[i].TransformX);
 			SVI(_layerData[i].TransformY);
 			SVI(_layerData[i].XPos);

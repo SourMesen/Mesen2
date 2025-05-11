@@ -124,7 +124,6 @@ struct GbaBgConfig
 	uint16_t TilemapAddr;
 	uint16_t TilesetAddr;
 	uint16_t ScrollX;
-	uint16_t ScrollXLatch;
 	uint16_t ScrollY;
 	uint8_t ScreenSize;
 	bool DoubleWidth;

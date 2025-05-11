@@ -17,6 +17,7 @@ struct GbaLayerRendererData
 
 	uint16_t TileIndex;
 	int16_t RenderX;
+	int16_t NextLoad;
 
 	int32_t TransformX;
 	int32_t TransformY;
@@ -188,8 +189,8 @@ private:
 
 	void SendFrame();
 	
-	template<int i, bool mosaic, bool bpp8> __forceinline void PushBgPixels();
-	template<int i, bool mosaic, bool bpp8, bool mirror> __forceinline void PushBgPixels();
+	template<int i, bool mosaic, bool bpp8> __forceinline void PushBgPixels(int renderX);
+	template<int i, bool mosaic, bool bpp8, bool mirror> __forceinline void PushBgPixels(int renderX);
 
 	template<int layer> void RenderTilemap();
 	template<int layer, bool mosaic, bool bpp8> void RenderTilemap();
