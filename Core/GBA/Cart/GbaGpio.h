@@ -19,6 +19,7 @@ public:
 
 	GbaGpioState& GetState() { return _state; }
 
+	bool CanRead();
 	uint8_t Read(uint32_t addr);
 	void Write(uint32_t addr, uint8_t value);
 

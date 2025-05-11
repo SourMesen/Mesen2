@@ -8,17 +8,19 @@ GbaGpio::GbaGpio(GbaRtc* rtc)
 	_rtc = rtc;
 }
 
+bool GbaGpio::CanRead()
+{
+	return _state.ReadWrite;
+}
+
 uint8_t GbaGpio::Read(uint32_t addr)
 {
-	if(_state.ReadWrite) {
-		switch(addr) {
-			case 0x80000C4: return _state.Data;
-			case 0x80000C6: return _state.WritablePins;
-			case 0x80000C8: return (uint8_t)_state.ReadWrite;
-			default: return 0;
-		}
+	switch(addr) {
+		case 0x80000C4: return _state.Data;
+		case 0x80000C6: return _state.WritablePins;
+		case 0x80000C8: return (uint8_t)_state.ReadWrite;
+		default: return 0;
 	}
-	return 0;
 }
 
 void GbaGpio::UpdateDataPins()
