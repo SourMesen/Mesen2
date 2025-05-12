@@ -79,7 +79,7 @@ public class WsRegisterViewer
 			new RegEntry("$05.0-6", "First Sprite Index", ppu.FirstSpriteIndex, Format.X8),
 			new RegEntry("$06", "Sprite Count", ppu.SpriteCount, Format.X8),
 			new RegEntry("$07.0-3", "Screen 1 Address", "$" + ppu.BgLayers[0].MapAddress.ToString("X4"), ppu.BgLayers[0].MapAddress >> 11),
-			new RegEntry("$07.4-7", "Screen 1 Address", "$" + ppu.BgLayers[1].MapAddress.ToString("X4"), ppu.BgLayers[1].MapAddress >> 11),
+			new RegEntry("$07.4-7", "Screen 2 Address", "$" + ppu.BgLayers[1].MapAddress.ToString("X4"), ppu.BgLayers[1].MapAddress >> 11),
 			new RegEntry("$08", "Screen 2 Window Left", ppu.BgWindow.Left, Format.X8),
 			new RegEntry("$09", "Screen 2 Window Top", ppu.BgWindow.Top, Format.X8),
 			new RegEntry("$0A", "Screen 2 Window Right", ppu.BgWindow.Right, Format.X8),
