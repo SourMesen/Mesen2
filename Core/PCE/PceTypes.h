@@ -210,8 +210,7 @@ struct PcePsgChannelState
 	bool DdaEnabled;
 	uint8_t DdaOutputValue;
 
-	uint8_t WriteAddr;
-	uint8_t ReadAddr;
+	uint8_t WaveAddr;
 	uint32_t Timer;
 	int8_t CurrentOutput;
 

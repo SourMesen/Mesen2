@@ -187,8 +187,7 @@ public struct PcePsgChannelState
 	[MarshalAs(UnmanagedType.I1)] public bool DdaEnabled;
 	public byte DdaOutputValue;
 
-	public byte WriteAddr;
-	public byte ReadAddr;
+	public byte WaveAddr;
 	public UInt32 Timer;
 	public byte CurrentOutput;
 
