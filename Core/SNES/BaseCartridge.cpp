@@ -134,9 +134,9 @@ int32_t BaseCartridge::GetHeaderScore(uint32_t addr)
 	
 	uint32_t score = 0;
 	uint8_t mode = (cartInfo.MapMode & ~0x10);
-	if((mode == 0x20 || mode == 0x22) && addr < 0x8000) {
+	if((mode == 0x20 || mode == 0x22) && (addr & ~0x400000) < 0x8000) {
 		score++;
-	} else if((mode == 0x21 || mode == 0x25) && addr >= 0x8000) {
+	} else if((mode == 0x21 || mode == 0x25) && (addr & ~0x400000) >= 0x8000) {
 		score++;
 	}
 
@@ -180,7 +180,7 @@ int32_t BaseCartridge::GetHeaderScore(uint32_t addr)
 void BaseCartridge::LoadRom()
 {
 	//Find the best potential header among lorom/hirom + headerless/headered combinations
-	vector<uint32_t> baseAddresses = { 0, 0x200, 0x8000, 0x8200, 0x408000, 0x408200 };
+	vector<uint32_t> baseAddresses = { 0, 0x200, 0x8000, 0x8200, 0x400000, 0x400200, 0x408000, 0x408200 };
 	int32_t bestScore = -1;
 	bool hasHeader = false;
 	bool isLoRom = true;
@@ -206,7 +206,7 @@ void BaseCartridge::LoadRom()
 	}
 
 	if(isLoRom) {
-		flags |= CartFlags::LoRom;
+		flags |= isExRom ? CartFlags::ExLoRom : CartFlags::LoRom;
 	} else {
 		flags |= isExRom ? CartFlags::ExHiRom : CartFlags::HiRom;
 	}
@@ -220,8 +220,6 @@ void BaseCartridge::LoadRom()
 	
 	if((flags & CartFlags::HiRom) && (_cartInfo.MapMode & 0x27) == 0x25) {
 		flags |= CartFlags::ExHiRom;
-	} else if((flags & CartFlags::LoRom) && (_cartInfo.MapMode & 0x27) == 0x22) {
-		flags |= CartFlags::ExLoRom;
 	}
 
 	if(_cartInfo.MapMode & 0x10) {
@@ -456,8 +454,12 @@ void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 		return;
 	}
 
-	if(_flags & CartFlags::LoRom) {
-		mm.RegisterHandler(0x00, 0x7D, 0x8000, 0xFFFF, _prgRomHandlers);
+	if(_flags & (CartFlags::LoRom | CartFlags::ExLoRom)) {
+		if(_flags & CartFlags::ExLoRom) {
+			mm.RegisterHandler(0x00, 0x7D, 0x8000, 0xFFFF, _prgRomHandlers, 0, 0x400);
+		} else {
+			mm.RegisterHandler(0x00, 0x7D, 0x8000, 0xFFFF, _prgRomHandlers);
+		}
 		mm.RegisterHandler(0x80, 0xFF, 0x8000, 0xFFFF, _prgRomHandlers);
 
 		if(_saveRamSize > 0) {
