@@ -122,7 +122,7 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 	Log("[iNes] CHR ROM: " + std::to_string(chrSize/1024) + " KB");
 	if(romData.ChrRamSize > 0 || romData.Info.IsNes20Header) {
 		Log("[iNes] CHR RAM: " + std::to_string(romData.ChrRamSize / 1024) + " KB");
-	} else if(romData.ChrRom.size() == 0) {
+	} else if(chrSize == 0) {
 		Log("[iNes] CHR RAM: 8 KB");
 	}
 	if(romData.WorkRamSize > 0 || romData.Info.IsNes20Header) {
