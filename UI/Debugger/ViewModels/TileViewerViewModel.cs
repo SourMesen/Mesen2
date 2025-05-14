@@ -806,10 +806,10 @@ namespace Mesen.Debugger.ViewModels
 					return new() {
 						CreatePreset(0, "VRAM", () => ApplyPpuPreset()),
 						CreatePreset(0, "ROM", () => ApplyPrgPreset()),
-						CreatePreset(1, "BG1", () => ApplyBgPreset(0)),
-						CreatePreset(1, "BG2", () => ApplyBgPreset(1)),
-						CreatePreset(1, "BG3", () => ApplyBgPreset(2)),
-						CreatePreset(1, "BG4", () => ApplyBgPreset(3)),
+						CreatePreset(1, "BG0", () => ApplyBgPreset(0)),
+						CreatePreset(1, "BG1", () => ApplyBgPreset(1)),
+						CreatePreset(1, "BG2", () => ApplyBgPreset(2)),
+						CreatePreset(1, "BG3", () => ApplyBgPreset(3)),
 						CreatePreset(2, "Sprites", () => ApplySpritePreset(0)),
 					};
 
