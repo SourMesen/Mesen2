@@ -59,7 +59,7 @@ private:
 	bool _prevNeedNmi = false;
 	bool _needNmi = false;
 
-	uint64_t _lastCrashWarning = 0;
+	uint64_t _hideCrashWarning = 0;
 	bool _isDmcDmaRead = false;
 
 	__forceinline void StartCpuCycle(bool forRead);
@@ -783,11 +783,7 @@ private:
 	}
 
 	//Unimplemented/Incorrect Unofficial OP codes
-	void HLT()
-	{
-		//normally freezes the cpu, we can probably assume nothing will ever call this
-		GetOperandValue();
-	}
+	void HLT();
 
 	void UNK()
 	{

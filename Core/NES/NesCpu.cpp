@@ -94,7 +94,7 @@ void NesCpu::Reset(bool softReset, ConsoleRegion region)
 	_abortDmcDma = false;
 	_isDmcDmaRead = false;
 	_cpuWrite = false;
-	_lastCrashWarning = 0;
+	_hideCrashWarning = false;
 
 	//Use _memoryManager->Read() directly to prevent clocking the PPU/APU when setting PC at reset
 	_state.PC = _memoryManager->Read(NesCpu::ResetVector) | _memoryManager->Read(NesCpu::ResetVector+1) << 8;
@@ -287,26 +287,8 @@ uint16_t NesCpu::FetchOperand()
 		case NesAddrMode::AbsY: return GetAbsYAddr(false);
 		case NesAddrMode::AbsYW: return GetAbsYAddr(true);
 		case NesAddrMode::Other: return 0; //Do nothing, op is handled specifically
-		default: break;
+		default: return 0;
 	}
-	
-#if !defined(DUMMYCPU)
-	if(_lastCrashWarning == 0 || _state.CycleCount - _lastCrashWarning > 5000000) {
-		MessageManager::DisplayMessage("Error", "GameCrash", "Invalid OP code - CPU crashed.");
-		_lastCrashWarning = _state.CycleCount;
-	}
-
-	_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnCpuCrash);
-	
-	if(!_emu->IsDebugging() && _console->GetRomFormat() == RomFormat::Nsf) {
-		//For NSF files, reset cpu if it ever crashes
-		_emu->Reset();
-	}
-	
-	return 0;
-#else 
-	return 0;
-#endif
 }
 
 void NesCpu::EndCpuCycle(bool forRead)
@@ -584,6 +566,30 @@ void NesCpu::SetMasterClockDivider(ConsoleRegion region)
 			_endClockCount = 8;
 			break;
 	}
+}
+
+void NesCpu::HLT()
+{
+	//Freeze the CPU, implemented by jumping back and re-executing this op infinitely (for performance reasons)
+	_state.PC -= 1;
+
+	//Prevent IRQ/NMI
+	_prevRunIrq = false;
+	_prevNeedNmi = false;
+
+#if !defined(DUMMYCPU)
+	if(!_hideCrashWarning) {
+		_hideCrashWarning = true;
+
+		MessageManager::DisplayMessage("Error", "GameCrash", "Invalid OP code - CPU crashed.");
+		_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnCpuCrash);
+
+		if(!_emu->IsDebugging() && _console->GetRomFormat() == RomFormat::Nsf) {
+			//For NSF files, reset cpu if it ever crashes
+			_emu->Reset();
+		}
+	}
+#endif
 }
 
 void NesCpu::Serialize(Serializer &s)
