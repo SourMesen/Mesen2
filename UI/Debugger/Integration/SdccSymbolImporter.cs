@@ -150,6 +150,11 @@ public abstract class SdccSymbolImporter : ISymbolProvider
 			sourceFile = Path.Combine(searchPath, filename);
 		}
 
+		if(File.Exists(sourceFile)) {
+			result = sourceFile;
+			return true;
+		}
+
 		return false;
 	}
 
