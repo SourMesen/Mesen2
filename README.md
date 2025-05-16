@@ -2,6 +2,10 @@
 
 Mesen is a multi-system emulator (NES, SNES, Game Boy, Game Boy Advance, PC Engine, SMS/Game Gear, WonderSwan) for Windows, Linux and macOS.  
 
+## Releases
+
+The latest stable version is available from the [releases on GitHub](https://github.com/SourMesen/Mesen2/releases).  
+
 ## Development Builds
 
 [![Mesen](https://github.com/SourMesen/Mesen2/actions/workflows/build.yml/badge.svg)](https://github.com/SourMesen/Mesen2/actions/workflows/build.yml)
