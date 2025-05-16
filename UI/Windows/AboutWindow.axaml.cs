@@ -31,7 +31,7 @@ namespace Mesen.Windows
 			RuntimeVersion = ".NET " + Environment.Version;
 			RuntimeVersion += RuntimeFeature.IsDynamicCodeSupported ? " (JIT)" : " (AOT)";
 			
-			string? commitHash = DependencyHelper.GetFileContent("BuildSha.txt");
+			string? commitHash = UpdateHelper.GetCommitHash();
 			BuildSha = commitHash ?? "";
 			BuildShortSha = commitHash?.Substring(0, 7) ?? "";
 

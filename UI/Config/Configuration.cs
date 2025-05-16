@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Mesen.Config.Shortcuts;
+using Mesen.Interop;
 using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -128,6 +129,7 @@ namespace Mesen.Config
 			}
 
 			ConfigUpgrade = (int)ConfigUpgradeHint.NextValue - 1;
+			Version = EmuApi.GetMesenVersion().ToString(3);
 		}
 
 		public void InitializeDefaults()

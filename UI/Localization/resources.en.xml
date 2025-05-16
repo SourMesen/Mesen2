@@ -1819,8 +1819,9 @@ E
 
 		<Message ID="CouldNotInstallRuntime">The Visual Studio Runtime could not be installed properly.</Message>
 		<Message ID="EmptyState">&lt;empty&gt;</Message>
+		<Message ID="AutoUpdateNotSupported">The version of Mesen you're using does not support automatic updates. Please visit the website and manually download the latest release.</Message>
 		<Message ID="ErrorWhileCheckingUpdates">An error has occurred while trying to check for updates. Check your internet connection and try again.&#xA;&#xA;Error details:&#xA;{0}</Message>
-		<Message ID="AutoUpdateDisabledMessage">Automatic updates are not enabled on this build - please download the latest version of the code and recompile Mesen to get the latest updates.</Message>
+		<Message ID="AutoUpdateInvalidFile">The downloaded file did not match the expected file.&#xA;&#xA;   Expected SHA256 signature: {0}&#xA;&#xA;   File SHA256 signature: {1}&#xA;&#xA;Please visit the website and manually download the latest release.</Message>
 		<Message ID="FileNotFound">File not found: {0}</Message>
 		<Message ID="InvalidArgument">Invalid argument: {0}</Message>
 

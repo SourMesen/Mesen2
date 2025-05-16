@@ -16,7 +16,7 @@ namespace Mesen.Windows
 		private UpdatePromptViewModel _model;
 
 		[Obsolete("For designer only")]
-		public UpdatePromptWindow() : this(new(new())) { }
+		public UpdatePromptWindow() : this(new(new(), new())) { }
 
 		public UpdatePromptWindow(UpdatePromptViewModel model)
 		{
@@ -44,13 +44,18 @@ namespace Mesen.Windows
 
 		private void OnUpdateClick(object sender, RoutedEventArgs e)
 		{
+			if(_model.FileInfo == null || UpdateHelper.GetCommitHash() == null) {
+				MesenMsgBox.Show(null, "AutoUpdateNotSupported", MessageBoxButtons.OK, MessageBoxIcon.Info);
+				return;
+			}
+			
 			_model.Progress = 0;
 			_model.IsUpdating = true;
 
 			Task.Run(async () => {
 				bool result;
 				try {
-					result = await _model.UpdateMesen();
+					result = await _model.UpdateMesen(this);
 				} catch(Exception ex) {
 					result = false;
 					Dispatcher.UIThread.Post(() => {
