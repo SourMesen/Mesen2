@@ -785,10 +785,16 @@ private:
 	//Unimplemented/Incorrect Unofficial OP codes
 	void HLT();
 
-	void UNK()
+	void ANE()
 	{
-		//Make sure we take the right amount of cycles (not reliable for operations that write to memory, etc.)
-		GetOperandValue();
+		uint8_t imm = GetOperandValue();
+
+		//Set N/Z based on the original value of A
+		SetA(A());
+
+		//Set A without updating the flags
+		uint8_t result = (A() | 0xEE) & X() & imm;
+		_state.A = result;
 	}
 
 	void LAS()

@@ -1,8 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Media;
-using Mesen.Debugger;
-using Mesen.Interop;
-using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI.Fody.Helpers;
 using System.Reactive.Linq;
 using System.Reactive;
 using Mesen.ViewModels;
@@ -13,8 +9,8 @@ namespace Mesen.Config
 	{
 		[Reactive] public bool BreakOnBrk { get; set; } = false;
 		[Reactive] public bool BreakOnUnofficialOpCode { get; set; } = false;
-		[Reactive] public bool BreakOnUnstableOpCode { get; set; } = false;
-		[Reactive] public bool BreakOnCpuCrash { get; set; } = false;
+		[Reactive] public bool BreakOnUnstableOpCode { get; set; } = true;
+		[Reactive] public bool BreakOnCpuCrash { get; set; } = true;
 		
 		[Reactive] public bool BreakOnBusConflict { get; set; } = false;
 		[Reactive] public bool BreakOnDecayedOamRead { get; set; } = false;
