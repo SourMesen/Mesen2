@@ -26,10 +26,12 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(FontSize), 12);
 		public static readonly StyledProperty<bool> ShowByteCodeProperty = AvaloniaProperty.Register<DisassemblyViewer, bool>(nameof(ShowByteCode), false);
 		public static readonly StyledProperty<AddressDisplayType> AddressDisplayTypeProperty = AvaloniaProperty.Register<DisassemblyViewer, AddressDisplayType>(nameof(AddressDisplayType), AddressDisplayType.CpuAddress);
-		
+
 		public static readonly StyledProperty<int> VisibleRowCountProperty = AvaloniaProperty.Register<DisassemblyViewer, int>(nameof(VisibleRowCount), 0);
 		public static readonly StyledProperty<double> HorizontalScrollPositionProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(HorizontalScrollPosition), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<double> HorizontalScrollMaxPositionProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(HorizontalScrollMaxPosition), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+
+		public static readonly StyledProperty<int> MouseOverRowNumberProperty = AvaloniaProperty.Register<DisassemblyViewer, int>(nameof(MouseOverRowNumber), 0);
 
 		private static readonly PolylineGeometry ArrowShape = new PolylineGeometry(new List<Point> {
 			new Point(0, 5), new Point(8, 5), new Point(8, 0), new Point(15, 7), new Point(15, 8), new Point(8, 15), new Point(8, 10), new Point(0, 10),
@@ -51,6 +53,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(VisibleRowCountProperty); }
 			set { SetValue(VisibleRowCountProperty, value); }
+		}
+
+		private int MouseOverRowNumber
+		{
+			get { return GetValue(MouseOverRowNumberProperty); }
+			set { SetValue(MouseOverRowNumberProperty, value); }
 		}
 
 		public double HorizontalScrollPosition
@@ -114,7 +122,8 @@ namespace Mesen.Debugger.Controls
 		{
 			AffectsRender<DisassemblyViewer>(
 				FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty,
-				LinesProperty, SearchStringProperty, AddressDisplayTypeProperty, HorizontalScrollPositionProperty
+				LinesProperty, SearchStringProperty, AddressDisplayTypeProperty, HorizontalScrollPositionProperty,
+				MouseOverRowNumberProperty
 			);
 		}
 
@@ -173,6 +182,10 @@ namespace Mesen.Debugger.Controls
 				rowNumber = -1;
 			}
 
+			if(MouseOverRowNumber != rowNumber) {
+				MouseOverRowNumber = rowNumber;
+			}
+
 			foreach(var codeSegment in _visibleCodeSegments) {
 				if(codeSegment.Bounds.Contains(p)) {
 					//Don't trigger an event if this is the same segment
@@ -202,6 +215,7 @@ namespace Mesen.Debugger.Controls
 			_previousPointerPos = new Point(0, 0);
 			_prevPointerOverSegment = null;
 			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(-1, e, null, null));
+			MouseOverRowNumber = -1;
 		}
 
 		private void InitFontAndLetterSize()
@@ -254,20 +268,24 @@ namespace Mesen.Debugger.Controls
 				_ => throw new NotImplementedException()
 			};
 
-			double symbolMargin = 20;
-			double addressMargin = Math.Floor(LetterSize.Width * addressMaxCharCount + symbolMargin) + 0.5;
+			double symbolMargin = Math.Floor(LetterSize.Width * 2.5);
+			double addressMargin = Math.Floor(LetterSize.Width * addressMaxCharCount) + 9;
 			double byteCodeMargin = Math.Floor(LetterSize.Width * (3 * styleProvider.ByteCodeSize));
 			double codeIndent = Math.Floor(LetterSize.Width * 2) + 0.5;
 
-			//Draw margin (address)
-			context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(235, 235, 235)), new Rect(0, 0, addressMargin, Bounds.Height));
-			context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(addressMargin, 0), new Point(addressMargin, Bounds.Height));
+			//Draw margin (symbol + address)
+			context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(230, 230, 230)), new Rect(0, 0, symbolMargin, Bounds.Height));
+			context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(240, 240, 240)), new Rect(symbolMargin, 0, addressMargin, Bounds.Height));
+
+			context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(symbolMargin + 0.5, 0), new Point(symbolMargin + 0.5, Bounds.Height));
+			addressMargin += symbolMargin;
+			context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(addressMargin + 0.5, 0), new Point(addressMargin + 0.5, Bounds.Height));
 
 			bool showByteCode = ShowByteCode;
 			if(showByteCode) {
 				//Draw byte code
-				context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(251, 251, 251)), new Rect(addressMargin, 0, byteCodeMargin, Bounds.Height));
-				context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(addressMargin + byteCodeMargin, 0), new Point(addressMargin + byteCodeMargin, Bounds.Height));
+				context.FillRectangle(ColorHelper.GetBrush(Color.FromRgb(251, 251, 251)), new Rect(addressMargin + 1, 0, byteCodeMargin - 1, Bounds.Height));
+				context.DrawLine(ColorHelper.GetPen(Colors.LightGray), new Point(addressMargin + byteCodeMargin + 0.5, 0), new Point(addressMargin + byteCodeMargin + 0.5, Bounds.Height));
 			}
 
 			_visibleCodeSegments.Clear();
@@ -291,13 +309,17 @@ namespace Mesen.Debugger.Controls
 				double x = 0;
 
 				//Draw symbol in margin
+				if(i == MouseOverRowNumber && line.HasAddress && !line.IsAddressHidden) {
+					DrawLineSymbol(context, y, new LineProperties() { Symbol = LineSymbol.CircleOutline, SymbolColor = Colors.DarkGray });
+				}
+
 				DrawLineSymbol(context, y, lineStyle);
 
 				//Draw address in margin
 				string addressText = line.HasAddress ? line.Address.ToString(addrFormat) : "";
 				text = FormatText(line.GetAddressText(addressDisplayType, addrFormat), ColorHelper.GetBrush(Colors.Gray));
 
-				Point marginAddressPos = new Point(addressMargin - text.Width - 1, y);
+				Point marginAddressPos = new Point(addressMargin - text.Width - 4, y);
 				context.DrawText(text, marginAddressPos);
 				_visibleCodeSegments.Add(new CodeSegmentInfo(addressText, CodeSegmentType.MarginAddress, new Rect(marginAddressPos.X, marginAddressPos.Y, text.Width, text.Height), line));
 				x += addressMargin;
@@ -311,17 +333,17 @@ namespace Mesen.Debugger.Controls
 
 				if(lineStyle.LineBgColor.HasValue) {
 					SolidColorBrush brush = ColorHelper.GetBrush(lineStyle.LineBgColor.Value);
-					context.DrawRectangle(brush, null, new Rect(x, y, Bounds.Width - x, LetterSize.Height));
+					context.DrawRectangle(brush, null, new Rect(x + 1, y, Bounds.Width - x - 1, LetterSize.Height));
 				}
 
 				if(lineStyle.IsSelectedRow) {
 					SolidColorBrush brush = ColorHelper.GetBrush(Color.FromArgb(150, 185, 210, 255));
-					context.DrawRectangle(brush, null, new Rect(x, y, Bounds.Width - x, LetterSize.Height));
+					context.DrawRectangle(brush, null, new Rect(x + 1, y, Bounds.Width - x - 1, LetterSize.Height));
 				}
 
 				if(lineStyle.IsActiveRow) {
 					Pen borderPen = ColorHelper.GetPen(Colors.Blue);
-					context.DrawRectangle(borderPen, new Rect(x, Math.Round(y) - 0.5, Math.Floor(Bounds.Width) - x - 0.5, Math.Round(LetterSize.Height)));
+					context.DrawRectangle(borderPen, new Rect(x + 1.5, Math.Round(y) - 0.5, Math.Floor(Bounds.Width) - x - 2, Math.Round(LetterSize.Height)));
 				}
 
 				if(line.Flags.HasFlag(LineFlags.BlockStart) || line.Flags.HasFlag(LineFlags.BlockEnd) || line.Flags.HasFlag(LineFlags.SubStart)) {
@@ -349,10 +371,10 @@ namespace Mesen.Debugger.Controls
 								Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUInt32()) : null;
 								Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUInt32()) : null;
 								if(b != null) {
-									context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin) - 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
+									context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin) + 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
 								}
 								if(p != null) {
-									context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin) - 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
+									context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin) + 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
 								}
 							}
 
