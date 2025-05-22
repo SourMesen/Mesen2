@@ -1317,6 +1317,11 @@ void BaseMapper::SaveRom(vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom)
 
 void BaseMapper::SerializeRomDiff(Serializer& s, vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom)
 {
+	if(s.GetFormat() != SerializeFormat::Binary) {
+		//Skip this completely for Lua
+		return;
+	}
+
 	if(s.IsSaving()) {
 		vector<uint8_t> prgRom = vector<uint8_t>(_prgRom, _prgRom + _prgSize);
 		vector<uint8_t> ipsData = IpsPatcher::CreatePatch(orgPrgRom, prgRom);
