@@ -79,7 +79,6 @@ protected:
 	uint32_t _workRamSize = 0;
 	uint8_t* _workRam = nullptr;
 	bool _hasChrBattery = false;
-	int16_t _vramOpenBusValue = -1;
 
 	uint8_t* _mapperRam = nullptr;
 	uint32_t _mapperRamSize = 0;
@@ -182,7 +181,7 @@ protected:
 		}
 
 		//Open bus - "When CHR is disabled, the pattern tables are open bus. Theoretically, this should return the LSB of the address read, but real-world behavior varies."
-		return _vramOpenBusValue >= 0 ? _vramOpenBusValue : addr;
+		return addr;
 	}
 
 	virtual vector<MapperStateEntry> GetMapperStateEntries() { return {}; }

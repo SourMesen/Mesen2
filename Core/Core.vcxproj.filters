@@ -2976,6 +2976,9 @@
     <ClInclude Include="NES\Mappers\Unlicensed\Mapper487.h">
       <Filter>NES\Mappers\Unlicensed</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\CnromProtect.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

@@ -109,6 +109,7 @@
 #include "NES/Mappers/Namco/Namco163.h"
 #include "NES/Mappers/Nintendo/AXROM.h"
 #include "NES/Mappers/Nintendo/CNROM.h"
+#include "NES/Mappers/Nintendo/CnromProtect.h"
 #include "NES/Mappers/Nintendo/CpRom.h"
 #include "NES/Mappers/Nintendo/FamicomBox.h"
 #include "NES/Mappers/Nintendo/FnsMmc1.h"
@@ -281,7 +282,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 0: return new NROM();
 		case 1: return new MMC1();
 		case 2: return new UNROM();
-		case 3: return new CNROM(false);
+		case 3: return new CNROM();
 		case 4: 
 			if(romData.Info.SubMapperID == 3) {
 				return new McAcc();
@@ -454,7 +455,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 182: return new MMC3_182();
 		case 183: return new Mapper183();
 		case 184: return new Sunsoft184();
-		case 185: return new CNROM(true);
+		case 185: return new CnromProtect();
 		case 186: break; //The study box is handled as a bios file, not a iNES rom
 		case 187: return new MMC3_187();
 		case 188: return new BandaiKaraoke();
