@@ -45,7 +45,7 @@ protected:
 	uint8_t MapperReadVram(uint16_t addr, MemoryOperationType operationType) override
 	{
 		uint8_t value = InternalReadVram(addr);
-		if(!_chrEnabled) {
+		if(!_chrEnabled && addr < 0x2000) {
 			//Simulate pull-up resistor on D0 when PPU reads the CHR ROM while the protection is enabled
 			//This is needed for the original version of Mighty Bomb Jack to boot
 			value |= 0x01;
