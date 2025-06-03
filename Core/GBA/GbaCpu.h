@@ -205,11 +205,11 @@ public:
 		if(_memoryManager->IsSystemStopped()) {
 			_memoryManager->ProcessStoppedCycle();
 		} else {
-			_memoryManager->ProcessInternalCycle<true>();
+			_memoryManager->ProcessIdleCycle();
 		}
 
 		if(isHaltOver) {
-			_memoryManager->ProcessInternalCycle<true>();
+			_memoryManager->ProcessIdleCycle();
 			_state.Stopped = false;
 			return false;
 		} else {
@@ -283,7 +283,9 @@ public:
 #endif
 	}
 
+	bool IsHalted() { return _state.Stopped; }
 	void SetStopFlag() { _state.Stopped = true; }
+
 	void ClearSequentialFlag() { _state.Pipeline.Mode &= ~GbaAccessMode::Sequential; }
 	void SetSequentialFlag() { _state.Pipeline.Mode |= GbaAccessMode::Sequential; }
 

@@ -104,6 +104,7 @@ void GbaDmaController::RunPendingDma(bool allowStartDma)
 
 	_dmaRunning = true;
 	_needStart = false;
+	_memoryManager->ProcessDmaStart();
 
 	//Before starting DMA, an additional idle cycle executes (CPU is blocked during this)
 	_memoryManager->ProcessIdleCycle();

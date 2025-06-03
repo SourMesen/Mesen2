@@ -76,6 +76,18 @@ void GbaMemoryManager::ProcessIdleCycle()
 		//When DMA is running, CPU idle cycles (e.g from MUL or other instructions) can run in parallel
 		//with the DMA. The CPU only stops once it tries to read or write to the bus.
 		//This allows this idle cycle to run in "parallel" with the DMA
+		if(_console->GetCpu()->IsHalted()) {
+			//When halted, the IRQ state is always updated, even during DMA, so no processing needs to be done here
+			_dmaIrqCounter = 0;
+		} else if(_dmaIrqCounter) {
+			//Update the IRQ state to match (because the IRQ state does get updated during the idle cycles that run in parallel with DMA)
+			_dmaIrqCounter--;
+			_state.IrqPending <<= 1;
+			_state.IrqPending |= (_dmaIrqPending >> _dmaIrqCounter) & 0x01;
+			_state.IrqLine <<= 1;
+			_state.IrqLine |= (_dmaIrqLine >> _dmaIrqCounter) & 0x01;
+			_irqFirstAccessCycle = _state.IrqLine;
+		}
 		return;
 	}
 
@@ -102,16 +114,26 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 
 	_masterClock++;
 
+	if(_dmaController->IsRunning() && _dmaIrqCounter < 10) {
+		//Keep track of the IRQ state during the first few cycles of DMA
+		//This is needed to update the IRQ state after DMA ends, if idle cycles executed during DMA
+		_dmaIrqPending <<= 1;
+		_dmaIrqPending |= (uint8_t)(bool)(_state.IE & _state.IF);
+		_dmaIrqLine <<= 1;
+		_dmaIrqLine |= (uint8_t)((bool)(_state.IE & _state.IF) && _state.IME);
+		_dmaIrqCounter++;
+	}
+
 	if(_state.IrqUpdateCounter) {
 		//The IRQ line updates appear to be paused while the CPU is paused for DMA
 		//This is needed to pass the Internal_Cycle_DMA_IRQ test
-		if(!_dmaController->IsRunning()) {
-				_state.IrqUpdateCounter--;
-				_state.IrqPending <<= 1;
-				_state.IrqPending |= (uint8_t)(bool)(_state.IE & _state.IF);
+		if(!_dmaController->IsRunning() || _console->GetCpu()->IsHalted()) {
+			_state.IrqUpdateCounter--;
+			_state.IrqPending <<= 1;
+			_state.IrqPending |= (uint8_t)(bool)(_state.IE & _state.IF);
 
-				_state.IrqLine <<= 1;
-				_state.IrqLine |= (uint8_t)((bool)(_state.IE & _state.IF) && _state.IME);
+			_state.IrqLine <<= 1;
+			_state.IrqLine |= (uint8_t)((bool)(_state.IE & _state.IF) && _state.IME);
 		}
 
 		_state.IE = _state.NewIE;
@@ -153,6 +175,7 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 		_state.IrqUpdateCounter ||
 		_pendingIrqSourceDelay ||
 		_haltDelay ||
+		(_dmaController->IsRunning() && _dmaIrqCounter < 10) ||
 		_serial->HasPendingIrq()
 	);
 }
@@ -694,6 +717,14 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 	}
 }
 
+void GbaMemoryManager::ProcessDmaStart()
+{
+	_dmaIrqCounter = 0;
+	_dmaIrqLine = 0;
+	_dmaIrqPending = 0;
+	SetPendingUpdateFlag();
+}
+
 void GbaMemoryManager::TriggerIrqUpdate()
 {
 	_state.IrqUpdateCounter = 3;
@@ -962,6 +993,10 @@ void GbaMemoryManager::Serialize(Serializer& s)
 		SV(_biosLocked);
 		SV(_irqFirstAccessCycle);
 		SV(_haltDelay);
+
+		SV(_dmaIrqCounter);
+		SV(_dmaIrqPending);
+		SV(_dmaIrqLine);
 
 		SVArray(_state.BootRomOpenBus, 4);
 		SVArray(_state.InternalOpenBus, 4);

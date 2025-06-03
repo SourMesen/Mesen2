@@ -61,6 +61,10 @@ private:
 	uint8_t _haltDelay = 0;
 	uint8_t _irqFirstAccessCycle = 0;
 
+	uint8_t _dmaIrqCounter = 0;
+	uint16_t _dmaIrqPending = 0;
+	uint16_t _dmaIrqLine = 0;
+
 	uint8_t* _waitStatesLut = nullptr;
 
 	__forceinline void ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr);
@@ -79,7 +83,7 @@ private:
 
 	uint32_t ReadRegister(uint32_t addr);
 	void WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8_t value);
-	
+
 	void TriggerIrqUpdate();
 	__noinline void ProcessPendingUpdates(bool allowStartDma);
 	__noinline void ProcessPendingLateUpdates();
@@ -120,6 +124,8 @@ public:
 		}
 	}
 	
+	void ProcessDmaStart();
+
 	__forceinline void ProcessDma()
 	{
 		if(_dmaController->HasPendingDma()) {
