@@ -25,8 +25,14 @@ namespace Mesen.Windows
 
 		public static Task<DialogResult> Show(Window? parent, string text, string title, MessageBoxButtons buttons, MessageBoxIcon icon)
 		{
+			return Show(parent, text, title, buttons, icon, out _);
+		}
+
+		public static Task<DialogResult> Show(Window? parent, string text, string title, MessageBoxButtons buttons, MessageBoxIcon icon, out MessageBox outMsgbox)
+		{
 			DialogResult result = DialogResult.OK;
 			MessageBox msgbox = new MessageBox() { Title = title };
+			outMsgbox = msgbox;
 			msgbox.GetControl<TextBlock>("Text").Text = text;
 			
 			switch(icon) {

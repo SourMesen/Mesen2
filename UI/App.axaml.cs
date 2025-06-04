@@ -11,6 +11,7 @@ using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.ViewModels;
 using Mesen.Windows;
+using System;
 using System.IO;
 using System.Reflection;
 
@@ -44,6 +45,24 @@ namespace Mesen
 					new PreferencesConfig().InitializeFontDefaults();
 					desktop.MainWindow = new SetupWizardWindow();
 				} else {
+					//Test if the core can be loaded, and display an error message popup if not
+					try {
+						EmuApi.TestDll();
+					} catch(Exception ex) {
+						bool sdlMissing = ex.Message.Contains("SDL2", StringComparison.InvariantCultureIgnoreCase);
+
+						string errorMessage;
+						if(sdlMissing) {
+							errorMessage = ResourceHelper.GetMessage("UnableToStartMissingSdl", ex.Message);
+						} else {
+							errorMessage = ResourceHelper.GetMessage("UnableToStartMissingDependencies", ex.Message + Environment.NewLine + ex.StackTrace);
+						}
+						MessageBox.Show(null, errorMessage, "Mesen", MessageBoxButtons.OK, MessageBoxIcon.Error, out MessageBox msgbox);
+						desktop.MainWindow = msgbox;
+						base.OnFrameworkInitializationCompleted();
+						return;
+					}
+
 					try {
 						desktop.MainWindow = new MainWindow();
 					} catch {
