@@ -245,7 +245,7 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 	//Process first cycle before checking prefetch
 	//If DMA is triggered by this cycle, the prefetch's state can change, which needs to be taken into account
 	ProcessInternalCycle<true>();
-	_dmaController->ResetIdleCounter();
+	_dmaController->ResetIdleCounter(mode);
 
 	if(addr < 0x8000000 || addr >= 0x10000000) {
 		waitStates = GetWaitStates(mode, addr);

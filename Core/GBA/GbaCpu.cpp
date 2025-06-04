@@ -146,14 +146,16 @@ void GbaCpu::ProcessException(GbaCpuMode mode, GbaCpuVector vector)
 uint32_t GbaCpu::ReadCode(GbaAccessModeVal mode, uint32_t addr)
 {
 #ifndef DUMMYCPU
-	//Next access should be sequential
-	//This is done before the call to Read() because e.g if DMA pauses the CPU and 
-	//runs, the next access will not be sequential (force-nseq-access test)
-	_state.Pipeline.Mode |= GbaAccessMode::Sequential;
 	if(_ldmGlitch) {
 		_ldmGlitch--;
 	}
-	return _memoryManager->Read(mode, addr);
+
+	uint32_t value = _memoryManager->Read(mode, addr);
+	
+	//Next access should be sequential
+	_state.Pipeline.Mode |= GbaAccessMode::Sequential;
+
+	return value;
 #else
 	uint32_t value = _memoryManager->DebugCpuRead(mode, addr);
 	LogMemoryOperation(addr, value, mode, MemoryOperationType::ExecOpCode);
