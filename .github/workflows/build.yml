@@ -35,7 +35,7 @@ jobs:
           msbuild-architecture: x64
 
       - name: Restore packages
-        run: dotnet restore -p:TargetFramework="${{ matrix.platform.targetframework }}" -r win-x64 -p:PublishAot="${{ matrix.platform.aot }}"
+        run: dotnet restore -p:TargetFramework="${{ matrix.platform.targetframework }}" -r win-x64 -p:PublishAot="${{ matrix.platform.aot }}" -p:BuildWithNetFrameworkHostedCompiler=true
 
       - name: Write commit SHA1 to file
         uses: ./.github/actions/build-sha1-action
