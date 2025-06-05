@@ -546,15 +546,11 @@ void NesConsole::InitializeInputDevices(GameInputType inputType, GameSystem syst
 	} else if(inputType == GameInputType::FourPlayerAdapter) {
 		log("[Input] Four player adapter connected");
 		expDevice = ControllerType::TwoPlayerAdapter;
-	} else if(inputType == GameInputType::ArkanoidControllerFamicom) {
+	} else if(inputType == GameInputType::ArkanoidControllerFamicom || inputType == GameInputType::DoubleArkanoidController) {
 		log("[Input] Arkanoid controller (Famicom) connected");
 		expDevice = ControllerType::FamicomArkanoidController;
 	} else if(inputType == GameInputType::ArkanoidControllerNes) {
 		log("[Input] Arkanoid controller (NES) connected");
-		port2 = ControllerType::NesArkanoidController;
-	} else if(inputType == GameInputType::DoubleArkanoidController) {
-		log("[Input] 2 arkanoid controllers (NES) connected");
-		port1 = ControllerType::NesArkanoidController;
 		port2 = ControllerType::NesArkanoidController;
 	} else if(inputType == GameInputType::OekaKidsTablet) {
 		log("[Input] Oeka Kids Tablet connected");

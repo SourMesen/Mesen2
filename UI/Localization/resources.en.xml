@@ -2665,7 +2665,7 @@ E
 			<Value ID="FamilyTrainerSideB">Family Trainer Side B</Value>
 			<Value ID="ArkanoidControllerNes">Arkanoid Controller (NES)</Value>
 			<Value ID="ArkanoidControllerFamicom">Arkanoid Controller (Famicom)</Value>
-			<Value ID="DoubleArkanoidController">2x Arkanoid Controllers (NES)</Value>
+			<Value ID="DoubleArkanoidController">2x Arkanoid Controllers (Famicom)</Value>
 			<Value ID="KonamiHyperShot">Konami Hyper Shot</Value>
 			<Value ID="PachinkoController">Pachinko Controller</Value>
 			<Value ID="ExcitingBoxing">Exciting Boxing</Value>
