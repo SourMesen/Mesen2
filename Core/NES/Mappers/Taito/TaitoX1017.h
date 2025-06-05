@@ -90,15 +90,21 @@ protected:
 				break;
 
 			case 0x7EFA:
-				SelectPrgPage(0, value >> 2);
-				break;
-
 			case 0x7EFB:
-				SelectPrgPage(1, value >> 2);
-				break;
-
 			case 0x7EFC:
-				SelectPrgPage(2, value >> 2);
+				if(_romInfo.MapperID == 82) {
+					SelectPrgPage(addr - 0x7EFA, value >> 2);
+				} else {
+					uint8_t page = (
+						((value & 0x20) >> 5) |
+						((value & 0x10) >> 3) |
+						((value & 0x08) >> 1) |
+						((value & 0x04) << 1) |
+						((value & 0x02) >> 3) |
+						((value & 0x01) << 5)
+					);
+					SelectPrgPage(addr - 0x7EFA, page);
+				}
 				break;
 		}
 	}

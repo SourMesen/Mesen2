@@ -621,6 +621,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 529: return new T230();
 		case 530: return new Ax5705();
 		
+		case 552: return new TaitoX1017();
+
 		case 682: return new Rainbow();
 
 		case UnifBoards::Ac08: return new Ac08(); //mapper 42?
