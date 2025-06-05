@@ -146,6 +146,7 @@ public:
 	void SetPendingLateUpdateFlag() { _hasPendingLateUpdates = true; }
 
 	uint8_t GetWaitStates(GbaAccessModeVal mode, uint32_t addr);
+	uint8_t GetPrefetchWaitStates(GbaAccessModeVal mode, uint32_t addr);
 
 	uint32_t Read(GbaAccessModeVal mode, uint32_t addr);
 	void Write(GbaAccessModeVal mode, uint32_t addr, uint32_t value);

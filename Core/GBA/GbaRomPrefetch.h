@@ -24,12 +24,7 @@ private:
 
 	__forceinline bool IsRomBoundary()
 	{
-		//When the prefetcher hits an address that's a multiple of 128kb,
-		//it behaves as if it was filled (blocking any more fetches until
-		//it gets emptied)
-		bool result = (_state.PrefetchAddr & 0x1FFFE) == 0;
-		_state.BoundaryCyclePenalty = (uint8_t)result;
-		return result;
+		return (_state.PrefetchAddr & 0x1FFFE) == 0;
 	}
 
 	__forceinline uint8_t WaitForPendingRead()
@@ -54,18 +49,13 @@ private:
 	{
 		_state.ReadAddr += 2;
 		_state.PrefetchAddr += 2;
-		if(IsRomBoundary()) {
-			_state.WasFilled = true;
-		}
 		_state.ClockCounter = 0;
 		_state.Sequential = true;
 	}
 
 	__forceinline uint8_t GetAccessClockCount()
 	{
-		uint8_t count = _memoryManager->GetWaitStates(GbaAccessMode::HalfWord | (_state.Sequential ? GbaAccessMode::Sequential : 0), _state.PrefetchAddr) + _state.BoundaryCyclePenalty;
-		_state.BoundaryCyclePenalty = 0;
-		return count;
+		return _memoryManager->GetPrefetchWaitStates(GbaAccessMode::HalfWord | (_state.Sequential ? GbaAccessMode::Sequential : 0), _state.PrefetchAddr);
 	}
 
 public:
@@ -86,6 +76,7 @@ public:
 		_state.Started = false;
 		_state.Sequential = false;
 		_state.WasFilled = false;
+		_state.HitBoundary = false;
 		_state.ReadAddr = 0;
 		_state.PrefetchAddr = 0;
 		_state.ClockCounter = 0;
@@ -124,10 +115,19 @@ public:
 			}
 
 			if(--_state.ClockCounter == 0) {
-				_state.PrefetchAddr += 2;
+				if(!_state.HitBoundary) {
+					//Prefetch fails to increment past boundary and keeps trying to read the same address
+					_state.PrefetchAddr += 2;
+				}
+
 				//Any cpu access after the prefetch stops should be non-sequential
 				_cpu->ClearSequentialFlag();
-				if(IsFull() || IsRomBoundary()) {
+
+				if(IsRomBoundary()) {
+					_state.HitBoundary = true;
+				}
+
+				if(IsFull()) {
 					_state.WasFilled = true;
 					break;
 				}
@@ -232,9 +232,9 @@ public:
 		SV(_state.ClockCounter);
 		SV(_state.ReadAddr);
 		SV(_state.PrefetchAddr);
-		SV(_state.BoundaryCyclePenalty);
 		SV(_state.WasFilled);
 		SV(_state.Sequential);
 		SV(_state.Started);
+		SV(_state.HitBoundary);
 	}
 };

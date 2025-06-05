@@ -233,6 +233,11 @@ void GbaMemoryManager::GenerateWaitStateLut()
 	}
 }
 
+uint8_t GbaMemoryManager::GetPrefetchWaitStates(GbaAccessModeVal mode, uint32_t addr)
+{
+	return _waitStatesLut[((addr >> 22) & 0x3FC) | (mode & (GbaAccessMode::Word | GbaAccessMode::Sequential))];
+}
+
 uint8_t GbaMemoryManager::GetWaitStates(GbaAccessModeVal mode, uint32_t addr)
 {
 	return _waitStatesLut[((addr >> 22) & 0x3FC) | (mode & (GbaAccessMode::Word | ((addr & 0x1FFFF) ? GbaAccessMode::Sequential : 0)))];
@@ -257,7 +262,14 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 		//When the prefetch is reset on its last cycle, the ROM access takes an extra cycle to complete
 		waitStates = GetWaitStates(mode, addr) + (int)_prefetch->Reset();
 	} else {
-		waitStates = _state.PrefetchEnabled ? _prefetch->Read<true>(mode, addr) : _prefetch->Read<false>(mode, addr);
+		if((addr & 0x1FFFE) == 0) {
+			//When reading a 128kb rom boundary, reset the prefetcher's state (and add the 1-cycle penalty as needed)
+			mode &= ~GbaAccessMode::Sequential;
+			uint8_t penalty = (uint8_t)_prefetch->Reset();
+			waitStates = penalty + (_state.PrefetchEnabled ? _prefetch->Read<true>(mode, addr) : _prefetch->Read<false>(mode, addr));
+		} else {
+			waitStates = _state.PrefetchEnabled ? _prefetch->Read<true>(mode, addr) : _prefetch->Read<false>(mode, addr);
+		}
 	}
 	waitStates--;
 
