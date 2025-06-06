@@ -117,6 +117,9 @@ public:
 	AudioTrackInfo GetAudioTrackInfo() override;
 	void ProcessAudioPlayerAction(AudioPlayerActionParams p) override;
 
+	void ClearCpuSequentialFlag();
+	void SetCpuSequentialFlag();
+
 	void RefreshRamCheats();
 
 	void InitializeRam(void* data, uint32_t length);

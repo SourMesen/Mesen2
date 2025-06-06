@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
-#include "GBA/GbaMemoryManager.h"
-#include "GBA/GbaCpu.h"
+#include "GBA/GbaWaitStates.h"
+#include "GBA/GbaConsole.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
@@ -9,8 +9,8 @@ class GbaRomPrefetch final : ISerializable
 {
 private:
 	GbaRomPrefetchState _state = {};
-	GbaMemoryManager* _memoryManager = nullptr;
-	GbaCpu* _cpu = nullptr;
+	GbaWaitStates* _waitStates = nullptr;
+	GbaConsole* _console = nullptr;
 
 	__forceinline bool IsEmpty()
 	{
@@ -55,14 +55,14 @@ private:
 
 	__forceinline uint8_t GetAccessClockCount()
 	{
-		return _memoryManager->GetPrefetchWaitStates(GbaAccessMode::HalfWord | (_state.Sequential ? GbaAccessMode::Sequential : 0), _state.PrefetchAddr);
+		return _waitStates->GetPrefetchWaitStates(GbaAccessMode::HalfWord | (_state.Sequential ? GbaAccessMode::Sequential : 0), _state.PrefetchAddr);
 	}
 
 public:
-	void Init(GbaMemoryManager* memoryManager, GbaCpu* cpu)
+	void Init(GbaWaitStates* waitStates, GbaConsole* console)
 	{
-		_memoryManager = memoryManager;
-		_cpu = cpu;
+		_waitStates = waitStates;
+		_console = console;
 	}
 
 	GbaRomPrefetchState& GetState()
@@ -121,7 +121,7 @@ public:
 				}
 
 				//Any cpu access after the prefetch stops should be non-sequential
-				_cpu->ClearSequentialFlag();
+				_console->ClearCpuSequentialFlag();
 
 				if(IsRomBoundary()) {
 					_state.HitBoundary = true;
@@ -155,17 +155,17 @@ public:
 				//Prefetcher is disabled & empty (but a prefetch read might be in-progress)
 				if(_state.ClockCounter == 0) {
 					//No prefetch is in progress - read normally
-					return _memoryManager->GetWaitStates(mode, addr);
+					return _waitStates->GetPrefetchWaitStates(mode, addr);
 				} else {
 					//Finish the current prefetch read
 					uint8_t totalTime = WaitForPendingRead();
-					_cpu->ClearSequentialFlag();
+					_console->ClearCpuSequentialFlag();
 					if(mode & GbaAccessMode::Word) {
 						//If fetching a 32-bit value, add the time it'll take to read the next half-word (non sequential)
-						totalTime += _memoryManager->GetWaitStates(GbaAccessMode::HalfWord, addr);
+						totalTime += _waitStates->GetPrefetchWaitStates(GbaAccessMode::HalfWord, addr);
 						
 						//The previous read counts as the first non-sequential read, next one should be sequential
-						_cpu->SetSequentialFlag();
+						_console->SetCpuSequentialFlag();
 					}
 					return totalTime;
 				}
@@ -207,9 +207,9 @@ public:
 				if constexpr(!prefetchEnabled) {
 					if(_state.ClockCounter == 0) {
 						//Prefetch is disabled and no pending read is in progress, but the CPU needs to read an extra half-word (ARM mode)
-						uint8_t totalTime = _memoryManager->GetWaitStates(GbaAccessMode::HalfWord, addr);
+						uint8_t totalTime = _waitStates->GetPrefetchWaitStates(GbaAccessMode::HalfWord, addr);
 						//The previous read counts as the first non-sequential read, next one should be sequential
-						_cpu->SetSequentialFlag();
+						_console->SetCpuSequentialFlag();
 						return totalTime;
 					}
 				}

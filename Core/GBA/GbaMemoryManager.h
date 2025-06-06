@@ -4,6 +4,8 @@
 #include "GBA/GbaPpu.h"
 #include "GBA/GbaTimer.h"
 #include "GBA/GbaDmaController.h"
+#include "GBA/GbaWaitStates.h"
+#include "GBA/GbaRomPrefetch.h"
 #include "Debugger/AddressInfo.h"
 #include "Utilities/ISerializable.h"
 
@@ -16,7 +18,6 @@ class GbaTimer;
 class GbaApu;
 class GbaCart;
 class GbaSerial;
-class GbaRomPrefetch;
 class MgbaLogHandler;
 
 class GbaMemoryManager final : public ISerializable
@@ -32,6 +33,7 @@ private:
 	GbaCart* _cart;
 	GbaSerial* _serial;
 	GbaRomPrefetch* _prefetch;
+	GbaWaitStates _waitStates;
 
 	unique_ptr<MgbaLogHandler> _mgbaLog;
 
@@ -65,8 +67,6 @@ private:
 	uint16_t _dmaIrqPending = 0;
 	uint16_t _dmaIrqLine = 0;
 
-	uint8_t* _waitStatesLut = nullptr;
-
 	__forceinline void ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr);
 
 	__noinline void ProcessVramAccess(GbaAccessModeVal mode, uint32_t addr);
@@ -88,7 +88,8 @@ private:
 	__noinline void ProcessPendingUpdates(bool allowStartDma);
 	__noinline void ProcessPendingLateUpdates();
 
-	void GenerateWaitStateLut();
+	void ProcessParallelIdleCycle();
+	__forceinline void RunPrefetch();
 
 public:
 	GbaMemoryManager(Emulator* emu, GbaConsole* console, GbaPpu* ppu, GbaDmaController* dmaController, GbaControlManager* controlManager, GbaTimer* timer, GbaApu* apu, GbaCart* cart, GbaSerial* serial, GbaRomPrefetch* prefetch);
@@ -97,7 +98,28 @@ public:
 	GbaMemoryManagerState& GetState() { return _state; }
 	uint64_t GetMasterClock() { return _masterClock; }
 
-	void ProcessIdleCycle();
+	GbaWaitStates* GetWaitStates() { return &_waitStates; }
+
+	__forceinline void ProcessIdleCycle()
+	{
+		if(_dmaController->HasPendingDma()) {
+			_dmaController->RunPendingDma(true);
+		}
+
+		if(_dmaController->CanRunInParallelWithDma()) {
+			//When DMA is running, CPU idle cycles (e.g from MUL or other instructions) can run in parallel
+			//with the DMA. The CPU only stops once it tries to read or write to the bus.
+			//This allows this idle cycle to run in "parallel" with the DMA
+			ProcessParallelIdleCycle();
+			return;
+		}
+
+		if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
+			_prefetch->Exec(1, _state.PrefetchEnabled);
+		}
+
+		ProcessInternalCycle<true>();
+	}
 
 	template<bool firstAccessCycle = false>
 	__forceinline void ProcessInternalCycle()
@@ -144,9 +166,6 @@ public:
 
 	void SetPendingUpdateFlag() { _hasPendingUpdates = true; }
 	void SetPendingLateUpdateFlag() { _hasPendingLateUpdates = true; }
-
-	uint8_t GetWaitStates(GbaAccessModeVal mode, uint32_t addr);
-	uint8_t GetPrefetchWaitStates(GbaAccessModeVal mode, uint32_t addr);
 
 	uint32_t Read(GbaAccessModeVal mode, uint32_t addr);
 	void Write(GbaAccessModeVal mode, uint32_t addr, uint32_t value);

@@ -8,6 +8,7 @@
 #include "GBA/GbaSerial.h"
 #include "GBA/GbaControlManager.h"
 #include "GBA/GbaRomPrefetch.h"
+#include "GBA/GbaWaitStates.h"
 #include "GBA/Debugger/MgbaLogHandler.h"
 #include "GBA/APU/GbaApu.h"
 #include "GBA/Cart/GbaCart.h"
@@ -46,8 +47,7 @@ GbaMemoryManager::GbaMemoryManager(Emulator* emu, GbaConsole* console, GbaPpu* p
 	_saveRam = (uint8_t*)emu->GetMemory(MemoryType::GbaSaveRam).Memory;
 	_saveRamSize = emu->GetMemory(MemoryType::GbaSaveRam).Size;
 
-	_waitStatesLut = new uint8_t[0x400];
-	GenerateWaitStateLut();
+	_waitStates.GenerateWaitStateLut(_state);
 
 	//Used to get the correct timing for the timer prescaler, based on the "timer" test
 	_masterClock = -1;
@@ -63,44 +63,35 @@ GbaMemoryManager::GbaMemoryManager(Emulator* emu, GbaConsole* console, GbaPpu* p
 
 GbaMemoryManager::~GbaMemoryManager()
 {
-	delete[] _waitStatesLut;
 }
 
-void GbaMemoryManager::ProcessIdleCycle()
+void GbaMemoryManager::ProcessParallelIdleCycle()
 {
-	if(_dmaController->HasPendingDma()) {
-		_dmaController->RunPendingDma(true);
+	if(_console->GetCpu()->IsHalted()) {
+		//When halted, the IRQ state is always updated, even during DMA, so no processing needs to be done here
+		_dmaIrqCounter = 0;
+	} else if(_dmaIrqCounter) {
+		//Update the IRQ state to match (because the IRQ state does get updated during the idle cycles that run in parallel with DMA)
+		_dmaIrqCounter--;
+		_state.IrqPending <<= 1;
+		_state.IrqPending |= (_dmaIrqPending >> _dmaIrqCounter) & 0x01;
+		_state.IrqLine <<= 1;
+		_state.IrqLine |= (_dmaIrqLine >> _dmaIrqCounter) & 0x01;
+		_irqFirstAccessCycle = _state.IrqLine;
 	}
+}
 
-	if(_dmaController->CanRunInParallelWithDma()) {
-		//When DMA is running, CPU idle cycles (e.g from MUL or other instructions) can run in parallel
-		//with the DMA. The CPU only stops once it tries to read or write to the bus.
-		//This allows this idle cycle to run in "parallel" with the DMA
-		if(_console->GetCpu()->IsHalted()) {
-			//When halted, the IRQ state is always updated, even during DMA, so no processing needs to be done here
-			_dmaIrqCounter = 0;
-		} else if(_dmaIrqCounter) {
-			//Update the IRQ state to match (because the IRQ state does get updated during the idle cycles that run in parallel with DMA)
-			_dmaIrqCounter--;
-			_state.IrqPending <<= 1;
-			_state.IrqPending |= (_dmaIrqPending >> _dmaIrqCounter) & 0x01;
-			_state.IrqLine <<= 1;
-			_state.IrqLine |= (_dmaIrqLine >> _dmaIrqCounter) & 0x01;
-			_irqFirstAccessCycle = _state.IrqLine;
-		}
-		return;
-	}
-
+void GbaMemoryManager::RunPrefetch()
+{
 	if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
 		_prefetch->Exec(1, _state.PrefetchEnabled);
 	}
-	ProcessInternalCycle<true>();
 }
 
 void GbaMemoryManager::ProcessStoppedCycle()
 {
 	//What exactly is disabled when stopped?
-	//This at least works the games that were tested (but is very likely inaccurate)
+	//This at least works for the games that were tested (but is very likely inaccurate)
 	_masterClock++;
 	_ppu->Exec(); //keep PPU running to keep emulation running properly
 	_timer->Exec(_masterClock);
@@ -189,60 +180,6 @@ void GbaMemoryManager::ProcessPendingLateUpdates()
 	_hasPendingLateUpdates = false;
 }
 
-void GbaMemoryManager::GenerateWaitStateLut()
-{
-	for(GbaAccessModeVal mode = 0; mode < 4; mode++) {
-		for(int i = 0; i <= 0xFF; i++) {
-			uint8_t waitStates = 1;
-			switch(i) {
-				case 0x02:
-					//External work ram
-					waitStates = (mode & GbaAccessMode::Word) ? 6 : 3;
-					break;
-
-				case 0x05:
-				case 0x06:
-					//VRAM/Palette
-					waitStates = (mode & GbaAccessMode::Word) ? 2 : 1;
-					break;
-
-				case 0x08:
-				case 0x09:
-					waitStates = _state.PrgWaitStates0[mode & GbaAccessMode::Sequential] + ((mode & GbaAccessMode::Word) ? _state.PrgWaitStates0[1] : 0);
-					break;
-
-				case 0x0A:
-				case 0x0B:
-					waitStates = _state.PrgWaitStates1[mode & GbaAccessMode::Sequential] + ((mode & GbaAccessMode::Word) ? _state.PrgWaitStates1[1] : 0);
-					break;
-
-				case 0x0C:
-				case 0x0D:
-					waitStates = _state.PrgWaitStates2[mode & GbaAccessMode::Sequential] + ((mode & GbaAccessMode::Word) ? _state.PrgWaitStates2[1] : 0);
-					break;
-
-				case 0x0E:
-				case 0x0F:
-					//SRAM
-					waitStates = _state.SramWaitStates;
-					break;
-			}
-
-			_waitStatesLut[(i << 2) | mode] = waitStates;
-		}
-	}
-}
-
-uint8_t GbaMemoryManager::GetPrefetchWaitStates(GbaAccessModeVal mode, uint32_t addr)
-{
-	return _waitStatesLut[((addr >> 22) & 0x3FC) | (mode & (GbaAccessMode::Word | GbaAccessMode::Sequential))];
-}
-
-uint8_t GbaMemoryManager::GetWaitStates(GbaAccessModeVal mode, uint32_t addr)
-{
-	return _waitStatesLut[((addr >> 22) & 0x3FC) | (mode & (GbaAccessMode::Word | ((addr & 0x1FFFF) ? GbaAccessMode::Sequential : 0)))];
-}
-
 void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 {
 	uint8_t waitStates;
@@ -253,14 +190,14 @@ void GbaMemoryManager::ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr)
 	_dmaController->ResetIdleCounter(mode);
 
 	if(addr < 0x8000000 || addr >= 0x10000000) {
-		waitStates = GetWaitStates(mode, addr);
+		waitStates = _waitStates.GetWaitStates(mode, addr);
 		if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
 			_prefetch->Exec(waitStates, _state.PrefetchEnabled);
 		}
 	} else if((mode & GbaAccessMode::Dma) || !(mode & GbaAccessMode::Prefetch)) {
 		//Accesses to ROM from DMA or reads not caused by the CPU loading opcodes will reset the cartridge prefetcher
 		//When the prefetch is reset on its last cycle, the ROM access takes an extra cycle to complete
-		waitStates = GetWaitStates(mode, addr) + (int)_prefetch->Reset();
+		waitStates = _waitStates.GetWaitStates(mode, addr) + (int)_prefetch->Reset();
 	} else {
 		if((addr & 0x1FFFE) == 0) {
 			//When reading a 128kb rom boundary, reset the prefetcher's state (and add the 1-cycle penalty as needed)
@@ -308,18 +245,14 @@ void GbaMemoryManager::ProcessVramAccess(GbaAccessModeVal mode, uint32_t addr)
 
 void GbaMemoryManager::ProcessVramStalling(uint8_t memType)
 {
-	if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
-		_prefetch->Exec(1, _state.PrefetchEnabled);
-	}
+	RunPrefetch();
 	_dmaController->ResetIdleCounter();
 
 	_ppu->RenderScanline(true);
 	while(_ppu->IsAccessingMemory(memType)) {
 		//Block CPU until PPU is done accessing ram
 		ProcessInternalCycle();
-		if(_prefetch->NeedExec(_state.PrefetchEnabled)) {
-			_prefetch->Exec(1, _state.PrefetchEnabled);
-		}
+		RunPrefetch();
 		_ppu->RenderScanline(true);
 	}
 }
@@ -672,7 +605,7 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 			_state.PrgWaitStates0[1] = (value & 0x10) ? 2 : 3;
 			_state.PrgWaitStates1[0] = (defaultWaitStates[(value >> 5) & 0x03] + 1);
 			_state.PrgWaitStates1[1] = (value & 0x80) ? 2 : 5;
-			GenerateWaitStateLut();
+			_waitStates.GenerateWaitStateLut(_state);
 			break;
 
 		case 0x205:
@@ -680,7 +613,7 @@ void GbaMemoryManager::WriteRegister(GbaAccessModeVal mode, uint32_t addr, uint8
 			_state.PrgWaitStates2[0] = defaultWaitStates[value & 0x03] + 1;
 			_state.PrgWaitStates2[1] = (value & 0x04) ? 2 : 9;
 			_state.PrefetchEnabled = (value & 0x40);
-			GenerateWaitStateLut();
+			_waitStates.GenerateWaitStateLut(_state);
 			break;
 		
 		case 0x206: break; //waitcontrol
@@ -1028,6 +961,6 @@ void GbaMemoryManager::Serialize(Serializer& s)
 	}
 
 	if(!s.IsSaving()) {
-		GenerateWaitStateLut();
+		_waitStates.GenerateWaitStateLut(_state);
 	}
 }

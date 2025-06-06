@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GBA\GbaCpuMultiply.h" />
+    <ClInclude Include="GBA\GbaWaitStates.h" />
     <ClInclude Include="NES\Epsm.h" />
     <ClInclude Include="NES\Mappers\Homebrew\Rainbow.h" />
     <ClInclude Include="NES\Mappers\Homebrew\RainbowAudio.h" />
