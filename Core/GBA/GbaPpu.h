@@ -32,6 +32,9 @@ struct GbaLayerRendererData
 	uint8_t TileRow;
 	uint8_t TileColumn;
 	uint8_t MosaicColor;
+
+	uint8_t TileFetchCounter;
+	bool RenderingDone;
 };
 
 struct GbaSpriteRendererData
@@ -234,8 +237,12 @@ public:
 
 		if(_state.Cycle == 308*4) {
 			ProcessEndOfScanline();
-		} else if(_state.Cycle == 1006) {
-			ProcessHBlank();
+		} else if(_state.Cycle >= 1006) {
+			if(_state.Cycle == 1006) {
+				ProcessHBlank();
+			} else if(_state.Cycle == 1056) {
+				RenderScanline();
+			}
 		}
 
 		_emu->ProcessPpuCycle<CpuType::Gba>();

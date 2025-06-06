@@ -74,7 +74,6 @@ GbaPpu::~GbaPpu()
 void GbaPpu::ProcessHBlank()
 {
 	if(_state.Scanline < 160) {
-		RenderScanline();
 		_console->GetDmaController()->TriggerDma(GbaDmaTrigger::HBlank);
 	} else {
 		ProcessLayerToggleDelay();
@@ -224,7 +223,7 @@ void GbaPpu::RenderScanline(bool forceRender)
 	ProcessSprites();
 	ProcessWindow();
 
-	if(_state.Scanline >= 160 || _lastRenderCycle >= 1006) {
+	if(_state.Scanline >= 160 || _lastRenderCycle >= 1056) {
 		return;
 	}
 
@@ -583,11 +582,15 @@ void GbaPpu::RenderTilemap()
 
 	if(_lastRenderCycle == -1) {
 		_layerData[i].NextLoad = -1;
+		_layerData[i].TileFetchCounter = 0;
+		_layerData[i].RenderingDone = false;
+	} else if(_layerData[i].RenderingDone) {
+		return;
 	}
 
 	int gap = 4 + i;
-	int cycle = std::max(0, _lastRenderCycle + 1 - gap) & ~0x03;
-	int end = std::min<int>(_state.Cycle, 1006) - gap;
+	int cycle = (std::max(0, _lastRenderCycle + 4 - gap)) & ~0x03;
+	int end = _state.Cycle - gap;
 	for(; cycle <= end; cycle += 4) {
 		int pixelOffset = (cycle >> 2) - 7;
 		if(((pixelOffset + layer.ScrollX) & 0x07) == 0) {
@@ -613,6 +616,7 @@ void GbaPpu::RenderTilemap()
 			_layerData[i].FetchAddr = layer.TilesetAddr + _layerData[i].TileIndex * (bpp8 ? 64 : 32) + _layerData[i].TileRow * (bpp8 ? 8 : 4) + _layerData[i].TileColumn;
 
 			_layerData[i].NextLoad = cycle + 4;
+			_layerData[i].TileFetchCounter = bpp8 ? 4 : 2;
 		} else if(_layerData[i].NextLoad == cycle) {
 			//Fetch tile data (4bpp & 8bpp)
 			_layerData[i].TileData = _vram16[_layerData[i].FetchAddr >> 1];
@@ -620,6 +624,12 @@ void GbaPpu::RenderTilemap()
 			_memoryAccess[cycle + gap] |= GbaPpuMemAccess::Vram;
 
 			_layerData[i].NextLoad = cycle + (bpp8 ? 8 : 16);
+			_layerData[i].TileFetchCounter--;
+			if(_layerData[i].TileFetchCounter == 0 && (cycle / 32) >= 31) {
+				//Stop after fetching 32 tiles
+				_layerData[i].RenderingDone = true;
+				break;
+			}
 		}
 	}
 }
@@ -1195,7 +1205,7 @@ void GbaPpu::SetLayerEnabled(int layer, bool enabled)
 void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 {
 	if(_lastRenderCycle != _state.Cycle && (_state.Scanline < 160 || _state.Scanline == _lastScanline)) {
-		if(_state.Cycle < 1006 || addr <= 0x01 || addr == 0x4D || addr >= 0x40 && addr <= 0x43) {
+		if(_state.Cycle < 1056 || addr <= 0x01 || addr == 0x4D || addr >= 0x40 && addr <= 0x43) {
 			//Only run renderer during active rendering (< 1006), or if the write could affect sprites/window processing
 			RenderScanline(true);
 		}
@@ -1631,6 +1641,8 @@ void GbaPpu::Serialize(Serializer& s)
 			SVI(_layerData[i].TileRow);
 			SVI(_layerData[i].TileColumn);
 			SVI(_layerData[i].MosaicColor);
+			SVI(_layerData[i].TileFetchCounter);
+			SVI(_layerData[i].RenderingDone);
 		}
 
 		for(int i = 0; i < 2; i++) {
