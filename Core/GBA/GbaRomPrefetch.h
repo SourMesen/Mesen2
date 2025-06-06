@@ -171,7 +171,7 @@ public:
 				}
 			}
 		} else {
-			if(addr != _state.ReadAddr) {
+			if((addr & ((mode & GbaAccessMode::Word) ? ~0x03 : ~0)) != _state.ReadAddr) {
 				//Restart prefetch, need to read an entire opcode
 				uint8_t totalTime = Reset();
 				_state.PrefetchAddr = addr;

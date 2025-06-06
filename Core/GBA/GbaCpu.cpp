@@ -102,10 +102,10 @@ void GbaCpu::SwitchMode(GbaCpuMode mode)
 void GbaCpu::ReloadPipeline()
 {
 	GbaCpuPipeline& pipe = _state.Pipeline;
-	pipe.Mode = GbaAccessMode::Prefetch | (_state.CPSR.Thumb ? GbaAccessMode::HalfWord : GbaAccessMode::Word);
+	pipe.Mode = GbaAccessMode::Prefetch | GbaAccessMode::NoRotate | (_state.CPSR.Thumb ? GbaAccessMode::HalfWord : GbaAccessMode::Word);
 
 	pipe.ReloadRequested = false;
-	pipe.Fetch.Address = _state.R[15] = _state.R[15] & (_state.CPSR.Thumb ? ~0x01 : ~0x03);
+	pipe.Fetch.Address = _state.R[15] = _state.R[15] & ~0x01;
 	_prefetch->ForceNonSequential(_state.R[15]);
 
 	pipe.Fetch.OpCode = ReadCode(pipe.Mode, pipe.Fetch.Address);
