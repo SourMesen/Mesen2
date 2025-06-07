@@ -35,6 +35,7 @@ struct GbaLayerRendererData
 
 	uint8_t TileFetchCounter;
 	bool RenderingDone;
+	bool LastTile;
 };
 
 struct GbaSpriteRendererData
