@@ -707,9 +707,10 @@ void ArmV3Cpu::ArmSingleDataSwap()
 	uint8_t rm = _opCode & 0x0F;
 
 	uint32_t mode = byte ? ArmV3AccessMode::Byte : ArmV3AccessMode::Word;
-	uint32_t val = Read(mode, R(rn));
+	uint32_t src = R(rn);
+	uint32_t val = Read(mode, src);
 	Idle();
-	Write(mode, R(rn), R(rm));
+	Write(mode, src, rm == 15 ? (R(rm) + 4) : R(rm));
 	SetR(rd, val);
 }
 
@@ -824,9 +825,11 @@ void ArmV3Cpu::InitArmOpTable()
 	}
 
 	//Single Data Swap (SWP)
-	//----_0001_0000_----_----_----_1001_----
-	addEntry(0x109, &ArmV3Cpu::ArmSingleDataSwap, ArmOpCategory::SingleDataSwap); //word
-	addEntry(0x149, &ArmV3Cpu::ArmSingleDataSwap, ArmOpCategory::SingleDataSwap); //byte
+	//----_0001_?0??_----_----_----_1001_----
+	for(int i = 0; i <= 0x07; i++) {
+		addEntry(0x109 | (i & 0x04) << 5 | (i & 0x03) << 4, &ArmV3Cpu::ArmSingleDataSwap, ArmOpCategory::SingleDataSwap); //word
+		addEntry(0x149 | (i & 0x04) << 5 | (i & 0x03) << 4, &ArmV3Cpu::ArmSingleDataSwap, ArmOpCategory::SingleDataSwap); //byte
+	}
 
 	for(int i = 0; i <= 0xFF; i++) {
 		addEntry(0xF00 + i, &ArmV3Cpu::ArmSoftwareInterrupt, ArmOpCategory::SoftwareInterrupt);
