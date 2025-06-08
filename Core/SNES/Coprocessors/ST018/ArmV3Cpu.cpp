@@ -492,7 +492,9 @@ void ArmV3Cpu::ArmMultiply()
 	}
 
 	uint32_t result = output.Output;
-	SetR(rd, result);
+	if(rd != 15) {
+		SetR(rd, result);
+	}
 
 	if(updateFlags) {
 		_state.CPSR.Carry = output.Carry;
@@ -538,8 +540,12 @@ void ArmV3Cpu::ArmMultiplyLong()
 
 	uint64_t result = output.Output;
 
-	SetR(rl, (uint32_t)result);
-	SetR(rh, (uint32_t)(result >> 32));
+	if(rl != 15) {
+		SetR(rl, (uint32_t)result);
+	}
+	if(rh != 15) {
+		SetR(rh, (uint32_t)(result >> 32));
+	}
 
 	if(updateFlags) {
 		_state.CPSR.Carry = output.Carry;
@@ -813,8 +819,8 @@ void ArmV3Cpu::InitArmOpTable()
 	}
 
 	//Multiply and Multiply-Accumulate (MUL, MLA)
-	//----_0000_00??_----_----_----_1001_----
-	for(int i = 0; i <= 0x03; i++) {
+	//----_0000_0???_----_----_----_1001_----
+	for(int i = 0; i <= 0x07; i++) {
 		addEntry(0x009 | (i << 4), &ArmV3Cpu::ArmMultiply, ArmOpCategory::Multiply);
 	}
 
