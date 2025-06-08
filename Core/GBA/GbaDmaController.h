@@ -20,6 +20,7 @@ private:
 	bool _needStart = false;
 	uint32_t _idleCycleCounter = 0;
 
+	int GetPendingDmaIndex();
 	void RunDma(GbaDmaChannel& ch, uint8_t chIndex);
 
 public:
