@@ -172,9 +172,8 @@ public:
 
 	void SetDelayedIrqSource(GbaIrqSource source, uint8_t delay);
 	void SetIrqSource(GbaIrqSource source);
-	bool ProcessIrq();
-	bool IsHaltOver();
 	bool HasPendingIrq();
+	bool IsHaltOver();
 
 	uint8_t GetOpenBus(uint32_t addr);
 

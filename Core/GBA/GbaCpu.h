@@ -22,6 +22,7 @@ private:
 	uint32_t _opCode = 0;
 	GbaCpuState _state = {};
 	uint8_t _ldmGlitch = 0;
+	bool _hasPendingIrq = false;
 
 	GbaMemoryManager* _memoryManager = nullptr;
 	GbaRomPrefetch* _prefetch = nullptr;
@@ -268,8 +269,8 @@ public:
 			ReloadPipeline();
 		}
 
-		bool checkIrq = _memoryManager->ProcessIrq();
-		if(checkIrq && startClock != _memoryManager->GetMasterClock()) {
+		bool hasPendingIrq = _hasPendingIrq;
+		if(hasPendingIrq && startClock != _memoryManager->GetMasterClock()) {
 			//TST, TEQ, CMP, CMN can modify the I flag without any fetch/idle cycles.
 			//In that case, the IRQ handling is done using the original I flag before the instruction was executed. (Passes "psr" test)
 			//Otherwise, use the current I flag.
@@ -277,7 +278,7 @@ public:
 		}
 
 		ProcessPipeline();
-		if(!irqDisable && checkIrq) {
+		if(!irqDisable && hasPendingIrq) {
 			CheckForIrqs();
 		}
 #endif

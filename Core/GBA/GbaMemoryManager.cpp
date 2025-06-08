@@ -695,12 +695,6 @@ void GbaMemoryManager::SetIrqSource(GbaIrqSource source)
 
 bool GbaMemoryManager::HasPendingIrq()
 {
-	//Keep track of whether or not a pending IRQ exists - used to break out of HALT mode
-	return _state.IrqPending & 0x01;
-}
-
-bool GbaMemoryManager::ProcessIrq()
-{
 	//Keep track of the IRQ line used by the CPU to decide if the IRQ handler should be executed
 	//(requires the IF+IE IRQ flags and IME to all be set)
 	return _irqFirstAccessCycle & 0x02;
@@ -708,7 +702,11 @@ bool GbaMemoryManager::ProcessIrq()
 
 bool GbaMemoryManager::IsHaltOver()
 {
-	return _state.StopMode ? _controlManager->CheckInputCondition() : HasPendingIrq();
+	if(_state.StopMode) {
+		return _controlManager->CheckInputCondition();
+	} else {
+		return (bool)(_state.IrqPending & 0x01);
+	}
 }
 
 bool GbaMemoryManager::UseInlineHalt()
