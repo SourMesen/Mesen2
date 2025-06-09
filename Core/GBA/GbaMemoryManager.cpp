@@ -132,17 +132,14 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 		_state.IME = _state.NewIME;
 	}
 
-	if(_pendingIrqSourceDelay && --_pendingIrqSourceDelay == 0) {
-		_state.NewIF |= (int)_pendingIrqSource;
-		
-		if(_pendingScanlineMatchIrq) {
-			//Scanline match IRQ is pending - will trigger on the next tick
-			_pendingScanlineMatchIrq = false;
-			_pendingIrqSourceDelay = 1;
-			_pendingIrqSource = GbaIrqSource::LcdScanlineMatch;
+	if(_pendingIrqs.size()) {
+		for(int i = (int)_pendingIrqs.size() - 1; i >= 0; i--) {
+			if(_pendingIrqs[i].Delay && --_pendingIrqs[i].Delay == 0) {
+				_state.NewIF |= (int)_pendingIrqs[i].Source;
+				_pendingIrqs.erase(_pendingIrqs.begin() + i);
+				TriggerIrqUpdate();
+			}
 		}
-
-		TriggerIrqUpdate();
 	}
 
 	if(_timer->HasPendingTimers()) {
@@ -164,7 +161,7 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 		_dmaController->HasPendingDma() ||
 		_timer->HasPendingTimers() ||
 		_state.IrqUpdateCounter ||
-		_pendingIrqSourceDelay ||
+		_pendingIrqs.size() > 0 ||
 		_haltDelay ||
 		(_dmaController->IsRunning() && _dmaIrqCounter < 10) ||
 		_serial->HasPendingIrq()
@@ -678,12 +675,7 @@ void GbaMemoryManager::TriggerIrqUpdate()
 
 void GbaMemoryManager::SetDelayedIrqSource(GbaIrqSource source, uint8_t delay)
 {
-	if(source == GbaIrqSource::LcdScanlineMatch && _pendingIrqSourceDelay) {
-		_pendingScanlineMatchIrq = true;
-	} else {
-		_pendingIrqSource = source;
-		_pendingIrqSourceDelay = delay;
-	}
+	_pendingIrqs.push_back({ source, delay });
 	SetPendingUpdateFlag();
 }
 
@@ -929,9 +921,9 @@ void GbaMemoryManager::Serialize(Serializer& s)
 	if(s.GetFormat() != SerializeFormat::Map) {
 		SV(_hasPendingUpdates);
 		SV(_hasPendingLateUpdates);
-		SV(_pendingIrqSource);
-		SV(_pendingIrqSourceDelay);
-		SV(_pendingScanlineMatchIrq);
+
+		SVVector(_pendingIrqs);
+
 		SV(_haltModeUsed);
 		SV(_biosLocked);
 		SV(_irqFirstAccessCycle);

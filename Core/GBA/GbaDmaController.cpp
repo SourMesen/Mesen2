@@ -288,7 +288,8 @@ void GbaDmaController::RunDma(GbaDmaChannel& ch, uint8_t chIndex)
 	_cpu->ClearSequentialFlag();
 
 	if(ch.IrqEnabled) {
-		_memoryManager->SetIrqSource((GbaIrqSource)((int)GbaIrqSource::DmaChannel0 << chIndex));
+		//IRQ flag is delayed by 1 cycle according to the fifo_6 test
+		_memoryManager->SetDelayedIrqSource((GbaIrqSource)((int)GbaIrqSource::DmaChannel0 << chIndex), 1);
 	}
 }
 

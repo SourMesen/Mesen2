@@ -20,6 +20,12 @@ class GbaCart;
 class GbaSerial;
 class MgbaLogHandler;
 
+struct GbaPendingIrq
+{
+	GbaIrqSource Source;
+	uint8_t Delay;
+};
+
 class GbaMemoryManager final : public ISerializable
 {
 private:
@@ -55,9 +61,8 @@ private:
 	uint8_t* _saveRam = nullptr;
 	uint32_t _saveRamSize = 0;
 	
-	GbaIrqSource _pendingIrqSource = {};
-	uint8_t _pendingIrqSourceDelay = 0;
-	bool _pendingScanlineMatchIrq = false;
+	vector<GbaPendingIrq> _pendingIrqs;
+	
 	bool _haltModeUsed = false;
 	bool _biosLocked = false;
 	uint8_t _haltDelay = 0;
