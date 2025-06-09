@@ -21,13 +21,14 @@ public:
 		
 		if(commit) {
 			if(_size >= 7) {
-				//TODOGBA is this correct?
-				return;
+				//Writing more than 7 values clears the FIFO (fifo_5)
+				_size = 0;
+				_readCount = 0;
+			} else {
+				_data[_writePos] = _writeBuffer;
+				_writePos = (_writePos + 1) % 7;
+				_size++;
 			}
-
-			_data[_writePos] = _writeBuffer;
-			_writePos = (_writePos + 1) % 7;
-			_size++;
 		}
 	}
 
