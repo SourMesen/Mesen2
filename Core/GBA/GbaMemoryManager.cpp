@@ -157,12 +157,17 @@ void GbaMemoryManager::ProcessPendingUpdates(bool allowStartDma)
 		_console->GetCpu()->SetStopFlag();
 	}
 
+	if(_objEnableDelay && --_objEnableDelay == 0) {
+		_ppu->ProcessObjEnableChange();
+	}
+
 	_hasPendingUpdates = (
 		_dmaController->HasPendingDma() ||
 		_timer->HasPendingTimers() ||
 		_state.IrqUpdateCounter ||
-		_pendingIrqs.size() > 0 ||
+		_pendingIrqs.size() ||
 		_haltDelay ||
+		_objEnableDelay ||
 		(_dmaController->IsRunning() && _dmaIrqCounter < 10) ||
 		_serial->HasPendingIrq()
 	);
@@ -673,6 +678,12 @@ void GbaMemoryManager::TriggerIrqUpdate()
 	SetPendingUpdateFlag();
 }
 
+void GbaMemoryManager::TriggerObjEnableUpdate()
+{
+	_objEnableDelay = 3;
+	SetPendingUpdateFlag();
+}
+
 void GbaMemoryManager::SetDelayedIrqSource(GbaIrqSource source, uint8_t delay)
 {
 	_pendingIrqs.push_back({ source, delay });
@@ -928,6 +939,7 @@ void GbaMemoryManager::Serialize(Serializer& s)
 		SV(_biosLocked);
 		SV(_irqFirstAccessCycle);
 		SV(_haltDelay);
+		SV(_objEnableDelay);
 
 		SV(_dmaIrqCounter);
 		SV(_dmaIrqPending);

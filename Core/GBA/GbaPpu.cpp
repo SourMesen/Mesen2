@@ -1202,6 +1202,22 @@ void GbaPpu::ProcessLayerToggleDelay()
 	}
 }
 
+void GbaPpu::ProcessObjEnableChange()
+{
+	RenderScanline();
+
+	if(_state.ObjLayerEnabled && !_newObjLayerEnabled) {
+		//Clear sprite row buffers when OBJ layer is disabled
+		//TODOGBA what does hardware do if sprites are re-enabled on the same or next scanline?
+		std::fill(_oamOutputBuffers[0], _oamOutputBuffers[0] + 240, GbaPixelData {});
+		std::fill(_oamOutputBuffers[1], _oamOutputBuffers[1] + 240, GbaPixelData {});
+	} else if(!_state.ObjLayerEnabled && _newObjLayerEnabled) {
+		_state.ObjEnableTimer = _state.Scanline >= 160 ? 0 : 3;
+	}
+
+	_state.ObjLayerEnabled = _newObjLayerEnabled;
+}
+
 void GbaPpu::SetLayerEnabled(int layer, bool enabled)
 {
 	//"Layer toggle 2" test seems to imply that fully disabling a layer has a delay and that
@@ -1256,15 +1272,10 @@ void GbaPpu::WriteRegister(uint32_t addr, uint8_t value)
 			SetLayerEnabled(2, value & 0x04);
 			SetLayerEnabled(3, value & 0x08);
 			bool objEnabled = value & 0x10;
-			if(_state.ObjLayerEnabled && !objEnabled) {
-				//Clear sprite row buffers when OBJ layer is disabled
-				//TODOGBA what does hardware do if sprites are re-enabled on the same or next scanline?
-				std::fill(_oamOutputBuffers[0], _oamOutputBuffers[0] + 240, GbaPixelData {});
-				std::fill(_oamOutputBuffers[1], _oamOutputBuffers[1] + 240, GbaPixelData {});
-			} else if(!_state.ObjLayerEnabled && objEnabled) {
-				_state.ObjEnableTimer = _state.Scanline >= 160 ? 0 : 3;
+			if(objEnabled != _state.ObjLayerEnabled) {
+				_newObjLayerEnabled = objEnabled;
+				_memoryManager->TriggerObjEnableUpdate();
 			}
-			_state.ObjLayerEnabled = objEnabled;
 			_state.Window0Enabled = value & 0x20;
 			_state.Window1Enabled = value & 0x40;
 			_state.ObjWindowEnabled = value & 0x80;
@@ -1642,6 +1653,8 @@ void GbaPpu::Serialize(Serializer& s)
 		SV(_oamScanline);
 		SV(_oamMosaicY);
 		SV(_oamMosaicScanline);
+
+		SV(_newObjLayerEnabled);
 
 		for(int i = 0; i < 4; i++) {
 			SVI(_layerData[i].TilemapData);

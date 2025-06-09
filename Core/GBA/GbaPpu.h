@@ -131,7 +131,7 @@ private:
 
 	Timer _frameSkipTimer;
 	bool _skipRender = false;
-	
+
 	bool _triggerSpecialDma = false;
 
 	int16_t _lastWindowCycle = -1;
@@ -156,6 +156,8 @@ private:
 	uint8_t _oamScanline = 0;
 	uint8_t _oamMosaicScanline = 0;
 	uint8_t _oamMosaicY = 0;
+
+	bool _newObjLayerEnabled = false;
 
 	uint8_t _memoryAccess[308 * 4] = {};
 	
@@ -253,6 +255,8 @@ public:
 	{
 		return _memoryAccess[_state.Cycle] & memType;
 	}
+
+	void ProcessObjEnableChange();
 
 	void RenderScanline(bool forceRender = false);
 	

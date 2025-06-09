@@ -72,6 +72,8 @@ private:
 	uint16_t _dmaIrqPending = 0;
 	uint16_t _dmaIrqLine = 0;
 
+	uint8_t _objEnableDelay = 0;
+
 	__forceinline void ProcessWaitStates(GbaAccessModeVal mode, uint32_t addr);
 
 	__noinline void ProcessVramAccess(GbaAccessModeVal mode, uint32_t addr);
@@ -159,6 +161,8 @@ public:
 			_dmaController->RunPendingDma(true);
 		}
 	}
+
+	void TriggerObjEnableUpdate();
 
 	void ProcessStoppedCycle();
 
