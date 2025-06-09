@@ -376,6 +376,7 @@ void GbaCpu::Serialize(Serializer& s)
 	SV(_state.CPSR.Negative);
 
 	SV(_state.Stopped);
+	SV(_state.Frozen);
 	SVArray(_state.R, 16);
 	SVArray(_state.UserRegs, 7);
 	SVArray(_state.FiqRegs, 7);

@@ -58,6 +58,13 @@ private:
 		return _waitStates->GetPrefetchWaitStates(GbaAccessMode::HalfWord | (_state.Sequential ? GbaAccessMode::Sequential : 0), _state.PrefetchAddr);
 	}
 
+	__noinline void TriggerCpuFreeze()
+	{
+		//Prefetch unit can't read more data because it was filled and needs to be emptied to resume.
+		//But the CPU needs more data to continue - this causes the system to hang (prefetcher_branch_thumb_arm_2 test)
+		_console->SetCpuStopFlag();
+	}
+
 public:
 	void Init(GbaWaitStates* waitStates, GbaConsole* console)
 	{
@@ -203,6 +210,10 @@ public:
 				}
 				return 1;
 			} else {
+				if(_state.WasFilled) {
+					TriggerCpuFreeze();
+				}
+
 				//Prefetch in progress, wait until it ends
 				if constexpr(!prefetchEnabled) {
 					if(_state.ClockCounter == 0) {

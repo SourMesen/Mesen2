@@ -211,7 +211,7 @@ public:
 
 		if(isHaltOver) {
 			_memoryManager->ProcessIdleCycle();
-			_state.Stopped = false;
+			_state.Stopped = _state.Frozen;
 			return false;
 		} else {
 			return true;
@@ -285,11 +285,14 @@ public:
 	}
 
 	bool IsHalted() { return _state.Stopped; }
-	void SetStopFlag() { _state.Stopped = true; }
+	void SetStopFlag(bool freeze = false) {
+		_state.Stopped = true;
+		_state.Frozen = freeze;
+	}
 
 	void ClearSequentialFlag() { _state.Pipeline.Mode &= ~GbaAccessMode::Sequential; }
 	void SetSequentialFlag() { _state.Pipeline.Mode |= GbaAccessMode::Sequential; }
-
+	
 	void PowerOn();
 
 	void Serialize(Serializer& s) override;

@@ -92,6 +92,7 @@ struct GbaCpuState : BaseState
 	uint32_t R[16];
 	GbaCpuFlags CPSR;
 	bool Stopped;
+	bool Frozen;
 
 	uint32_t UserRegs[7];
 	uint32_t FiqRegs[7];

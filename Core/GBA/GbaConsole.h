@@ -119,6 +119,7 @@ public:
 
 	void ClearCpuSequentialFlag();
 	void SetCpuSequentialFlag();
+	void SetCpuStopFlag();
 
 	void RefreshRamCheats();
 

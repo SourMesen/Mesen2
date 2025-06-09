@@ -283,6 +283,7 @@ public struct GbaCpuState : BaseState
 	public UInt32[] R;
 	public GbaCpuFlags CPSR;
 	[MarshalAs(UnmanagedType.I1)] public bool Stopped;
+	[MarshalAs(UnmanagedType.I1)] public bool Frozen;
 
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
 	public UInt32[] UserRegs;

@@ -459,6 +459,11 @@ void GbaConsole::SetCpuSequentialFlag()
 	_cpu->SetSequentialFlag();
 }
 
+void GbaConsole::SetCpuStopFlag()
+{
+	_cpu->SetStopFlag(true);
+}
+
 ConsoleRegion GbaConsole::GetRegion()
 {
 	return ConsoleRegion::Ntsc;
