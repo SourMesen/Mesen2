@@ -294,13 +294,17 @@ void GbaCpu::ThumbPushPopReg()
 		}
 	}
 
-	if(storeLrLoadPc) {
+	bool emptyPopGlitch = !regMask && load && !storeLrLoadPc;
+	if(storeLrLoadPc || emptyPopGlitch) {
 		if(load) {
 			SetR(15, Read(GbaAccessMode::Word | GbaAccessMode::NoRotate, sp));
 		} else {
 			Write(GbaAccessMode::Word, sp, _state.R[14]);
 		}
 		sp += 4;
+		if(emptyPopGlitch) {
+			sp += 15 * 4;
+		}
 	}
 
 	if(load) {
