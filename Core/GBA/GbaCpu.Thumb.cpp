@@ -495,7 +495,8 @@ void GbaCpu::InitThumbOpTable()
 
 	//Conditional branch
 	//1101_????
-	for(int i = 0; i <= 0xF; i++) {
+	for(int i = 0; i <= 0xD; i++) {
+		//E is undefined, F is SWI, so skip those
 		addEntry(0xD0 | i, &GbaCpu::ThumbConditionalBranch, GbaThumbOpCategory::ConditionalBranch);
 	}
 
