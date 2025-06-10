@@ -381,10 +381,11 @@ void GbaCpu::ArmSignedHalfDataTransfer()
 		}
 		Idle();
 	} else {
+		uint32_t value = R(rd) + (rd == 15 ? 4 : 0);
 		if(half) {
-			Write(GbaAccessMode::HalfWord | (sign ? GbaAccessMode::Signed : 0), addr, R(rd));
+			Write(GbaAccessMode::HalfWord | (sign ? GbaAccessMode::Signed : 0), addr, value);
 		} else {
-			Write(GbaAccessMode::Byte | (sign ? GbaAccessMode::Signed : 0), addr, R(rd));
+			Write(GbaAccessMode::Byte | (sign ? GbaAccessMode::Signed : 0), addr, value);
 		}
 	}
 
@@ -393,7 +394,7 @@ void GbaCpu::ArmSignedHalfDataTransfer()
 	}
 
 	if((rd != rn || !load) && (writeBack || !pre)) {
-		SetR(rn, addr);
+		SetR(rn, addr + (rn == 15 ? 4 : 0));
 	}
 }
 
