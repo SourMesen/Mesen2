@@ -1260,6 +1260,29 @@
 			<Control ID="btnStart">Log to file...</Control>
 			<Control ID="btnStop">Stop logging</Control>
 			<Control ID="btnClear">Clear log</Control>
+			
+			<Control ID="tipFormatNotesLine">Notes</Control>
+			<Control ID="tipFormatCustomFormatDescLine">You can customize the output by enabling the 'Use custom format' option and manually editing the format.</Control>
+			
+			<Control ID="tipFormatTagDisplayFormatDescLine">Tags can have their display format configured by using a comma and specifying the format options. e.g:</Control>
+			<Control ID="tipFormatTagDisplayDecimalPaddedDesc">display scanline in decimal, pad to always be 3 characters wide</Control>
+			<Control ID="tipFormatTagDisplayHexadecimalDesc">display scanline in hexadecimal</Control>
+			<Control ID="tipFormatTagDisplayHexadecimalPaddedDesc">display scanline in hexadecimal, pad to always be 3 characters wide</Control>
+			
+			<Control ID="tipFormatCommonTagsDescLine">Common tags (all CPUs)</Control>
+			<Control ID="tipFormatByteCodeTagDesc">byte code for the instruction (1 to 3 bytes)</Control>
+			<Control ID="tipFormatDisassemblyTagDesc">disassembly for the current instruction</Control>
+			<Control ID="tipFormatEffectiveAddressTagDesc">effective address used for indirect addressing modes</Control>
+			<Control ID="tipFormatMemoryValueTagDesc">value stored at the memory location referred to by the instruction</Control>
+			<Control ID="tipFormatPCTagDesc">program counter</Control>
+			<Control ID="tipFormatCycleTagDesc">current horizontal cycle (H)</Control>
+			<Control ID="tipFormatHClockTagDesc">current horizontal cycle (H, in master clocks)</Control>
+			<Control ID="tipFormatScanlineTagDesc">current scanline (V)</Control>
+			<Control ID="tipFormatFrameCountTagDesc">current frame number</Control>
+			<Control ID="tipFormatCycleCountTagDesc">current CPU cycle (64-bit unsigned value)</Control>
+			<Control ID="tipFormatAlignXTagDesc">add spaces to ensure the line is X characters long</Control>
+
+			<Control ID="tipFormatCpuSpecificTagsDesc">CPU-specific tags</Control>
 		</Form>
 
 		<Form ID="EventViewerWindow">
