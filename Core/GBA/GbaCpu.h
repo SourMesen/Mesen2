@@ -72,6 +72,7 @@ private:
 	}
 
 	GbaCpuFlags& GetSpsr();
+	void SetStatusFlags(bool writeToSpsr, uint8_t mask, uint32_t value);
 
 	static void InitArmOpTable();
 	void ArmBranchExchangeRegister();

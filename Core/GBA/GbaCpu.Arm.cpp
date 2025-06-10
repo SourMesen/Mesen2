@@ -15,10 +15,19 @@ ArmOpCategory GbaCpu::GetArmOpCategory(uint32_t opCode)
 
 void GbaCpu::ArmBranchExchangeRegister()
 {
+	//A lot of this behavior is not officially documented in the data sheet (and is similar to the behavior of MSR)
+	//Passes png183's "branches" test: https://github.com/png183/gba-tests/blob/master/arm/
+	uint8_t mask = (_opCode >> 16) & 0x0F;
 	uint32_t value = R(_opCode & 0x0F);
-	_state.CPSR.Thumb = (value & 0x01) != 0;
-	_state.R[15] = value;
-	_state.Pipeline.ReloadRequested = true;
+	bool writeToSpsr = _opCode & (1 << 22);
+	if((mask & 0x09) == 0x09) {
+		GbaCpuFlags& flags = writeToSpsr ? GetSpsr() : _state.CPSR;
+		flags.Thumb = (value & 0x01) != 0;
+	} else {
+		SetStatusFlags(writeToSpsr, mask, value);
+	}
+	uint8_t rd = (_opCode >> 12) & 0x0F;
+	SetR(rd, value);
 }
 
 void GbaCpu::ArmBranch()
@@ -59,6 +68,15 @@ void GbaCpu::ArmMsr()
 		value = R(_opCode & 0x0F);
 	}
 
+	SetStatusFlags(writeToSpsr, mask, value);
+}
+
+void GbaCpu::SetStatusFlags(bool writeToSpsr, uint8_t mask, uint32_t value)
+{
+	if(writeToSpsr && (_state.CPSR.Mode == GbaCpuMode::User || _state.CPSR.Mode == GbaCpuMode::System)) {
+		return;
+	}
+
 	GbaCpuFlags& flags = writeToSpsr ? GetSpsr() : _state.CPSR;
 	if(mask & 0x08) {
 		flags.Negative = value & (1 << 31);
@@ -66,7 +84,7 @@ void GbaCpu::ArmMsr()
 		flags.Carry = value & (1 << 29);
 		flags.Overflow = value & (1 << 28);
 	}
-	
+
 	if(mask & 0x01) {
 		if(writeToSpsr || _state.CPSR.Mode != GbaCpuMode::User) {
 			if(!writeToSpsr) {
@@ -535,8 +553,10 @@ void GbaCpu::InitArmOpTable()
 	}
 
 	//Branch and Exchange (BX)
-	//----_0001_0010_----_----_----_0001_----
-	addEntry(0x121, &GbaCpu::ArmBranchExchangeRegister, ArmOpCategory::BranchExchangeRegister);
+	//----_0001_0?10_----_----_----_0??1_----
+	for(int i = 0; i <= 0x0F; i++) {
+		addEntry(0x101 | ((i & 0x03) << 1) | ((i & 0x0C) << 3), &GbaCpu::ArmBranchExchangeRegister, ArmOpCategory::BranchExchangeRegister);
+	}
 
 	//Branch and Branch with Link (B, BL)
 	//----_101?_????_----_----_----_????_----
