@@ -788,13 +788,7 @@ private:
 	void ANE()
 	{
 		uint8_t imm = GetOperandValue();
-
-		//Set N/Z based on the original value of A
-		SetA(A());
-
-		//Set A without updating the flags
-		uint8_t result = (A() | 0xEE) & X() & imm;
-		_state.A = result;
+		SetA((A() | 0xEE) & X() & imm);
 	}
 
 	void LAS()
