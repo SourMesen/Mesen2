@@ -32,6 +32,9 @@ private:
 	uint8_t _blockFrameCounterTick = 0;
 	int16_t _newValue = 0;
 	int8_t _writeDelayCounter = 0;
+	
+	bool _irqFlag = false;
+	uint64_t _irqFlagClearClock = 0;
 
 public:
 	ApuFrameCounter(NesConsole* console)
@@ -43,6 +46,8 @@ public:
 	void Reset(bool softReset)
 	{
 		_previousCycle = 0;
+		_irqFlag = false;
+		_irqFlagClearClock = 0;
 
 		//"After reset: APU mode in $4017 was unchanged", so we need to keep whatever value _stepMode has for soft resets
 		if(!softReset) {
@@ -65,6 +70,8 @@ public:
 	void Serialize(Serializer &s) override
 	{
 		SV(_previousCycle); SV(_currentStep); SV(_stepMode); SV(_inhibitIRQ); SV(_blockFrameCounterTick); SV(_writeDelayCounter); SV(_newValue);
+		SV(_irqFlag);
+		SV(_irqFlagClearClock);
 
 		if(!s.IsSaving()) {
 			SetRegion(_console->GetRegion());
@@ -94,9 +101,17 @@ public:
 		uint32_t cyclesRan;
 		
 		if(_previousCycle + cyclesToRun >= _stepCycles[_stepMode][_currentStep]) {
-			if(!_inhibitIRQ && _stepMode == 0 && _currentStep >= 3) {
+			if(_stepMode == 0 && _currentStep >= 3) {
 				//Set irq on the last 3 cycles for 4-step mode
-				_console->GetCpu()->SetIrqSource(IRQSource::FrameCounter);
+				_irqFlag = true;
+				_irqFlagClearClock = 0;
+
+				if(!_inhibitIRQ) {
+					_console->GetCpu()->SetIrqSource(IRQSource::FrameCounter);
+				} else if(_currentStep == 5) {
+					_irqFlag = false;
+					_irqFlagClearClock = 0;
+				}
 			}
 
 			FrameType type = _frameType[_stepMode][_currentStep];
@@ -191,7 +206,24 @@ public:
 		_inhibitIRQ = (value & 0x40) == 0x40;
 		if(_inhibitIRQ) {
 			_console->GetCpu()->ClearIrqSource(IRQSource::FrameCounter);
+			_irqFlag = false;
+			_irqFlagClearClock = 0;
 		}
+	}
+
+	bool GetIrqFlag()
+	{
+		if(_irqFlag) {
+			uint64_t clock = _console->GetMasterClock();
+			if(_irqFlagClearClock == 0) {
+				//The flag will be cleared at the start of the next APU cycle (see AccuracyCoin test)
+				_irqFlagClearClock = clock + ((clock & 0x01) ? 2 : 1);
+			} else if(clock >= _irqFlagClearClock) {
+				_irqFlagClearClock = 0;
+				_irqFlag = false;
+			}
+		}
+		return _irqFlag;
 	}
 
 	ApuFrameCounterState GetState()

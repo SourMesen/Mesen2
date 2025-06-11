@@ -79,7 +79,7 @@ uint8_t NesApu::GetStatus()
 	status |= _triangle->GetStatus() ? 0x04 : 0x00;
 	status |= _noise->GetStatus() ? 0x08 : 0x00;
 	status |= _dmc->GetStatus() ? 0x10 : 0x00;
-	status |= _console->GetCpu()->HasIrqSource(IRQSource::FrameCounter) ? 0x40 : 0x00;
+	status |= _frameCounter->GetIrqFlag() ? 0x40 : 0x00;
 	status |= _console->GetCpu()->HasIrqSource(IRQSource::DMC) ? 0x80 : 0x00;
 
 	return status;
