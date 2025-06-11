@@ -150,7 +150,12 @@ void DeltaModulationChannel::Run(uint32_t targetCycle)
 				_shiftRegister = _readBuffer;
 				_bufferEmpty = true;
 				_needToRun = true;
-				StartDmcTransfer();
+				if(_transferStartDelay == 0) {
+					//Don't trigger the DMA if the channel was just enabled by a 4015 write
+					//The DMA will be triggered later (see ProcessClock)
+					//Based on AccuracyCoin's "Delta Modulation Channel" test result
+					StartDmcTransfer();
+				}
 			}
 		}
 
