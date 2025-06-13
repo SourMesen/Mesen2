@@ -84,6 +84,7 @@ std::list<string> MessageManager::_log;
 SimpleLock MessageManager::_logLock;
 SimpleLock MessageManager::_messageLock;
 bool MessageManager::_osdEnabled = true;
+bool MessageManager::_outputToStdout = false;
 IMessageManager* MessageManager::_messageManager = nullptr;
 
 void MessageManager::RegisterMessageManager(IMessageManager* messageManager)
@@ -102,9 +103,10 @@ void MessageManager::UnregisterMessageManager(IMessageManager* messageManager)
 	}
 }
 
-void MessageManager::SetOsdState(bool enabled)
+void MessageManager::SetOptions(bool osdEnabled, bool outputToStdout)
 {
-	_osdEnabled = enabled;
+	_osdEnabled = osdEnabled;
+	_outputToStdout = outputToStdout;
 }
 
 string MessageManager::Localize(string key)
@@ -176,7 +178,9 @@ void MessageManager::Log(string message)
 	}
 	_log.push_back(message);
 
-	std::cout << message << std::endl;
+	if(_outputToStdout) {
+		std::cout << message << std::endl;
+	}
 }
 
 void MessageManager::ClearLog()

@@ -12,8 +12,9 @@
 	mc:Ignorable="d"
 	x:Class="Mesen.Windows.CommandLineHelpWindow"
 	Width="550" Height="400"
+	MinWidth="550" MinHeight="400"
 	Title="{l:Translate wndTitle}"
-	CanResize="False"
+	CanResize="True"
 	Name="root"
 	Icon="/Assets/CommandLine.png"
 >

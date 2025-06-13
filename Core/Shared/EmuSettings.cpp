@@ -291,7 +291,7 @@ GameConfig& EmuSettings::GetGameConfig()
 
 void EmuSettings::SetPreferences(PreferencesConfig& config)
 {
-	MessageManager::SetOsdState(!config.DisableOsd);
+	MessageManager::SetOptions(!config.DisableOsd, CheckFlag(EmulationFlags::OutputToStdout));
 
 	_preferences = config;
 

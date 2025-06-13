@@ -21,12 +21,13 @@ private:
 	static std::unordered_map<string, string> _enResources;
 
 	static bool _osdEnabled;
+	static bool _outputToStdout;
 	static SimpleLock _logLock;
 	static SimpleLock _messageLock;
 	static std::list<string> _log;
 	
 public:
-	static void SetOsdState(bool enabled);
+	static void SetOptions(bool osdEnabled, bool outputToStdout);
 
 	static string Localize(string key);
 

@@ -41,7 +41,9 @@ std::shared_ptr<LinuxGameController> LinuxGameController::GetController(Emulator
 			MessageManager::Log(std::string("[Input Connected] Name: ") + libevdev_get_name(device) + " Vendor: " + std::to_string(libevdev_get_id_vendor(device)) + " Product: " + std::to_string(libevdev_get_id_product(device)));
 			return std::shared_ptr<LinuxGameController>(new LinuxGameController(emu, deviceID, fd, device));
 		} else {
-			MessageManager::Log(std::string("[Input] Device ignored (Not a gamepad) - Name: ") + libevdev_get_name(device) + " Vendor: " + std::to_string(libevdev_get_id_vendor(device)) + " Product: " + std::to_string(libevdev_get_id_product(device)));
+			if(logInformation) {
+				MessageManager::Log(std::string("[Input] Device ignored (Not a gamepad) - Name: ") + libevdev_get_name(device) + " Vendor: " + std::to_string(libevdev_get_id_vendor(device)) + " Product: " + std::to_string(libevdev_get_id_product(device)));
+			}
 			close(fd);			
 		}
 	}	

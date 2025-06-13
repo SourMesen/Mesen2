@@ -61,6 +61,7 @@ public class CommandLineHelper
 					case "noaudio": NoAudio = true; break;
 					case "noinput": NoInput = true; break;
 					case "fullscreen": Fullscreen = true; break;
+					case "enablestdout": ConfigApi.SetEmulationFlag(EmulationFlags.OutputToStdout, true); break;
 					case "donotsavesettings": ConfigManager.DisableSaveSettings = true; break;
 					case "loadlastsession": LoadLastSessionRequested = true; break;
 					default:
@@ -180,10 +181,13 @@ public class CommandLineHelper
 	{
 		Dictionary<string, string> result = new();
 
-		string general = @"--fullscreen - Start in fullscreen mode
---doNotSaveSettings - Prevent settings from being saved to the disk (useful to prevent command line options from becoming the default settings)
+		string general = @"--doNotSaveSettings - Prevent settings from being saved to the disk (useful to prevent command line options from becoming the default settings)
+--enableStdout - Writes the log window's content to stdout
+--fullscreen - Start in fullscreen mode
+--loadLastSession - Resumes the game in the state it was left in when it was last played.
 --recordMovie=""filename.mmo"" - Start recording a movie after the specified game is loaded.
---loadLastSession - Resumes the game in the state it was left in when it was last played.";
+--testRunner [lua script] [rom file] - Runs a Lua script in headless mode (use emu.exit(...) to stop execution)
+";
 
 		result["General"] = general;
 		result["Audio"] = GetSwichesForObject("audio.", typeof(AudioConfig));
