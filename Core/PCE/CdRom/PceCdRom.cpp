@@ -110,6 +110,11 @@ void PceCdRom::SetScsiGoodStatus()
 
 void PceCdRom::SetIrqSource(PceCdRomIrqSource src)
 {
+	if(_state.ResetRegValue & 0x02) {
+		//Don't set IRQ flags when SCSI drive reset is active
+		return;
+	}
+
 	//LogDebug("Set IRQ source: " + HexUtilities::ToHex((uint8_t)src));
 	if((_state.ActiveIrqs & (uint8_t)src) == 0) {
 		_state.ActiveIrqs |= (uint8_t)src;
@@ -168,7 +173,7 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 			_scsi.SetSignalValue(Rst, reset);
 			_scsi.UpdateState();
 			if(reset) {
-				//Clear enabled IRQs flags for SCSI drive (SubChannel? + StatusMsgIn + DataIn)
+				//Clear enabled IRQs flags for SCSI drive (SubChannel + StatusMsgIn + DataIn)
 				_state.EnabledIrqs &= 0x8F;
 				UpdateIrqState();
 			}
@@ -224,19 +229,25 @@ uint8_t PceCdRom::Read(uint16_t addr)
 		case 0x03:
 			_state.BramLocked = true;
 			_console->GetMemoryManager()->UpdateCdRomBanks();
-			
-			return (
-				_state.ActiveIrqs |
-				0x10 | //drive active flag
-				(_state.ReadRightChannel ? 0 : 0x02)
-			);
+			return _state.ActiveIrqs | (_state.ReadRightChannel ? 0 : 0x02);
 
 		case 0x04: return _state.ResetRegValue;
 
 		case 0x05: return (uint8_t)_state.AudioSampleLatch;
 		case 0x06: return (uint8_t)(_state.AudioSampleLatch >> 8);
 			
-		case 0x07: return _state.BramLocked ? 0 : 0x80;
+		case 0x07: {
+			uint32_t sector = _audioPlayer.GetSubcodeSector();
+			uint8_t position = _audioPlayer.GetSubcodePosition();
+
+			uint32_t subcodeOffset = sector * 98 + position;
+			ClearIrqSource(PceCdRomIrqSource::SubCode);
+
+			if(subcodeOffset < _disc.SubCode.size()) {
+				return _disc.SubCode[subcodeOffset];
+			}
+			return 0;
+		}
 
 		case 0x08: {
 			uint8_t val = _scsi.GetDataPort();

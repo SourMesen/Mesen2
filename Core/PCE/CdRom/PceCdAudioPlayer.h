@@ -19,12 +19,18 @@ class PceCdAudioPlayer final : public IAudioProvider, public ISerializable
 
 	vector<int16_t> _samplesToPlay;
 	uint32_t _clockCounter = 0;
+	int8_t _irqCounter = 0;
+	uint8_t _subcodePosition = 0;
+	uint32_t _subcodeSector = 0;
+	uint32_t _nextSubcodeSector = 0;
 	uint32_t _seekDelay = 0;
 	
 	HermiteResampler _resampler;
 	
 	void PlaySample();
 	void ProcessAudioPlaybackStart();
+
+	void ProcessSubcodeIrq();
 
 public:
 	PceCdAudioPlayer(Emulator* emu, PceCdRom* cdrom, DiscInfo& disc);
@@ -38,6 +44,9 @@ public:
 	PceCdAudioPlayerState& GetState() { return _state; }
 
 	CdAudioStatus GetStatus() { return _state.Status; }
+	
+	uint32_t GetSubcodeSector() { return _subcodeSector; }
+	uint8_t GetSubcodePosition() { return _subcodePosition; }
 	uint32_t GetCurrentSector() { return _state.CurrentSector; }
 
 	__forceinline void Exec()
@@ -45,6 +54,12 @@ public:
 		_clockCounter += 3;
 		if(_clockCounter > 487) {
 			_clockCounter -= 487;
+
+			if(++_irqCounter >= 6) {
+				//Trigger subchannel irq every 6 samples, regardless of whether or not the cd-rom is playing, paused, stopped or seeking (?)
+				ProcessSubcodeIrq();
+			}
+
 			if(_seekDelay == 0) {
 				//Output one sample every 487 master clocks (~44101.1hz)
 				PlaySample();

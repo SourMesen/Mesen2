@@ -86,6 +86,25 @@ void PceCdAudioPlayer::ProcessAudioPlaybackStart()
 	_cdrom->SetScsiGoodStatus();
 }
 
+void PceCdAudioPlayer::ProcessSubcodeIrq()
+{
+	//Every 6 samples, trigger an IRQ and increment the current subcode position
+	_cdrom->SetIrqSource(PceCdRomIrqSource::SubCode);
+	_irqCounter = 0;
+	_subcodePosition++;
+	if(_subcodePosition >= 98) {
+		_subcodePosition = 0;
+		if(!_seekDelay) {
+			//While seeking, the subcode seems to repeat the previous sector's data until seeking is over
+			//After seeking is over, the previous sector's data appears to be repeated completely at least
+			//one more time before the new sector's data is sent. (based on the CD+G player requiring this
+			//behavior to avoid freezes when stopping playback while on track 2+)
+			_subcodeSector = _nextSubcodeSector;
+			_nextSubcodeSector = _cdrom->GetCurrentSector();
+		}
+	}
+}
+
 void PceCdAudioPlayer::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 {
 	double volume = _cdrom->GetAudioFader().GetVolume(PceAudioFaderTarget::CdAudio);
@@ -105,6 +124,11 @@ void PceCdAudioPlayer::Serialize(Serializer& s)
 	SV(_state.CurrentSample);
 	SV(_state.LeftSample);
 	SV(_state.RightSample);
-
+	
+	SV(_irqCounter);
+	SV(_subcodePosition);
+	SV(_subcodeSector);
+	SV(_nextSubcodeSector);
+	SV(_seekDelay);
 	SV(_clockCounter);
 }

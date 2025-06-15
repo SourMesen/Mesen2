@@ -299,6 +299,7 @@ enum class PceCdRomIrqSource
 {
 	Adpcm = 0x04,
 	Stop = 0x08,
+	SubCode = 0x10,
 	StatusMsgIn = 0x20,
 	DataIn = 0x40
 };

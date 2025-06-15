@@ -206,8 +206,8 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 
 			trk.FirstSector = trk.StartPosition.ToLba();
 
-			uint32_t currentFileOffset = 0;
 			if(disc.Tracks.size() > 0) {
+				uint32_t currentFileOffset = 0;
 				TrackInfo& prvTrk = disc.Tracks[disc.Tracks.size() - 1];
 				if(prvTrk.Size == 0) {
 					//Update end position for this file's previous track based on the start of the current track
@@ -217,9 +217,11 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 					prvTrk.Size = prvTrk.SectorCount * trk.GetSectorSize();
 					currentFileOffset = prvTrk.FileOffset + prvTrk.Size;
 				}
+				trk.FileOffset = currentFileOffset;
+			} else {
+				trk.FileOffset = trk.FirstSector * trk.GetSectorSize();
 			}
 
-			trk.FileOffset = currentFileOffset;
 			if(trk.HasLeadIn && !entry.PreGap.HasGap) {
 				trk.FileOffset += (trk.StartPosition.ToLba() - trk.LeadInPosition.ToLba()) * trk.GetSectorSize();
 			}
@@ -255,5 +257,37 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 	}
 	MessageManager::Log("---- END TRACKS ----");
 
+	LoadSubcodeFile(cueFile, disc);
+
 	return disc.Tracks.size() > 0;
+}
+
+void CdReader::LoadSubcodeFile(VirtualFile& cueFile, DiscInfo& disc)
+{
+	VirtualFile subFile = FolderUtilities::CombinePath(FolderUtilities::GetFolderName(cueFile.GetFilePath()), FolderUtilities::GetFilename(cueFile.GetFileName(), false)) + ".sub";
+	if(subFile.IsValid()) {
+		vector<uint8_t>& subCode = disc.DecodedSubCode;
+		subFile.ReadFile(subCode);
+		for(int i = 0; i < disc.DecodedSubCode.size() / 96; i++) {
+			disc.SubCode.push_back(0x00);
+			disc.SubCode.push_back(0x80);
+
+			for(int j = 0; j < 12; j++) {
+				for(int k = 7; k >= 0; k--) {
+					uint8_t encoded = (
+						(((subCode[i * 96 + j + 0] >> k) & 0x01) << 7) |
+						(((subCode[i * 96 + j + 12] >> k) & 0x01) << 6) |
+						(((subCode[i * 96 + j + 24] >> k) & 0x01) << 5) |
+						(((subCode[i * 96 + j + 36] >> k) & 0x01) << 4) |
+						(((subCode[i * 96 + j + 48] >> k) & 0x01) << 3) |
+						(((subCode[i * 96 + j + 60] >> k) & 0x01) << 2) |
+						(((subCode[i * 96 + j + 72] >> k) & 0x01) << 1) |
+						(((subCode[i * 96 + j + 84] >> k) & 0x01) << 0)
+					);
+
+					disc.SubCode.push_back(encoded);
+				}
+			}
+		}
+	}
 }

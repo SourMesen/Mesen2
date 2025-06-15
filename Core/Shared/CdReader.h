@@ -80,6 +80,8 @@ struct DiscInfo
 
 	vector<VirtualFile> Files;
 	vector<TrackInfo> Tracks;
+	vector<uint8_t> SubCode;
+	vector<uint8_t> DecodedSubCode;
 	uint32_t DiscSize;
 	uint32_t DiscSectorCount;
 	DiscPosition EndPosition;
@@ -159,10 +161,21 @@ struct DiscInfo
 	{
 		return ReadAudioSample(sector, sample, 2);
 	}
+
+	void GetSubCodeQ(uint32_t sector, std::deque<uint8_t>& out)
+	{
+		uint32_t startPos = sector * 96 + 12;
+		uint32_t endPos = startPos + 10;
+		if(endPos <= DecodedSubCode.size()) {
+			out.insert(out.end(), DecodedSubCode.begin() + startPos, DecodedSubCode.begin() + endPos);
+		}
+	}
 };
 
 class CdReader
 {
+	static void LoadSubcodeFile(VirtualFile& cueFile, DiscInfo& disc);
+
 public:
 	static bool LoadCue(VirtualFile& file, DiscInfo& disc);
 
