@@ -181,7 +181,11 @@ void PceAdpcm::ProcessDmaRequest()
 
 uint8_t PceAdpcm::GetClocksToNextSlot(bool forRead)
 {
-	uint64_t slotIndex = _console->GetMasterClock() / 9;
+	//TODOPCE - what's the actual delay for this? 27 master clocks per slot breaks test roms, so that's too slow.
+	//Reads apparently require a minimum delay of 30 cpu cycles (90 master clocks), but this is unstable and 32 cpu cycles (96 master clocks) is safe
+	//Writes apparently are 22 cpu cycles min (66), but 24 cpu cycles is safe (72 master clocks)
+	//This might imply each slot takes ~24 master clocks, but using 18 master clock per slot to be safe for now
+	uint64_t slotIndex = _console->GetMasterClock() / 18;
 	uint8_t slotType = slotIndex & 0x03;
 	uint8_t gap;
 	switch(slotType) {
@@ -191,7 +195,7 @@ uint8_t PceAdpcm::GetClocksToNextSlot(bool forRead)
 		case 3: gap = forRead ? 4 : 2; break; //Read slot
 	}
 
-	uint64_t nextSlotClock = (slotIndex + gap) * 9;
+	uint64_t nextSlotClock = (slotIndex + gap) * 18;
 	return (nextSlotClock - _console->GetMasterClock()) / 3;
 }
 
