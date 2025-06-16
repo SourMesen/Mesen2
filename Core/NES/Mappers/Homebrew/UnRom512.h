@@ -60,6 +60,11 @@ protected:
 			_orgPrgRom = vector<uint8_t>(_prgRom, _prgRom + _prgSize);
 			ApplySaveData();
 		}
+
+		if(_romInfo.SubMapperID == 4) {
+			//LED register is at 0x8000-0xBFFF and currently not emulated
+			RemoveRegisterRange(0x8000, 0xBFFF, MemoryOperation::Write);
+		}
 	}
 
 	void Serialize(Serializer& s) override
@@ -112,7 +117,7 @@ protected:
 
 			if(_enableMirroringBit) {
 				if(_romInfo.SubMapperID == 3) {
-					SetMirroringType(value & 0x80 ? MirroringType::Horizontal : MirroringType::Vertical);
+					SetMirroringType(value & 0x80 ? MirroringType::Vertical : MirroringType::Horizontal);
 				} else {
 					SetMirroringType(value & 0x80 ? MirroringType::ScreenBOnly : MirroringType::ScreenAOnly);
 				}
