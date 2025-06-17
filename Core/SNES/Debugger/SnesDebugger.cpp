@@ -494,7 +494,7 @@ uint32_t SnesDebugger::GetProgramCounter(bool getInstPc)
 	return getInstPc ? _prevProgramCounter : ((GetCpuState().K << 16) | GetCpuState().PC);
 }
 
-uint8_t SnesDebugger::GetCpuFlags()
+uint8_t SnesDebugger::GetCpuFlags(uint32_t addr)
 {
 	return GetCpuState().PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 }

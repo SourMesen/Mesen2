@@ -159,7 +159,7 @@ public:
 
 	DebuggerFeatures GetDebuggerFeatures(CpuType cpuType);
 	uint32_t GetProgramCounter(CpuType cpuType, bool forInstStart);
-	uint8_t GetCpuFlags(CpuType cpuType);
+	uint8_t GetCpuFlags(CpuType cpuType, uint32_t addr);
 	CpuInstructionProgress GetInstructionProgress(CpuType cpuType);
 	void SetProgramCounter(CpuType cpuType, uint32_t addr);
 

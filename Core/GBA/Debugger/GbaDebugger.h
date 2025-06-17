@@ -82,7 +82,7 @@ public:
 	uint64_t GetCpuCycleCount(bool forProfiler = false) override;
 	void ResetPrevOpCode() override;
 
-	uint8_t GetCpuFlags() override;
+	uint8_t GetCpuFlags(uint32_t addr) override;
 
 	DebuggerFeatures GetSupportedFeatures() override;
 

@@ -989,9 +989,9 @@ uint32_t Debugger::GetProgramCounter(CpuType cpuType, bool getInstPc)
 	return _debuggers[(int)cpuType].Debugger->GetProgramCounter(getInstPc);
 }
 
-uint8_t Debugger::GetCpuFlags(CpuType cpuType)
+uint8_t Debugger::GetCpuFlags(CpuType cpuType, uint32_t addr)
 {
-	return _debuggers[(int)cpuType].Debugger->GetCpuFlags();
+	return _debuggers[(int)cpuType].Debugger->GetCpuFlags(addr);
 }
 
 CpuInstructionProgress Debugger::GetInstructionProgress(CpuType cpuType)

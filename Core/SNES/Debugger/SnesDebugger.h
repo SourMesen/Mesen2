@@ -109,7 +109,7 @@ public:
 	void SetProgramCounter(uint32_t addr, bool updateDebuggerOnly = false) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
 	
-	uint8_t GetCpuFlags() override;
+	uint8_t GetCpuFlags(uint32_t addr) override;
 
 	ITraceLogger* GetTraceLogger() override;
 	BreakpointManager* GetBreakpointManager() override;

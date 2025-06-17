@@ -370,11 +370,11 @@ void GbaDebugger::ResetPrevOpCode()
 	_prevOpCode = 0;
 }
 
-uint8_t GbaDebugger::GetCpuFlags()
+uint8_t GbaDebugger::GetCpuFlags(uint32_t addr)
 {
 	switch(_settings->GetDebugConfig().GbaDisMode) {
-		case GbaDisassemblyMode::Default: return _cpu->GetState().CPSR.Thumb ? GbaCdlFlags::Thumb : 0;
-		case GbaDisassemblyMode::Arm: return 0;
+		case GbaDisassemblyMode::Default: return ((addr & 0x02) || _cpu->GetState().CPSR.Thumb) ? GbaCdlFlags::Thumb : 0;
+		case GbaDisassemblyMode::Arm: return (addr & 0x02) ? GbaCdlFlags::Thumb : 0;
 		case GbaDisassemblyMode::Thumb: return GbaCdlFlags::Thumb;
 	}
 	return 0;
