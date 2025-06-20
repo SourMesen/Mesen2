@@ -98,8 +98,17 @@ namespace Mesen.Debugger.Views
 			if(sender is TextBox txt && txt.DataContext is WatchValueInfo entry) {
 				if(e.Key == Key.Enter) {
 					e.Handled = true;
-					txt.FindLogicalAncestorOfType<DataBoxRow>()?.Focus();
+					DataBoxRow? row = txt.FindLogicalAncestorOfType<DataBoxRow>();
+					int index = -1;
+					if(row != null) {
+						index = _grid.GetRowIndex(row);
+					}
 					Model.EditWatch(Model.WatchEntries.IndexOf(entry), entry.Expression);
+					if(index >= 0) {
+						Dispatcher.UIThread.Post(() => {
+							_grid.GetRow(index)?.Focus();
+						});
+					}
 				} else if(e.Key == Key.Escape) {
 					//Undo
 					e.Handled = true;

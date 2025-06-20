@@ -443,6 +443,11 @@ public class DataBox : TemplatedControl
 		ApplicationHelper.GetMainWindow()?.Clipboard?.SetTextAsync(ConvertToText());
 	}
 
+	public int GetRowIndex(DataBoxRow row)
+	{
+		return _rowsPresenter?.GetRowIndex(row) ?? -1;
+	}
+
 	public DataBoxRow? GetRow(int index)
 	{
 		return _rowsPresenter?.GetRow(index);

@@ -41,6 +41,11 @@ public class DataBoxRowsPresenter : ListBox
 		}
 	}
 
+	public int GetRowIndex(DataBoxRow row)
+	{
+		return this.IndexFromContainer(row);
+	}
+
 	public DataBoxRow? GetRow(int index)
 	{
 		return this.ContainerFromIndex(index) as DataBoxRow;

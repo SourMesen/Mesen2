@@ -134,12 +134,6 @@ namespace Mesen.Windows
 			hotkeyConfig.Cut.Add(new KeyGesture(Key.Delete, KeyModifiers.Shift));
 		}
 
-		protected override void ArrangeCore(Rect finalRect)
-		{
-			//TODOv2 why is this needed to make resizing the window by setting ClientSize work?
-			base.ArrangeCore(new Rect(ClientSize));
-		}
-
 		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			base.OnClosing(e);
@@ -508,7 +502,8 @@ namespace Mesen.Windows
 
 				double width = Math.Max(MinWidth, Math.Round(screenSize.Height * aspectRatio * scale) / dpiScale);
 				double height = Math.Max(MinHeight, screenSize.Height * scale / dpiScale);
-				ClientSize = new Size(width, height + menuHeight + _audioPlayer.Bounds.Height);
+				Width = width;
+				Height = height + menuHeight + _audioPlayer.Bounds.Height;
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
 				_rendererSize = new Size(Math.Round(screenSize.Width * scale * aspectRatio) / dpiScale, Math.Round(screenSize.Height * scale) / dpiScale);
@@ -580,7 +575,8 @@ namespace Mesen.Windows
 					Dispatcher.UIThread.Post(() => {
 						WindowState = _prevWindowState;
 						if(_prevWindowState == WindowState.Normal) {
-							ClientSize = _originalSize;
+							Width = _originalSize.Width;
+							Height = _originalSize.Height;
 							Position = _originalPos;
 						}
 						_preventFullscreenToggle = false;

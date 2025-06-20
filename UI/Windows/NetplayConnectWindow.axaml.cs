@@ -2,10 +2,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Mesen.Windows
 {
@@ -31,7 +33,9 @@ namespace Mesen.Windows
 
 			Close(true);
 
-			NetplayApi.Connect(cfg.Host, cfg.Port, cfg.Password, false); 
+			Task.Run(() => {
+				NetplayApi.Connect(cfg.Host, cfg.Port, cfg.Password, false);
+			});
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)

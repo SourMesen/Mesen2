@@ -26,7 +26,7 @@
 			<TextBox Grid.Column="1" Text="{Binding Host, Converter={StaticResource NullTextConverter}}" />
 
 			<TextBlock Grid.Row="1" Text="{l:Translate lblPort}" />
-			<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Port, Converter={StaticResource NullTextConverter}}" />
+			<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{Binding Port}" />
 
 			<TextBlock Grid.Row="2" Text="{l:Translate lblPassword}" />
 			<TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Password, Converter={StaticResource NullTextConverter}}" />

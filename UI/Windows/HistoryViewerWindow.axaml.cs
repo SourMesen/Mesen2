@@ -157,7 +157,8 @@ namespace Mesen.Windows
 
 				double width = Math.Max(MinWidth, Math.Round(screenSize.Height * aspectRatio * scale) / dpiScale);
 				double height = Math.Max(MinHeight, screenSize.Height * scale / dpiScale);
-				ClientSize = new Size(width, height + menuHeight + _controlBar.Bounds.Height);
+				Width = width;
+				Height = height + menuHeight + _controlBar.Bounds.Height;
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
 				_rendererSize = new Size(Math.Floor(screenSize.Width * scale * aspectRatio) / dpiScale, Math.Floor(screenSize.Height * scale) / dpiScale);
@@ -205,12 +206,6 @@ namespace Mesen.Windows
 			_renderer.Height = height;
 			_model.SoftwareRenderer.Width = width;
 			_model.SoftwareRenderer.Height = height;
-		}
-
-		protected override void ArrangeCore(Rect finalRect)
-		{
-			//TODOv2 why is this needed to make resizing the window by setting ClientSize work?
-			base.ArrangeCore(new Rect(ClientSize));
 		}
 
 		private void OnWindowStateChanged()
