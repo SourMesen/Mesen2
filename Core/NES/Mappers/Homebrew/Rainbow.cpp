@@ -604,14 +604,14 @@ uint8_t Rainbow::ReadRegister(uint16_t addr)
 			UpdateIrqStatus();
 
 			if(_nmiVectorEnabled) {
-				return (addr & 0x01) ? _nmiVectorAddr : (_nmiVectorAddr >> 8);
+				return (addr & 0x01) ? (_nmiVectorAddr >> 8) : _nmiVectorAddr;
 			}
 			return DebugReadRam(addr);
 
 		case 0xFFFE:
 		case 0xFFFF:
 			if(_irqVectorEnabled) {
-				return (addr & 0x01) ? _irqVectorAddr : (_irqVectorAddr >> 8);
+				return (addr & 0x01) ? (_irqVectorAddr >> 8) : _irqVectorAddr;
 			}
 			return DebugReadRam(addr);
 	}
