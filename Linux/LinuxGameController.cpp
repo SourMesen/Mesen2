@@ -248,14 +248,14 @@ optional<int16_t> LinuxGameController::GetAxisPosition(int axis)
 	return axis & 0x01 ? axisValue : -axisValue;
 }
 
-void LinuxGameController::SetForceFeedback(uint16_t magnitude)
+void LinuxGameController::SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft)
 {
 	if(!_rumbleEffect || !_enableForceFeedback) {
 		return;
 	}
 
-	_rumbleEffect->u.rumble.strong_magnitude = magnitude;
-	_rumbleEffect->u.rumble.weak_magnitude = magnitude;
+	_rumbleEffect->u.rumble.strong_magnitude = magnitudeLeft;
+	_rumbleEffect->u.rumble.weak_magnitude = magnitudeRight;
 	int rc = ioctl(_fd, EVIOCSFF, _rumbleEffect.get());
 	if(rc < 0) {
 		//MessageManager::Log("Could not update force feedback effect.");

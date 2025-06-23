@@ -214,9 +214,9 @@ void LinuxKeyManager::SetDisabled(bool disabled)
 	_disableAllKeys = disabled;
 }
 
-void LinuxKeyManager::SetForceFeedback(uint16_t magnitude)
+void LinuxKeyManager::SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft)
 {
 	for(auto& controller : _controllers) {
-		controller->SetForceFeedback(magnitude);
+		controller->SetForceFeedback(magnitudeRight, magnitudeLeft);
 	}
 }

@@ -23,5 +23,5 @@ class XInputManager
 		bool IsPressed(uint8_t gamepadPort, uint8_t button);
 		optional<int16_t> GetAxisPosition(uint8_t gamepadPort, int axis);
 
-		void SetForceFeedback(uint16_t magnitude);
+		void SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft);
 };

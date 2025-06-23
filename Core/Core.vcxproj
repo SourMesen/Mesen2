@@ -586,6 +586,7 @@
     <ClInclude Include="Netplay\ClientConnectionData.h" />
     <ClInclude Include="SNES\DSP\DspTypes.h" />
     <ClInclude Include="SNES\DSP\DspVoice.h" />
+    <ClInclude Include="SNES\Input\SnesRumbleController.h" />
     <ClInclude Include="SNES\SnesCpu.Shared.h" />
     <ClInclude Include="SNES\Coprocessors\SA1\CpuBwRamHandler.h" />
     <ClInclude Include="SNES\Debugger\SnesDebugger.h" />
@@ -978,6 +979,7 @@
     <ClCompile Include="SNES\Debugger\TraceLogger\St018TraceLogger.cpp" />
     <ClCompile Include="SNES\DSP\Dsp.cpp" />
     <ClCompile Include="SNES\DSP\DspVoice.cpp" />
+    <ClCompile Include="SNES\Input\SnesRumbleController.cpp" />
     <ClCompile Include="SNES\SnesConsole.cpp" />
     <ClCompile Include="Shared\EmulatorLock.cpp" />
     <ClCompile Include="SNES\SnesControlManager.cpp" />

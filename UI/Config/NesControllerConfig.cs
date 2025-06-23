@@ -186,6 +186,7 @@ namespace Mesen.Config
 					break;
 
 				case ControllerType.SnesController:
+				case ControllerType.SnesRumbleController:
 				case ControllerType.NesController:
 				case ControllerType.FamicomController:
 				case ControllerType.FamicomControllerP2:

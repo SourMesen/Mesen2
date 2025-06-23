@@ -45,5 +45,5 @@ public:
 	virtual void ResetKeyState() = 0;
 	virtual void SetDisabled(bool disabled) = 0;
 
-	virtual void SetForceFeedback(uint16_t magnitude) {}
+	virtual void SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft) {}
 };

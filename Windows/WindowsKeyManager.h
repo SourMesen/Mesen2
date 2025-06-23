@@ -50,7 +50,7 @@ public:
 	void ResetKeyState() override;
 	void SetDisabled(bool disabled) override;
 
-	void SetForceFeedback(uint16_t magnitude) override;
+	void SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft) override;
 
 	void UpdateDevices() override;
 };

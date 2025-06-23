@@ -34,5 +34,5 @@ public:
 	bool IsButtonPressed(int buttonNumber);
 	std::optional<int16_t> GetAxisPosition(int axis);
 
-	void SetForceFeedback(uint16_t magnitude);
+	void SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft);
 };

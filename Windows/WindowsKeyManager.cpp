@@ -229,9 +229,9 @@ void WindowsKeyManager::SetDisabled(bool disabled)
 	_disableAllKeys = disabled;
 }
 
-void WindowsKeyManager::SetForceFeedback(uint16_t magnitude)
+void WindowsKeyManager::SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft)
 {
-	_xInput->SetForceFeedback(magnitude);
+	_xInput->SetForceFeedback(magnitudeRight, magnitudeLeft);
 }
 
 void WindowsKeyManager::ResetKeyState()

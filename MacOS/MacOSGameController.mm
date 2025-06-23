@@ -115,7 +115,7 @@ std::optional<int16_t> MacOSGameController::GetAxisPosition(int axis)
 	return _axisState[axis];
 }
 
-void MacOSGameController::SetForceFeedback(uint16_t magnitude)
+void MacOSGameController::SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft)
 {
 	NSError* error = nil;
 
@@ -134,11 +134,11 @@ void MacOSGameController::SetForceFeedback(uint16_t magnitude)
 	}
 
 	//If magnitude is zero, only stop current effect
-	if(magnitude == 0) {
+	if(magnitudeRight == 0 && magnitudeLeft == 0) {
 		return;
 	}
 
-	double strength = magnitude / (double) UINT16_MAX;
+	double strength = (magnitudeRight < magnitudeLeft ? magnitudeLeft : magnitudeRight) / (double)UINT16_MAX;
 	CHHapticEventParameter* intensityPar = [[CHHapticEventParameter alloc] initWithParameterID:CHHapticEventParameterIDHapticIntensity value:strength];
 	CHHapticEventParameter* sharpnessPar = [[CHHapticEventParameter alloc] initWithParameterID:CHHapticEventParameterIDHapticSharpness value:0.6];
 	CHHapticEvent* event = [[CHHapticEvent alloc] initWithEventType:CHHapticEventTypeHapticContinuous parameters:@[intensityPar, sharpnessPar] relativeTime:0.0 duration:GCHapticDurationInfinite];

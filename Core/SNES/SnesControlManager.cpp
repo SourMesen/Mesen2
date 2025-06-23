@@ -10,6 +10,7 @@
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Interfaces/IInputRecorder.h"
 #include "SNES/Input/SnesController.h"
+#include "SNES/Input/SnesRumbleController.h"
 #include "SNES/Input/SnesMouse.h"
 #include "SNES/Input/Multitap.h"
 #include "SNES/Input/SuperScope.h"
@@ -62,6 +63,10 @@ shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(Control
 			device.reset(new Multitap(_console, port, controllers));
 			break;
 		}
+
+		case ControllerType::SnesRumbleController:
+			device.reset(new SnesRumbleController(_emu, _console, port, port == 0 ? cfg.Port1.Keys : cfg.Port2.Keys));
+			break;
 	}
 
 	return device;

@@ -2002,6 +2002,7 @@ E
 		<Enum ID="ControllerType">
 			<Value ID="None">None</Value>
 			<Value ID="SnesController">SNES Controller</Value>
+			<Value ID="SnesRumbleController">SNES Rumble</Value>
 			<Value ID="SnesMouse">SNES Mouse</Value>
 			<Value ID="SuperScope">Super Scope</Value>
 			<Value ID="Multitap">Super Multitap</Value>

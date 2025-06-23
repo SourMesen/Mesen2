@@ -35,5 +35,5 @@ public:
 	bool IsButtonPressed(int buttonNumber);
 	optional<int16_t> GetAxisPosition(int axis);
 
-	void SetForceFeedback(uint16_t magnitude);
+	void SetForceFeedback(uint16_t rightMagnitude, uint16_t leftMagnitude);
 };

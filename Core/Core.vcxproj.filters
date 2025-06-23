@@ -2982,6 +2982,9 @@
     <ClInclude Include="GBA\GbaWaitStates.h">
       <Filter>GBA</Filter>
     </ClInclude>
+    <ClInclude Include="SNES\Input\SnesRumbleController.h">
+      <Filter>SNES\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -3343,6 +3346,9 @@
     </ClCompile>
     <ClCompile Include="SNES\Debugger\St018DisUtils.cpp">
       <Filter>SNES\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES\Input\SnesRumbleController.cpp">
+      <Filter>SNES\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

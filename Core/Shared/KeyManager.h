@@ -37,4 +37,5 @@ public:
 	static MousePosition GetMousePosition();
 
 	static void SetForceFeedback(uint16_t magnitude);
+	static void SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft);
 };

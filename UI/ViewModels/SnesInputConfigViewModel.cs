@@ -20,6 +20,7 @@ namespace Mesen.ViewModels
 			ControllerType.SnesMouse,
 			ControllerType.SuperScope,
 			ControllerType.Multitap,
+			ControllerType.SnesRumbleController,
 		};
 
 		public Enum[] AvailableControllerTypesMultitap => new Enum[] {

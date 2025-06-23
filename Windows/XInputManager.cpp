@@ -95,11 +95,11 @@ optional<int16_t> XInputManager::GetAxisPosition(uint8_t port, int axis)
 	return std::nullopt;
 }
 
-void XInputManager::SetForceFeedback(uint16_t magnitude)
+void XInputManager::SetForceFeedback(uint16_t magnitudeRight, uint16_t magnitudeLeft)
 {
 	XINPUT_VIBRATION settings = {};
-	settings.wLeftMotorSpeed = magnitude;
-	settings.wRightMotorSpeed = magnitude;
+	settings.wRightMotorSpeed = magnitudeRight;
+	settings.wLeftMotorSpeed = magnitudeLeft;
 
 	for(int i = 0; i < XUSER_MAX_COUNT; i++) {
 		if(_enableForceFeedback[i]) {

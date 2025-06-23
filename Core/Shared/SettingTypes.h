@@ -181,6 +181,7 @@ enum class ControllerType
 	SnesMouse,
 	SuperScope,
 	Multitap,
+	SnesRumbleController,
 
 	//NES controllers
 	NesController,
