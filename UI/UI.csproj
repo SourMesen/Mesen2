@@ -101,7 +101,6 @@
 	<ItemGroup>
 		<TrimmerRootAssembly Include="Mesen" />
 		<TrimmerRootAssembly Include="AvaloniaEdit" />
-		<TrimmerRootAssembly Include="Avalonia.MarkupExtension" />
 		<TrimmerRootAssembly Include="Dock.Avalonia" />
 		<TrimmerRootAssembly Include="Dock.Model" />
 		<TrimmerRootAssembly Include="Dock.Model.Mvvm" />
