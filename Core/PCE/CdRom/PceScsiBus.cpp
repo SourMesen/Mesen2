@@ -187,7 +187,7 @@ void PceScsiBus::LogCommand(string msg)
 		return;
 	}
 
-	msg = "[SCSI] CMD: " + msg + " - ";
+	msg = "[SCSI] CMD: " + msg + " -";
 	for(size_t i = 0, len = _cmdBuffer.size(); i < len; i++) {
 		msg += " $" + HexUtilities::ToHex(_cmdBuffer[i]);
 	}
@@ -238,6 +238,10 @@ void PceScsiBus::CmdRead()
 
 	if(sectorsToRead == 0) {
 		LogCommand("Read - No sectors to read");
+		SetStatusMessage(ScsiStatus::Good, 0);
+		return;
+	} else if(sector >= _disc->DiscSectorCount) {
+		LogCommand("Read - invalid sector, command ignored: " + std::to_string(sector));
 		SetStatusMessage(ScsiStatus::Good, 0);
 		return;
 	}
@@ -292,6 +296,12 @@ uint32_t PceScsiBus::GetAudioLbaPos()
 void PceScsiBus::CmdAudioStartPos()
 {
 	uint32_t startSector = GetAudioLbaPos();
+
+	if(startSector >= _disc->DiscSectorCount) {
+		LogCommand("Audio Start Position - invalid sector, command ignored: " + std::to_string(startSector));
+		SetStatusMessage(ScsiStatus::Good, 0);
+		return;
+	}
 
 	if(_emu->IsDebugging()) {
 		uint32_t fromSector = _cdrom->GetCurrentSector();
