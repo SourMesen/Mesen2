@@ -14,13 +14,21 @@ namespace Mesen.ViewModels
 		[ObservableAsProperty] public bool HasMultitap1 { get; }
 		[ObservableAsProperty] public bool HasMultitap2 { get; }
 
-		public Enum[] AvailableControllerTypesP12 => new Enum[] {
+		public Enum[] AvailableControllerTypesP1 => new Enum[] {
 			ControllerType.None,
 			ControllerType.SnesController,
 			ControllerType.SnesMouse,
 			ControllerType.SuperScope,
 			ControllerType.Multitap,
 			ControllerType.SnesRumbleController,
+		};
+
+		public Enum[] AvailableControllerTypesP2 => new Enum[] {
+			ControllerType.None,
+			ControllerType.SnesController,
+			ControllerType.SnesMouse,
+			ControllerType.SuperScope,
+			ControllerType.Multitap
 		};
 
 		public Enum[] AvailableControllerTypesMultitap => new Enum[] {

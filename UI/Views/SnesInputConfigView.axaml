@@ -26,7 +26,7 @@
 						Grid.Row="0" Grid.Column="1"
 						Config="{Binding Config.Port1}"
 						ControllerType="{Binding Config.Port1.Type}"
-						AvailableValues="{Binding AvailableControllerTypesP12}"
+						AvailableValues="{Binding AvailableControllerTypesP1}"
 					/>
 
 					<c:GroupBox
@@ -78,7 +78,7 @@
 						Grid.Row="2" Grid.Column="1"
 						Config="{Binding Config.Port2}"
 						ControllerType="{Binding Config.Port2.Type}"
-						AvailableValues="{Binding AvailableControllerTypesP12}"
+						AvailableValues="{Binding AvailableControllerTypesP2}"
 					/>
 
 					<c:GroupBox
