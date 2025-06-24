@@ -388,7 +388,7 @@ void PceScsiBus::CmdReadSubCodeQ()
 		(isData ? 0x40 : 0x00) //Control field - Bit 2: clear = audio track, set = data track
 	);
 
-	uint32_t sectorGap = track >= 0 ? (_disc->Tracks[track].FirstSector - sector) : 0;
+	uint32_t sectorGap = track >= 0 ? (sector - _disc->Tracks[track].FirstSector) : 0;
 	DiscPosition relPos = DiscPosition::FromLba(sectorGap);
 	DiscPosition absPos = DiscPosition::FromLba(sector);
 
