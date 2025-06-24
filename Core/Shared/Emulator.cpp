@@ -412,6 +412,8 @@ bool Emulator::InternalLoadRom(VirtualFile romFile, VirtualFile patchFile, bool 
 	if(patchFile.IsValid()) {
 		if(romFile.ApplyPatch(patchFile)) {
 			MessageManager::DisplayMessage("Patch", "ApplyingPatch", patchFile.GetFileName());
+		} else {
+			MessageManager::DisplayMessage("Patch", "PatchFailed", patchFile.GetFileName());
 		}
 	}
 

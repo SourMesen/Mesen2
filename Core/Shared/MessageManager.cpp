@@ -22,6 +22,7 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "VideoRecorder", u8"Video Recorder" },
 
 	{ "ApplyingPatch", u8"Applying patch: %1" },
+	{ "PatchFailed", u8"Failed to apply patch: %1" },
 	{ "CheatApplied", u8"1 cheat applied." },
 	{ "CheatsApplied", u8"%1 cheats applied." },
 	{ "CheatsDisabled", u8"All cheats disabled." },

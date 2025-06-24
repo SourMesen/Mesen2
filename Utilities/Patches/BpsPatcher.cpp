@@ -55,6 +55,10 @@ bool BpsPatcher::PatchBuffer(std::istream &bpsFile, vector<uint8_t> &input, vect
 	}
 
 	int64_t metadataSize = ReadBase128Number(bpsFile);
+	if(metadataSize == -1) {
+		return false;
+	}
+
 	bpsFile.seekg(metadataSize, std::ios::cur);
 
 	output.resize((size_t)outputFileSize);
@@ -75,6 +79,10 @@ bool BpsPatcher::PatchBuffer(std::istream &bpsFile, vector<uint8_t> &input, vect
 			case 0:
 				//SourceRead
 				while(length--) {
+					if(outputOffset >= output.size()) {
+						return false;
+					}
+
 					output[outputOffset] = input[outputOffset];
 					outputOffset++;
 				}
@@ -83,6 +91,10 @@ bool BpsPatcher::PatchBuffer(std::istream &bpsFile, vector<uint8_t> &input, vect
 			case 1:
 				//TargetRead
 				while(length--) {
+					if(outputOffset >= output.size()) {
+						return false;
+					}
+
 					uint8_t value = 0;
 					bpsFile.read((char*)&value, 1);
 
@@ -93,8 +105,16 @@ bool BpsPatcher::PatchBuffer(std::istream &bpsFile, vector<uint8_t> &input, vect
 			case 2: {
 				//SourceCopy
 				int32_t data = (int32_t)ReadBase128Number(bpsFile);
+				if(data == -1) {
+					return false;
+				}
+
 				inputRelativeOffset += (data & 1 ? -1 : +1) * (data >> 1);
 				while(length--) {
+					if(outputOffset >= output.size() || inputRelativeOffset >= input.size()) {
+						return false;
+					}
+
 					output[outputOffset++] = input[inputRelativeOffset++];
 				}
 				break;
@@ -103,8 +123,16 @@ bool BpsPatcher::PatchBuffer(std::istream &bpsFile, vector<uint8_t> &input, vect
 			case 3: {
 				//TargetCopy
 				int32_t data = (int32_t)ReadBase128Number(bpsFile);
+				if(data == -1) {
+					return false;
+				}
+
 				outputRelativeOffset += (data & 1 ? -1 : +1) * (data >> 1);
 				while(length--) {
+					if(outputOffset >= output.size() || outputRelativeOffset >= output.size()) {
+						return false;
+					}
+
 					output[outputOffset++] = output[outputRelativeOffset++];
 				}
 				break;
