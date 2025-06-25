@@ -2,6 +2,7 @@
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
@@ -11,10 +12,15 @@ namespace Mesen.Utilities
 	{
 		public static IDisposable RegisterRecursiveObserver(ReactiveObject target, PropertyChangedEventHandler handler)
 		{
+			Dictionary<string, ReactiveObject> observableObjects = new();
+			Dictionary<string, PropertyInfo> props = new();
+
 			foreach(PropertyInfo prop in target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)) {
 				if(prop.GetCustomAttribute<ReactiveAttribute>() != null) {
 					object? value = prop.GetValue(target);
 					if(value is ReactiveObject propValue) {
+						observableObjects[prop.Name] = propValue;
+						props[prop.Name] = prop;
 						ReactiveHelper.RegisterRecursiveObserver(propValue, handler);
 					} else if(value is IList list) {
 						foreach(object listValue in list) {
@@ -26,7 +32,25 @@ namespace Mesen.Utilities
 				}
 			}
 
-			target.PropertyChanged += handler;
+			target.PropertyChanged += (s, e) => {
+				handler(s, e);
+
+				//Reset change handlers if an object is replaced with another object
+				if(e.PropertyName != null && observableObjects.TryGetValue(e.PropertyName, out ReactiveObject? obj)) {
+					//Remove handlers on the old object
+					ReactiveHelper.UnregisterRecursiveObserver(obj, handler);
+
+					if(props.TryGetValue(e.PropertyName, out PropertyInfo? prop)) {
+						object? value = prop.GetValue(target);
+						if(value is ReactiveObject propValue) {
+							observableObjects[prop.Name] = propValue;
+
+							//Register change handlers on the new object
+							ReactiveHelper.RegisterRecursiveObserver(propValue, handler);
+						}
+					}
+				}
+			};
 
 			return new RecursiveObserver(target, handler);
 		}
