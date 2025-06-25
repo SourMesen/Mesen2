@@ -137,6 +137,8 @@ void RecordedRomTest::Record(string filename, bool reset)
 		settings->GetGbaConfig().DisableFrameSkipping = true;
 
 		settings->GetGbaConfig().SkipBootScreen = false;
+		settings->GetWsConfig().UseBootRom = true;
+		settings->GetWsConfig().LcdShowIcons = true;
 				
 		//Start recording movie alongside with screenshots
 		RecordMovieOptions options;
@@ -225,6 +227,8 @@ RomTestResult RecordedRomTest::Run(string filename)
 		settings->GetGbaConfig().DisableFrameSkipping = true;
 		
 		settings->GetGbaConfig().SkipBootScreen = false;
+		settings->GetWsConfig().UseBootRom = true;
+		settings->GetWsConfig().LcdShowIcons = true;
 
 		_emu->Lock();
 		//Start playing movie

@@ -45,8 +45,7 @@ void WsDmaController::RunGeneralDma()
 
 void WsDmaController::ProcessSoundDma()
 {
-	if(!_state.SdmaEnabled || _state.SdmaLength == 0) {
-		//TODOWS what does enabling when length = 0 do?
+	if(!_state.SdmaEnabled) {
 		return;
 	}
 
@@ -170,7 +169,12 @@ void WsDmaController::WritePort(uint16_t port, uint8_t value)
 			break;
 
 		case 0x52:
-			_state.SdmaControl = value & 0x5F;
+			if(_state.SdmaLength == 0) {
+				//Clear enable flag if length is 0 (based on sound_dma + WSHSTest results)
+				value &= ~0x80;
+			}
+
+			_state.SdmaControl = value & 0xDF;
 
 			switch(value & 0x03) {
 				default:
