@@ -95,6 +95,7 @@ void WsPpu::ProcessEndOfScanline()
 		SendFrame();
 	} else if(_state.Scanline == 144) {
 		_timer->TickVerticalTimer();
+		((WsControlManager*)_console->GetControlManager())->TriggerKeyIrq();
 		_console->GetMemoryManager()->SetIrqSource(WsIrqSource::VerticalBlank);
 	}
 

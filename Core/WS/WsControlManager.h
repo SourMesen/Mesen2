@@ -14,6 +14,7 @@ private:
 
 	uint8_t _prevInput = 0;
 	bool _soundButtonPressed = false;
+	bool _needKeyIrq = false;
 
 	WsConsole* _console = nullptr;
 
@@ -26,6 +27,8 @@ public:
 
 	void UpdateControlDevices() override;
 	void UpdateInputState() override;
+
+	void TriggerKeyIrq();
 
 	uint8_t Read();
 	void Write(uint8_t value);
