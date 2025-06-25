@@ -164,7 +164,7 @@ public:
 
 	__forceinline bool HasPendingIrq()
 	{
-		return (GetActiveIrqs() & _state.EnabledIrqs) != 0;
+		return GetActiveIrqs() != 0;
 	}
 
 	AddressInfo GetAbsoluteAddress(uint32_t relAddr);
