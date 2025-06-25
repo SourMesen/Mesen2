@@ -406,14 +406,14 @@ void WsCpu::CallFar()
 {
 	uint16_t offset = ReadCodeWord();
 	uint16_t segment = ReadCodeWord();
+	Push(_state.CS);
+	Push(_state.IP);
 	CallFar(segment, offset);
 }
 
 void WsCpu::CallFar(uint16_t segment, uint16_t offset)
 {
 	Idle<6>();
-	Push(_state.CS);
-	Push(_state.IP);
 	_state.CS = segment;
 	_state.IP = offset;
 	ClearPrefetch();
@@ -630,7 +630,6 @@ void WsCpu::SAHF()
 
 void WsCpu::LdsLesLeaModRm()
 {
-	ReadModRmByte();
 	if(_modRm.Mode == 3) {
 		//These instructions change the behavior of mode 3 (reg)
 		_modRm.Mode = 0;
@@ -655,6 +654,7 @@ void WsCpu::LdsLesLeaModRm()
 uint16_t WsCpu::LoadSegment()
 {
 	Idle<4>();
+	ReadModRmByte();
 	LdsLesLeaModRm();
 
 	uint16_t value = GetModRm<uint16_t>();
@@ -677,6 +677,7 @@ void WsCpu::LES()
 void WsCpu::LEA()
 {
 	Idle();
+	ReadModRmByte();
 	LdsLesLeaModRm();
 	SetModRegister(_modRm.Register, _modRm.Offset);
 }
@@ -1009,6 +1010,10 @@ void WsCpu::Grp45ModRm()
 			break;
 
 		case 0x03: {
+			Push(_state.CS);
+			Push(_state.IP);
+
+			LdsLesLeaModRm();
 			uint16_t offset = GetModRm<uint16_t>();
 			_modRm.Offset += 2;
 			uint16_t segment = GetModRm<uint16_t>();
@@ -1025,6 +1030,7 @@ void WsCpu::Grp45ModRm()
 		}
 
 		case 0x05: {
+			LdsLesLeaModRm();
 			Idle<7>();
 			uint16_t offset = GetModRm<uint16_t>();
 			_modRm.Offset += 2;
