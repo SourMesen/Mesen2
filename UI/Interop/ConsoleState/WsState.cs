@@ -100,6 +100,8 @@ public struct WsPpuState : BaseState
 	[MarshalAs(UnmanagedType.I1)] public bool HighContrast;
 	[MarshalAs(UnmanagedType.I1)] public bool SleepEnabled;
 
+	public byte LcdControl;
+
 	public WsLcdIcons Icons;
 
 	public byte LastScanline;
@@ -183,6 +185,7 @@ public struct WsCpuState : BaseState
 
 	public WsCpuFlags Flags;
 	[MarshalAs(UnmanagedType.I1)] public bool Halted;
+	[MarshalAs(UnmanagedType.I1)] public bool PowerOff;
 }
 
 public enum WsIrqSource : byte
@@ -204,6 +207,8 @@ public struct WsMemoryManagerState
 	public byte IrqVectorOffset;
 
 	public byte SystemControl2;
+	public byte SystemTest;
+
 	[MarshalAs(UnmanagedType.I1)] public bool ColorEnabled;
 	[MarshalAs(UnmanagedType.I1)] public bool Enable4bpp;
 	[MarshalAs(UnmanagedType.I1)] public bool Enable4bppPacked;
@@ -215,6 +220,7 @@ public struct WsMemoryManagerState
 	[MarshalAs(UnmanagedType.I1)] public bool SlowSram;
 	[MarshalAs(UnmanagedType.I1)] public bool SlowPort;
 	[MarshalAs(UnmanagedType.I1)] public bool EnableLowBatteryNmi;
+	[MarshalAs(UnmanagedType.I1)] public bool PowerOffRequested;
 }
 
 public struct WsControlManagerState
@@ -392,6 +398,8 @@ public struct WsApuState
 	[MarshalAs(UnmanagedType.I1)] public bool ForceOutput2;
 	[MarshalAs(UnmanagedType.I1)] public bool ForceOutput4;
 	[MarshalAs(UnmanagedType.I1)] public bool ForceOutputCh2Voice;
+	
+	public byte SoundTest;
 };
 
 public struct WsSerialState

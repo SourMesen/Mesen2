@@ -125,7 +125,7 @@ LoadRomResult WsConsole::LoadRom(VirtualFile& romFile)
 	_timer.reset(new WsTimer());
 	_serial.reset(new WsSerial(this));
 	_dmaController.reset(new WsDmaController());
-	_ppu.reset(new WsPpu(_emu, this, _timer.get(), _workRam));
+	_ppu.reset(new WsPpu(_emu, this, _memoryManager.get(), _timer.get(), _workRam));
 	_apu.reset(new WsApu(_emu, this, _memoryManager.get(), _dmaController.get()));
 	_cart.reset(new WsCart());
 	
@@ -172,6 +172,11 @@ void WsConsole::GetScreenRotationOverride(uint32_t& rotation)
 bool WsConsole::IsColorMode()
 {
 	return _memoryManager->GetState().ColorEnabled;
+}
+
+bool WsConsole::IsPowerOff()
+{
+	return _cpu->IsPowerOff();
 }
 
 bool WsConsole::IsVerticalMode()

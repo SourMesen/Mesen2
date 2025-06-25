@@ -18,7 +18,7 @@ uint8_t WsSerial::Read(uint16_t port)
 			return (
 				(_state.HasReceiveData ? 0x01 : 0) |
 				(_state.ReceiveOverflow ? 0x02 : 0) |
-				(_state.HasSendData ? 0 : 0x04) |
+				((!_state.Enabled || _state.HasSendData) ? 0 : 0x04) |
 				(_state.HighSpeed ? 0x40 : 0) |
 				(_state.Enabled ? 0x80 : 0)
 			);

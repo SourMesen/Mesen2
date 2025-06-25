@@ -53,8 +53,8 @@ public:
 			case 0x6B: return _state->ControlHigh;
 		}
 
-		//TODOWS open bus
-		return 0x90;
+		//Unreachable
+		return 0;
 	}
 
 	void WriteStereoInput(uint8_t sample)

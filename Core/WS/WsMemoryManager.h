@@ -55,6 +55,8 @@ public:
 
 	void RefreshMappings();
 
+	uint8_t GetUnmappedPort();
+
 	void Map(uint32_t start, uint32_t end, MemoryType type, uint32_t offset, bool readonly);
 	void Unmap(uint32_t start, uint32_t end);
 
@@ -148,6 +150,9 @@ public:
 	void InternalWritePort(uint16_t port, uint8_t value, bool isWordAccess);
 
 	template<typename T> T DebugReadPort(uint16_t port);
+
+	bool IsPowerOffRequested() { return _state.PowerOffRequested; }
+	bool IsColorEnabled() { return _state.ColorEnabled; }
 
 	bool IsWordBus(uint32_t addr);
 	uint8_t GetWaitStates(uint32_t addr);

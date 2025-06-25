@@ -143,8 +143,7 @@ T WsMemoryManager::ReadPort(uint16_t port)
 
 			uint16_t value;
 			if(IsUnmappedPort(port)) {
-				//TODOWS open bus
-				value = 0x9090;
+				value = GetUnmappedPort() | (GetUnmappedPort() << 8);
 			} else {
 				uint8_t lo = InternalReadPort(port, true);
 				uint8_t hi = InternalReadPort(port + 1, true);
@@ -157,8 +156,7 @@ T WsMemoryManager::ReadPort(uint16_t port)
 	} else {
 		Exec();
 
-		//TODOWS open bus
-		uint8_t value = IsUnmappedPort(port) ? 0x90 : InternalReadPort(port, false);
+		uint8_t value = IsUnmappedPort(port) ? GetUnmappedPort() : InternalReadPort(port, false);
 		_emu->ProcessMemoryAccess<CpuType::Ws, MemoryType::WsPort, MemoryOperationType::Read>(port, value);
 		return value;
 	}
@@ -200,8 +198,7 @@ T WsMemoryManager::DebugReadPort(uint16_t port)
 		return lo | (hi << 8);
 	} else {
 		if(IsUnmappedPort(port)) {
-			//TODOWS open bus
-			return 0x90;
+			return GetUnmappedPort();
 		}
 
 		if(port == 0xB1 || port == 0xB3 || port == 0xB5) {
@@ -218,35 +215,48 @@ bool WsMemoryManager::IsUnmappedPort(uint16_t port)
 	return (port & 0x100) || (port >= 0x100 && (port & 0xFF) >= 0xB7);
 }
 
+uint8_t WsMemoryManager::GetUnmappedPort()
+{
+	return _console->GetModel() == WsModel::Monochrome ? 0x90 : 0;
+}
+
 uint8_t WsMemoryManager::InternalReadPort(uint16_t port, bool isWordAccess)
 {
 	port &= 0xFF;
 
 	if(port <= 0x3F) {
 		return _ppu->ReadPort(port);
-	} else if(port >= 0x40 && port <= 0x53 && _state.ColorEnabled) {
-		return _dmaController->ReadPort(port);
-	} else if(port >= 0x64 && port <= 0x6B && _state.ColorEnabled) {
+	} else if(port >= 0x40 && port <= 0x53 && _console->GetModel() != WsModel::Monochrome) {
+		return _state.ColorEnabled ? _dmaController->ReadPort(port) : 0;
+	} else if(port >= 0x6A && port <= 0x6B && _console->GetModel() != WsModel::Monochrome) {
 		return _apu->Read(port); //HyperVoice
 	} else if(port >= 0x70 && port <= 0x77 && _console->GetModel() == WsModel::SwanCrystal) {
 		return _ppu->ReadLcdConfigPort(port);
 	} else if(port >= 0x80 && port <= 0x9F) {
 		return _apu->Read(port);
-	} else if(port >= 0xA2 && port <= 0xAB) {
+	} else if(port >= 0xA2 && port <= 0xAB && port != 0xA3) {
 		return _timer->ReadPort(port);
 	} else if(port >= 0xBA && port <= 0xBF) {
 		if(_console->GetModel() != WsModel::Monochrome || isWordAccess || !(port & 0x01)) {
 			return _eeprom->ReadPort(port - 0xBA);
 		} else {
-			//TODOWS open bus
-			return 0x90;
+			return GetUnmappedPort();
 		}
 	} else if(port >= 0xC0) {
 		return _cart->ReadPort(port);
 	} else {
 		switch(port) {
-			case 0x60: return _state.SystemControl2;
-			case 0x62: return _console->GetModel() == WsModel::SwanCrystal ? 0x80 : 0;
+			case 0x60: return _console->GetModel() == WsModel::Monochrome ? GetUnmappedPort() : _state.SystemControl2;
+
+			case 0x62:
+				if(_console->GetModel() == WsModel::Monochrome) {
+					return GetUnmappedPort();
+				}
+				return (
+					(_state.PowerOffRequested ? 0x01 : 0) |
+					(_console->GetModel() == WsModel::SwanCrystal ? 0x80 : 0)
+				);
+
 			case 0xA0:
 				return (
 					(_state.BootRomDisabled ? 0x01 : 0) |
@@ -254,8 +264,9 @@ uint8_t WsMemoryManager::InternalReadPort(uint16_t port, bool isWordAccess)
 					(_state.CartWordBus ? 0x04 : 0) |
 					(_state.SlowRom ? 0x08 : 0) |
 					0x80 //mbc authentication?
-					);
+				);
 
+			case 0xA3: return _state.SystemTest;
 			case 0xB0: return GetIrqVector();
 			case 0xB1: return _serial->Read(port);
 			case 0xB2: return _state.EnabledIrqs;
@@ -266,11 +277,12 @@ uint8_t WsMemoryManager::InternalReadPort(uint16_t port, bool isWordAccess)
 				_controlManager->SetInputReadFlag();
 				return _controlManager->Read();
 
+			case 0xB6: return 0;
+
 			case 0xB7: return _state.EnableLowBatteryNmi ? 0x10 : 0;
 			default:
-				//TODOWS open bus
 				LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(port));
-				return 0x90;
+				return GetUnmappedPort();
 		}
 	}
 }
@@ -283,13 +295,13 @@ void WsMemoryManager::InternalWritePort(uint16_t port, uint8_t value, bool isWor
 		_ppu->WritePort(port, value);
 	} else if(port >= 0x40 && port <= 0x53 && _state.ColorEnabled) {
 		return _dmaController->WritePort(port, value);
-	} else if(port >= 0x64 && port <= 0x6B && _state.ColorEnabled) {
+	} else if(port >= 0x64 && port <= 0x6B && _console->GetModel() != WsModel::Monochrome) {
 		_apu->Write(port, value); //HyperVoice
 	} else if(port >= 0x70 && port <= 0x77 && !_state.BootRomDisabled && _console->GetModel() == WsModel::SwanCrystal) {
 		_ppu->WriteLcdConfigPort(port, value);
 	} else if(port >= 0x80 && port <= 0x9F) {
 		_apu->Write(port, value);
-	} else if(port >= 0xA2 && port <= 0xAB) {
+	} else if(port >= 0xA2 && port <= 0xAB && port != 0xA3) {
 		_timer->WritePort(port, value);
 	} else if(port >= 0xBA && port <= 0xBF) {
 		if(_console->GetModel() != WsModel::Monochrome || isWordAccess || !(port & 0x01)) {
@@ -323,8 +335,8 @@ void WsMemoryManager::InternalWritePort(uint16_t port, uint8_t value, bool isWor
 				break;
 
 			case 0x62:
-				if(value & 0x01) {
-					MessageManager::DisplayMessage("WS", "Power off.");
+				if(_console->GetModel() != WsModel::Monochrome) {
+					_state.PowerOffRequested = value & 0x01;
 				}
 				break;
 
@@ -333,6 +345,13 @@ void WsMemoryManager::InternalWritePort(uint16_t port, uint8_t value, bool isWor
 				_state.CartWordBus = value & 0x04;
 				_state.SlowRom = value & 0x08;
 				RefreshMappings();
+				break;
+
+			case 0xA3:
+				//TODOWS SystemTest is not implemented
+				if(!isWordAccess) {
+					_state.SystemTest = value & 0x0F;
+				}
 				break;
 
 			case 0xB0: _state.IrqVectorOffset = value & 0xF8; break;
@@ -457,6 +476,7 @@ void WsMemoryManager::Serialize(Serializer& s)
 	SV(_state.EnabledIrqs);
 	SV(_state.IrqVectorOffset);
 	SV(_state.SystemControl2);
+	SV(_state.SystemTest);
 	SV(_state.ColorEnabled);
 	SV(_state.Enable4bpp);
 	SV(_state.Enable4bppPacked);
@@ -466,6 +486,7 @@ void WsMemoryManager::Serialize(Serializer& s)
 	SV(_state.SlowSram);
 	SV(_state.CartWordBus);
 	SV(_state.EnableLowBatteryNmi);
+	SV(_state.PowerOffRequested);
 
 	if(!s.IsSaving()) {
 		RefreshMappings();

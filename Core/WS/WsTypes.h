@@ -83,6 +83,7 @@ struct WsCpuState : BaseState
 
 	WsCpuFlags Flags;
 	bool Halted;
+	bool PowerOff;
 };
 
 struct WsBgLayer
@@ -186,6 +187,8 @@ struct WsPpuState : BaseState
 	bool HighContrast;
 	bool SleepEnabled;
 
+	uint8_t LcdControl;
+
 	WsLcdIcons Icons;
 
 	uint8_t LastScanline;
@@ -226,6 +229,8 @@ struct WsMemoryManagerState
 	uint8_t IrqVectorOffset;
 
 	uint8_t SystemControl2;
+	uint8_t SystemTest;
+
 	bool ColorEnabled;
 	bool Enable4bpp;
 	bool Enable4bppPacked;
@@ -238,6 +243,7 @@ struct WsMemoryManagerState
 	bool SlowPort;
 
 	bool EnableLowBatteryNmi;
+	bool PowerOffRequested;
 };
 
 struct WsControlManagerState
@@ -395,6 +401,8 @@ struct WsApuState
 	bool ForceOutput2;
 	bool ForceOutput4;
 	bool ForceOutputCh2Voice;
+	
+	uint8_t SoundTest;
 };
 
 struct WsSerialState

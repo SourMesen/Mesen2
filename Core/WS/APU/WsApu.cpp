@@ -251,16 +251,7 @@ uint8_t WsApu::Read(uint16_t port)
 				((uint8_t)_state.Ch2.HalfPcmVolumeLeft << 3)
 			);
 
-		case 0x95:
-			return (
-				(uint8_t)_state.HoldChannels |
-				((uint8_t)_state.Ch3.UseSweepCpuClock << 1) |
-				(_state.Ch4.HoldLfsr << 2) |
-				//todows bit 4?
-				((uint8_t)_state.ForceOutputCh2Voice << 5) |
-				((uint8_t)_state.ForceOutput2 << 6) |
-				((uint8_t)_state.ForceOutput4 << 7)
-			);
+		case 0x95: return _state.SoundTest;
 
 		case 0x96: return GetApuOutput(true);
 		case 0x97: return GetApuOutput(true) >> 8;
@@ -276,8 +267,7 @@ uint8_t WsApu::Read(uint16_t port)
 			break;
 	}
 
-	//todows open bus
-	return 0x90;
+	return _memoryManager->GetUnmappedPort();
 }
 
 void WsApu::Write(uint16_t port, uint8_t value)
@@ -289,13 +279,13 @@ void WsApu::Write(uint16_t port, uint8_t value)
 			break;
 
 		case 0x80: BitUtilities::SetBits<0>(_state.Ch1.Frequency, value); break;
-		case 0x81: BitUtilities::SetBits<8>(_state.Ch1.Frequency, value & 0x0F); break;
+		case 0x81: BitUtilities::SetBits<8>(_state.Ch1.Frequency, value & 0x07); break;
 		case 0x82: BitUtilities::SetBits<0>(_state.Ch2.Frequency, value); break;
-		case 0x83: BitUtilities::SetBits<8>(_state.Ch2.Frequency, value & 0x0F); break;
+		case 0x83: BitUtilities::SetBits<8>(_state.Ch2.Frequency, value & 0x07); break;
 		case 0x84: BitUtilities::SetBits<0>(_state.Ch3.Frequency, value); break;
-		case 0x85: BitUtilities::SetBits<8>(_state.Ch3.Frequency, value & 0x0F); break;
+		case 0x85: BitUtilities::SetBits<8>(_state.Ch3.Frequency, value & 0x07); break;
 		case 0x86: BitUtilities::SetBits<0>(_state.Ch4.Frequency, value); break;
-		case 0x87: BitUtilities::SetBits<8>(_state.Ch4.Frequency, value & 0x0F); break;
+		case 0x87: BitUtilities::SetBits<8>(_state.Ch4.Frequency, value & 0x07); break;
 
 		case 0x88: _state.Ch1.SetVolume(value); break;
 		case 0x89: _state.Ch2.SetVolume(value); break;
@@ -345,6 +335,8 @@ void WsApu::Write(uint16_t port, uint8_t value)
 			break;
 
 		case 0x95:
+			_state.SoundTest = value;
+
 			_state.HoldChannels = value & 0x01;
 			_state.Ch3.UseSweepCpuClock = value & 0x02;
 			_state.Ch4.HoldLfsr = (value & 0x0C) >> 2;
@@ -462,6 +454,7 @@ void WsApu::Serialize(Serializer& s)
 	SV(_state.ForceOutput2);
 	SV(_state.ForceOutput4);
 	SV(_state.ForceOutputCh2Voice);
+	SV(_state.SoundTest);
 
 	SV(_filterL);
 	SV(_filterR);

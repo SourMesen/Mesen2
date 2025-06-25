@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "WS/WsConsole.h"
-#include "WS/WsConsole.h"
 #include "WS/WsTimer.h"
 #include "WS/WsControlManager.h"
 #include "WS/WsMemoryManager.h"
@@ -15,15 +14,18 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
-WsPpu::WsPpu(Emulator* emu, WsConsole* console, WsTimer* timer, uint8_t* vram)
+WsPpu::WsPpu(Emulator* emu, WsConsole* console, WsMemoryManager* memoryManager, WsTimer* timer, uint8_t* vram)
 {
 	_emu = emu;
 	_console = console;
+	_memoryManager = memoryManager;
 	_timer = timer;
 	_vram = vram;
 
 	_state.LastScanline = 158;
-	_state.BackPorchScanline = 155;
+	if(_console->GetModel() != WsModel::SwanCrystal) {
+		_state.BackPorchScanline = 155;
+	}
 	_state.ShowVolumeIconFrame = UINT32_MAX;
 
 	_screenWidth = WsConstants::ScreenWidth;
@@ -475,7 +477,7 @@ uint8_t WsPpu::GetLcdStatus()
 
 void WsPpu::SendFrame()
 {
-	if(_state.SleepEnabled || !_state.LcdEnabled || _state.LastScanline == 255) {
+	if(_state.SleepEnabled || !_state.LcdEnabled || _state.LastScanline == 255 || _console->IsPowerOff()) {
 		//Screen should be white when in sleep mode, or if the last scanline is set to 255
 		std::fill(_currentBuffer, _currentBuffer + WsConstants::MaxPixelCount, 0xFFF);
 	} else if(_state.LastScanline < 144) {
@@ -506,13 +508,13 @@ uint8_t WsPpu::ReadPort(uint16_t port)
 {
 	switch(port) {
 	case 0x00: return _state.Control;
-	case 0x01: return _state.BgColor & (_console->GetModel() == WsModel::Monochrome ? 0x07 : 0xFF);
+	case 0x01: return _state.BgColor & (_memoryManager->IsColorEnabled() ? 0xFF : 0x07);
 	case 0x02: return _state.Scanline;
 	case 0x03: return _state.IrqScanline;
-	case 0x04: return (_state.SpriteTableAddress >> 9) & (_console->GetModel() == WsModel::Monochrome ? 0x1F : 0x3F);
+	case 0x04: return (_state.SpriteTableAddress >> 9) & (_memoryManager->IsColorEnabled() ? 0x3F : 0x1F);
 	case 0x05: return _state.FirstSpriteIndex;
 	case 0x06: return _state.SpriteCount;
-	case 0x07: return _state.ScreenAddress & (_console->GetModel() == WsModel::Monochrome ? 0x77 : 0xFF);
+	case 0x07: return _state.ScreenAddress & (_memoryManager->IsColorEnabled() ? 0xFF : 0x77);
 	case 0x08: return _state.BgWindow.Left;
 	case 0x09: return _state.BgWindow.Top;
 	case 0x0A: return _state.BgWindow.Right;
@@ -527,17 +529,12 @@ uint8_t WsPpu::ReadPort(uint16_t port)
 	case 0x11: return _state.BgLayers[0].ScrollY;
 	case 0x12: return _state.BgLayers[1].ScrollX;
 	case 0x13: return _state.BgLayers[1].ScrollY;
-
-	case 0x14:
-		return (
-			(_state.LcdEnabled ? 0x01 : 0) |
-			(_state.HighContrast ? 0x02 : 0)
-		);
-
+	case 0x14: return  _state.LcdControl;
 	case 0x15: return _state.Icons.Value;
 	case 0x16: return _state.LastScanline;
 	case 0x17: return _state.BackPorchScanline;
 	case 0x1A: return GetLcdStatus();
+	case 0x1B: return 0;
 
 	case 0x1C:
 	case 0x1D:
@@ -557,7 +554,7 @@ uint8_t WsPpu::ReadPort(uint16_t port)
 		}
 		else {
 			LogDebug("[Debug] PPU Read - missing handler: $" + HexUtilities::ToHex(port));
-			return 0;
+			return _memoryManager->GetUnmappedPort();
 		}
 	}
 }
@@ -605,8 +602,19 @@ void WsPpu::WritePort(uint16_t port, uint8_t value)
 
 	case 0x14:
 		_state.LcdEnabled = value & 0x01;
-		if(_console->GetModel() == WsModel::Color) {
-			_state.HighContrast = value & 0x02;
+		switch(_console->GetModel()) {
+			case WsModel::SwanCrystal:
+				_state.LcdControl = value & 0x01;
+				break;
+
+			case WsModel::Color:
+				_state.HighContrast = value & 0x02;
+				_state.LcdControl = value & 0xF3;
+				break;
+
+			default:
+				_state.LcdControl = value & 0xF1;
+				break;
 		}
 		break;
 
@@ -623,8 +631,8 @@ void WsPpu::WritePort(uint16_t port, uint8_t value)
 	case 0x16: _state.LastScanline = value; break;
 
 	case 0x17:
-		if(_console->GetModel() == WsModel::Color) {
-			_state.BackPorchScanline = value; break;
+		if(_console->GetModel() != WsModel::SwanCrystal) {
+			_state.BackPorchScanline = value;
 		}
 		break;
 
@@ -742,6 +750,8 @@ void WsPpu::Serialize(Serializer& s)
 	SV(_state.LcdEnabled);
 	SV(_state.HighContrast);
 	SV(_state.SleepEnabled);
+
+	SV(_state.LcdControl);
 
 	SV(_state.ShowVolumeIconFrame);
 	SV(_state.BackPorchScanline);

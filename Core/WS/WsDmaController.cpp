@@ -14,7 +14,7 @@ void WsDmaController::Init(WsMemoryManager* memoryManager, WsApu* apu)
 void WsDmaController::RunGeneralDma()
 {
 	int offset = (_state.GdmaControl & 0x40) ? -2 : 2;
-
+	
 	if(_state.GdmaLength == 0 || _memoryManager->GetWaitStates(_state.GdmaSrc) > 1 || !_memoryManager->IsWordBus(_state.GdmaSrc)) {
 		//When length is 0, or if transfer has an invalid source address, stop processing immediately
 		//The 5 cycles of setup time aren't executed in this scenario
@@ -41,8 +41,6 @@ void WsDmaController::RunGeneralDma()
 		_state.GdmaDest = _state.GdmaDest + offset;
 		_state.GdmaLength -= 2;
 	}
-
-	_state.GdmaControl &= ~0x80;
 }
 
 void WsDmaController::ProcessSoundDma()
@@ -120,8 +118,7 @@ uint8_t WsDmaController::ReadPort(uint16_t port)
 		case 0x53: return 0;
 	}
 
-	//TODOWS openbus
-	return 0x90;
+	return _memoryManager->GetUnmappedPort();
 }
 
 void WsDmaController::WritePort(uint16_t port, uint8_t value)
@@ -136,8 +133,8 @@ void WsDmaController::WritePort(uint16_t port, uint8_t value)
 		case 0x46: BitUtilities::SetBits<0>(_state.GdmaLength, value & 0xFE); break;
 		case 0x47: BitUtilities::SetBits<8>(_state.GdmaLength, value); break;
 		case 0x48:
-			_state.GdmaControl = value & 0xC0;
-			if(_state.GdmaControl & 0x80) {
+			_state.GdmaControl = value & 0x40;
+			if(value & 0x80) {
 				RunGeneralDma();
 			}
 			break;
@@ -173,7 +170,7 @@ void WsDmaController::WritePort(uint16_t port, uint8_t value)
 			break;
 
 		case 0x52:
-			_state.SdmaControl = value & 0xDF;
+			_state.SdmaControl = value & 0x5F;
 
 			switch(value & 0x03) {
 				default:

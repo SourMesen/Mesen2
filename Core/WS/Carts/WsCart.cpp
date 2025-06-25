@@ -44,8 +44,7 @@ uint8_t WsCart::ReadPort(uint16_t port)
 		return _cartEeprom->ReadPort(port - 0xC4);
 	}
 
-	//TODOWS open bus
-	return 0x90;
+	return _memoryManager->GetUnmappedPort();
 }
 
 void WsCart::WritePort(uint16_t port, uint8_t value)

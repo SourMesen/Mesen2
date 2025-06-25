@@ -67,6 +67,7 @@ public:
 
 	void GetScreenRotationOverride(uint32_t& rotation) override;
 	bool IsColorMode();
+	bool IsPowerOff();
 	bool IsVerticalMode();
 	WsModel GetModel();
 

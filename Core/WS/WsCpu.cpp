@@ -2,6 +2,7 @@
 #include "WS/WsCpu.h"
 #include "WS/WsMemoryManager.h"
 #include "Shared/Emulator.h"
+#include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
@@ -41,7 +42,7 @@ void WsCpu::Exec()
 {
 #ifndef DUMMYCPU
 	bool irqPending = _memoryManager->HasPendingIrq();
-	if(_state.Halted && !irqPending) {
+	if(_state.Halted && (!irqPending || _state.PowerOff)) {
 		Idle();
 		_emu->ProcessHaltedCpu<CpuType::Ws>();
 		return;
@@ -819,6 +820,10 @@ void WsCpu::Halt()
 {
 	Idle<12>();
 	_state.Halted = true;
+	if(_memoryManager->IsPowerOffRequested()) {
+		MessageManager::DisplayMessage("WS", "Power off.");
+		_state.PowerOff = true;
+	}
 }
 
 void WsCpu::SuppressIrq(bool suppressTrap)
@@ -2139,6 +2144,7 @@ void WsCpu::Serialize(Serializer& s)
 	SV(_state.CX);
 	SV(_state.DX);
 	SV(_state.Halted);
+	SV(_state.PowerOff);
 	SV(_state.Flags.AuxCarry);
 	SV(_state.Flags.Carry);
 	SV(_state.Flags.Direction);

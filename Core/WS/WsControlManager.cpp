@@ -49,7 +49,7 @@ void WsControlManager::UpdateControlDevices()
 
 uint8_t WsControlManager::Read()
 {
-	uint8_t result = 0;
+	uint8_t result = _state.InputSelect;
 
 	for(shared_ptr<BaseControlDevice>& controller : _controlDevices) {
 		if(controller->GetPort() == 0 && controller->GetControllerType() == ControllerType::WsController) {
