@@ -451,7 +451,7 @@ int WsDisUtils::GetModRmSize(uint8_t modRm)
 
 bool WsDisUtils::IsPrefix(uint8_t opCode)
 {
-	return opCode == 0xF0 || opCode == 0xF2 || opCode == 0xF3 || opCode == 0x26 || opCode == 0x36 || opCode == 0x2E || opCode == 0x3F;
+	return opCode == 0xF0 || opCode == 0xF2 || opCode == 0xF3 || opCode == 0x26 || opCode == 0x36 || opCode == 0x2E || opCode == 0x3E;
 }
 
 uint8_t WsDisUtils::GetOpSize(uint32_t cpuAddress, MemoryType memType, MemoryDumper* memoryDumper)
