@@ -34,14 +34,27 @@ SystemMouseState LinuxMouseManager::GetSystemMouseState(void* rendererHandle)
 
 	Window root = 0;
 	Window c = 0;
-	int rootX, rootY, childX, childY;
-	uint32_t mask;
+	int rootX = 0;
+	int rootY = 0;
+	int childX = 0;
+	int childY = 0;
+	uint32_t mask = 0;
 
 	XGrabServer(_display);
-	XQueryPointer(_display, _rootWindow, &root, &c, &rootX, &rootY, &childX, &childY, &mask);
-	if(root != _rootWindow) c = root;
+	if(!XQueryPointer(_display, _rootWindow, &root, &c, &rootX, &rootY, &childX, &childY, &mask)) {
+		XUngrabServer(_display);
+		XFlush(_display);
+		return state;
+	}
+
+	if(root != _rootWindow) {
+		c = root;
+	}
+
 	while(c != 0) {
-		XQueryPointer(_display, c, &root, &c, &rootX, &rootY, &childX, &childY, &mask);
+		if(!XQueryPointer(_display, c, &root, &c, &rootX, &rootY, &childX, &childY, &mask)) {
+			break;
+		}
 	}
 	XUngrabServer(_display);
 	XFlush(_display);
