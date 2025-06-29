@@ -27,11 +27,11 @@ void NsfMapper::InitMapper()
 {
 	_settings = _console->GetEmulator()->GetSettings();
 
+	SetCpuMemoryMapping(0x4100, 0x41FF, PrgMemoryType::MapperRam, 0, MemoryAccessType::Read);
+
 	//Clear all register settings
 	RemoveRegisterRange(0x0000, 0xFFFF, MemoryOperation::Any);
-
-	AddRegisterRange(0x3F00, 0x3F1F, MemoryOperation::Read);
-	AddRegisterRange(0x3F00, 0x3F00, MemoryOperation::Write);
+	AddRegisterRange(0x4100, 0x4100, MemoryOperation::Write);
 
 	//NSF registers
 	AddRegisterRange(0x5FF6, 0x5FFF, MemoryOperation::Write);
@@ -81,6 +81,8 @@ void NsfMapper::InitMapper(RomData& romData)
 	_nsfBios[0x03] = (_nsfHeader.InitAddress >> 8) & 0xFF;
 	_nsfBios[0x14] = _nsfHeader.PlayAddress & 0xFF;
 	_nsfBios[0x15] = (_nsfHeader.PlayAddress >> 8) & 0xFF;
+
+	memcpy(_mapperRam, _nsfBios, sizeof(_nsfBios));
 }
 
 void NsfMapper::Reset(bool softReset)
@@ -156,16 +158,6 @@ void NsfMapper::OnAfterResetPowerOn()
 	_irqCounter = 0;
 }
 
-void NsfMapper::GetMemoryRanges(MemoryRanges& ranges)
-{
-	BaseMapper::GetMemoryRanges(ranges);
-	
-	//Allows us to override the PPU's range (0x3F00 - 0x3F1F)
-	ranges.SetAllowOverride();
-	ranges.AddHandler(MemoryOperation::Read, 0x3F00, 0x3F1F);
-	ranges.AddHandler(MemoryOperation::Write, 0x3F00, 0x3F1F);
-}
-
 uint32_t NsfMapper::GetIrqReloadValue()
 {
 	switch(_console->GetRegion()) {
@@ -234,8 +226,6 @@ uint8_t NsfMapper::ReadRegister(uint16_t addr)
 		return _fdsAudio->ReadRegister(addr);
 	} else if((_nsfHeader.SoundChips & NsfSoundChips::Namco) && addr >= 0x4800 && addr <= 0x4FFF) {
 		return _namcoAudio->ReadRegister(addr);
-	} else if(addr >= 0x3F00 && addr <= 0x3F1F) {
-		return _nsfBios[addr & 0x1F];
 	} else {
 		switch(addr) {
 			case 0x5205: return (_mmc5MultiplierValues[0] * _mmc5MultiplierValues[1]) & 0xFF;
@@ -243,9 +233,9 @@ uint8_t NsfMapper::ReadRegister(uint16_t addr)
 
 			//Reset/irq vectors
 			case 0xFFFC: return 0x00;
-			case 0xFFFD: return 0x3F;
+			case 0xFFFD: return 0x41;
 			case 0xFFFE: return 0x10;
-			case 0xFFFF: return 0x3F;
+			case 0xFFFF: return 0x41;
 		}
 	}
 
@@ -269,7 +259,7 @@ void NsfMapper::WriteRegister(uint16_t addr, uint8_t value)
 		_sunsoftAudio->WriteRegister(addr, value);
 	} else {
 		switch(addr) {
-			case 0x3F00:
+			case 0x4100:
 				_irqCounter = GetIrqReloadValue();
 				ClearIrq();
 				break;

@@ -42,24 +42,26 @@ private:
 	
 	/*
 	
-	.org $3F00	
+	.org $4100	
 	reset:
 		CLI
 		JSR [INIT]  ;set at load time
-		STA $3F00   ;clear irq
+		STA $4100   ;clear irq
+		CLI         ;make sure the init subroutine didn't disable IRQs, otherwise nothing will be played
 	 loop:
 		JMP loop    ;loop forever
 
-	.org $3F10
+	.org $4110
 	 irq:
-		STA $3F00   ;clear irq
+		STA $4100   ;clear irq
 		JSR [PLAY]  ;set at load time
+		CLI         ;make sure the play subroutine didn't disable IRQs, otherwise the song will stop playing
 		RTI
 	*/
 
 	uint8_t _nsfBios[0x20] = {
-		0x58,0x20,0x00,0x00,0x8D,0x00,0x3F,0x4C,0x07,0x3F,0x00,0x00,0x00,0x00,0x00,0x00,
-		0x8D,0x00,0x3F,0x20,0x00,0x00,0x40,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+		0x58,0x20,0x00,0x00,0x8D,0x00,0x41,0x58,0x4C,0x08,0x41,0x00,0x00,0x00,0x00,0x00,
+		0x8D,0x00,0x41,0x20,0x00,0x00,0x58,0x40,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 	};
 
 private:
@@ -75,6 +77,7 @@ protected:
 	uint32_t GetWorkRamPageSize() override { return 0x1000; }
 	bool AllowRegisterRead() override { return true; }
 	bool EnableCpuClockHook() override { return true; }
+	uint32_t GetMapperRamSize() override { return 0x100; }
 
 	void Serialize(Serializer& s) override;
 
@@ -82,7 +85,6 @@ protected:
 	void InitMapper(RomData& romData) override;
 	void Reset(bool softReset) override;
 	void OnAfterResetPowerOn() override;
-	void GetMemoryRanges(MemoryRanges &ranges) override;
 
 	uint32_t GetIrqReloadValue();
 	
