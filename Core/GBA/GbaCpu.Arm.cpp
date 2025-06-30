@@ -417,7 +417,7 @@ void GbaCpu::ArmBlockDataTransfer()
 	uint8_t rn = (_opCode >> 16) & 0x0F;
 	uint16_t regMask = (uint16_t)_opCode;
 
-	uint32_t base = R(rn) + (rn == 15 ? 4 : 0);
+	uint32_t base = R(rn);
 	uint32_t addr = base;
 
 	uint8_t regCount = 0;
