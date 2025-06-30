@@ -226,6 +226,13 @@ void PceDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
+void PceDebugger::ProcessIdleCycle()
+{
+	if(_step->ProcessCpuCycle()) {
+		_debugger->SleepUntilResume(CpuType::Pce, BreakSource::CpuStep);
+	}
+}
+
 void PceDebugger::Run()
 {
 	_step.reset(new StepRequest());

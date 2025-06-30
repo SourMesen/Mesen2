@@ -362,6 +362,7 @@ void Debugger::ProcessIdleCycle()
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessIdleCycle(); break;
 		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessIdleCycle(); break;
+		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessIdleCycle(); break;
 	}
 }
 
@@ -1255,6 +1256,7 @@ template void Debugger::ProcessMemoryAccess<CpuType::Ws, MemoryType::WsCartEepro
 
 template void Debugger::ProcessIdleCycle<CpuType::Snes>();
 template void Debugger::ProcessIdleCycle<CpuType::Sa1>();
+template void Debugger::ProcessIdleCycle<CpuType::Pce>();
 
 template void Debugger::ProcessHaltedCpu<CpuType::Snes>();
 template void Debugger::ProcessHaltedCpu<CpuType::Spc>();

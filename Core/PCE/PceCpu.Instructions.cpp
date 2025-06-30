@@ -12,9 +12,10 @@ void PceCpu::WriteMemoryModeValue(uint8_t value)
 void PceCpu::AND()
 {
 	if(_memoryFlag) {
-		DummyRead();
-		uint8_t value = MemoryRead(PceCpu::ZeroPage + X());
-		WriteMemoryModeValue(value & GetOperandValue());
+		uint8_t op1 = GetOperandValue();
+		uint8_t op2 = MemoryRead(PceCpu::ZeroPage + X());
+		Idle();
+		WriteMemoryModeValue(op1 & op2);
 	} else {
 		SetA(A() & GetOperandValue());
 	}
@@ -23,9 +24,10 @@ void PceCpu::AND()
 void PceCpu::EOR()
 {
 	if(_memoryFlag) {
-		DummyRead();
-		uint8_t value = MemoryRead(PceCpu::ZeroPage + X());
-		WriteMemoryModeValue(value ^ GetOperandValue());
+		uint8_t op1 = GetOperandValue();
+		uint8_t op2 = MemoryRead(PceCpu::ZeroPage + X());
+		Idle();
+		WriteMemoryModeValue(op1 ^ op2);
 	} else {
 		SetA(A() ^ GetOperandValue());
 	}
@@ -34,9 +36,10 @@ void PceCpu::EOR()
 void PceCpu::ORA()
 {
 	if(_memoryFlag) {
-		DummyRead();
-		uint8_t value = MemoryRead(PceCpu::ZeroPage + X());
-		WriteMemoryModeValue(value | GetOperandValue());
+		uint8_t op1 = GetOperandValue();
+		uint8_t op2 = MemoryRead(PceCpu::ZeroPage + X());
+		Idle();
+		WriteMemoryModeValue(op1 | op2);
 	} else {
 		SetA(A() | GetOperandValue());
 	}
@@ -46,14 +49,20 @@ void PceCpu::ADD(uint8_t value)
 {
 	uint8_t source;
 	if(_memoryFlag) {
-		DummyRead();
 		source = MemoryRead(PceCpu::ZeroPage + X());
+		Idle();
 	} else {
 		source = A();
 	}
 
 	uint16_t result;
 	if(CheckFlag(PceCpuFlags::Decimal)) {
+		if(_memoryFlag) {
+			Idle();
+		} else {
+			DummyRead();
+		}
+
 		result = (uint16_t)(source & 0x0F) + (uint16_t)(value & 0x0F) + (_state.PS & PceCpuFlags::Carry);
 		if(result > 0x09) result += 0x06;
 		result = (uint16_t)(source & 0xF0) + (uint16_t)(value & 0xF0) + (result > 0x0F ? 0x10 : 0) + (result & 0x0F);
@@ -86,6 +95,12 @@ void PceCpu::SUB(uint8_t value)
 {
 	int32_t result;
 	if(CheckFlag(PceCpuFlags::Decimal)) {
+		if(_memoryFlag) {
+			Idle();
+		} else {
+			DummyRead();
+		}
+
 		result = (A() & 0x0F) + (value & 0x0F) + (_state.PS & PceCpuFlags::Carry);
 		if(result <= 0x0F) result -= 0x06;
 		result = (A() & 0xF0) + (value & 0xF0) + (result > 0x0F ? 0x10 : 0) + (result & 0x0F);
@@ -147,7 +162,7 @@ void PceCpu::INC()
 	ClearFlags(PceCpuFlags::Negative | PceCpuFlags::Zero);
 	uint8_t value = MemoryRead(addr);
 
-	DummyRead();
+	Idle();
 
 	value++;
 	SetZeroNegativeFlags(value);
@@ -160,7 +175,7 @@ void PceCpu::DEC()
 	ClearFlags(PceCpuFlags::Negative | PceCpuFlags::Zero);
 	uint8_t value = MemoryRead(addr);
 
-	DummyRead();
+	Idle();
 
 	value--;
 	SetZeroNegativeFlags(value);
@@ -222,7 +237,7 @@ void PceCpu::ASLAddr()
 {
 	uint16_t addr = GetOperand();
 	uint8_t value = MemoryRead(addr);
-	DummyRead();
+	Idle();
 	MemoryWrite(addr, ASL(value));
 }
 
@@ -230,7 +245,7 @@ void PceCpu::LSRAddr()
 {
 	uint16_t addr = GetOperand();
 	uint8_t value = MemoryRead(addr);
-	DummyRead();
+	Idle();
 	MemoryWrite(addr, LSR(value));
 }
 
@@ -238,7 +253,7 @@ void PceCpu::ROLAddr()
 {
 	uint16_t addr = GetOperand();
 	uint8_t value = MemoryRead(addr);
-	DummyRead();
+	Idle();
 	MemoryWrite(addr, ROL(value));
 }
 
@@ -246,7 +261,7 @@ void PceCpu::RORAddr()
 {
 	uint16_t addr = GetOperand();
 	uint8_t value = MemoryRead(addr);
-	DummyRead();
+	Idle();
 	MemoryWrite(addr, ROR(value));
 }
 
@@ -255,7 +270,7 @@ void PceCpu::BranchRelative(bool branch)
 	int8_t offset = (int8_t)GetOperand();
 	if(branch) {
 		DummyRead();
-		DummyRead();
+		Idle();
 
 		SetPC(PC() + offset);
 	}
@@ -293,7 +308,7 @@ void PceCpu::TSB()
 		SetFlags(PceCpuFlags::Zero);
 	}
 
-	DummyRead();
+	Idle();
 	MemoryWrite(_operand, value);
 }
 
@@ -314,16 +329,15 @@ void PceCpu::TRB()
 		SetFlags(PceCpuFlags::Zero);
 	}
 
-	DummyRead();
+	Idle();
 	MemoryWrite(_operand, value);
 }
 
 void PceCpu::TST()
 {
-	DummyRead();
-	DummyRead();
-
+	Idle();
 	uint8_t value = MemoryRead(_operand2);
+	Idle();
 
 	ClearFlags(PceCpuFlags::Zero | PceCpuFlags::Overflow | PceCpuFlags::Negative);
 	if(value & 0x40) {
@@ -342,20 +356,22 @@ void PceCpu::TST()
 
 void PceCpu::CSL()
 {
-	//CSH/CSL take 3 cycles
-	DummyRead();
 #ifndef DUMMYCPU
 	_memoryManager->SetSpeed(true);
 #endif
+
+	//CSH/CSL take 3 cycles, last idle cycle is after the speed change takes effect
+	Idle();
 }
 
 void PceCpu::CSH()
 {
-	//CSH/CSL take 3 cycles
-	DummyRead();
 #ifndef DUMMYCPU
 	_memoryManager->SetSpeed(false);
 #endif
+
+	//CSH/CSL take 3 cycles, last idle cycle is after the speed change takes effect
+	Idle();
 }
 
 //OP Codes
@@ -387,25 +403,25 @@ void PceCpu::PHP()
 
 void PceCpu::PLA()
 {
-	DummyRead();
+	Idle();
 	SetA(Pop());
 }
 
 void PceCpu::PLP()
 {
-	DummyRead();
+	Idle();
 	SetPS(Pop());
 }
 
 void PceCpu::PLX()
 {
-	DummyRead();
+	Idle();
 	SetX(Pop());
 }
 
 void PceCpu::PLY()
 {
-	DummyRead();
+	Idle();
 	SetY(Pop());
 }
 
@@ -437,31 +453,33 @@ void PceCpu::JMP_Abs()
 void PceCpu::JMP_Ind()
 {
 	//Unlike the 6502 CPU, this CPU works normally when crossing a page during indirect jumps
-	DummyRead();
-	DummyRead();
+	Idle();
 	SetPC(MemoryReadWord(_operand));
+	Idle();
 }
 
 void PceCpu::JMP_AbsX()
 {
-	DummyRead();
 	SetPC(MemoryReadWord(_operand));
+	Idle();
 }
 
 void PceCpu::JSR()
 {
-	uint16_t addr = GetOperand();
-	DummyRead();
-	Push((uint16_t)(PC() - 1));
+	uint8_t lo = ReadByte();
+	Idle();
+	Push(PC());
+	uint16_t addr = (ReadByte() << 8) | lo;
+	Idle();
 	SetPC(addr);
 }
 
 void PceCpu::RTS()
 {
-	DummyRead();
+	Idle();
 	uint16_t addr = PopWord();
-	DummyRead();
-	DummyRead();
+	Idle();
+	Idle();
 	SetPC(addr + 1);
 }
 
@@ -521,10 +539,10 @@ void PceCpu::BRK()
 
 void PceCpu::RTI()
 {
-	DummyRead();
+	Idle();
 	SetPS(Pop());
-	DummyRead();
 	SetPC(PopWord());
+	Idle();
 }
 
 void PceCpu::NOP()
@@ -535,34 +553,37 @@ void PceCpu::NOP()
 void PceCpu::BSR()
 {
 	int8_t relAddr = (int8_t)GetOperand();
-	DummyRead();
-	DummyRead();
+	Idle();
 	Push((uint16_t)(PC() - 1));
-	DummyRead();
-	DummyRead();
+	Idle();
+	Idle();
+	Idle();
 	SetPC(PC() + relAddr);
 }
 
 void PceCpu::BRA()
 {
-	BranchRelative(true);
+	int8_t offset = (int8_t)GetOperand();
+	Idle();
+	Idle();
+	SetPC(PC() + offset);
 }
 
 void PceCpu::SXY()
 {
-	DummyRead();
+	Idle();
 	std::swap(_state.X, _state.Y);
 }
 
 void PceCpu::SAX()
 {
-	DummyRead();
+	Idle();
 	std::swap(_state.A, _state.X);
 }
 
 void PceCpu::SAY()
 {
-	DummyRead();
+	Idle();
 	std::swap(_state.A, _state.Y);
 }
 
@@ -583,8 +604,8 @@ void PceCpu::CLY()
 
 void PceCpu::ST0()
 {
-	DummyRead(); //1 dummy read
 #ifndef DUMMYCPU
+	Idle();
 	ProcessCpuCycle(); //1 write cycle
 	_memoryManager->WriteVdc(0, _operand);
 #endif
@@ -592,8 +613,8 @@ void PceCpu::ST0()
 
 void PceCpu::ST1()
 {
-	DummyRead(); //1 dummy read
 #ifndef DUMMYCPU
+	Idle();
 	ProcessCpuCycle(); //1 write cycle
 	_memoryManager->WriteVdc(2, _operand);
 #endif
@@ -601,8 +622,8 @@ void PceCpu::ST1()
 
 void PceCpu::ST2()
 {
-	DummyRead(); //1 dummy read
 #ifndef DUMMYCPU
+	Idle();
 	ProcessCpuCycle(); //1 write cycle
 	_memoryManager->WriteVdc(3, _operand);
 #endif
@@ -610,8 +631,8 @@ void PceCpu::ST2()
 
 void PceCpu::TMA()
 {
-	DummyRead();
-	DummyRead();
+	Idle();
+	Idle();
 #ifndef DUMMYCPU
 	SetA(_memoryManager->GetMprValue(GetOperand()));
 #endif
@@ -619,9 +640,9 @@ void PceCpu::TMA()
 
 void PceCpu::TAM()
 {
-	DummyRead();
-	DummyRead();
-	DummyRead();
+	Idle();
+	Idle();
+	Idle();
 #ifndef DUMMYCPU
 	_memoryManager->SetMprValue(GetOperand(), A());
 #endif
@@ -630,18 +651,24 @@ void PceCpu::TAM()
 void PceCpu::StartBlockTransfer()
 {
 	DummyRead();
+	Idle();
+
 	Push(Y());
-	DummyRead();
-	Push(X());
-	DummyRead();
 	Push(A());
-	DummyRead();
+	Push(X());
+
+	_operand = ReadWord();
+	_operand2 = ReadWord();
+	_operand3 = ReadWord();
+
+	Idle();
 }
 
 void PceCpu::EndBlockTransfer()
 {
-	_state.A = Pop();
+	Idle();
 	_state.X = Pop();
+	_state.A = Pop();
 	_state.Y = Pop();
 }
 
@@ -655,13 +682,13 @@ void PceCpu::TAI()
 
 	uint32_t count = 0;
 	do {
-		DummyRead();
+		Idle();
 		uint8_t value = MemoryRead(src);
-		DummyRead();
-
-		DummyRead();
+		Idle();
 		MemoryWrite(dst, value);
-		DummyRead();
+
+		Idle();
+		Idle();
 
 		src += (count & 0x01) ? -1 : 1;
 		dst++;
@@ -682,13 +709,13 @@ void PceCpu::TDD()
 	uint16_t length = _operand3;
 
 	do {
-		DummyRead();
+		Idle();
 		uint8_t value = MemoryRead(src);
-		DummyRead();
-
-		DummyRead();
+		Idle();
 		MemoryWrite(dst, value);
-		DummyRead();
+
+		Idle();
+		Idle();
 
 		src--;
 		dst--;
@@ -709,13 +736,13 @@ void PceCpu::TIA()
 
 	uint32_t count = 0;
 	do {
-		DummyRead();
+		Idle();
 		uint8_t value = MemoryRead(src);
-		DummyRead();
-
-		DummyRead();
+		Idle();
 		MemoryWrite(dst, value);
-		DummyRead();
+
+		Idle();
+		Idle();
 
 		src++;
 		dst += (count & 0x01) ? -1 : 1;
@@ -736,13 +763,13 @@ void PceCpu::TII()
 	uint16_t length = _operand3;
 
 	do {
-		DummyRead();
+		Idle();
 		uint8_t value = MemoryRead(src);
-		DummyRead();
-
-		DummyRead();
+		Idle();
 		MemoryWrite(dst, value);
-		DummyRead();
+
+		Idle();
+		Idle();
 
 		src++;
 		dst++;
@@ -762,13 +789,13 @@ void PceCpu::TIN()
 	uint16_t length = _operand3;
 
 	do {
-		DummyRead();
+		Idle();
 		uint8_t value = MemoryRead(src);
-		DummyRead();
-
-		DummyRead();
+		Idle();
 		MemoryWrite(dst, value);
-		DummyRead();
+
+		Idle();
+		Idle();
 
 		src++;
 
@@ -780,27 +807,31 @@ void PceCpu::TIN()
 
 void PceCpu::BBR(uint8_t bit)
 {
-	DummyRead();
-	DummyRead();
+	uint8_t addr = ReadByte();
+	Idle();
+	int8_t offset = (int8_t)ReadByte();
+	Idle();
 
-	uint8_t value = MemoryRead(PceCpu::ZeroPage + (_operand & 0xFF));
+	uint8_t value = MemoryRead(PceCpu::ZeroPage + addr);
 	if((value & (1 << bit)) == 0) {
-		DummyRead();
-		DummyRead();
-		SetPC(PC() + (int8_t)(_operand >> 8));
+		Idle();
+		Idle();
+		SetPC(PC() + offset);
 	}
 }
 
 void PceCpu::BBS(uint8_t bit)
 {
-	DummyRead();
-	DummyRead();
+	uint8_t addr = ReadByte();
+	Idle();
+	int8_t offset = (int8_t)ReadByte();
+	Idle();
 
-	uint8_t value = MemoryRead(PceCpu::ZeroPage + (_operand & 0xFF));
+	uint8_t value = MemoryRead(PceCpu::ZeroPage + addr);
 	if((value & (1 << bit)) != 0) {
-		DummyRead();
-		DummyRead();
-		SetPC(PC() + (int8_t)(_operand >> 8));
+		Idle();
+		Idle();
+		SetPC(PC() + offset);
 	}
 }
 
@@ -808,8 +839,8 @@ void PceCpu::RMB(uint8_t bit)
 {
 	uint8_t value = MemoryRead(_operand);
 	value &= ~(1 << bit);
-	DummyRead();
-	DummyRead();
+	Idle();
+	Idle();
 	MemoryWrite(_operand, value);
 }
 
@@ -817,7 +848,7 @@ void PceCpu::SMB(uint8_t bit)
 {
 	uint8_t value = MemoryRead(_operand);
 	value |= (1 << bit);
-	DummyRead();
-	DummyRead();
+	Idle();
+	Idle();
 	MemoryWrite(_operand, value);
 }

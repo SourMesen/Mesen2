@@ -190,6 +190,8 @@ private:
 
 	template<bool hasSprites, bool hasSprite0, bool skipRender> __forceinline void InternalDrawScanline();
 
+	bool CheckUpdateLatchTiming(uint16_t clock);
+
 public:
 	PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, bool isVdc2);
 	~PceVdc();

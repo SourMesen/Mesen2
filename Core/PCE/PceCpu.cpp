@@ -33,7 +33,7 @@ PceAddrMode const PceCpu::_addrMode[] = {
 //	0			1				2			3				4				5				6				7				8			9			A			B			C				D			E			F
 	M::Imm,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,		M::Abs,	M::Abs,	M::ZeroRel,	//0
 	M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Zero,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Abs,		M::AbsX,	M::AbsX,	M::ZeroRel,//1
-	M::Abs,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,		M::Abs,	M::Abs,	M::ZeroRel,	//2
+	M::None, M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,		M::Abs,	M::Abs,	M::ZeroRel,	//2
 	M::Rel,	M::IndY,		M::ZInd,	M::Imp,		M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,		M::AbsX,	M::AbsX,	M::ZeroRel,//3
 	M::Imp,	M::IndX,		M::Imp,	M::Imm,		M::Rel,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,		M::Abs,	M::Abs,	M::ZeroRel,	//4
 	M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,		M::AbsX,	M::AbsX,	M::ZeroRel,//5
@@ -118,54 +118,51 @@ void PceCpu::FetchOperand()
 		case PceAddrMode::Imp: DummyRead(); _operand = 0; break;
 		case PceAddrMode::Imm:
 		case PceAddrMode::Rel: _operand = GetImmediate(); break;
-		case PceAddrMode::Zero: _operand = PceCpu::ZeroPage + GetZeroAddr(); DummyRead(); break;
-		case PceAddrMode::ZeroX: _operand = PceCpu::ZeroPage + GetZeroXAddr(); DummyRead(); break;
-		case PceAddrMode::ZeroY: _operand = PceCpu::ZeroPage + GetZeroYAddr(); DummyRead(); break;
+		case PceAddrMode::Zero: _operand = PceCpu::ZeroPage + GetZeroAddr(); Idle(); break;
+		case PceAddrMode::ZeroX: _operand = PceCpu::ZeroPage + GetZeroXAddr(); Idle(); break;
+		case PceAddrMode::ZeroY: _operand = PceCpu::ZeroPage + GetZeroYAddr(); Idle(); break;
 		case PceAddrMode::Ind: _operand = GetIndAddr(); break;
 		case PceAddrMode::IndX: _operand = GetIndXAddr(); break;
 		case PceAddrMode::IndY: _operand = GetIndYAddr(); break;
-		case PceAddrMode::Abs: _operand = GetAbsAddr(); DummyRead(); break;
-		case PceAddrMode::AbsX: _operand = GetAbsXAddr(); DummyRead(); break;
-		case PceAddrMode::AbsY: _operand = GetAbsYAddr(); DummyRead(); break;
-		case PceAddrMode::ZeroRel: _operand = ReadWord(); break;
+		case PceAddrMode::Abs: _operand = GetAbsAddr(); Idle(); break;
+		case PceAddrMode::AbsX: _operand = GetAbsXAddr(); Idle(); break;
+		case PceAddrMode::AbsY: _operand = GetAbsYAddr(); Idle(); break;
+		case PceAddrMode::ZeroRel: _operand = 0; break;
 
-		case PceAddrMode::Block:
-			_operand = ReadWord();
-			_operand2 = ReadWord();
-			_operand3 = ReadWord();
-			break;
+		case PceAddrMode::Block: break;
 
 		case PceAddrMode::ZInd: _operand = GetIndZeroAddr(); break;
 
 		case PceAddrMode::ImZero:
 			_operand = ReadByte();
 			_operand2 = PceCpu::ZeroPage + GetZeroAddr();
-			DummyRead();
+			Idle();
 			break;
 
 		case PceAddrMode::ImZeroX:
 			_operand = ReadByte();
 			_operand2 = PceCpu::ZeroPage + GetZeroXAddr();
-			DummyRead();
+			Idle();
 			break;
 
 		case PceAddrMode::ImAbs:
 			_operand = ReadByte();
 			_operand2 = GetAbsAddr();
-			DummyRead();
+			Idle();
 			break;
 
 		case PceAddrMode::ImAbsX:
 			_operand = ReadByte();
 			_operand2 = GetAbsXAddr();
-			DummyRead();
+			Idle();
 			break;
 
 		case PceAddrMode::AbsXInd:
 			_operand = GetAbsXAddr();
-			DummyRead();
+			Idle();
 			break;
 
+		case PceAddrMode::None:
 		default:
 			break;
 	}
@@ -230,6 +227,14 @@ void PceCpu::DummyRead()
 	MemoryRead(_state.PC, MemoryOperationType::DummyRead);
 }
 
+void PceCpu::Idle()
+{
+#ifndef DUMMYCPU
+	ProcessCpuCycle();
+	_emu->ProcessIdleCycle<CpuType::Pce>();
+#endif
+}
+
 uint8_t PceCpu::ReadByte()
 {
 	uint8_t value = MemoryRead(_state.PC, MemoryOperationType::ExecOperand);
@@ -270,7 +275,7 @@ void PceCpu::SetZeroNegativeFlags(uint8_t value)
 
 void PceCpu::RunIdleCpuCycle()
 {
-	ProcessCpuCycle();
+	Idle();
 }
 
 void PceCpu::ProcessCpuCycle()
@@ -361,28 +366,28 @@ uint16_t PceCpu::ReadZeroPageWrap(uint8_t zero)
 uint16_t PceCpu::GetIndZeroAddr()
 {
 	uint8_t zero = ReadByte();
-	DummyRead();
+	Idle();
 	uint16_t addr = ReadZeroPageWrap(zero);
-	DummyRead();
+	Idle();
 	return addr;
 }
 
 uint16_t PceCpu::GetIndXAddr()
 {
 	uint8_t zero = ReadByte();
-	DummyRead();
+	Idle();
 	zero += X();
 	uint16_t addr = ReadZeroPageWrap(zero);
-	DummyRead();
+	Idle();
 	return addr;
 }
 
 uint16_t PceCpu::GetIndYAddr()
 {
 	uint8_t zero = ReadByte();
-	DummyRead();
+	Idle();
 	uint16_t addr = ReadZeroPageWrap(zero);
-	DummyRead();
+	Idle();
 	return addr + Y();
 }
 
@@ -426,10 +431,7 @@ void PceCpu::ProcessIrq(bool forBrk)
 		DummyRead();  //read next instruction byte (actually the same as above, since PC increment is suppressed. Also discarded.)
 	}
 
-	DummyRead();
 	Push((uint16_t)(PC()));
-	DummyRead();
-	DummyRead();
 
 	if(forBrk) {
 		//B flag is set on the stack for BRK
@@ -445,6 +447,8 @@ void PceCpu::ProcessIrq(bool forBrk)
 	SetFlags(PceCpuFlags::Interrupt);
 
 	SetPC(MemoryReadWord(vector));
+
+	Idle();
 
 	if(!forBrk) {
 #ifndef DUMMYCPU

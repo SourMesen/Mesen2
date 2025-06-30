@@ -187,7 +187,7 @@ void PceVdc::SetHorizontalMode(PceVdcModeH hMode)
 			_needVCounterClock = true;
 			_needRcrIncrement = true;
 			_nextEvent = PceVdcEvent::IncRcrCounter;
-			_nextEventCounter = DotsToClocks((_state.HvLatch.HorizDisplayWidth - 1) * 8) + 2;
+			_nextEventCounter = DotsToClocks((_state.HvLatch.HorizDisplayWidth - 1) * 8 + 2);
 			_hModeCounter = DotsToClocks((_state.HvLatch.HorizDisplayWidth + 1) * 8);
 			//LogDebug("H: " + std::to_string(_state.HClock) + " - HDW start");
 			break;
@@ -269,12 +269,12 @@ void PceVdc::ProcessHorizontalSyncStart()
 	if(_vMode == PceVdcModeV::Vdw) {
 		_nextEvent = PceVdcEvent::LatchScrollY;
 
-		//Less than 33 causes Asuka 120% to have a flickering line
+		//Less than 34 causes Asuka 120% to have a flickering line
 		//Either the RCR interrupt is too early, or the latching was too late
-		eventClocks = DotsToClocks(33);
+		eventClocks = DotsToClocks(34);
 	} else {
 		_nextEvent = PceVdcEvent::HdsIrqTrigger;
-		eventClocks = DotsToClocks(24);
+		eventClocks = DotsToClocks(25);
 	}
 
 	if((int16_t)displayStart - (int16_t)eventClocks <= (int16_t)_state.HClock) {
@@ -1135,6 +1135,19 @@ uint8_t PceVdc::ReadRegister(uint16_t addr)
 	}
 }
 
+bool PceVdc::CheckUpdateLatchTiming(uint16_t clock)
+{
+	//There seems to be a window where writing to the BXR/BYR registers after they
+	//get latched causes them to be latched with the newly written value instead.
+	//This might be due to other timing inaccuracies in other portions of the
+	//VDC's implementation and is likely not quite accurate.
+	//This allows "rcrtest" and "Asuka 100%" to behave like hardware
+	//It allows reduces the jitter in "Hyper Dyne Sidearms Special" to only appear on the "game over" screen.
+	int start = clock / GetClockDivider() * GetClockDivider();
+	int end = start + (GetClockDivider() + 1) / 2;
+	return _state.HClock > start && _state.HClock < end;
+}
+
 void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 {
 	DrawScanline();
@@ -1193,7 +1206,7 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 
 						_state.NextSpritesEnabled = (value & 0x40) != 0;
 						_state.NextBackgroundEnabled = (value & 0x80) != 0;
-						if(_latchClockY == _state.HClock && !_state.BurstModeEnabled) {
+						if(CheckUpdateLatchTiming(_latchClockY) && !_state.BurstModeEnabled) {
 							//Write occurred at the same time as the CR latch, update latch too
 							_state.SpritesEnabled = _state.NextSpritesEnabled;
 							_state.BackgroundEnabled = _state.NextBackgroundEnabled;
@@ -1202,17 +1215,20 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 					break;
 
 				case 0x06: UpdateReg<0x3FF>(_state.RasterCompareRegister, value, msb); break;
+
 				case 0x07:
 					UpdateReg<0x3FF>(_state.HvReg.BgScrollX, value, msb);
-					if(_latchClockX == _state.HClock) {
+					if(CheckUpdateLatchTiming(_latchClockX)) {
 						//Write occurred at the same time as the BXR latch, update latch too
 						_state.HvLatch.BgScrollX = _state.HvReg.BgScrollX;
 					}
 					break;
+
 				case 0x08:
 					UpdateReg<0x1FF>(_state.HvReg.BgScrollY, value, msb);
 					_state.BgScrollYUpdatePending = true;
-					if(_latchClockY == _state.HClock) {
+
+					if(CheckUpdateLatchTiming(_latchClockY)) {
 						//Write occurred at the same time as the BYR latch, update latch too
 						IncScrollY();
 					}

@@ -257,6 +257,7 @@ private:
 	uint8_t GetOperandValue();
 
 	void DummyRead();
+	void Idle();
 
 	uint8_t ReadByte();
 	uint16_t ReadWord();
