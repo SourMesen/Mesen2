@@ -137,7 +137,7 @@ namespace Mesen.Debugger.Windows
 				bool isWrite = evt.Operation.Type == MemoryOperationType.Write || evt.Operation.Type == MemoryOperationType.DmaWrite;
 				bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead;
 
-				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = _model.CpuType.ToMemoryType() });
+				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = evt.Operation.MemType });
 				string registerText = "$" + evt.Operation.Address.ToString("X4");
 				if(label != null) {
 					registerText = label.Label + " (" + registerText + ")";

@@ -573,7 +573,7 @@ namespace Mesen.Debugger.ViewModels
 			if(isReadWriteOp) {
 				address += "$" + evt.Operation.Address.ToString("X4");
 
-				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = _cpuType.ToMemoryType() });
+				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = evt.Operation.MemType });
 				if(label != null) {
 					address = label.Label + " (" + address + ")";
 				}
