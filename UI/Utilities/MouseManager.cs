@@ -35,6 +35,7 @@ namespace Mesen.Utilities
 		private int _prevPositionX;
 		private int _prevPositionY;
 		private bool _mouseCaptured = false;
+		private bool _closeMenuPending = false;
 		private DateTime _lastMouseMove = DateTime.Now;
 
 		public MouseManager(MainWindow wnd, Control renderer, MainMenuView mainMenu, bool usesSoftwareRenderer)
@@ -63,15 +64,22 @@ namespace Mesen.Utilities
 			}
 
 			SystemMouseState mouseState = InputApi.GetSystemMouseState(GetRendererHandle());
-			
-			if(_wnd.IsActive && mouseState.LeftButton && !IsPointerInMenu() && (EmuApi.IsRunning() || !MainWindowViewModel.Instance.RecentGames.Visible)) {
-				//Close menu when renderer is clicked
-				_mainMenu.MainMenu.Close();
-				if(MainWindowViewModel.Instance.AudioPlayer == null) {
-					//Only give renderer focus when the audio player isn't active
-					//Otherwise clicking on the audio player's buttons does nothing
-					_renderer.Focus();
+
+			if((mouseState.LeftButton || _closeMenuPending) && _wnd.IsActive && !IsPointerInMenu() && (EmuApi.IsRunning() || !MainWindowViewModel.Instance.RecentGames.Visible)) {
+				if(_closeMenuPending && !mouseState.LeftButton) {
+					//Close menu when renderer is clicked, after the mouse button is released (while not in the menu)
+					_mainMenu.MainMenu.Close();
+					if(MainWindowViewModel.Instance.AudioPlayer == null) {
+						//Only give renderer focus when the audio player isn't active
+						//Otherwise clicking on the audio player's buttons does nothing
+						_renderer.Focus();
+					}
+					_closeMenuPending = false;
+				} else {
+					_closeMenuPending = true;
 				}
+			} else {
+				_closeMenuPending = false;
 			}
 
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
