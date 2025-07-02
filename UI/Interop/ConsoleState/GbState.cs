@@ -77,6 +77,8 @@ public struct GbDmaControllerState
 	public UInt16 CgbDmaDest;
 	public byte CgbDmaLength;
 	[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaRunning;
+	[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaPending;
+	[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaTrigger;
 };
 
 public struct GbTimerState

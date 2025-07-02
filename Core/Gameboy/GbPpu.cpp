@@ -177,7 +177,6 @@ void GbPpu::ExecCycle()
 		RunDrawCycle();
 		if(_drawnPixels == 160) {
 			//Mode turns to hblank on the same cycle as the last pixel is output
-			_state.Mode = PpuMode::HBlank;
 			_state.IrqMode = PpuMode::HBlank;
 			if(_gameboy->IsSgb()) {
 				_gameboy->GetSgb()->ProcessHBlank();
@@ -188,11 +187,8 @@ void GbPpu::ExecCycle()
 			_oamWriteBlocked = false;
 			_vramReadBlocked = false;
 			_vramWriteBlocked = false;
-
-			if(_state.Scanline <= 143) {
-				//HDMA runs at the start of hblank on every visible scanline (0 to 143)
-				_dmaController->ProcessHdma();
-			}
+			
+			SetMode(PpuMode::HBlank);
 		}
 	} else if(_state.Mode == PpuMode::OamEvaluation) {
 		RunSpriteEvaluation();
@@ -220,7 +216,7 @@ void GbPpu::ProcessVblankScanline()
 			if(_state.Scanline < 153) {
 				_state.LyForCompare = _state.Scanline;
 				if(_state.Scanline == 144) {
-					_state.Mode = PpuMode::VBlank;
+					SetMode(PpuMode::VBlank);
 					_state.IrqMode = PpuMode::VBlank;
 					if(_gameboy->IsSgb()) {
 						_gameboy->GetSgb()->ProcessVBlank();
@@ -265,7 +261,7 @@ void GbPpu::ProcessVblankScanline()
 
 				if(!_gameboy->IsCgb()) {
 					//On scanline 0, hblank gets set here (not on CGB)
-					_state.Mode = PpuMode::HBlank;
+					SetMode(PpuMode::HBlank);
 				}
 
 				if(_emu->IsDebugging()) {
@@ -291,7 +287,7 @@ void GbPpu::ProcessFirstScanlineAfterPowerOn()
 
 			_rendererIdle = true;
 			_wxEnableFlag = false;
-			_state.Mode = PpuMode::Drawing;
+			SetMode(PpuMode::Drawing);
 			_state.IrqMode = PpuMode::Drawing;
 			ResetRenderer();
 			_rendererIdle = true;
@@ -331,7 +327,7 @@ void GbPpu::ProcessVisibleScanline()
 			_spriteCount = 0;
 			_state.LyForCompare = _state.Scanline;
 			_oamWriteBlocked = true;
-			_state.Mode = PpuMode::OamEvaluation;
+			SetMode(PpuMode::OamEvaluation);
 			_state.IrqMode = PpuMode::OamEvaluation;
 			break;
 
@@ -349,7 +345,7 @@ void GbPpu::ProcessVisibleScanline()
 
 		case 84:
 			_wxEnableFlag = false;
-			_state.Mode = PpuMode::Drawing;
+			SetMode(PpuMode::Drawing);
 			_state.IrqMode = PpuMode::Drawing;
 			_oamWriteBlocked = true;
 			_vramWriteBlocked = true;
@@ -870,6 +866,12 @@ void GbPpu::UpdatePalette()
 	}
 }
 
+void GbPpu::SetMode(PpuMode mode)
+{
+	_state.Mode = mode;
+	_dmaController->ProcessHdma();
+}
+
 uint8_t GbPpu::Read(uint16_t addr)
 {
 	switch(addr) {
@@ -923,15 +925,13 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_vramReadBlocked = false;
 					_vramWriteBlocked = false;
 
-					_state.Mode = PpuMode::HBlank;
 					_state.IrqMode = PpuMode::NoIrq;
 					_wyEnableFlag = false;
 					_lcdDisabled = true;
 
 					_lastFrameTime = _gameboy->GetApuCycleCount();
 					
-					//"If the HDMA started when the screen was on, when the screen is switched off it will copy one block after the switch."
-					_dmaController->ProcessHdma();
+					SetMode(PpuMode::HBlank);
 				} else {
 					_lcdDisabled = false;
 					_isFirstFrame = true;

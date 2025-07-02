@@ -551,6 +551,11 @@ uint8_t GbMemoryManager::ProcessIrqRequests()
 	return 0;
 }
 
+void GbMemoryManager::ProcessHaltEnd()
+{
+	_dmaController->ProcessHdma();
+}
+
 void GbMemoryManager::ToggleSpeed()
 {
 	_state.CgbSwitchSpeedRequest = false;

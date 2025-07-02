@@ -131,6 +131,8 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 					//  - New bit 7 is 1: Restart copy. New size is the value of written_value bits 0-6.
 					//This means that HDMA can't switch to GDMA with only one write. It must be stopped first."
 					_state.CgbHdmaRunning = false;
+					_state.CgbHdmaPending = false;
+					_state.CgbHdmaTrigger = false;
 				} else {
 					//4 cycles for setup
 					_memoryManager->Exec();
@@ -146,9 +148,7 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 
 				//"If a HDMA transfer is started when the screen is off, one block is copied. "
 				//" When a HDMA transfer is started during HBL it will start right away."
-				if(!_ppu->IsLcdEnabled() || _ppu->GetMode() == PpuMode::HBlank) {
-					ProcessHdma();
-				}
+				ProcessHdma();
 			}
 			break;
 		}
@@ -157,25 +157,32 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 
 void GbDmaController::ProcessHdma()
 {
-	//TODOGB what happens if the CPU resumes execution during hblank?
-	if(_state.CgbHdmaRunning && !_cpu->IsHalted()) {
+	//TODOGB validate start timing
+	bool trigger = _state.CgbHdmaRunning && _ppu->GetMode() == PpuMode::HBlank;
+	_state.CgbHdmaPending |= trigger && !_state.CgbHdmaTrigger;
+	_state.CgbHdmaTrigger = trigger;
+
+	if(_state.CgbHdmaPending && !_cpu->IsHalted()) {
 		//4 cycles for setup
 		_memoryManager->Exec();
 		_memoryManager->Exec();
-
 		ProcessDmaBlock();
+		_state.CgbHdmaPending = false;
 	}
 }
 
 void GbDmaController::ProcessDmaBlock()
 {
-	//TODO check invalid dma sources/etc.
+	bool isInvalidSource = _state.CgbDmaSource >= 0x8000 && _state.CgbDmaSource <= 0x9FFF || _state.CgbDmaSource >= 0xE000;
 	for(int i = 0; i < 16; i++) {
 		uint16_t dst = 0x8000 | ((_state.CgbDmaDest + i) & 0x1FFF);
 
 		//2 or 4 cycles per byte transfered (2x more cycles in high speed mode - effective speed is the same in both modes
 		_memoryManager->Exec();
 		uint8_t value = _memoryManager->Read<MemoryOperationType::DmaRead>(_state.CgbDmaSource + i);
+		if(isInvalidSource) {
+			value = 0xFF;
+		}
 		if(_memoryManager->IsHighSpeed()) {
 			_memoryManager->Exec();
 		}
@@ -187,7 +194,7 @@ void GbDmaController::ProcessDmaBlock()
 	_state.CgbDmaDest += 16;
 	_state.CgbDmaLength = (_state.CgbDmaLength - 1) & 0x7F;
 
-	if(_state.CgbHdmaRunning && _state.CgbDmaLength == 0x7F) {
+	if((_state.CgbHdmaRunning && _state.CgbDmaLength == 0x7F) || _state.CgbDmaDest == 0) {
 		_state.CgbHdmaRunning = false;
 	}
 }
@@ -196,5 +203,7 @@ void GbDmaController::Serialize(Serializer& s)
 {
 	SV(_state.OamDmaSource); SV(_state.DmaStartDelay); SV(_state.InternalDest); SV(_state.DmaCounter); SV(_state.DmaReadBuffer);
 	SV(_state.CgbDmaDest); SV(_state.CgbDmaLength); SV(_state.CgbDmaSource); SV(_state.CgbHdmaRunning);
+	SV(_state.CgbHdmaPending);
+	SV(_state.CgbHdmaTrigger);
 	SV(_state.OamDmaRunning);
 }

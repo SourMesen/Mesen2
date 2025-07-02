@@ -75,6 +75,8 @@ public:
 	void ClearIrqRequest(uint8_t source);
 	uint8_t ProcessIrqRequests();
 
+	void ProcessHaltEnd();
+
 	void ToggleSpeed();
 	bool IsHighSpeed();
 	bool IsBootRomDisabled();

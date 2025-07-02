@@ -56,6 +56,11 @@ void GbCpu::Exec()
 			return;
 		}
 	} else if(_prevIrqVector && !_state.HaltBug) {
+		if(_state.HaltCounter > 0) {
+			_state.HaltCounter = 0;
+			_memoryManager->ProcessHaltEnd();
+		}
+
 		if(_state.IME) {
 			uint16_t oldPc = _state.PC;
 			ExecCpuCycle();
@@ -96,7 +101,6 @@ void GbCpu::Exec()
 			_state.IME = false;
 			_emu->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
 		}
-		_state.HaltCounter = 0;
 	}
 #endif
 
@@ -455,6 +459,7 @@ void GbCpu::ProcessCgbSpeedSwitch()
 	if(_state.HaltCounter == 1 && _memoryManager->GetState().CgbSwitchSpeedRequest) {
 		_memoryManager->ToggleSpeed();
 		_state.HaltCounter = 0;
+		_memoryManager->ProcessHaltEnd();
 	}
 }
 

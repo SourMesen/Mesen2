@@ -98,6 +98,8 @@ private:
 	void SendFrame();
 	void UpdatePalette();
 
+	void SetMode(PpuMode mode);
+
 	uint8_t ReadCgbPalette(uint8_t& pos, uint16_t* pal);
 	void WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t value);
 
