@@ -356,7 +356,7 @@ uint16_t PceCpu::ReadZeroPageWrap(uint8_t zero)
 {
 	if(zero == 0xFF) {
 		uint8_t lo = MemoryRead(PceCpu::ZeroPage + 0xFF);
-		uint8_t hi = (MemoryRead(PceCpu::ZeroPage + 0x00) << 8);
+		uint8_t hi = MemoryRead(PceCpu::ZeroPage + 0x00);
 		return lo | (hi << 8);
 	} else {
 		return MemoryReadWord(PceCpu::ZeroPage + zero);
