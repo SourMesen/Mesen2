@@ -634,7 +634,7 @@ void PceCpu::TMA()
 	Idle();
 	Idle();
 #ifndef DUMMYCPU
-	SetA(_memoryManager->GetMprValue(GetOperand()));
+	_state.A = _memoryManager->GetMprValue(GetOperand());
 #endif
 }
 
