@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Mesen.Config;
 using Mesen.Utilities;
 using ReactiveUI;
@@ -56,7 +56,7 @@ namespace Mesen.ViewModels
 			IsWindows = OperatingSystem.IsWindows();
 
 			//MacOS only supports the software renderer
-			IsMacOs = OperatingSystem.IsMacOS();
+			IsMacOs = false;//OperatingSystem.IsMacOS();
 
 			if(Design.IsDesignMode) {
 				return;

@@ -1,9 +1,10 @@
-﻿#include "SdlRenderer.h"
+#include "SdlRenderer.h"
 #include "Core/Debugger/Debugger.h"
 #include "Core/Shared/Emulator.h"
 #include "Core/Shared/Video/VideoRenderer.h"
 #include "Core/Shared/Video/VideoDecoder.h"
 #include "Core/Shared/EmuSettings.h"
+#include "Core/Shared/NotificationManager.h"
 #include "Core/Shared/MessageManager.h"
 #include "Core/Shared/RenderedFrame.h"
 
@@ -41,7 +42,7 @@ void SdlRenderer::SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle
 bool SdlRenderer::Init()
 {
 	const char* originalHint = SDL_GetHint("SDL_VIDEODRIVER");
-	SDL_SetHint("SDL_VIDEODRIVER", "x11");
+	//SDL_SetHint("SDL_VIDEODRIVER", "x11");
 	if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
 		LogSdlError("[SDL] Failed to initialize video subsystem.");
 		return false;
@@ -97,7 +98,7 @@ bool SdlRenderer::InitTexture()
 		return false;
 	}
 
-	SDL_SetWindowSize(_sdlWindow, _screenWidth, _screenHeight);
+	//SDL_SetWindowSize(_sdlWindow, _screenWidth, _screenHeight);
 
 	return true;
 }
@@ -130,6 +131,11 @@ void SdlRenderer::OnRendererThreadStarted()
 }
 
 void SdlRenderer::Reset()
+{
+	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestSdlReset);
+}
+
+void SdlRenderer::ResetSdl()
 {
 	Cleanup();
 	if(Init()) {

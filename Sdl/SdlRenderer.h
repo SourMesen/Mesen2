@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "SDL.h"
 #include "Core/Shared/Interfaces/IRenderingDevice.h"
 #include "Utilities/SimpleLock.h"
@@ -61,6 +61,8 @@ private:
 public:
 	SdlRenderer(Emulator* emu, void* windowHandle);
 	virtual ~SdlRenderer();
+
+	void ResetSdl();
 
 	void ClearFrame() override;
 	void UpdateFrame(RenderedFrame& frame) override;

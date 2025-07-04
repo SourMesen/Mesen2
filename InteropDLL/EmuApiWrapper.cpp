@@ -25,6 +25,7 @@
 	#include "Windows/WindowsKeyManager.h"
 	#include "Windows/WindowsMouseManager.h"
 #elif __APPLE__
+	#include "Sdl/SdlRenderer.h"
 	#include "Sdl/SdlSoundManager.h"
 	#include "MacOS/MacOSKeyManager.h"
 	#include "MacOS/MacOSMouseManager.h"
@@ -92,8 +93,6 @@ extern "C" {
 				} else {
 					#ifdef _WIN32
 						_renderer.reset(new Renderer(_emu.get(), (HWND)_viewerHandle));
-					#elif __APPLE__
-						_renderer.reset(new SoftwareRenderer(_emu.get()));
 					#else
 						_renderer.reset(new SdlRenderer(_emu.get(), _viewerHandle));
 					#endif
@@ -217,6 +216,11 @@ extern "C" {
 	DllExport bool __stdcall IsPaused()
 	{
 		return _emu->IsPaused();
+	}
+
+	DllExport void __stdcall ResetSdl()
+	{
+		return ((SdlRenderer*)_renderer.get())->ResetSdl();
 	}
 
 	DllExport void __stdcall Release()

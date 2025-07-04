@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using System;
 using System.Runtime.InteropServices;
 
@@ -86,7 +86,8 @@ namespace Mesen.Interop
 		GameLoadFailed,
 		CheatsChanged,
 		RequestConfigChange,
-		RefreshSoftwareRenderer
+		RefreshSoftwareRenderer,
+		RequestSdlReset
 	}
 
 	public struct GameLoadedEventParams

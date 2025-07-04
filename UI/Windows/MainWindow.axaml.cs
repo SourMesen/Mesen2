@@ -78,7 +78,7 @@ namespace Mesen.Windows
 		{
 			_testModeEnabled = System.Diagnostics.Debugger.IsAttached;
 			_isLinux = OperatingSystem.IsLinux();
-			_usesSoftwareRenderer = ConfigManager.Config.Video.UseSoftwareRenderer || OperatingSystem.IsMacOS();
+			_usesSoftwareRenderer = false; //ConfigManager.Config.Video.UseSoftwareRenderer || OperatingSystem.IsMacOS();
 
 			_model = new MainWindowViewModel();
 			DataContext = _model;
@@ -432,6 +432,10 @@ namespace Mesen.Windows
 				case ConsoleNotificationType.RefreshSoftwareRenderer:
 					SoftwareRendererFrame frame = Marshal.PtrToStructure<SoftwareRendererFrame>(e.Parameter);
 					_softwareRenderer.UpdateSoftwareRenderer(frame);
+					break;
+
+				case ConsoleNotificationType.RequestSdlReset:
+					Dispatcher.UIThread.InvokeAsync(() => EmuApi.ResetSdl()).Wait();
 					break;
 			}
 		}
