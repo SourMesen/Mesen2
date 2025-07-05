@@ -55,7 +55,6 @@
 						<CheckBox Content="{l:Translate chkIntegerFpsMode}" IsChecked="{Binding Config.IntegerFpsMode}" />
 						<CheckBox
 							Content="{l:Translate chkVerticalSync}"
-							IsVisible="{Binding !IsMacOs}"
 							IsEnabled="{Binding !Config.UseSoftwareRenderer}"
 							IsChecked="{Binding Config.VerticalSync}"
 						/>
@@ -178,7 +177,7 @@
 		<TabItem Header="{l:Translate tpgAdvanced}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:CheckBoxWarning IsVisible="{Binding !IsMacOs}" IsChecked="{Binding Config.UseSoftwareRenderer}" Text="{l:Translate chkUseSoftwareRenderer}" />
+					<c:CheckBoxWarning IsChecked="{Binding Config.UseSoftwareRenderer}" Text="{l:Translate chkUseSoftwareRenderer}" />
 					<StackPanel Orientation="Horizontal" Margin="0 5 0 0">
 						<TextBlock Text="{l:Translate lblScreenRotation}" VerticalAlignment="Center" />
 						<c:EnumComboBox SelectedItem="{Binding Config.ScreenRotation}" />

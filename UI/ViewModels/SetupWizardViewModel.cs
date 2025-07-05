@@ -23,7 +23,7 @@ namespace Mesen.ViewModels
 
 		[Reactive] public bool CreateShortcut { get; set; } = true;
 		[Reactive] public bool CheckForUpdates { get; set; } = true;
-		[Reactive] public bool IsOsx { get; set; } = OperatingSystem.IsMacOS();
+		[Reactive] public bool IsMacOs { get; set; } = OperatingSystem.IsMacOS();
 
 		public SetupWizardViewModel()
 		{

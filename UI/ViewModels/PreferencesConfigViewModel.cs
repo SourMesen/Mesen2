@@ -16,7 +16,7 @@ namespace Mesen.ViewModels
 		[Reactive] public PreferencesConfig OriginalConfig { get; set; }
 
 		public string DataStorageLocation { get; }
-		public bool IsOsx { get; }
+		public bool IsMacOs { get; }
 
 		public List<ShortcutKeyInfo> ShortcutKeys { get; set; }
 
@@ -25,7 +25,7 @@ namespace Mesen.ViewModels
 			Config = ConfigManager.Config.Preferences;
 			OriginalConfig = Config.Clone();
 
-			IsOsx = OperatingSystem.IsMacOS();
+			IsMacOs = OperatingSystem.IsMacOS();
 			DataStorageLocation = ConfigManager.HomeFolder;
 
 			EmulatorShortcut[] displayOrder = new EmulatorShortcut[] {

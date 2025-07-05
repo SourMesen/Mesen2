@@ -17,7 +17,6 @@ namespace Mesen.ViewModels
 		[ObservableAsProperty] public bool ShowNtscBisqwitSettings { get; }
 		[ObservableAsProperty] public bool ShowLcdGridSettings { get; }
 		public bool IsWindows { get; }
-		public bool IsMacOs { get; }
 
 		public ReactiveCommand<Unit, Unit> PresetCompositeCommand { get; }
 		public ReactiveCommand<Unit, Unit> PresetSVideoCommand { get; }
@@ -54,9 +53,6 @@ namespace Mesen.ViewModels
 
 			//Exclusive fullscreen is only supported on Windows currently
 			IsWindows = OperatingSystem.IsWindows();
-
-			//MacOS only supports the software renderer
-			IsMacOs = false;//OperatingSystem.IsMacOS();
 
 			if(Design.IsDesignMode) {
 				return;
