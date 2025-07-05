@@ -228,6 +228,16 @@ void SdlRenderer::UpdateHudTexture(HudRenderInfo& hud, uint32_t* src)
 
 void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud)
 {
+	_emuHudInfo = &emuHud;
+	_scriptHudInfo = &scriptHud;
+	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestSdlRender);
+}
+
+void SdlRenderer::RenderSdl()
+{
+	RenderSurfaceInfo& emuHud = *_emuHudInfo;
+	RenderSurfaceInfo& scriptHud = *_scriptHudInfo;
+
 	SetScreenSize(_requiredWidth, _requiredHeight);
 	if(!_sdlRenderer || !_sdlTexture) {
 		return;

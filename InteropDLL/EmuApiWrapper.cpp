@@ -223,6 +223,11 @@ extern "C" {
 		return ((SdlRenderer*)_renderer.get())->ResetSdl();
 	}
 
+	DllExport void __stdcall RenderSdl()
+	{
+		return ((SdlRenderer*)_renderer.get())->RenderSdl();
+	}
+
 	DllExport void __stdcall Release()
 	{
 		if(_emu) {

@@ -6,6 +6,7 @@
 #include "Core/Shared/RenderedFrame.h"
 
 class Emulator;
+struct RenderSurfaceInfo;
 
 struct HudRenderInfo
 {
@@ -23,6 +24,9 @@ private:
 	SDL_Window* _sdlWindow = nullptr;
 	SDL_Renderer *_sdlRenderer = nullptr;
 	SDL_Texture* _sdlTexture = nullptr;
+
+	RenderSurfaceInfo* _emuHudInfo;
+	RenderSurfaceInfo* _scriptHudInfo;
 
 	HudRenderInfo _emuHud = {};
 	HudRenderInfo _scriptHud = {};
@@ -63,6 +67,7 @@ public:
 	virtual ~SdlRenderer();
 
 	void ResetSdl();
+	void RenderSdl();
 
 	void ClearFrame() override;
 	void UpdateFrame(RenderedFrame& frame) override;

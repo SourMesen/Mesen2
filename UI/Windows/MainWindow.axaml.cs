@@ -437,6 +437,10 @@ namespace Mesen.Windows
 				case ConsoleNotificationType.RequestSdlReset:
 					Dispatcher.UIThread.InvokeAsync(() => EmuApi.ResetSdl()).Wait();
 					break;
+
+				case ConsoleNotificationType.RequestSdlRender:
+					Dispatcher.UIThread.InvokeAsync(() => EmuApi.RenderSdl()).Wait();
+					break;
 			}
 		}
 
