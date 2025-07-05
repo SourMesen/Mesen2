@@ -59,6 +59,7 @@
 		>
 			<c:ImageAspectRatio
 				Source="{Binding Image, ElementName=root}"
+				AspectRatio="{Binding AspectRatio, ElementName=root}"
 				RenderOptions.BitmapInterpolationMode="LowQuality"
 				Stretch="Fill"
 				StretchDirection="Both"

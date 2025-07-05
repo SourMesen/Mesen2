@@ -282,6 +282,13 @@ void SaveStateManager::SaveRecentGame(string romName, string romPath, string pat
 	romInfoStream << romName << std::endl;
 	romInfoStream << romPath << std::endl;
 	romInfoStream << patchPath << std::endl;
+
+	FrameInfo baseFrameSize = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
+	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion(), baseFrameSize);
+	if(aspectRatio > 0) {
+		romInfoStream << "aspectratio=" << aspectRatio << std::endl;
+	}
+
 	writer.AddFile(romInfoStream, "RomInfo.txt");
 	writer.Save();
 }
