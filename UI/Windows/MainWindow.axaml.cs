@@ -162,8 +162,9 @@ namespace Mesen.Windows
 			}
 
 			_timerBackgroundFlag.Stop();
-			EmuApi.Stop();
 			_listener?.Dispose();
+Dispatcher.UIThread.RunJobs();
+			EmuApi.Stop();
 			EmuApi.Release();
 			ConfigManager.Config.MainWindow.SaveWindowSettings(this);
 			ConfigManager.Config.Save();
@@ -439,7 +440,9 @@ namespace Mesen.Windows
 					break;
 
 				case ConsoleNotificationType.RequestSdlRender:
-					Dispatcher.UIThread.InvokeAsync(() => EmuApi.RenderSdl()).Wait();
+					if(_suspendLayoutUpdate == 0) {
+						Dispatcher.UIThread.InvokeAsync(() => EmuApi.RenderSdl(), DispatcherPriority.Render).Wait();
+					}
 					break;
 			}
 		}
@@ -525,10 +528,27 @@ namespace Mesen.Windows
 			_rendererPanel.InvalidateArrange();
 		}
 
+int _suspendLayoutUpdate = 0;
+protected override void OnSizeChanged(SizeChangedEventArgs e)
+{
+	_suspendLayoutUpdate++;
+	DispatcherTimer.RunOnce(() => {
+		_suspendLayoutUpdate--;
+		if(_suspendLayoutUpdate == 0) {
+			ResizeRenderer();
+		}
+	}, TimeSpan.FromMilliseconds(100));
+	base.OnSizeChanged(e);
+}
+
 		private void RendererPanel_LayoutUpdated(object? sender, EventArgs e)
 		{
+if(_suspendLayoutUpdate > 0) {
+	return;
+}
+//EmuApi.StopRendering();
 			double aspectRatio = EmuApi.GetAspectRatio();
-			double dpiScale = LayoutHelper.GetLayoutScale(this);
+			double dpiScale = 1.0;//LayoutHelper.GetLayoutScale(this);
 
 			Size finalSize = _rendererSize == default ? _rendererPanel.Bounds.Size : _rendererSize;
 			double height = finalSize.Height;
@@ -559,6 +579,7 @@ namespace Mesen.Windows
 			_renderer.Height = height;
 			_model.SoftwareRenderer.Width = width;
 			_model.SoftwareRenderer.Height = height;
+//EmuApi.StartRendering();
 		}
 
 		private void OnWindowStateChanged()

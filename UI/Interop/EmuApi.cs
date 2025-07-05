@@ -22,6 +22,8 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void InitDll();
 		[DllImport(DllPath)] public static extern void ResetSdl();
 		[DllImport(DllPath)] public static extern void RenderSdl();
+[DllImport(DllPath)] public static extern void StopRendering();
+[DllImport(DllPath)] public static extern void StartRendering();
 		[DllImport(DllPath, EntryPoint = "GetMesenVersion")] private static extern UInt32 GetMesenVersionWrapper();
 		public static Version GetMesenVersion()
 		{

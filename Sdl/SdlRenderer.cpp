@@ -10,6 +10,15 @@
 
 SimpleLock SdlRenderer::_frameLock;
 
+int SdlEventFilter(void* userdata, SDL_Event* event)
+{
+    if (event->type == SDL_WINDOWEVENT) {
+	std::cout << "filtered event" << std::endl;
+        return false;
+    }
+    return true;
+}
+
 SdlRenderer::SdlRenderer(Emulator* emu, void* windowHandle) : _windowHandle(windowHandle)
 {
 	_emu = emu;
@@ -18,6 +27,14 @@ SdlRenderer::SdlRenderer(Emulator* emu, void* windowHandle) : _windowHandle(wind
 	_requiredHeight = 240;
 	
 	_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
+
+	SDL_SetEventFilter(SdlEventFilter, nullptr);
+SDL_EventState(SDL_WINDOWEVENT, SDL_IGNORE);
+SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
+SDL_EventState(SDL_DISPLAYEVENT, SDL_IGNORE);
+SDL_EventState(SDL_RENDER_TARGETS_RESET, SDL_IGNORE);
+SDL_EventState(SDL_RENDER_DEVICE_RESET, SDL_IGNORE);
+
 }
 
 SdlRenderer::~SdlRenderer()
@@ -132,6 +149,7 @@ void SdlRenderer::OnRendererThreadStarted()
 
 void SdlRenderer::Reset()
 {
+//ResetSdl();
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestSdlReset);
 }
 
@@ -164,7 +182,7 @@ void SdlRenderer::SetScreenSize(uint32_t width, uint32_t height)
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, _useBilinearInterpolation ? "1" : "0");
 		_screenBufferSize = _screenHeight*_screenWidth;
 
-		Reset();
+		ResetSdl();
 	}	
 }
 
@@ -231,6 +249,7 @@ void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud
 	_emuHudInfo = &emuHud;
 	_scriptHudInfo = &scriptHud;
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestSdlRender);
+	//RenderSdl();
 }
 
 void SdlRenderer::RenderSdl()

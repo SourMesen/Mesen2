@@ -223,6 +223,16 @@ extern "C" {
 		return ((SdlRenderer*)_renderer.get())->ResetSdl();
 	}
 
+	DllExport void __stdcall StopRendering()
+	{
+		_emu->GetVideoRenderer()->StopThread();
+	}
+
+	DllExport void __stdcall StartRendering()
+	{
+		_emu->GetVideoRenderer()->StartThread();
+	}
+
 	DllExport void __stdcall RenderSdl()
 	{
 		return ((SdlRenderer*)_renderer.get())->RenderSdl();
