@@ -467,6 +467,10 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 {
 	if(_suspendRequestCount) {
 		return;
+	} else if(_executionStopped) {
+		//Prevent re-entry, which can happen when OnBeforeBreak() below is called, which causes the SPC to run and can trigger a pause.
+		//Specifically, this happens when resetting the SNES with the "Break on power/reset" option disabled.
+		return;
 	} else if(_breakRequestCount > 0 && (sourceCpu != _mainCpuType || !_debuggers[(int)sourceCpu].Debugger->AllowChangeProgramCounter)) {
 		//When a break is requested by e.g a debugger call, load/save state, etc. always
 		//break in-between 2 instructions of the main CPU, ensuring the state can be saved/loaded safely
