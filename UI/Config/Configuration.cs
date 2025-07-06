@@ -20,7 +20,7 @@ namespace Mesen.Config
 	{
 		private string _fileData = "";
 
-		public string Version { get; set; } = "2.1.0";
+		public string Version { get; set; } = "2.1.1";
 		public int ConfigUpgrade { get; set; } = 0;
 
 		[Reactive] public VideoConfig Video { get; set; } = new();
