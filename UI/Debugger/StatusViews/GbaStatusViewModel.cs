@@ -48,7 +48,7 @@ namespace Mesen.Debugger.StatusViews
 		public GbaStatusViewModel()
 		{
 			this.WhenAnyValue(x => x.FlagZero, x => x.FlagCarry, x => x.FlagNegative, x => x.FlagOverflow).Subscribe(x => UpdateFlags());
-			this.WhenAnyValue(x => x.FlagThumb, x => x.FlagIrqDisable, x => x.FlagFiqDisable).Subscribe(x => UpdateFlags());
+			this.WhenAnyValue(x => x.FlagThumb, x => x.FlagIrqDisable, x => x.FlagFiqDisable, x => x.Mode).Subscribe(x => UpdateFlags());
 		}
 
 		private void UpdateFlags()
