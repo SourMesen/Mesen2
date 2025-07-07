@@ -68,6 +68,10 @@ namespace Mesen.Windows
 		private Dictionary<Key, long> _keyPressedStamp = new();
 		private bool _focusInMenu;
 
+		//Used to fix renderer size issues on macOS
+		private bool _isMacos = false;
+		private int _suspendLayoutUpdate = 0;
+
 		static MainWindow()
 		{
 			WindowStateProperty.Changed.AddClassHandler<MainWindow>((x, e) => x.OnWindowStateChanged());
@@ -78,6 +82,7 @@ namespace Mesen.Windows
 		{
 			_testModeEnabled = System.Diagnostics.Debugger.IsAttached;
 			_isLinux = OperatingSystem.IsLinux();
+			_isMacos = OperatingSystem.IsMacOS();
 			_usesSoftwareRenderer = ConfigManager.Config.Video.UseSoftwareRenderer;
 
 			_model = new MainWindowViewModel();
@@ -163,7 +168,7 @@ namespace Mesen.Windows
 
 			_timerBackgroundFlag.Stop();
 			_listener?.Dispose();
-Dispatcher.UIThread.RunJobs();
+			Dispatcher.UIThread.RunJobs();
 			EmuApi.Stop();
 			EmuApi.Release();
 			ConfigManager.Config.MainWindow.SaveWindowSettings(this);
@@ -436,12 +441,12 @@ Dispatcher.UIThread.RunJobs();
 					break;
 
 				case ConsoleNotificationType.RequestSdlReset:
-					Dispatcher.UIThread.InvokeAsync(() => EmuApi.ResetSdl()).Wait();
+					Dispatcher.UIThread.InvokeAsync(() => EmuApi.SdlReset()).Wait();
 					break;
 
 				case ConsoleNotificationType.RequestSdlRender:
 					if(_suspendLayoutUpdate == 0) {
-						Dispatcher.UIThread.InvokeAsync(() => EmuApi.RenderSdl(), DispatcherPriority.Render).Wait();
+						Dispatcher.UIThread.InvokeAsync(() => EmuApi.SdlRender(), DispatcherPriority.Render).Wait();
 					}
 					break;
 			}
@@ -528,27 +533,29 @@ Dispatcher.UIThread.RunJobs();
 			_rendererPanel.InvalidateArrange();
 		}
 
-int _suspendLayoutUpdate = 0;
-protected override void OnSizeChanged(SizeChangedEventArgs e)
-{
-	_suspendLayoutUpdate++;
-	DispatcherTimer.RunOnce(() => {
-		_suspendLayoutUpdate--;
-		if(_suspendLayoutUpdate == 0) {
-			ResizeRenderer();
+		protected override void OnSizeChanged(SizeChangedEventArgs e)
+		{
+			if(_isMacos) {
+				_suspendLayoutUpdate++;
+				DispatcherTimer.RunOnce(() => {
+					_suspendLayoutUpdate--;
+					if(_suspendLayoutUpdate == 0) {
+						ResizeRenderer();
+					}
+				}, TimeSpan.FromMilliseconds(100));
+			}
+
+			base.OnSizeChanged(e);
 		}
-	}, TimeSpan.FromMilliseconds(100));
-	base.OnSizeChanged(e);
-}
 
 		private void RendererPanel_LayoutUpdated(object? sender, EventArgs e)
 		{
-if(_suspendLayoutUpdate > 0) {
-	return;
-}
-//EmuApi.StopRendering();
+			if(_suspendLayoutUpdate > 0) {
+				return;
+			}
+
 			double aspectRatio = EmuApi.GetAspectRatio();
-			double dpiScale = 1.0;//LayoutHelper.GetLayoutScale(this);
+			double dpiScale = _isMacos ? 1.0 : LayoutHelper.GetLayoutScale(this);
 
 			Size finalSize = _rendererSize == default ? _rendererPanel.Bounds.Size : _rendererSize;
 			double height = finalSize.Height;
@@ -579,7 +586,6 @@ if(_suspendLayoutUpdate > 0) {
 			_renderer.Height = height;
 			_model.SoftwareRenderer.Width = width;
 			_model.SoftwareRenderer.Height = height;
-//EmuApi.StartRendering();
 		}
 
 		private void OnWindowStateChanged()

@@ -20,10 +20,7 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool TestDll();
 		[DllImport(DllPath)] public static extern void InitDll();
-		[DllImport(DllPath)] public static extern void ResetSdl();
-		[DllImport(DllPath)] public static extern void RenderSdl();
-[DllImport(DllPath)] public static extern void StopRendering();
-[DllImport(DllPath)] public static extern void StartRendering();
+
 		[DllImport(DllPath, EntryPoint = "GetMesenVersion")] private static extern UInt32 GetMesenVersionWrapper();
 		public static Version GetMesenVersion()
 		{
@@ -46,6 +43,9 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void InitializeEmu([MarshalAs(UnmanagedType.LPUTF8Str)]string homeFolder, IntPtr windowHandle, IntPtr dxViewerHandle, [MarshalAs(UnmanagedType.I1)] bool useSoftwareRenderer, [MarshalAs(UnmanagedType.I1)]bool noAudio, [MarshalAs(UnmanagedType.I1)]bool noVideo, [MarshalAs(UnmanagedType.I1)]bool noInput);
 
 		[DllImport(DllPath)] public static extern void Release();
+
+		[DllImport(DllPath)] public static extern void SdlReset();
+		[DllImport(DllPath)] public static extern void SdlRender();
 
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsRunning();
 		[DllImport(DllPath)] public static extern void Stop();

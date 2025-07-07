@@ -218,26 +218,6 @@ extern "C" {
 		return _emu->IsPaused();
 	}
 
-	DllExport void __stdcall ResetSdl()
-	{
-		return ((SdlRenderer*)_renderer.get())->ResetSdl();
-	}
-
-	DllExport void __stdcall StopRendering()
-	{
-		_emu->GetVideoRenderer()->StopThread();
-	}
-
-	DllExport void __stdcall StartRendering()
-	{
-		_emu->GetVideoRenderer()->StartThread();
-	}
-
-	DllExport void __stdcall RenderSdl()
-	{
-		return ((SdlRenderer*)_renderer.get())->RenderSdl();
-	}
-
 	DllExport void __stdcall Release()
 	{
 		if(_emu) {
@@ -249,6 +229,20 @@ extern "C" {
 		_soundManager.reset();
 		_keyManager.reset();
 		_emu.reset();
+	}
+
+	DllExport void __stdcall SdlReset()
+	{
+#ifndef _WIN32
+		return ((SdlRenderer*)_renderer.get())->ResetSdl();
+#endif
+	}
+
+	DllExport void __stdcall SdlRender()
+	{
+#ifndef _WIN32
+		return ((SdlRenderer*)_renderer.get())->RenderSdl();
+#endif
 	}
 
 	DllExport INotificationListener* __stdcall RegisterNotificationCallback(NotificationListenerCallback callback)

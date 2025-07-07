@@ -10,15 +10,6 @@
 
 SimpleLock SdlRenderer::_frameLock;
 
-int SdlEventFilter(void* userdata, SDL_Event* event)
-{
-    if (event->type == SDL_WINDOWEVENT) {
-	std::cout << "filtered event" << std::endl;
-        return false;
-    }
-    return true;
-}
-
 SdlRenderer::SdlRenderer(Emulator* emu, void* windowHandle) : _windowHandle(windowHandle)
 {
 	_emu = emu;
@@ -27,14 +18,6 @@ SdlRenderer::SdlRenderer(Emulator* emu, void* windowHandle) : _windowHandle(wind
 	_requiredHeight = 240;
 	
 	_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
-
-	SDL_SetEventFilter(SdlEventFilter, nullptr);
-SDL_EventState(SDL_WINDOWEVENT, SDL_IGNORE);
-SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
-SDL_EventState(SDL_DISPLAYEVENT, SDL_IGNORE);
-SDL_EventState(SDL_RENDER_TARGETS_RESET, SDL_IGNORE);
-SDL_EventState(SDL_RENDER_DEVICE_RESET, SDL_IGNORE);
-
 }
 
 SdlRenderer::~SdlRenderer()
@@ -59,30 +42,32 @@ void SdlRenderer::SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle
 bool SdlRenderer::Init()
 {
 	const char* originalHint = SDL_GetHint("SDL_VIDEODRIVER");
-	//SDL_SetHint("SDL_VIDEODRIVER", "x11");
-	if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
-		LogSdlError("[SDL] Failed to initialize video subsystem.");
-		return false;
-	};
 
-	_sdlWindow = SDL_CreateWindowFrom(_windowHandle);
-	if(!_sdlWindow) {
-		MessageManager::Log("[SDL] Failed to create window from handle with SDL_VIDEODRIVER=x11, retry with default...");
+#ifdef __APPLE__
+	vector<const char*> videoDrivers = { "cacao", originalHint };
+#else
+	vector<const char*> videoDrivers = { "x11", originalHint };
+#endif
 
-		SDL_QuitSubSystem(SDL_INIT_VIDEO);
-		SDL_SetHint("SDL_VIDEODRIVER", originalHint);
+	for(const char* videoDriver : videoDrivers) {
+		SDL_SetHint(SDL_HINT_VIDEODRIVER, videoDriver);
+
 		if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
 			LogSdlError("[SDL] Failed to initialize video subsystem.");
-			return false;
-		}
-
-		_sdlWindow = SDL_CreateWindowFrom(_windowHandle);
-		if(!_sdlWindow) {
-			LogSdlError("[SDL] Failed to create window from handle.");
-			return false;
 		} else {
-			MessageManager::Log("[SDL] Window creation succeeded with default driver.");
+			_sdlWindow = SDL_CreateWindowFrom(_windowHandle);
+			if(!_sdlWindow) {
+				MessageManager::Log("[SDL] Failed to create window from handle with SDL_VIDEODRIVER=" + string(videoDriver ? videoDriver : "default") + ", trying next driver...");
+				SDL_QuitSubSystem(SDL_INIT_VIDEO);
+			} else {
+				MessageManager::Log("[SDL] Window creation succeeded with video driver: " + string(SDL_GetCurrentVideoDriver()));
+			}
 		}
+	}
+
+	if(!_sdlWindow) {
+		LogSdlError("[SDL] Failed to create window from handle.");
+		return false;
 	}
 
 	if(SDL_GL_LoadLibrary(NULL) != 0) {
@@ -90,6 +75,10 @@ bool SdlRenderer::Init()
 	}
 
 	uint32_t baseFlags = _vsyncEnabled ? SDL_RENDERER_PRESENTVSYNC : 0;
+
+#ifdef __APPLE__
+	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+#endif
 
 	_sdlRenderer = SDL_CreateRenderer(_sdlWindow, -1, baseFlags | SDL_RENDERER_ACCELERATED);
 	if(!_sdlRenderer) {
@@ -115,7 +104,9 @@ bool SdlRenderer::InitTexture()
 		return false;
 	}
 
-	//SDL_SetWindowSize(_sdlWindow, _screenWidth, _screenHeight);
+#ifndef __APPLE__
+	SDL_SetWindowSize(_sdlWindow, _screenWidth, _screenHeight);
+#endif
 
 	return true;
 }
@@ -149,8 +140,12 @@ void SdlRenderer::OnRendererThreadStarted()
 
 void SdlRenderer::Reset()
 {
-//ResetSdl();
+#ifdef __APPLE__
+	//Run reset/renderer in UI thread on macOS (otherwise resizing the window causes crashes)
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestSdlReset);
+#else
+	ResetSdl();
+#endif
 }
 
 void SdlRenderer::ResetSdl()
@@ -248,8 +243,13 @@ void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud
 {
 	_emuHudInfo = &emuHud;
 	_scriptHudInfo = &scriptHud;
+
+#ifdef __APPLE__
+	//Run reset/renderer in UI thread on macOS (otherwise resizing the window causes crashes)
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestSdlRender);
-	//RenderSdl();
+#else
+	RenderSdl();
+#endif
 }
 
 void SdlRenderer::RenderSdl()
