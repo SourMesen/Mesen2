@@ -52,6 +52,7 @@ private:
 	uint32_t _newFrameBufferSize = 0;
 
 	bool _vsyncEnabled = false;
+	bool _firstInit = true;
 
 	bool Init();
 	bool InitTexture();
