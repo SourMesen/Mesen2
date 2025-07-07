@@ -41,9 +41,6 @@ void SdlRenderer::SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle
 
 bool SdlRenderer::Init()
 {
-	bool firstInit = _firstInit;
-	_firstInit = false;
-
 	const char* originalHint = SDL_GetHint("SDL_VIDEODRIVER");
 
 #ifdef __APPLE__
@@ -61,14 +58,10 @@ bool SdlRenderer::Init()
 			_sdlWindow = SDL_CreateWindowFrom(_windowHandle);
 
 			if(!_sdlWindow) {
-				if(firstInit) {
-					MessageManager::Log("[SDL] Failed to create window from handle with SDL_VIDEODRIVER=" + string(videoDriver ? videoDriver : "default") + ", trying next driver...");
-				}
+				MessageManager::Log("[SDL] Failed to create window from handle with SDL_VIDEODRIVER=" + string(videoDriver ? videoDriver : "default") + ", trying next driver...");
 				SDL_QuitSubSystem(SDL_INIT_VIDEO);
 			} else {
-				if(firstInit) {
-					MessageManager::Log("[SDL] Video driver: " + string(SDL_GetCurrentVideoDriver()));
-				}
+				break;
 			}
 		}
 	}
@@ -97,13 +90,6 @@ bool SdlRenderer::Init()
 		if(!_sdlRenderer) {
 			LogSdlError("[SDL] Failed to create software renderer.");
 			return false;
-		}
-	}
-
-	if(firstInit) {
-		SDL_RendererInfo info = {};
-		if(SDL_GetRendererInfo(_sdlRenderer, &info) == 0) {
-			MessageManager::Log("[SDL] Renderer: " + string(info.name));
 		}
 	}
 
