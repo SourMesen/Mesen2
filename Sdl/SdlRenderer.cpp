@@ -50,7 +50,7 @@ bool SdlRenderer::Init()
 #endif
 
 	for(const char* videoDriver : videoDrivers) {
-		SDL_SetHint(SDL_HINT_VIDEODRIVER, videoDriver);
+		SDL_SetHint("SDL_VIDEODRIVER", videoDriver);
 
 		if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
 			LogSdlError("[SDL] Failed to initialize video subsystem.");
