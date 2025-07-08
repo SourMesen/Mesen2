@@ -231,20 +231,6 @@ extern "C" {
 		_emu.reset();
 	}
 
-	DllExport void __stdcall SdlReset()
-	{
-#ifndef _WIN32
-		return ((SdlRenderer*)_renderer.get())->ResetSdl();
-#endif
-	}
-
-	DllExport void __stdcall SdlRender()
-	{
-#ifndef _WIN32
-		return ((SdlRenderer*)_renderer.get())->RenderSdl();
-#endif
-	}
-
 	DllExport INotificationListener* __stdcall RegisterNotificationCallback(NotificationListenerCallback callback)
 	{
 		return _listeners.RegisterNotificationCallback(callback, _emu.get());

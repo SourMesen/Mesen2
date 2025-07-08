@@ -70,7 +70,6 @@ namespace Mesen.Windows
 
 		//Used to fix renderer size issues on macOS
 		private bool _isMacos = false;
-		private int _suspendLayoutUpdate = 0;
 
 		static MainWindow()
 		{
@@ -439,16 +438,6 @@ namespace Mesen.Windows
 					SoftwareRendererFrame frame = Marshal.PtrToStructure<SoftwareRendererFrame>(e.Parameter);
 					_softwareRenderer.UpdateSoftwareRenderer(frame);
 					break;
-
-				case ConsoleNotificationType.RequestSdlReset:
-					Dispatcher.UIThread.InvokeAsync(() => EmuApi.SdlReset()).Wait();
-					break;
-
-				case ConsoleNotificationType.RequestSdlRender:
-					if(_suspendLayoutUpdate == 0) {
-						Dispatcher.UIThread.InvokeAsync(() => EmuApi.SdlRender(), DispatcherPriority.Render).Wait();
-					}
-					break;
 			}
 		}
 
@@ -533,27 +522,8 @@ namespace Mesen.Windows
 			_rendererPanel.InvalidateArrange();
 		}
 
-		protected override void OnSizeChanged(SizeChangedEventArgs e)
-		{
-			if(_isMacos) {
-				_suspendLayoutUpdate++;
-				DispatcherTimer.RunOnce(() => {
-					_suspendLayoutUpdate--;
-					if(_suspendLayoutUpdate == 0) {
-						ResizeRenderer();
-					}
-				}, TimeSpan.FromMilliseconds(100));
-			}
-
-			base.OnSizeChanged(e);
-		}
-
 		private void RendererPanel_LayoutUpdated(object? sender, EventArgs e)
 		{
-			if(_suspendLayoutUpdate > 0) {
-				return;
-			}
-
 			double aspectRatio = EmuApi.GetAspectRatio();
 			double dpiScale = _isMacos ? 1.0 : LayoutHelper.GetLayoutScale(this);
 

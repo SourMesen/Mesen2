@@ -45,6 +45,7 @@ bool SdlRenderer::Init()
 
 #ifdef __APPLE__
 	vector<const char*> videoDrivers = { "cocoa", originalHint };
+	SDL_SetHint(SDL_HINT_VIDEO_FOREIGN_WINDOW_OPENGL, "1");
 #else
 	vector<const char*> videoDrivers = { "x11", originalHint };
 #endif
@@ -78,7 +79,7 @@ bool SdlRenderer::Init()
 	uint32_t baseFlags = _vsyncEnabled ? SDL_RENDERER_PRESENTVSYNC : 0;
 
 #ifdef __APPLE__
-	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
 #endif
 
 	_sdlRenderer = SDL_CreateRenderer(_sdlWindow, -1, baseFlags | SDL_RENDERER_ACCELERATED);
@@ -141,16 +142,6 @@ void SdlRenderer::OnRendererThreadStarted()
 
 void SdlRenderer::Reset()
 {
-#ifdef __APPLE__
-	//Run reset/renderer in UI thread on macOS (otherwise resizing the window causes crashes)
-	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestSdlReset);
-#else
-	ResetSdl();
-#endif
-}
-
-void SdlRenderer::ResetSdl()
-{
 	Cleanup();
 	if(Init()) {
 		InitTexture();
@@ -178,7 +169,7 @@ void SdlRenderer::SetScreenSize(uint32_t width, uint32_t height)
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, _useBilinearInterpolation ? "1" : "0");
 		_screenBufferSize = _screenHeight*_screenWidth;
 
-		ResetSdl();
+		Reset();
 	}	
 }
 
@@ -242,22 +233,6 @@ void SdlRenderer::UpdateHudTexture(HudRenderInfo& hud, uint32_t* src)
 
 void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud)
 {
-	_emuHudInfo = &emuHud;
-	_scriptHudInfo = &scriptHud;
-
-#ifdef __APPLE__
-	//Run reset/renderer in UI thread on macOS (otherwise resizing the window causes crashes)
-	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestSdlRender);
-#else
-	RenderSdl();
-#endif
-}
-
-void SdlRenderer::RenderSdl()
-{
-	RenderSurfaceInfo& emuHud = *_emuHudInfo;
-	RenderSurfaceInfo& scriptHud = *_scriptHudInfo;
-
 	SetScreenSize(_requiredWidth, _requiredHeight);
 	if(!_sdlRenderer || !_sdlTexture) {
 		return;

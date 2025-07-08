@@ -44,9 +44,6 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern void Release();
 
-		[DllImport(DllPath)] public static extern void SdlReset();
-		[DllImport(DllPath)] public static extern void SdlRender();
-
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsRunning();
 		[DllImport(DllPath)] public static extern void Stop();
 		[DllImport(DllPath)] public static extern Int32 GetStopCode();
