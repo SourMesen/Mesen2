@@ -655,7 +655,9 @@ namespace Mesen.Debugger.ViewModels
 				entries.AddEntry("Attribute address", "$" + tileInfo.AttributeAddress.ToString("X4"));
 			}
 			if(tileInfo.AttributeData >= 0) {
-				entries.AddEntry("Attribute data", "$" + tileInfo.AttributeData.ToString("X2"));
+				int attrVal = tileInfo.AttributeData;
+				entries.AddEntry("Attribute data", "$" + attrVal.ToString("X2"));
+				entries.AddEntry("Attribute bits", Convert.ToString(attrVal, 2).PadLeft(8, '0'));
 			}
 
 			entries.AddSeparator("MiscSeparator");
