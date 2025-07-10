@@ -429,7 +429,7 @@ uint8_t Rainbow::MapperReadVram(uint16_t addr, MemoryOperationType memoryOperati
 				return ReadChr(fetchAddr);
 			} else {
 				uint32_t fetchAddr = (addr & 0x1FF8) | (windowScanline & 0x07);
-				return ReadChr(fetchAddr);
+				return InternalReadVram(fetchAddr);
 			}
 		} else if(_overrideTileFetch && isBgFetch) {
 			uint32_t fetchAddr = (addr & 0xFFF) | ((_extData & 0x3F) << 12) | (_bgExtModeOffset << 18);
