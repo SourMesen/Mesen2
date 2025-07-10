@@ -72,6 +72,7 @@ public:
 				output <<= 1;
 			}
 			_stateBuffer <<= 1;
+			_stateBuffer |= 0x01;
 		}
 		return output;
 	}
