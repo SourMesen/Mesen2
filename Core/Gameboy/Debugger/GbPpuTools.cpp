@@ -33,12 +33,7 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 
 		for(int column = 0; column < 32; column++) {
 			uint16_t addr = (baseOffset + column);
-			
-			//This is defined as an int to avoid a bug where MSVC calculates
-			//the tileStart value wrong. The issue doesn't seem to be caused
-			//by the technically undefined behavior of the uint8_t -> int8_t
-			//cast, either. This seems to be the simplest fix.
-			int tileIndex = vram[addr];
+			uint8_t tileIndex = vram[addr];
 
 			uint8_t attributes = isCgb ? vram[addr | 0x2000] : 0;
 
@@ -48,7 +43,16 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 			bool vMirror = (attributes & 0x40) != 0;
 			//bool bgPriority = (attributes & 0x80) != 0;
 
-			uint16_t tileStart = baseTile + (baseTile ? (int8_t)tileIndex * 16 : tileIndex * 16);
+			uint16_t tileStart = baseTile;
+			if(baseTile) {
+				//This is done manually to avoid a bug where MSVC calculates the tileStart value wrong.
+				//The issue doesn't seem to be caused by the technically undefined behavior of casting uint8_t to int8_t.
+				//Calculating the negative value manually works, so use that for now.
+				tileStart += (tileIndex >= 0x80 ? -(0x80 - (tileIndex & 0x7F)) : tileIndex) * 16;
+			} else {
+				tileStart += tileIndex * 16;
+			}
+
 			tileStart |= tileBank;
 
 			for(int y = 0; y < 8; y++) {
