@@ -33,10 +33,14 @@ public class NesHeaderEditViewModel : DisposableViewModel
 	public NesHeaderEditViewModel()
 	{
 		bool releaseDebugger = !DebugWindowManager.HasOpenedDebugWindows();
+		bool paused = EmuApi.IsPaused();
 		byte[] headerBytes = DebugApi.GetRomHeader();
 		if(releaseDebugger) {
 			//GetRomHeader will initialize the debugger - stop the debugger if no other debug window is opened
 			DebugApi.ReleaseDebugger();
+			if(paused) {
+				EmuApi.Pause();
+			}
 		}
 
 		if(headerBytes.Length < 16) {
