@@ -378,7 +378,7 @@ int WsDisUtils::GetModRmParam(FastString& str, uint8_t* byteCode, WsSegment segm
 
 EffectiveAddressInfo WsDisUtils::GetEffectiveAddress(DisassemblyInfo& info, WsConsole* console, WsCpuState& state)
 {
-	DummyWsCpu dummyCpu(nullptr, console->GetMemoryManager());
+	DummyWsCpu dummyCpu(nullptr, console, console->GetMemoryManager());
 	dummyCpu.SetDummyState(state);
 	dummyCpu.Exec();
 

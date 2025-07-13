@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "WS/WsCpu.h"
+#include "WS/WsConsole.h"
 #include "WS/WsMemoryManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/MessageManager.h"
@@ -8,12 +9,13 @@
 
 WsCpuParityTable WsCpu::_parity = {};
 
-WsCpu::WsCpu(Emulator* emu, WsMemoryManager* memoryManager)
+WsCpu::WsCpu(Emulator* emu, WsConsole* console, WsMemoryManager* memoryManager)
 #ifndef DUMMYCPU
 	: _prefetch(this, memoryManager)
 #endif
 {
 	_emu = emu;
+	_console = console;
 	_memoryManager = memoryManager;
 
 	_state.CS = 0xFFFF;
@@ -1326,7 +1328,7 @@ void WsCpu::MulUnsigned(T x, T y)
 	_state.Flags.AuxCarry = false;
 	_state.Flags.Parity = false;
 	_state.Flags.Sign = false;
-	_state.Flags.Zero = true;
+	_state.Flags.Zero = _console->GetModel() != WsModel::Monochrome;
 
 	_mulOverflow = overflow;
 

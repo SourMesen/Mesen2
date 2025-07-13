@@ -12,6 +12,7 @@
 #include "Utilities/ISerializable.h"
 
 class Emulator;
+class WsConsole;
 class WsMemoryManager;
 
 class WsCpu final : public ISerializable
@@ -65,6 +66,7 @@ private:
 
 	Emulator* _emu = nullptr;
 	WsMemoryManager* _memoryManager = nullptr;
+	WsConsole* _console = nullptr;
 
 	WsCpuState _state = {};
 	ModRmState _modRm = {};
@@ -263,7 +265,7 @@ private:
 	void SetIrqFlag();
 
 public:
-	WsCpu(Emulator* emu, WsMemoryManager* memoryManager);
+	WsCpu(Emulator* emu, WsConsole* console, WsMemoryManager* memoryManager);
 
 	WsCpuState& GetState() { return _state; }
 	uint64_t GetCycleCount() { return _state.CycleCount; }
