@@ -29,6 +29,7 @@ public:
 	void RefreshMappings();
 	
 	WsCartState& GetState() { return _state; }
+	WsEeprom* GetEeprom() { return _cartEeprom; }
 
 	virtual uint8_t ReadPort(uint16_t port);
 	virtual void WritePort(uint16_t port, uint8_t value);

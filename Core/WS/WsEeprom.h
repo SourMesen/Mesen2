@@ -44,6 +44,8 @@ public:
 	void WritePort(uint8_t port, uint8_t value);
 	uint8_t ReadPort(uint8_t port);
 
+	void Run();
+
 	void LoadBattery();
 	void SaveBattery();
 

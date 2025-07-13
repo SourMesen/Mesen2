@@ -427,6 +427,7 @@ public enum WsEepromSize : UInt16
 
 public struct WsEepromState
 {
+	public UInt64 CmdStartClock;
 	public WsEepromSize Size;
 	public UInt16 ReadBuffer;
 	public UInt16 WriteBuffer;

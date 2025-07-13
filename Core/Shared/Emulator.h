@@ -86,6 +86,7 @@ private:
 	const shared_ptr<GameClient> _gameClient;
 	const shared_ptr<RewindManager> _rewindManager;
 
+	thread_local static thread::id _currentThreadId;
 	thread::id _emulationThreadId;
 
 	atomic<uint32_t> _lockCounter;

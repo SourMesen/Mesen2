@@ -428,6 +428,15 @@ uint8_t WsMemoryManager::GetIrqVector()
 	return _state.IrqVectorOffset;
 }
 
+void WsMemoryManager::OnBeforeBreak()
+{
+	_eeprom->Run();
+	WsEeprom* cartEeprom = _cart->GetEeprom();
+	if(cartEeprom) {
+		cartEeprom->Run();
+	}
+}
+
 AddressInfo WsMemoryManager::GetAbsoluteAddress(uint32_t relAddr)
 {
 	if(relAddr < _workRamSize) {

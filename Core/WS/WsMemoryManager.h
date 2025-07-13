@@ -162,6 +162,8 @@ public:
 	uint8_t GetActiveIrqs();
 	uint8_t GetIrqVector();
 
+	void OnBeforeBreak();
+
 	__forceinline bool HasPendingIrq()
 	{
 		return GetActiveIrqs() != 0;

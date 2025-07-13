@@ -76,6 +76,11 @@ void WsDebugger::Reset()
 	ResetPrevOpCode();
 }
 
+void WsDebugger::OnBeforeBreak(CpuType cpuType)
+{
+	_memoryManager->OnBeforeBreak();
+}
+
 void WsDebugger::ProcessInstruction()
 {
 	WsCpuState& state = _cpu->GetState();

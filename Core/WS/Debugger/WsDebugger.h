@@ -81,6 +81,8 @@ public:
 
 	bool SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
+	void OnBeforeBreak(CpuType cpuType) override;
+
 	void ProcessInputOverrides(DebugControllerState inputOverrides[8]) override;
 
 	void SetProgramCounter(uint32_t addr, bool updateDebuggerOnly = false) override;

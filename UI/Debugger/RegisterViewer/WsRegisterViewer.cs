@@ -378,7 +378,8 @@ public class WsRegisterViewer
 				new RegEntry("$C4/C5", "Read Data", ws.CartEeprom.ReadBuffer, Format.X16),
 				new RegEntry("$C6/C7", "Command", ws.CartEeprom.Command, Format.X16),
 				new RegEntry("$C8.0", "Read Done", ws.CartEeprom.ReadDone),
-				new RegEntry("$C8.1", "Idle", ws.CartEeprom.Idle)
+				new RegEntry("$C8.1", "Idle", ws.CartEeprom.Idle),
+				new RegEntry("", "Write Disabled", ws.CartEeprom.WriteDisabled)
 			});
 		}
 
@@ -429,6 +430,7 @@ public class WsRegisterViewer
 			new RegEntry("$BE.0", "Read Done", ws.InternalEeprom.ReadDone),
 			new RegEntry("$BE.1", "Idle", ws.InternalEeprom.Idle),
 			new RegEntry("$BE.7", "Write Protection", ws.InternalEeprom.InternalEepromWriteProtected),
+			new RegEntry("", "Write Disabled", ws.InternalEeprom.WriteDisabled)
 		});
 
 		return new RegisterViewerTab("Misc", entries, CpuType.Ws, MemoryType.WsPort);

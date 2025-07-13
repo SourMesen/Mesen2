@@ -1093,7 +1093,7 @@ void Emulator::StopDebugger()
 
 bool Emulator::IsEmulationThread()
 {
-	return _emulationThreadId == std::this_thread::get_id();
+	return _emulationThreadId == _currentThreadId;
 }
 
 void Emulator::SetStopCode(int32_t stopCode)
@@ -1173,3 +1173,5 @@ template void Emulator::AddDebugEvent<CpuType::Snes>(DebugEventType evtType);
 template void Emulator::AddDebugEvent<CpuType::Gameboy>(DebugEventType evtType);
 template void Emulator::AddDebugEvent<CpuType::Nes>(DebugEventType evtType);
 template void Emulator::AddDebugEvent<CpuType::Pce>(DebugEventType evtType);
+
+thread_local std::thread::id Emulator::_currentThreadId = std::this_thread::get_id();

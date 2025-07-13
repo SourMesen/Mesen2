@@ -430,6 +430,7 @@ enum class WsEepromSize : uint16_t
 
 struct WsEepromState
 {
+	uint64_t CmdStartClock;
 	WsEepromSize Size;
 	uint16_t ReadBuffer;
 	uint16_t WriteBuffer;
