@@ -2,6 +2,7 @@
 #include "WS/WsEeprom.h"
 #include "WS/WsConsole.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/BatteryManager.h"
 #include "Utilities/BitUtilities.h"
 #include "Utilities/Serializer.h"
@@ -18,6 +19,11 @@ WsEeprom::WsEeprom(Emulator* emu, WsConsole* console, WsEepromSize size, uint8_t
 	_state.WriteDisabled = true;
 
 	if(_isInternal) {
+		if(!emu->GetSettings()->GetWsConfig().UseBootRom) {
+			//Boot ROM leaves writes enabled
+			_state.WriteDisabled = false;
+		}
+
 		InitInternalEepromData();
 	}
 }
