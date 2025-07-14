@@ -152,6 +152,12 @@ void WsConsole::RunFrame()
 	
 	_apu->PlayQueuedAudio();
 
+	//Make sure to process writes to EEPROM once a frame at least (so that the update is visible in the memory viewer)
+	_internalEeprom->Run();
+	if(_cartEeprom) {
+		_cartEeprom->Run();
+	}
+
 	_verticalMode |= _ppu->GetState().Icons.Vertical;
 	if(_ppu->GetState().Icons.Horizontal) {
 		_verticalMode = false;

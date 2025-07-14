@@ -164,7 +164,9 @@ void WsEeprom::Run()
 }
 
 void WsEeprom::WritePort(uint8_t port, uint8_t value)
-{
+{ 
+	Run();
+
 	switch(port) {
 		case 0x00: BitUtilities::SetBits<0>(_state.WriteBuffer, value); break;
 		case 0x01: BitUtilities::SetBits<8>(_state.WriteBuffer, value); break;
