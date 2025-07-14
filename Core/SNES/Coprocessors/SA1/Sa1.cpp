@@ -31,7 +31,8 @@ Sa1::Sa1(SnesConsole* console)
 	
 	_iRam = new uint8_t[Sa1::InternalRamSize];
 	_emu->RegisterMemory(MemoryType::Sa1InternalRam, _iRam, Sa1::InternalRamSize);
-	_iRamHandler.reset(new Sa1IRamHandler(_iRam));
+	_iRamHandlerSa1.reset(new Sa1IRamHandler(&_state.Sa1IRamWriteProtect, _iRam));
+	_iRamHandlerCpu.reset(new Sa1IRamHandler(&_state.CpuIRamWriteProtect, _iRam));
 	_console->InitializeRam(_iRam, 0x800);
 	
 	//Register the SA1 in the CPU's memory space ($22xx-$23xx registers)
@@ -39,13 +40,13 @@ Sa1::Sa1(SnesConsole* console)
 	_mappings.RegisterHandler(0x00, 0x3F, 0x2000, 0x2FFF, this);
 	_mappings.RegisterHandler(0x80, 0xBF, 0x2000, 0x2FFF, this);
 	
-	cpuMappings->RegisterHandler(0x00, 0x3F, 0x3000, 0x3FFF, _iRamHandler.get());
-	cpuMappings->RegisterHandler(0x80, 0xBF, 0x3000, 0x3FFF, _iRamHandler.get());
+	cpuMappings->RegisterHandler(0x00, 0x3F, 0x3000, 0x3FFF, _iRamHandlerCpu.get());
+	cpuMappings->RegisterHandler(0x80, 0xBF, 0x3000, 0x3FFF, _iRamHandlerCpu.get());
 
-	_mappings.RegisterHandler(0x00, 0x3F, 0x3000, 0x3FFF, _iRamHandler.get());
-	_mappings.RegisterHandler(0x80, 0xBF, 0x3000, 0x3FFF, _iRamHandler.get());
-	_mappings.RegisterHandler(0x00, 0x3F, 0x0000, 0x0FFF, _iRamHandler.get());
-	_mappings.RegisterHandler(0x80, 0xBF, 0x0000, 0x0FFF, _iRamHandler.get());
+	_mappings.RegisterHandler(0x00, 0x3F, 0x3000, 0x3FFF, _iRamHandlerSa1.get());
+	_mappings.RegisterHandler(0x80, 0xBF, 0x3000, 0x3FFF, _iRamHandlerSa1.get());
+	_mappings.RegisterHandler(0x00, 0x3F, 0x0000, 0x0FFF, _iRamHandlerSa1.get());
+	_mappings.RegisterHandler(0x80, 0xBF, 0x0000, 0x0FFF, _iRamHandlerSa1.get());
 
 	if(_cart->DebugGetSaveRamSize() > 0) {
 		_bwRamHandler.reset(new Sa1BwRamHandler(_cart->DebugGetSaveRam(), _cart->DebugGetSaveRamSize(), &_state));
@@ -62,10 +63,10 @@ Sa1::Sa1(SnesConsole* console)
 
 	vector<unique_ptr<IMemoryHandler>> &saveRamHandlers = _cart->GetSaveRamHandlers();
 	for(unique_ptr<IMemoryHandler> &handler : saveRamHandlers) {
-		_cpuBwRamHandlers.push_back(unique_ptr<IMemoryHandler>(new CpuBwRamHandler(handler.get(), &_state, this)));
+		_cpuBwRamHandlers.push_back(unique_ptr<IMemoryHandler>(new CpuBwRamHandler((RamHandler*)handler.get(), &_state, this)));
 	}
 	cpuMappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, _cpuBwRamHandlers);
-	_mappings.RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, saveRamHandlers);
+	_mappings.RegisterHandler(0x40, 0x5F, 0x0000, 0xFFFF, _cpuBwRamHandlers);
 
 	_cpu.reset(new Sa1Cpu(this, _emu));
 	_cpu->PowerOn();
@@ -240,6 +241,7 @@ void Sa1::CpuRegisterWrite(uint16_t addr, uint8_t value)
 			//CCNT (SA-1 CPU Control)
 			if(!(value & 0x20) && _state.Sa1Reset) {
 				//Reset the CPU, and sync cycle count
+				_state.Sa1IRamWriteProtect = 0;
 				_cpu->Reset();
 				_cpu->IncreaseCycleCount(_memoryManager->GetMasterClock() / 2);
 			}
@@ -619,7 +621,7 @@ void Sa1::UpdateVectorMappings()
 
 void Sa1::UpdateSaveRamMappings()
 {
-	vector<unique_ptr<IMemoryHandler>> &saveRamHandlers = _cart->GetSaveRamHandlers();
+	vector<unique_ptr<IMemoryHandler>> &saveRamHandlers = _cpuBwRamHandlers;
 	if(saveRamHandlers.size() > 0) {
 		MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();
 		uint32_t bank1 = (_state.CpuBwBank * 2) % saveRamHandlers.size();

@@ -34,7 +34,8 @@ private:
 	MemoryType _lastAccessMemType;
 	uint8_t _openBus;
 
-	unique_ptr<IMemoryHandler> _iRamHandler;
+	unique_ptr<IMemoryHandler> _iRamHandlerCpu;
+	unique_ptr<IMemoryHandler> _iRamHandlerSa1;
 	unique_ptr<IMemoryHandler> _bwRamHandler;
 	unique_ptr<IMemoryHandler> _cpuVectorHandler;
 	

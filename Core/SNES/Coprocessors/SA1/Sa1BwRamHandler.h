@@ -36,6 +36,18 @@ private:
 		}
 	}
 
+	__forceinline void WriteValue(uint32_t addr, uint8_t value)
+	{
+		if(_state->CpuBwWriteEnabled || _state->Sa1BwWriteEnabled) {
+			_ram[addr] = value;
+		} else {
+			uint32_t size = 256 << (_state->BwWriteProtectedArea > 0x0A ? 0x0A : _state->BwWriteProtectedArea);
+			if((addr & 0x3FFFF) >= size) {
+				_ram[addr] = value;
+			}
+		}
+	}
+
 public:
 	Sa1BwRamHandler(uint8_t* bwRam, uint32_t bwRamSize, Sa1State* state) : IMemoryHandler(MemoryType::SnesSaveRam)
 	{
@@ -70,7 +82,7 @@ public:
 			if(_state->Sa1BwMode) {
 				WriteBitmapMode(addr, value);
 			} else {
-				_ram[addr & _mask] = value;
+				WriteValue(addr & _mask, value);
 			}
 		}
 	}
@@ -89,11 +101,11 @@ public:
 		if(_state->BwRam2BppMode) {
 			uint8_t shift = (addr & 0x03) * 2;
 			addr = (addr >> 2) & _mask;
-			_ram[addr] = (_ram[addr] & ~(0x03 << shift)) | ((value & 0x03) << shift);
+			WriteValue(addr, (_ram[addr] & ~(0x03 << shift)) | ((value & 0x03) << shift));
 		} else {
 			uint8_t shift = (addr & 0x01) * 4;
 			addr = (addr >> 1) & _mask;
-			_ram[addr] = (_ram[addr] & ~(0x0F << shift)) | ((value & 0x0F) << shift);
+			WriteValue(addr, (_ram[addr] & ~(0x0F << shift)) | ((value & 0x0F) << shift));
 		}
 	}
 

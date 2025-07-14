@@ -52,6 +52,8 @@ public:
 		_ram[addr & _mask] = value;
 	}
 
+	uint32_t GetOffset() { return _offset; }
+
 	AddressInfo GetAbsoluteAddress(uint32_t address) override
 	{
 		AddressInfo info;

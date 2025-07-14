@@ -7,7 +7,8 @@
 class Sa1IRamHandler : public IMemoryHandler
 {
 private:
-	uint8_t * _ram;
+	uint8_t* _writeEnabled = nullptr;
+	uint8_t * _ram = nullptr;
 
 	__forceinline uint8_t InternalRead(uint32_t addr)
 	{
@@ -19,8 +20,9 @@ private:
 	}
 
 public:
-	Sa1IRamHandler(uint8_t *ram) : IMemoryHandler(MemoryType::Sa1InternalRam)
+	Sa1IRamHandler(uint8_t* writeProtected, uint8_t *ram) : IMemoryHandler(MemoryType::Sa1InternalRam)
 	{
+		_writeEnabled = writeProtected;
 		_ram = ram;
 	}
 
@@ -43,7 +45,7 @@ public:
 
 	void Write(uint32_t addr, uint8_t value) override
 	{
-		if(!(addr & 0x800)) {
+		if(!(addr & 0x800) && ((*_writeEnabled) & (1 << ((addr >> 8) & 0x07))) != 0) {
 			_ram[addr & 0x7FF] = value;
 		}
 	}

@@ -455,12 +455,14 @@ void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 		MapBsxMemoryPack(mm);
 		return;
 	}
+	
+	bool mapSram = _coprocessorType != CoprocessorType::SA1;
 
 	if(_flags & CartFlags::LoRom) {
 		mm.RegisterHandler(0x00, 0x7D, 0x8000, 0xFFFF, _prgRomHandlers);
 		mm.RegisterHandler(0x80, 0xFF, 0x8000, 0xFFFF, _prgRomHandlers);
 
-		if(_saveRamSize > 0) {
+		if(mapSram && _saveRamSize > 0) {
 			if(_prgRomSize >= 1024 * 1024 * 2) {
 				//For games >= 2mb in size, put ROM at 70-7D/F0-FF:0000-7FFF (e.g: Fire Emblem: Thracia 776) 
 				mm.RegisterHandler(0x70, 0x7D, 0x0000, 0x7FFF, _saveRamHandlers);
@@ -477,8 +479,10 @@ void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 		mm.RegisterHandler(0x80, 0xBF, 0x8000, 0xFFFF, _prgRomHandlers, 8);
 		mm.RegisterHandler(0xC0, 0xFF, 0x0000, 0xFFFF, _prgRomHandlers, 0);
 
-		mm.RegisterHandler(0x20, 0x3F, 0x6000, 0x7FFF, _saveRamHandlers);
-		mm.RegisterHandler(0xA0, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
+		if(mapSram) {
+			mm.RegisterHandler(0x20, 0x3F, 0x6000, 0x7FFF, _saveRamHandlers);
+			mm.RegisterHandler(0xA0, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
+		}
 	} else if(_flags & CartFlags::ExHiRom) {
 		//First half is at the end
 		mm.RegisterHandler(0xC0, 0xFF, 0x0000, 0xFFFF, _prgRomHandlers, 0);
@@ -489,11 +493,13 @@ void BaseCartridge::RegisterHandlers(MemoryMappings &mm)
 		mm.RegisterHandler(0x00, 0x3F, 0x8000, 0xFFFF, _prgRomHandlers, 8, 0x400); //mirror
 
 		//Save RAM
-		if(!_emu->GetSettings()->GetSnesConfig().EnableStrictBoardMappings) {
-			//This shouldn't be mapped on ExHiROM boards, but some old romhacks seem to depend on this
-			mm.RegisterHandler(0x20, 0x3F, 0x6000, 0x7FFF, _saveRamHandlers);
+		if(mapSram) {
+			if(!_emu->GetSettings()->GetSnesConfig().EnableStrictBoardMappings) {
+				//This shouldn't be mapped on ExHiROM boards, but some old romhacks seem to depend on this
+				mm.RegisterHandler(0x20, 0x3F, 0x6000, 0x7FFF, _saveRamHandlers);
+			}
+			mm.RegisterHandler(0x80, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
 		}
-		mm.RegisterHandler(0x80, 0xBF, 0x6000, 0x7FFF, _saveRamHandlers);
 	}
 
 	MapBsxMemoryPack(mm);

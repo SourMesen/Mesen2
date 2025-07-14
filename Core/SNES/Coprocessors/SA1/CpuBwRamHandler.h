@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "SNES/IMemoryHandler.h"
+#include "SNES/RamHandler.h"
 #include "SNES/Coprocessors/SA1/Sa1Cpu.h"
 #include "SNES/Coprocessors/SA1/Sa1Types.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
@@ -10,12 +11,12 @@
 class CpuBwRamHandler : public IMemoryHandler
 {
 private:
-	IMemoryHandler * _handler;
-	Sa1State* _state;
-	Sa1* _sa1;
+	RamHandler* _handler = nullptr;
+	Sa1State* _state = nullptr;
+	Sa1* _sa1 = nullptr;
 
 public:
-	CpuBwRamHandler(IMemoryHandler* handler, Sa1State* state, Sa1* sa1) : IMemoryHandler(handler->GetMemoryType())
+	CpuBwRamHandler(RamHandler* handler, Sa1State* state, Sa1* sa1) : IMemoryHandler(handler->GetMemoryType())
 	{
 		_handler = handler;
 		_sa1 = sa1;
@@ -43,7 +44,16 @@ public:
 
 	void Write(uint32_t addr, uint8_t value) override
 	{
-		_handler->Write(addr, value);
+		if(_state->Sa1BwWriteEnabled || _state->CpuBwWriteEnabled) {
+			_handler->Write(addr, value);
+		} else {
+			uint32_t size = 256 << (_state->BwWriteProtectedArea > 0x0A ? 0x0A : _state->BwWriteProtectedArea);
+			if((addr & 0xE00000) == 0x400000 && (addr & 0x3FFFF) >= size) {
+				_handler->Write(addr, value);
+			} else if(_handler->GetOffset() + (addr & 0xFFF) >= size) {
+				_handler->Write(addr, value);
+			}
+		}
 	}
 
 	AddressInfo GetAbsoluteAddress(uint32_t address) override
