@@ -97,6 +97,7 @@ struct Sa1State
 	Sa1MathOp MathOp;
 	uint16_t MultiplicandDividend;
 	uint16_t MultiplierDivisor;
+	uint64_t MathStartClock;
 	uint64_t MathOpResult;
 	uint8_t MathOverflow;
 

@@ -673,6 +673,7 @@ public struct Sa1State
 	public Sa1MathOp MathOp;
 	public UInt16 MultiplicandDividend;
 	public UInt16 MultiplierDivisor;
+	public UInt64 MathStartClock;
 	public UInt64 MathOpResult;
 	public byte MathOverflow;
 

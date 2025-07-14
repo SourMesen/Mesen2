@@ -197,21 +197,24 @@ void Sa1::Sa1RegisterWrite(uint16_t addr, uint8_t value)
 
 		case 0x2250: 
 			//MCNT (Arithmetic Control)
+			ProcessMathOp();
 			_state.MathOp = (Sa1MathOp)(value & 0x03);
 			if(value & 0x02) {
 				//"Note: Writing Bit1=1 resets the sum to zero."
 				_state.MathOpResult = 0;
 			}
 			break;
-		case 0x2251: _state.MultiplicandDividend = (_state.MultiplicandDividend & 0xFF00) | value; break; //MA (Arithmetic parameters - Multiplicand/Dividend - Low)
-		case 0x2252: _state.MultiplicandDividend = (_state.MultiplicandDividend & 0x00FF) | (value << 8); break; //MA (Arithmetic parameters - Multiplicand/Dividend - High)
-		case 0x2253: _state.MultiplierDivisor = (_state.MultiplierDivisor & 0xFF00) | value; break; //MB (Arithmetic parameters - Multiplier/Divisor - Low)
+		case 0x2251: ProcessMathOp(); _state.MultiplicandDividend = (_state.MultiplicandDividend & 0xFF00) | value; break; //MA (Arithmetic parameters - Multiplicand/Dividend - Low)
+		case 0x2252: ProcessMathOp(); _state.MultiplicandDividend = (_state.MultiplicandDividend & 0x00FF) | (value << 8); break; //MA (Arithmetic parameters - Multiplicand/Dividend - High)
+		case 0x2253: ProcessMathOp(); _state.MultiplierDivisor = (_state.MultiplierDivisor & 0xFF00) | value; break; //MB (Arithmetic parameters - Multiplier/Divisor - Low)
 		case 0x2254: 
+			ProcessMathOp();
+
 			//MB (Arithmetic parameters - Multiplier/Divisor - High)
 			_state.MultiplierDivisor = (_state.MultiplierDivisor & 0x00FF) | (value << 8);
 
 			//"Writing to 2254h starts the operation."
-			CalculateMathOpResult();
+			_state.MathStartClock = _cpu->GetCycleCount();
 			break; 
 		
 		case 0x2258: 
@@ -373,13 +376,13 @@ uint8_t Sa1::Sa1RegisterRead(uint16_t addr)
 		case 0x2304: break; //VCR (SA-1 V Counter read - Low)
 		case 0x2305: break; //VCR (SA-1 V Counter read - High)
 			
-		case 0x2306: return _state.MathOpResult & 0xFF; //MR (Arithmetic result)
-		case 0x2307: return (_state.MathOpResult >> 8) & 0xFF; //MR (Arithmetic result)
-		case 0x2308: return (_state.MathOpResult >> 16) & 0xFF; break; //MR (Arithmetic result)
-		case 0x2309: return (_state.MathOpResult >> 24) & 0xFF; break; //MR (Arithmetic result)
-		case 0x230A: return (_state.MathOpResult >> 32) & 0xFF; break; //MR (Arithmetic result)
+		case 0x2306: ProcessMathOp(); return _state.MathOpResult & 0xFF; //MR (Arithmetic result)
+		case 0x2307: ProcessMathOp(); return (_state.MathOpResult >> 8) & 0xFF; //MR (Arithmetic result)
+		case 0x2308: ProcessMathOp(); return (_state.MathOpResult >> 16) & 0xFF; break; //MR (Arithmetic result)
+		case 0x2309: ProcessMathOp(); return (_state.MathOpResult >> 24) & 0xFF; break; //MR (Arithmetic result)
+		case 0x230A: ProcessMathOp(); return (_state.MathOpResult >> 32) & 0xFF; break; //MR (Arithmetic result)
 
-		case 0x230B: return _state.MathOverflow; break; //OF (Arithmetic overflow flag)
+		case 0x230B: ProcessMathOp(); return _state.MathOverflow; break; //OF (Arithmetic overflow flag)
 
 		case 0x230C: {
 			//VDP (Variable length data port - Low)
@@ -643,9 +646,22 @@ void Sa1::IncVarLenPosition()
 	_state.VarLenCurrentBit &= 0x07;
 }
 
-void Sa1::CalculateMathOpResult()
+void Sa1::ProcessMathOp()
 {
-	if((int)_state.MathOp & (int)Sa1MathOp::Sum) {
+	if(_state.MathStartClock == 0) {
+		return;
+	}
+
+	bool sumMode = (int)_state.MathOp & (int)Sa1MathOp::Sum;
+	if(_cpu->GetCycleCount() - _state.MathStartClock < (sumMode ? 6 : 5)) {
+		//Still in-progress - do nothing for now
+		//TODO update result register/etc. clock by clock
+		return;
+	}
+
+	_state.MathStartClock = 0;
+
+	if(sumMode) {
 		uint64_t result = _state.MathOpResult + ((int16_t)_state.MultiplicandDividend * (int16_t)_state.MultiplierDivisor);
 		_state.MathOverflow = (result >> 33) & 0x80;
 		
@@ -858,6 +874,7 @@ void Sa1::Serialize(Serializer &s)
 	SV(_state.BitmapRegister2[4]); SV(_state.BitmapRegister2[5]); SV(_state.BitmapRegister2[6]); SV(_state.BitmapRegister2[7]);
 	SV(_state.CharConvDmaActive); SV(_state.CharConvBpp); SV(_state.CharConvFormat); SV(_state.CharConvWidth); SV(_state.CharConvCounter);
 	SV(_state.VarLenCurrentBit);
+	SV(_state.MathStartClock);
 
 	SV(_lastAccessMemType); SV(_openBus);
 	SVArray(_iRam, Sa1::InternalRamSize);

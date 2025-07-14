@@ -49,7 +49,7 @@ private:
 	void UpdateSaveRamMappings();
 
 	void IncVarLenPosition();
-	void CalculateMathOpResult();
+	void ProcessMathOp();
 	void RunCharConvertType2();
 	
 	void ProcessInterrupts();
