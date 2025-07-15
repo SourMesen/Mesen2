@@ -23,7 +23,8 @@ private:
 
 	LinuxGameController(Emulator* emu, int deviceID, int fileDescriptor, libevdev *device);
 	bool CheckAxis(unsigned int code, bool forPositive);
-	void Calibrate();	
+	bool CheckButton(int btn);
+	void Calibrate();
 
 public:
 	~LinuxGameController();

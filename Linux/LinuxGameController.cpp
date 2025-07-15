@@ -151,24 +151,29 @@ bool LinuxGameController::CheckAxis(unsigned int code, bool forPositive)
 	}
 }
 
+bool LinuxGameController::CheckButton(int btn)
+{
+	return libevdev_get_event_value(_device, EV_KEY, btn) == 1;
+}
+
 bool LinuxGameController::IsButtonPressed(int buttonNumber)
 {
 	bool pressed = false;
 	switch(buttonNumber) {
-		case 0: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_A) == 1; break;
-		case 1: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_B) == 1; break;
-		case 2: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_C) == 1; break;
-		case 3: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_X) == 1; break;
-		case 4: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_Y) == 1; break;
-		case 5: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_Z) == 1; break;
-		case 6: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TL) == 1; break;
-		case 7: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TR) == 1; break;
-		case 8: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TL2) == 1; break;
-		case 9: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TR2) == 1; break;
-		case 10: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_SELECT) == 1; break;
-		case 11: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_START) == 1; break;
-		case 12: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_THUMBL) == 1; break;
-		case 13: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_THUMBR) == 1; break;
+		case 0: pressed = CheckButton(BTN_A); break;
+		case 1: pressed = CheckButton(BTN_B); break;
+		case 2: pressed = CheckButton(BTN_C); break;
+		case 3: pressed = CheckButton(BTN_X); break;
+		case 4: pressed = CheckButton(BTN_Y); break;
+		case 5: pressed = CheckButton(BTN_Z); break;
+		case 6: pressed = CheckButton(BTN_TL); break;
+		case 7: pressed = CheckButton(BTN_TR); break;
+		case 8: pressed = CheckButton(BTN_TL2); break;
+		case 9: pressed = CheckButton(BTN_TR2); break;
+		case 10: pressed = CheckButton(BTN_SELECT); break;
+		case 11: pressed = CheckButton(BTN_START); break;
+		case 12: pressed = CheckButton(BTN_THUMBL); break;
+		case 13: pressed = CheckButton(BTN_THUMBR); break;
 
 		case 14: pressed = CheckAxis(ABS_X, true); break;
 		case 15: pressed = CheckAxis(ABS_X, false); break;
@@ -183,10 +188,12 @@ bool LinuxGameController::IsButtonPressed(int buttonNumber)
 		case 24: pressed = CheckAxis(ABS_RZ, true); break;
 		case 25: pressed = CheckAxis(ABS_RZ, false); break;
 
-		case 26: pressed = CheckAxis(ABS_HAT0X, true); break;
-		case 27: pressed = CheckAxis(ABS_HAT0X, false); break;
-		case 28: pressed = CheckAxis(ABS_HAT0Y, true); break;
-		case 29: pressed = CheckAxis(ABS_HAT0Y, false); break;
+		//PS3 controller maps the D-Pad to BTN_DPAD_x unlike PS4/Xbox controllers, so check those too
+		case 26: pressed = CheckAxis(ABS_HAT0X, true) || CheckButton(BTN_DPAD_RIGHT); break;
+		case 27: pressed = CheckAxis(ABS_HAT0X, false) || CheckButton(BTN_DPAD_LEFT); break;
+		case 28: pressed = CheckAxis(ABS_HAT0Y, true) || CheckButton(BTN_DPAD_DOWN); break;
+		case 29: pressed = CheckAxis(ABS_HAT0Y, false) || CheckButton(BTN_DPAD_UP); break;
+
 		case 30: pressed = CheckAxis(ABS_HAT1X, true); break;
 		case 31: pressed = CheckAxis(ABS_HAT1X, false); break;
 		case 32: pressed = CheckAxis(ABS_HAT1Y, true); break;
@@ -200,19 +207,19 @@ bool LinuxGameController::IsButtonPressed(int buttonNumber)
 		case 40: pressed = CheckAxis(ABS_HAT3Y, true); break;
 		case 41: pressed = CheckAxis(ABS_HAT3Y, false); break;
 
-		case 42: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TRIGGER) == 1; break;
-		case 43: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_THUMB) == 1; break;
-		case 44: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_THUMB2) == 1; break;
-		case 45: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TOP) == 1; break;
-		case 46: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_TOP2) == 1; break;
-		case 47: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_PINKIE) == 1; break;
-		case 48: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE) == 1; break;
-		case 49: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE2) == 1; break;
-		case 50: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE3) == 1; break;
-		case 51: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE4) == 1; break;
-		case 52: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE5) == 1; break;
-		case 53: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_BASE6) == 1; break;
-		case 54: pressed = libevdev_get_event_value(_device, EV_KEY, BTN_DEAD) == 1; break;
+		case 42: pressed = CheckButton(BTN_TRIGGER); break;
+		case 43: pressed = CheckButton(BTN_THUMB); break;
+		case 44: pressed = CheckButton(BTN_THUMB2); break;
+		case 45: pressed = CheckButton(BTN_TOP); break;
+		case 46: pressed = CheckButton(BTN_TOP2); break;
+		case 47: pressed = CheckButton(BTN_PINKIE); break;
+		case 48: pressed = CheckButton(BTN_BASE); break;
+		case 49: pressed = CheckButton(BTN_BASE2); break;
+		case 50: pressed = CheckButton(BTN_BASE3); break;
+		case 51: pressed = CheckButton(BTN_BASE4); break;
+		case 52: pressed = CheckButton(BTN_BASE5); break;
+		case 53: pressed = CheckButton(BTN_BASE6); break;
+		case 54: pressed = CheckButton(BTN_DEAD); break;
 	}
 
 	_enableForceFeedback |= pressed;
