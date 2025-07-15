@@ -463,7 +463,6 @@ protected:
 		bool isNtFetch = addr >= 0x2000 && addr <= 0x2FFF && (addr & 0x3FF) < 0x3C0;
 		if(isNtFetch) {
 			//Nametable data, not an attribute fetch
-			_splitInSplitRegion = false;
 			_splitTileNumber++;
 
 			if(_ppuInFrame) {
@@ -486,14 +485,22 @@ protected:
 				uint8_t column = (_splitTileNumber + 2) % 42;
 				if(addr >= 0x2000) {
 					if(isNtFetch) {
-						if(column <= 32 && ((_verticalSplitRightSide && column >= _verticalSplitDelimiterTile) || (!_verticalSplitRightSide && column < _verticalSplitDelimiterTile))) {
-							//Split region (for next 3 fetches, attribute + 2x tile data)
-							_splitInSplitRegion = true;
-							_splitTile = ((verticalSplitScroll & 0xF8) << 2) | column;
-							return _mapperRam[_splitTile];
-						} else {
+						if(column == 0) {
+							_splitInSplitRegion = !_verticalSplitRightSide;
+						}
+
+						if(column == _verticalSplitDelimiterTile && _splitTileNumber < 42) {
+							//Enter/exit split section when the current column matches the column number written to $5200
+							_splitInSplitRegion = !_splitInSplitRegion;
+						} else if(column > 32) {
 							//Outside of split region (or sprite data), result can get modified by ex ram mode code below
 							_splitInSplitRegion = false;
+						}
+
+						if(_splitInSplitRegion) {
+							//In vertical split region, override data received by the PPU
+							_splitTile = ((verticalSplitScroll & 0xF8) << 2) | column;
+							return _mapperRam[_splitTile];
 						}
 					} else if(_splitInSplitRegion) {
 						uint8_t shift = ((_splitTile >> 4) & 0x04) | (_splitTile & 0x02);
