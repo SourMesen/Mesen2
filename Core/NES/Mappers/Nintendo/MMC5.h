@@ -443,7 +443,6 @@ protected:
 					}
 				}
 			}
-			_ntReadCounter = 0;
 		} else if(addr >= 0x2000 && addr <= 0x2FFF) {
 			if(_lastPpuReadAddr == addr) {
 				//Count consecutive identical reads
@@ -451,10 +450,10 @@ protected:
 				if(_ntReadCounter >= 2) {
 					_splitTileNumber = 0;
 				}
-			} else {
-				_ntReadCounter = 0;
 			}
-		} else {
+		}
+
+		if(_lastPpuReadAddr != addr) {
 			_ntReadCounter = 0;
 		}
 	}
