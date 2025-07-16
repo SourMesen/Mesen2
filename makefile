@@ -36,7 +36,6 @@ ifeq ($(UNAME_S),Darwin)
 	MESENOS := osx
 	SHAREDLIB := MesenCore.dylib
 	LTO := false
-	STATICLINK := false
 	LINKCHECKUNRESOLVED :=
 endif
 
@@ -102,7 +101,7 @@ ifeq ($(PGO),optimize)
 	MESENFLAGS += ${PROFILE_USE_FLAG}
 endif
 
-ifneq ($(STATICLINK),false)
+ifeq ($(STATICLINK),true)
 	LINKOPTIONS += -static-libgcc -static-libstdc++ 
 endif
 
