@@ -80,7 +80,7 @@ void NesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 		NesDefaultVideoFilter::ApplyPalBorder(ppuOutputBuffer);
 	}
 
-	nes_ntsc_blit(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, GetVideoPhase(), _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, NES_NTSC_OUT_WIDTH(_baseFrameInfo.Width) * 4);
+	nes_ntsc_blit(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, (GetVideoPhaseOffset() / 4), _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, NES_NTSC_OUT_WIDTH(_baseFrameInfo.Width) * 4);
 
 	for(uint32_t i = 0; i < frameInfo.Height; i+=2) {
 		memcpy(GetOutputBuffer()+i*frameInfo.Width, _ntscBuffer + yOffset + xOffset + (i/2)*baseWidth, frameInfo.Width * sizeof(uint32_t));
