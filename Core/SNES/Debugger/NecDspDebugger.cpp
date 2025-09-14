@@ -198,6 +198,51 @@ BaseEventManager* NecDspDebugger::GetEventManager()
 	return nullptr;
 }
 
+optional<uint32_t> NecDspDebugger::GetRegisterValue(RegisterType registerType)
+{
+	NecDspState& s = _dsp->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::A: return s.A;
+		case RegisterType::B: return s.B;
+		case RegisterType::Tr: return s.TR;
+		case RegisterType::Trb: return s.TRB;
+		case RegisterType::Rp: return s.RP;
+		case RegisterType::Dp: return s.DP;
+		case RegisterType::Dr: return s.DR;
+		case RegisterType::Sr: return s.SR;
+		case RegisterType::K: return s.K;
+		case RegisterType::L: return s.L;
+		case RegisterType::M: return s.M;
+		case RegisterType::N: return s.N;
+		case RegisterType::Sp: return s.SP;
+		case RegisterType::Pc: return s.PC;
+	}
+}
+
+bool NecDspDebugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	NecDspState& s = _dsp->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::A: s.A = (uint16_t)value; break;
+		case RegisterType::B: s.B = (uint16_t)value; break;
+		case RegisterType::Tr: s.TR = (uint16_t)value; break;
+		case RegisterType::Trb: s.TRB = (uint16_t)value; break;
+		case RegisterType::Rp: s.RP = (uint16_t)value; break;
+		case RegisterType::Dp: s.DP = (uint16_t)value; break;
+		case RegisterType::Dr: s.DR = (uint16_t)value; break;
+		case RegisterType::Sr: s.SR = (uint16_t)value; break;
+		case RegisterType::K: s.K = (uint16_t)value; break;
+		case RegisterType::L: s.L = (uint16_t)value; break;
+		case RegisterType::M: s.M = (uint16_t)value; break;
+		case RegisterType::N: s.N = (uint16_t)value; break;
+		case RegisterType::Sp: s.SP = (uint8_t)value; break;
+		case RegisterType::Pc: s.PC = (uint16_t)value; break;
+	}
+	return true;
+}
+
 BaseState& NecDspDebugger::GetState()
 {
 	return _dsp->GetState();

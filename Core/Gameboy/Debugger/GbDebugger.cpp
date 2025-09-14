@@ -410,6 +410,51 @@ BreakpointManager* GbDebugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
+optional<uint32_t> GbDebugger::GetRegisterValue(RegisterType registerType)
+{
+	GbCpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::A: return s.A;
+		case RegisterType::B: return s.B;
+		case RegisterType::C: return s.C;
+		case RegisterType::D: return s.D;
+		case RegisterType::E: return s.E;
+		case RegisterType::F: return s.Flags;
+		case RegisterType::H: return s.H;
+		case RegisterType::L: return s.L;
+		case RegisterType::Af: return (s.A << 8) | s.Flags;
+		case RegisterType::Bc: return (s.B << 8) | s.C;
+		case RegisterType::De: return (s.D << 8) | s.E;
+		case RegisterType::Hl: return (s.H << 8) | s.L;
+		case RegisterType::Sp: return s.SP;
+		case RegisterType::Pc: return s.PC;
+	}
+}
+
+bool GbDebugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	GbCpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::A: s.A = (uint8_t)value; break;
+		case RegisterType::B: s.B = (uint8_t)value; break;
+		case RegisterType::C: s.C = (uint8_t)value; break;
+		case RegisterType::D: s.D = (uint8_t)value; break;
+		case RegisterType::E: s.E = (uint8_t)value; break;
+		case RegisterType::F: s.Flags = (uint8_t)value; break;
+		case RegisterType::H: s.H = (uint8_t)value; break;
+		case RegisterType::L: s.L = (uint8_t)value; break;
+		case RegisterType::Af: s.A = (uint8_t)(value >> 8); s.Flags = (uint8_t)value; break;
+		case RegisterType::Bc: s.B = (uint8_t)(value >> 8); s.C = (uint8_t)value; break;
+		case RegisterType::De: s.D = (uint8_t)(value >> 8); s.E = (uint8_t)value; break;
+		case RegisterType::Hl: s.H = (uint8_t)(value >> 8); s.L = (uint8_t)value; break;
+		case RegisterType::Sp: s.SP = (uint16_t)value; break;
+		case RegisterType::Pc: s.PC = (uint16_t)value; break;
+	}
+	return true;
+}
+
 BaseState& GbDebugger::GetState()
 {
 	return _cpu->GetState();

@@ -433,6 +433,68 @@ BreakpointManager* WsDebugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
+optional<uint32_t> WsDebugger::GetRegisterValue(RegisterType registerType)
+{
+	WsCpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::Ax: return s.AX;
+		case RegisterType::Bx: return s.BX;
+		case RegisterType::Cx: return s.CX;
+		case RegisterType::Dx: return s.DX;
+		case RegisterType::Al: return s.AX & 0xFF;
+		case RegisterType::Bl: return s.BX & 0xFF;
+		case RegisterType::Cl: return s.CX & 0xFF;
+		case RegisterType::Dl: return s.DX & 0xFF;
+		case RegisterType::Ah: return s.AX >> 8;
+		case RegisterType::Bh: return s.BX >> 8;
+		case RegisterType::Ch: return s.CX >> 8;
+		case RegisterType::Dh: return s.DX >> 8;
+		case RegisterType::Cs: return s.CS;
+		case RegisterType::Ds: return s.DS;
+		case RegisterType::Es: return s.ES;
+		case RegisterType::Ss: return s.SS;
+		case RegisterType::Si: return s.SI;
+		case RegisterType::Di: return s.DI;
+		case RegisterType::Bp: return s.BP;
+		case RegisterType::Ip: return s.IP;
+		case RegisterType::F: return s.Flags.Get();
+		case RegisterType::Sp: return s.SP;
+		case RegisterType::Pc: return (s.CS << 4) + s.IP;
+	}
+}
+
+bool WsDebugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	WsCpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::Ax: s.AX = (uint16_t)value; break;
+		case RegisterType::Bx: s.BX = (uint16_t)value; break;
+		case RegisterType::Cx: s.CX = (uint16_t)value; break;
+		case RegisterType::Dx: s.DX = (uint16_t)value; break;
+		case RegisterType::Al: s.AX = (s.AX & 0xFF00) | (uint8_t)value; break;
+		case RegisterType::Bl: s.BX = (s.BX & 0xFF00) | (uint8_t)value; break;
+		case RegisterType::Cl: s.CX = (s.CX & 0xFF00) | (uint8_t)value; break;
+		case RegisterType::Dl: s.DX = (s.DX & 0xFF00) | (uint8_t)value; break;
+		case RegisterType::Ah: s.AX = (s.AX & 0xFF) | ((uint8_t)value << 8); break;
+		case RegisterType::Bh: s.BX = (s.BX & 0xFF) | ((uint8_t)value << 8); break;
+		case RegisterType::Ch: s.CX = (s.CX & 0xFF) | ((uint8_t)value << 8); break;
+		case RegisterType::Dh: s.DX = (s.DX & 0xFF) | ((uint8_t)value << 8); break;
+		case RegisterType::Cs: s.CS = (uint16_t)value; break;
+		case RegisterType::Ds: s.DS = (uint16_t)value; break;
+		case RegisterType::Es: s.ES = (uint16_t)value; break;
+		case RegisterType::Ss: s.SS = (uint16_t)value; break;
+		case RegisterType::Si: s.SI = (uint16_t)value; break;
+		case RegisterType::Di: s.DI = (uint16_t)value; break;
+		case RegisterType::Bp: s.BP = (uint16_t)value; break;
+		case RegisterType::Ip: s.IP = (uint16_t)value; break;
+		case RegisterType::F: s.Flags.Set((uint16_t)value); break;
+		case RegisterType::Sp: s.SP = (uint16_t)value; break;
+	}
+	return true;
+}
+
 BaseState& WsDebugger::GetState()
 {
 	return _cpu->GetState();

@@ -148,6 +148,9 @@ public:
 
 	void SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOperationInfo* operation = nullptr, int breakpointId = -1);
 
+	optional<uint32_t> GetRegisterValue(RegisterType registerType, CpuType cpuType);
+	bool SetRegisterValue(RegisterType registerType, CpuType cpuType, uint32_t value);
+
 	void GetCpuState(BaseState& dstState, CpuType cpuType);
 	void SetCpuState(BaseState& srcState, CpuType cpuType);
 	BaseState& GetCpuStateRef(CpuType cpuType);

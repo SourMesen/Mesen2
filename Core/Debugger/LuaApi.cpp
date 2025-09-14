@@ -98,6 +98,9 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 		{ "readWord", LuaApi::ReadMemory16 }, //for backward compatibility
 		{ "writeWord", LuaApi::WriteMemory16 }, //for backward compatibility
+
+		{ "readRegister", LuaApi::ReadRegister },
+		{ "writeRegister", LuaApi::WriteRegister },
 		
 		{ "convertAddress", LuaApi::ConvertAddress },
 		{ "getLabelAddress", LuaApi::GetLabelAddress },
@@ -181,6 +184,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 	GenerateEnumDefinition<CheatType>(lua, "cheatType");
 	GenerateEnumDefinition<AccessCounterType>(lua, "counterType");
 	GenerateEnumDefinition<CpuType>(lua, "cpuType");
+	GenerateEnumDefinition<RegisterType>(lua, "registerType");
 	GenerateEnumDefinition<ScriptDrawSurface>(lua, "drawSurface");
 	GenerateEnumDefinition<EventType>(lua, "eventType", { EventType::LastValue });
 	GenerateEnumDefinition<StepType>(lua, "stepType", { StepType::StepBack });
@@ -308,6 +312,24 @@ int LuaApi::ReadMemory32(lua_State* lua)
 	return l.ReturnCount();
 }
 
+int LuaApi::ReadRegister(lua_State *lua)
+{
+	LuaCallHelper l(lua);
+	l.ForceParamCount(2);
+	CpuType cpuType = (CpuType)l.ReadInteger((uint32_t)_context->GetDefaultCpuType());
+	RegisterType registerType = (RegisterType)l.ReadInteger();
+	checkminparams(1);
+	checkEnum(CpuType, cpuType, "invalid cpu type");
+	checkEnum(RegisterType, registerType, "invalid register type");
+
+	if(optional<uint32_t> value = _debugger->GetRegisterValue(registerType, cpuType)) {
+		l.Return(*value);
+		return l.ReturnCount();
+	} else {
+		error("unsupported register type for the given CPU");
+	}
+}
+
 int LuaApi::WriteMemory16(lua_State *lua)
 {
 	LuaCallHelper l(lua);
@@ -336,6 +358,23 @@ int LuaApi::WriteMemory32(lua_State* lua)
 	errorCond(address < 0, "address must be >= 0");
 	checkEnum(MemoryType, memType, "invalid memory type");
 	_memoryDumper->SetMemoryValue32(memType, address, value, disableSideEffects);
+	return l.ReturnCount();
+}
+
+int LuaApi::WriteRegister(lua_State *lua)
+{
+	LuaCallHelper l(lua);
+	l.ForceParamCount(3);
+	CpuType cpuType = (CpuType)l.ReadInteger((uint32_t)_context->GetDefaultCpuType());
+	uint32_t value = l.ReadInteger();
+	RegisterType registerType = (RegisterType)l.ReadInteger();
+	checkminparams(2);
+	checkEnum(CpuType, cpuType, "invalid cpu type");
+	checkEnum(RegisterType, registerType, "invalid register type");
+
+	if(!_debugger->SetRegisterValue(registerType, cpuType, value)) {
+		error("unsupported register type for the given CPU");
+	}
 	return l.ReturnCount();
 }
 

@@ -529,6 +529,39 @@ PpuTools* SnesDebugger::GetPpuTools()
 	return _ppuTools.get();
 }
 
+optional<uint32_t> SnesDebugger::GetRegisterValue(RegisterType registerType)
+{
+	SnesCpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::A: return s.A;
+		case RegisterType::X: return s.X;
+		case RegisterType::Y: return s.Y;
+		case RegisterType::Sp: return s.SP;
+		case RegisterType::Ps: return s.PS;
+		case RegisterType::Db: return s.DBR;
+		case RegisterType::D: return s.D;
+		case RegisterType::Pc: return (s.K << 16) | s.PC;
+	}
+}
+
+bool SnesDebugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	SnesCpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::A: s.A = (uint16_t)value; break;
+		case RegisterType::X: s.X = (uint16_t)value; break;
+		case RegisterType::Y: s.Y = (uint16_t)value; break;
+		case RegisterType::Sp: s.SP = (uint16_t)value; break;
+		case RegisterType::Ps: s.PS = (uint8_t)value; break;
+		case RegisterType::Db: s.DBR = (uint8_t)value; break;
+		case RegisterType::D: s.D = (uint16_t)value; break;
+		case RegisterType::Pc: s.K = (uint8_t)(value >> 16); s.PC = (uint16_t)value; break;
+	}
+	return true;
+}
+
 BaseState& SnesDebugger::GetState()
 {
 	return GetCpuState();

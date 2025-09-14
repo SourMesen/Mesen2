@@ -33,6 +33,9 @@ public:
 	static int ReadMemory32(lua_State* lua);
 	static int WriteMemory32(lua_State* lua);
 
+	static int ReadRegister(lua_State* lua);
+	static int WriteRegister(lua_State* lua);
+
 	static int GetLabelAddress(lua_State* lua);
 	static int ConvertAddress(lua_State *lua);
 
