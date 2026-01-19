@@ -107,9 +107,12 @@ void SnesDefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	if(_baseFrameInfo.Width == 512 && _blendHighRes) {
 		//Very basic blend effect for high resolution modes
 		for(uint32_t i = 0; i < frameInfo.Height; i++) {
-			for(uint32_t j = 0; j < frameInfo.Width; j++) {
+			for(uint32_t j = 0; j < frameInfo.Width; j += 2) {
 				uint32_t &pixel1 = out[i*frameInfo.Width + j];
-				pixel1 = BlendPixels(pixel1, out[i * frameInfo.Width + j + 1]);
+				uint32_t &pixel2 = out[i*frameInfo.Width + j + 1];
+				uint32_t newPixel = BlendPixels(pixel1, out[i * frameInfo.Width + j + 1]);
+				pixel1 = newPixel;
+				pixel2 = newPixel;
 			}
 		}
 	}
