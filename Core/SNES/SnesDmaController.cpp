@@ -78,7 +78,7 @@ void SnesDmaController::RunDma(DmaChannelConfig &channel)
 
 	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
 
-	uint8_t i = 0;
+	uint32_t i = 0;
 	do {
 		//Manual DMA transfers run to the end of the transfer when started
 		CopyDmaByte(
