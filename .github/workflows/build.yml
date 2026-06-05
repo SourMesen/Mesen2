@@ -5,6 +5,8 @@ on: [push]
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  POWERSHELL_TELEMETRY_OPTOUT: 1
+  POWERSHELL_UPDATECHECK: Off
 
 jobs:
   windows:
@@ -23,6 +25,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Verify Prebuild Script (Pester Tests)
+        shell: powershell
+        run: |
+          Invoke-Pester -Path "UI/tests/prebuild_windows.test.ps1" -Passthru | ForEach-Object { if ($_.FailedCount -gt 0) { exit 1 } }
 
       - name: Install .NET Core
         uses: actions/setup-dotnet@v4
