@@ -14,6 +14,18 @@ namespace Mesen.Debugger.Controls
 {
 	public partial class HexEditor
 	{
+		private static (string Name, SKTypeface Typeface)? s_typefaceCache = null;
+
+		private static SKTypeface GetCachedTypeface(string fontFamily)
+		{
+			if(s_typefaceCache == null || s_typefaceCache.Value.Name != fontFamily) {
+				s_typefaceCache?.Typeface.Dispose();
+				s_typefaceCache = (fontFamily, SKTypeface.FromFamilyName(fontFamily));
+			}
+
+			return s_typefaceCache.Value.Typeface;
+		}
+
 		class HexViewDrawOperation : ICustomDrawOperation
 		{
 			private HexEditor _he;
@@ -125,7 +137,7 @@ namespace Mesen.Debugger.Controls
 				SKPaint paint = new SKPaint();
 				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUInt32());
 
-				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
+				SKTypeface typeface = GetCachedTypeface(_fontFamily);
 				SKFont font = new SKFont(typeface, _fontSize);
 				SetFontProperties(font);
 
@@ -232,7 +244,7 @@ namespace Mesen.Debugger.Controls
 				SKPaint paint = new SKPaint();
 				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUInt32());
 
-				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
+				SKTypeface typeface = GetCachedTypeface(_fontFamily);
 				SKFont monoFont = new SKFont(typeface, _fontSize);
 				SetFontProperties(monoFont);
 
@@ -473,7 +485,7 @@ namespace Mesen.Debugger.Controls
 					SKPaint paint = new SKPaint();
 					paint.Color = new SKColor(ColorHelper.GetColor(_headerForeground).ToUInt32());
 
-					SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
+					SKTypeface typeface = GetCachedTypeface(_fontFamily);
 					SKFont font = new SKFont(typeface, _fontSize);
 					font.Edging = _skiaEdging;
 					font.Subpixel = _skiaSubpixelSmoothing;
