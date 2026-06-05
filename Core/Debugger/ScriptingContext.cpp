@@ -104,15 +104,15 @@ bool ScriptingContext::LoadScript(string scriptName, string path, string scriptC
 		}
 	}
 
-	if(lua_isstring(_lua, -1)) {
-		ProcessLuaError();
-	}
+	ProcessLuaError();
 	return false;
 }
 
 void ScriptingContext::ProcessLuaError()
 {
-	string errorMsg = lua_tostring(_lua, -1);
+	size_t len = 0;
+	const char* cstr = luaL_tolstring(_lua, -1, &len);
+	string errorMsg = string(cstr, len);
 	if(StringUtilities::Contains(errorMsg, "attempt to call a nil value (global 'require')") || StringUtilities::Contains(errorMsg, "attempt to index a nil value (global 'os')") || StringUtilities::Contains(errorMsg, "attempt to index a nil value (global 'io')")) {
 		Log("I/O and OS libraries are disabled by default for security.\nYou can enable them here:\nScript->Settings->Script Window->Restrictions->Allow access to I/O and OS functions.");
 	} else if(StringUtilities::Contains(errorMsg, "module 'socket.core' not found")) {
@@ -120,7 +120,7 @@ void ScriptingContext::ProcessLuaError()
 	} else {
 		Log(errorMsg);
 	}
-	lua_pop(_lua, 1);
+	lua_pop(_lua, 2);
 }
 
 void ScriptingContext::ExecutionCountHook(lua_State* lua)
