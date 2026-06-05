@@ -4612,6 +4612,7 @@
 		{ "desc": "Start with double shot", "code": "SSVGILEA;PZKGNISO" },
 		{ "desc": "Infinite lives", "code": "XVOKVUXK" },
 		{ "desc": "Keep double ship after being destroyed", "code": "AVNTKEOZ" },
+		{ "desc": "Faster shots", "code": "EAKVGPEL" },
 		{ "desc": "Only one part to collect", "code": "PESEGPGT" },
 		{ "desc": "Always get a perfect bonus", "code": "PXVIIEOK;AEVITEAZ" },
 		{ "desc": "Infinite lives (alt)", "code": "0485:05;0487:05" }
@@ -4630,6 +4631,20 @@
 		{ "desc": "Start with 1 life", "code": "PAKKKILA" },
 		{ "desc": "Start with 6 lives", "code": "TAKKKILA" },
 		{ "desc": "Infinite lives (alt)", "code": "0485:05;0487:05" }
+	]
+}, {
+	"name": "Galaxian (Japan)",
+	"sha1": "A5F7A67A40B7A0A47A48F2280938129A1335DCAA",
+	"cheats": [
+		{ "desc": "Infinite lives", "code": "OXEYUZVK" },
+		{ "desc": "Invincibility", "code": "VGOTSYVT;AAXVKYLZ" },
+		{ "desc": "Faster shots", "code": "GAUTITGE" },
+		{ "desc": "Aliens don\u0027t attack", "code": "EIOYYGEY" },
+		{ "desc": "Start on level H0 (240)", "code": "VAEYKZSA" },
+		{ "desc": "Start with 4 flagships", "code": "OZSYNGSU" },
+		{ "desc": "Green aliens are cyan (requires reset)", "code": "GXKTPOZO;GXSTPOZO" },
+		{ "desc": "Starfield moves up", "code": "VIKYPEVN;ZAKNAAKV;KTSYAEAZ" },
+		{ "desc": "More difficult alien bullets (glitchy)", "code": "SNKVPSIN" }
 	]
 }, {
 	"name": "Galaxy 5000 (USA)",
