@@ -10,10 +10,13 @@ To build under Linux you need a version of Clang or GCC that supports C++17.
 
 Additionally, SDL2 and the [.NET 8 SDK](https://learn.microsoft.com/en-us/dotnet/core/install/linux) must also be installed.
 
-Once SDL2 and the .NET 8 SDK are installed, run `make` to compile with Clang.  
+To create an AppImage, you must execute appimage.sh from the root folder of the project, i.e., from the terminal:  Linux/appimage/appimage.sh
+(The appimage.sh script will initiate the compilation process itself.)
+
+
+If not creating an AppImage, once SDL2 and the .NET 8 SDK are installed, run `make` to compile with Clang.  
 To compile with GCC instead, use `USE_GCC=true make`.  
 **Note:** Mesen usually runs faster when built with Clang instead of GCC.
-
 
 ## macOS
 
