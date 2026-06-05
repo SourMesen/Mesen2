@@ -3671,6 +3671,8 @@ E
 			<Value ID="ResetAccessCounters">Reset access stats</Value>
 
 			<Value ID="CopyToHdPackFormat">Copy tile (HD pack format)</Value>
+			<Value ID="CopyTileMemory">Copy tile (memory)</Value>
+			<Value ID="PasteTileMemory">Paste tile (memory)</Value>
 			<Value ID="CheatDatabase">Cheat database</Value>
 			<Value ID="ToggleBilinearInterpolation">Use bilinear interpolation</Value>
 
