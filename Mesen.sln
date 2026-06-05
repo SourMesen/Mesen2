@@ -41,6 +41,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SevenZip", "SevenZip\SevenZ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua\Lua.vcxproj", "{B609E0A0-5050-4871-91D6-E760633BCDD1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core.Test", "Core.Test\Core.Test.vcxproj", "{20DC996B-90E6-C763-B1CE-B6A48C8391F9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0} = {78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,6 +155,22 @@ Global
 		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Release|Any CPU.ActiveCfg = Release|x64
 		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Release|x64.ActiveCfg = Release|x64
 		{B609E0A0-5050-4871-91D6-E760633BCDD1}.Release|x64.Build.0 = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.Debug|Any CPU.Build.0 = Debug|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.Debug|x64.ActiveCfg = Debug|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.Debug|x64.Build.0 = Debug|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.PGO Optimize|Any CPU.ActiveCfg = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.PGO Optimize|Any CPU.Build.0 = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.PGO Optimize|x64.ActiveCfg = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.PGO Optimize|x64.Build.0 = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.PGO Profile|Any CPU.ActiveCfg = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.PGO Profile|Any CPU.Build.0 = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.PGO Profile|x64.ActiveCfg = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.PGO Profile|x64.Build.0 = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.Release|Any CPU.ActiveCfg = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.Release|Any CPU.Build.0 = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.Release|x64.ActiveCfg = Release|x64
+		{20DC996B-90E6-C763-B1CE-B6A48C8391F9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

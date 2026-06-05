@@ -41,10 +41,10 @@ jobs:
         uses: ./.github/actions/build-sha1-action
 
       - name: Build Mesen
-        run: msbuild -nologo -v:d -clp:ForceConsoleColor -m -p:Configuration=Release -p:Platform=x64 -t:Clean,UI -p:TargetFramework="${{ matrix.platform.targetframework }}"
+        run: msbuild -nologo -v:d -clp:ForceConsoleColor -m -p:Configuration=Release -p:Platform=x64 -t:UI -p:TargetFramework="${{ matrix.platform.targetframework }}"
 
       - name: Publish Mesen
-        run: dotnet publish --no-restore -c Release -p:PublishAot="${{ matrix.platform.aot }}" -p:SelfContained="${{ matrix.platform.aot }}" -p:PublishSingleFile="${{ matrix.platform.singleFile }}" -p:OptimizeUi="true" -p:Platform="Any CPU" -p:TargetFramework="${{ matrix.platform.targetframework }}" -r win-x64 Mesen.sln /p:PublishProfile=UI\Properties\PublishProfiles\Release.pubxml
+        run: dotnet publish UI/UI.csproj --no-restore -c Release -p:PublishAot="${{ matrix.platform.aot }}" -p:SelfContained="${{ matrix.platform.aot }}" -p:PublishSingleFile="${{ matrix.platform.singleFile }}" -p:OptimizeUi="true" -p:Platform="x64" -p:TargetFramework="${{ matrix.platform.targetframework }}" -r win-x64 /p:PublishProfile=Properties\PublishProfiles\Release.pubxml
 
       - name: Upload Mesen
         uses: actions/upload-artifact@v4

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Debugger">
+      <UniqueIdentifier>{dc955070-0465-4f07-9feb-f62abd34603b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestUtil">
+      <UniqueIdentifier>{8a68fd58-15c6-4a54-bc57-35547b27c900}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TestUtil\TempFile.h">
+      <Filter>TestUtil</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Debugger\CodeDataLogger.Test.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="TestUtil\TempFile.Test.cpp">
+      <Filter>TestUtil</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+</Project>
+

@@ -18,7 +18,9 @@ CodeDataLogger::CodeDataLogger(Debugger* debugger, MemoryType memType, uint32_t 
 	_cdlData = new uint8_t[memSize];
 	Reset();
 
-	debugger->GetCdlManager()->RegisterCdl(memType, this);
+	if(debugger && debugger->GetCdlManager()) {
+		debugger->GetCdlManager()->RegisterCdl(memType, this);
+	}
 }
 
 CodeDataLogger::~CodeDataLogger()
@@ -28,7 +30,9 @@ CodeDataLogger::~CodeDataLogger()
 
 void CodeDataLogger::Reset()
 {
-	memset(_cdlData, 0, _memSize);
+	if(_cdlData) {
+		memset(_cdlData, 0, _memSize);
+	}
 }
 
 uint8_t* CodeDataLogger::GetRawData()
@@ -46,6 +50,16 @@ MemoryType CodeDataLogger::GetMemoryType()
 	return _memType;
 }
 
+/**
+ * Read a CDL file and load contents into memory.
+ *
+ * Checks the 4-byte CRC32 value of the CDL file against the expected CRC32 for the current ROM. If checksums do not match, clears all CDL data and starts over from zero.
+ *
+ * @param cdlFilepath Valid path to the file to read.
+ * @param autoResetCdl If false: ignore mismatched CRC and load CDL data even if checksums do not match.
+ *
+ * @return Returns true if the file was successfully read and loaded, and false otherwise.
+ */
 bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl)
 {
 	VirtualFile cdlFile = cdlFilepath;
@@ -56,11 +70,12 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl)
 		if(fileSize >= _memSize && fileSize >= CodeDataLogger::HeaderSize) {
 			Reset();
 
-			if(memcmp(cdlData.data(), "CDLv2", 5) == 0) {
+			if(memcmp(cdlData.data(), CodeDataLogger::CdlHeader.data(), CodeDataLogger::CdlHeader.length()) == 0) {
 				uint32_t savedCrc = cdlData[5] | (cdlData[6] << 8) | (cdlData[7] << 16) | (cdlData[8] << 24);
 				if((!autoResetCdl || savedCrc == _romCrc32) && fileSize >= _memSize + CodeDataLogger::HeaderSize) {
 					memcpy(_cdlData, cdlData.data() + CodeDataLogger::HeaderSize, _memSize);
 					InternalLoadCdlFile(cdlData.data() + CodeDataLogger::HeaderSize, (uint32_t)cdlData.size() - CodeDataLogger::HeaderSize);
+					return true;
 				}
 			} else {
 				MessageManager::Log("[Warning] CDL file doesn't contain header/CRC and may be incompatible.");
@@ -68,9 +83,8 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl)
 				//Older CRC-less CDL file, use as-is without checking CRC to avoid data loss
 				memcpy(_cdlData, cdlData.data(), _memSize);
 				InternalLoadCdlFile(cdlData.data(), (uint32_t)cdlData.size());
+				return true;
 			}
-			
-			return true;
 		}
 	}
 	return false;
@@ -80,7 +94,7 @@ bool CodeDataLogger::SaveCdlFile(string cdlFilepath)
 {
 	ofstream cdlFile(cdlFilepath, ios::out | ios::binary);
 	if(cdlFile) {
-		cdlFile.write("CDLv2", 5);
+		cdlFile.write(CodeDataLogger::CdlHeader.data(), CodeDataLogger::CdlHeader.length());
 		cdlFile.put(_romCrc32 & 0xFF);
 		cdlFile.put((_romCrc32 >> 8) & 0xFF);
 		cdlFile.put((_romCrc32 >> 16) & 0xFF);
@@ -104,7 +118,7 @@ CdlStatistics CodeDataLogger::GetStatistics()
 	uint32_t dataSize = 0;
 	uint32_t bothSize = 0;
 
-	for(int i = 0, len = _memSize; i < len; i++) {
+	for(uint32_t i = 0, len = _memSize; i < len; i++) {
 		uint32_t isCode = (uint32_t)(_cdlData[i] & CdlFlags::Code);
 		uint32_t isData = (uint32_t)(_cdlData[i] & CdlFlags::Data) >> 1;
 		codeSize += isCode;
@@ -123,43 +137,67 @@ CdlStatistics CodeDataLogger::GetStatistics()
 
 bool CodeDataLogger::IsCode(uint32_t absoluteAddr)
 {
+	if(absoluteAddr >= _memSize) {
+		return false;
+	}
 	return (_cdlData[absoluteAddr] & CdlFlags::Code) != 0;
 }
 
 bool CodeDataLogger::IsJumpTarget(uint32_t absoluteAddr)
 {
+	if(absoluteAddr >= _memSize) {
+		return false;
+	}
+
 	return (_cdlData[absoluteAddr] & CdlFlags::JumpTarget) != 0;
 }
 
 bool CodeDataLogger::IsSubEntryPoint(uint32_t absoluteAddr)
 {
+	if(absoluteAddr >= _memSize) {
+		return false;
+	}
+
 	return (_cdlData[absoluteAddr] & CdlFlags::SubEntryPoint) != 0;
 }
 
 bool CodeDataLogger::IsData(uint32_t absoluteAddr)
 {
+	if(absoluteAddr >= _memSize) {
+		return false;
+	}
 	return (_cdlData[absoluteAddr] & CdlFlags::Data) != 0;
 }
 
 void CodeDataLogger::SetCdlData(uint8_t *cdlData, uint32_t length)
 {
-	if(length <= _memSize) {
+	if(cdlData && length <= _memSize) {
 		memcpy(_cdlData, cdlData, length);
 	}
 }
 
 void CodeDataLogger::GetCdlData(uint32_t offset, uint32_t length, uint8_t *cdlData)
 {
-	memcpy(cdlData, _cdlData + offset, length);
+	if(cdlData && (offset + length <= _memSize)) {
+		memcpy(cdlData, _cdlData + offset, length);
+	}
 }
 
 uint8_t CodeDataLogger::GetFlags(uint32_t addr)
 {
+	if(addr >= _memSize) {
+		return 0;
+	}
+
 	return _cdlData[addr];
 }
 
 uint32_t CodeDataLogger::GetFunctions(uint32_t functions[], uint32_t maxSize)
 {
+	if(!functions) {
+		return 0;
+	}
+
 	uint32_t count = 0;
 	for(int i = 0, len = _memSize; i < len; i++) {
 		if(IsSubEntryPoint(i)) {
@@ -176,6 +214,11 @@ uint32_t CodeDataLogger::GetFunctions(uint32_t functions[], uint32_t maxSize)
 
 void CodeDataLogger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)
 {
+	if(end >= _memSize) {
+		MessageManager::Log("[Warning] end >= _memSize; capping CDL bytes");
+		end = _memSize - 1;
+	}
+
 	for(uint32_t i = start; i <= end; i++) {
 		_cdlData[i] = (_cdlData[i] & 0xFC) | (int)flags;
 	}
@@ -183,6 +226,10 @@ void CodeDataLogger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)
 
 void CodeDataLogger::StripData(uint8_t* romBuffer, CdlStripOption flag)
 {
+	if(!romBuffer) {
+		return;
+	}
+
 	if(flag == CdlStripOption::StripUnused) {
 		for(uint32_t i = 0; i < _memSize; i++) {
 			if(_cdlData[i] == 0) {

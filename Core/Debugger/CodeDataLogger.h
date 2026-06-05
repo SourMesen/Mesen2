@@ -8,13 +8,15 @@ class Debugger;
 class CodeDataLogger
 {
 protected:
-	constexpr static int HeaderSize = 9; //"CDLv2" + 4-byte CRC32 value
+	static constexpr std::string_view CdlHeader = "CDLv2";
 
 	uint8_t* _cdlData = nullptr;
 	CpuType _cpuType = CpuType::Snes;
 	MemoryType _memType = {};
 	uint32_t _memSize = 0;
 	uint32_t _romCrc32 = 0;
+
+	constexpr static size_t HeaderSize = CdlHeader.length() + sizeof(CodeDataLogger::_romCrc32); //"CDLv2" + 4-byte CRC32 value
 	
 	virtual void InternalLoadCdlFile(uint8_t* cdlData, uint32_t cdlSize) {}
 	virtual void InternalSaveCdlFile(ofstream& cdlFile) {}
