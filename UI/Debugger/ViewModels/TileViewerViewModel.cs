@@ -65,7 +65,7 @@ namespace Mesen.Debugger.ViewModels
 		public List<object> ViewMenuActions { get; } = new();
 
 		public int ColumnCount => Math.Clamp(Config.ColumnCount, 4, 256); 
-		public int RowCount => Math.Clamp(Config.RowCount, 4, 256);
+		public int RowCount => Math.Clamp(Config.RowCount, 4, 512);
 
 		private BaseState? _ppuState;
 		private object _updateLock = new();

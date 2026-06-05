@@ -202,7 +202,7 @@ void SnesPpu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 
 	/* The tilemap address to read the tile data from */
 	uint16_t addr = baseOffset + (column & 0x1F) + (config.DoubleWidth ? (column & 0x20) << 5 : 0);
-	_layerData[layerIndex].Tiles[columnIndex].TilemapData = _vram[addr & 0x7FFF];
+	_layerData[layerIndex].Tiles[columnIndex].TilemapData = _vram[addr & 0xFFFF];
 	_layerData[layerIndex].Tiles[columnIndex].VScroll = vScroll;
 }
 
@@ -251,7 +251,7 @@ void SnesPpu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 
 	uint8_t yOffset = vMirror ? (7 - baseYOffset) : baseYOffset;
 	uint16_t pixelStart = tileStart + yOffset + (plane << 3);
-	tileData.ChrData[plane + (secondTile ? bpp / 2 : 0)] = _vram[pixelStart & 0x7FFF];
+	tileData.ChrData[plane + (secondTile ? bpp / 2 : 0)] = _vram[pixelStart & 0xFFFF];
 }
 
 void SnesPpu::GetHorizontalOffsetByte(uint8_t columnIndex)
@@ -259,7 +259,7 @@ void SnesPpu::GetHorizontalOffsetByte(uint8_t columnIndex)
 	uint16_t columnOffset = (((columnIndex << 3) + (_state.Layers[2].HScroll & ~0x07)) >> 3) & (_state.Layers[2].DoubleWidth ? 0x3F : 0x1F);
 	uint16_t rowOffset = (_state.Layers[2].VScroll >> 3) & (_state.Layers[2].DoubleHeight ? 0x3F : 0x1F);
 
-	_hOffset = _vram[(_state.Layers[2].TilemapAddress + columnOffset + (rowOffset << 5)) & 0x7FFF];
+	_hOffset = _vram[(_state.Layers[2].TilemapAddress + columnOffset + (rowOffset << 5)) & 0xFFFF];
 }
 
 void SnesPpu::GetVerticalOffsetByte(uint8_t columnIndex)
@@ -272,7 +272,7 @@ void SnesPpu::GetVerticalOffsetByte(uint8_t columnIndex)
 	//The vertical offset is 0x40 bytes later - but wraps around within the tilemap based on the tilemap size (0x800 or 0x1000 bytes)
 	uint16_t vOffsetAddr = _state.Layers[2].TilemapAddress + ((tileOffset + 0x20) & (_state.Layers[2].DoubleHeight ? 0x7FF : 0x3FF));
 
-	_vOffset = _vram[vOffsetAddr & 0x7FFF];
+	_vOffset = _vram[vOffsetAddr & 0xFFFF];
 }
 
 void SnesPpu::FetchTileData()
@@ -738,7 +738,7 @@ void SnesPpu::FetchSpriteAttributes(uint16_t oamAddress)
 	uint8_t columnOffset = _currentSprite.HorizontalMirror ? _currentSprite.ColumnOffset : (columnCount - _currentSprite.ColumnOffset - 1);
 	uint8_t tileIndex = (row << 4) | ((tileColumn + columnOffset) & 0x0F);
 	uint16_t tileStart = (_state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? _state.OamAddressOffset : 0));
-	_currentSprite.FetchAddress = (tileStart + yOffset) & 0x7FFF;
+	_currentSprite.FetchAddress = (tileStart + yOffset) & 0xFFFF;
 
 	int16_t x = _currentSprite.X == -256 ? 0 : _currentSprite.X;
 	int16_t endTileX = x + ((columnCount - _currentSprite.ColumnOffset - 1) << 3) + 8;
@@ -758,7 +758,7 @@ void SnesPpu::FetchSpriteTile(bool secondCycle)
 	_currentSprite.ChrData[secondCycle] = chrData;
 
 	if(!secondCycle) {
-		_currentSprite.FetchAddress = (_currentSprite.FetchAddress + 8) & 0x7FFF;
+		_currentSprite.FetchAddress = (_currentSprite.FetchAddress + 8) & 0xFFFF;
 	} else {
 		int16_t xPos = _currentSprite.DrawX;
 		for(int x = 0; x < 8; x++) {
@@ -1759,7 +1759,7 @@ uint8_t SnesPpu::Read(uint16_t addr)
 			_emu->ProcessPpuRead<CpuType::Snes>(GetVramAddress(), returnValue, MemoryType::SnesVideoRam);
 			if(!_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
-				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
+				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0xFFFF;
 			}
 			_state.Ppu1OpenBus = returnValue;
 			return returnValue;
@@ -1771,7 +1771,7 @@ uint8_t SnesPpu::Read(uint16_t addr)
 			_emu->ProcessPpuRead<CpuType::Snes>(GetVramAddress() + 1, returnValue, MemoryType::SnesVideoRam);
 			if(_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
-				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
+				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0xFFFF;
 			}
 			_state.Ppu1OpenBus = returnValue;
 			return returnValue;
@@ -1975,15 +1975,15 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2107: case 0x2108: case 0x2109: case 0x210A:
 			//BG 1-4 Tilemap Address and Size (BG1SC, BG2SC, BG3SC, BG4SC)
-			_state.Layers[addr - 0x2107].TilemapAddress = (value & 0x7C) << 8;
+			_state.Layers[addr - 0x2107].TilemapAddress = (value & 0xFC) << 8;
 			_state.Layers[addr - 0x2107].DoubleWidth = (value & 0x01) != 0;
 			_state.Layers[addr - 0x2107].DoubleHeight = (value & 0x02) != 0;
 			break;
 
 		case 0x210B: case 0x210C:
 			//BG1+2 / BG3+4 Chr Address (BG12NBA / BG34NBA)
-			_state.Layers[(addr - 0x210B) * 2].ChrAddress = (value & 0x07) << 12;
-			_state.Layers[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0x70) << 8;
+			_state.Layers[(addr - 0x210B) * 2].ChrAddress = (value & 0x0F) << 12;
+			_state.Layers[(addr - 0x210B) * 2 + 1].ChrAddress = (value & 0xF0) << 8;
 			break;
 		
 		case 0x210D:
@@ -2033,13 +2033,13 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2116:
 			//VMADDL - VRAM Address low byte
-			_state.VramAddress = (_state.VramAddress & 0x7F00) | value;
+			_state.VramAddress = (_state.VramAddress & 0xFF00) | value;
 			UpdateVramReadBuffer();
 			break;
 
 		case 0x2117:
 			//VMADDH - VRAM Address high byte
-			_state.VramAddress = (_state.VramAddress & 0x00FF) | ((value & 0x7F) << 8);
+			_state.VramAddress = (_state.VramAddress & 0x00FF) | ((value & 0xFF) << 8);
 			UpdateVramReadBuffer();
 			break;
 
@@ -2053,7 +2053,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 
 			//The VRAM address is incremented even outside of vblank/forced blank
 			if(!_state.VramAddrIncrementOnSecondReg) {
-				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
+				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0xFFFF;
 			}
 			break;
 
@@ -2067,7 +2067,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			
 			//The VRAM address is incremented even outside of vblank/forced blank
 			if(_state.VramAddrIncrementOnSecondReg) {
-				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
+				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0xFFFF;
 			}
 			break;
 

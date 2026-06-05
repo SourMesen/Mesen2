@@ -170,24 +170,24 @@ void SnesPpuTools::RenderTilemap(GetTilemapOptions& options, int rowCount, Layer
 		uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
 		for(int column = 0; column < columnCount; column++) {
-			uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
+			uint32_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
 
 			bool vMirror = (vram[addr + 1] & 0x80) != 0;
 			bool hMirror = (vram[addr + 1] & 0x40) != 0;
-			uint16_t tileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
+			uint32_t tileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
 
 			for(int y = 0; y < tileHeight; y++) {
 				uint8_t yOffset = vMirror ? (7 - (y & 0x07)) : (y & 0x07);
 				uint8_t yTileOffset = (largeTileHeight ? ((y & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0);
 
 				for(int x = 0; x < tileWidth; x++) {
-					uint16_t tileOffset = (
+					uint32_t tileOffset = (
 						yTileOffset +
 						(largeTileWidth ? ((x & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
 					);
 
-					uint16_t tileStart = (layer.ChrAddress << 1) + ((tileIndex + tileOffset) & 0x3FF) * 8 * bpp;
-					uint16_t pixelStart = tileStart + yOffset * 2;
+					uint32_t tileStart = (layer.ChrAddress << 1) + ((tileIndex + tileOffset) & 0x3FF) * 8 * bpp;
+					uint32_t pixelStart = tileStart + yOffset * 2;
 
 					uint8_t pixelIndex = hMirror ? (7 - (x & 0x07)) : (x & 0x07);
 					uint8_t color = GetTilePixelColor<format>(vram, SnesPpu::VideoRamSize - 1, pixelStart, pixelIndex);
@@ -339,7 +339,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePrevie
 	sprite.Height = height;
 	sprite.Width = width;
 	sprite.TileIndex = oamRam[addr + 2];
-	sprite.TileAddress = ((state.OamBaseAddress + (sprite.TileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
+	sprite.TileAddress = ((state.OamBaseAddress + (sprite.TileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0xFFFF) << 1;
 	sprite.Palette = ((flags >> 1) & 0x07);
 	sprite.PaletteAddress = (sprite.Palette + 8) * 16;
 	sprite.Priority = (DebugSpritePriority)((flags >> 4) & 0x03);
@@ -358,7 +358,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePrevie
 		int row = (i + tileRow) & 0x0F;
 		for(int j = 0, columnCount = width / 8; j < columnCount; j++) {
 			int col = (j + tileColumn) & 0x0F;
-			sprite.TileAddresses[sprite.TileCount] = ((state.OamBaseAddress + (row * 16 + col) * 16 + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
+			sprite.TileAddresses[sprite.TileCount] = ((state.OamBaseAddress + (row * 16 + col) * 16 + (useSecondTable ? state.OamAddressOffset : 0)) & 0xFFFF) << 1;
 			sprite.TileCount++;
 		}
 	}
@@ -401,7 +401,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t* spritePrevie
 
 			uint8_t column = (tileColumn + columnOffset) & 0x0F;
 			uint8_t tileIndex = (row << 4) | column;
-			uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
+			uint32_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0xFFFF) << 1;
 
 			uint8_t color = GetTilePixelColor<TileFormat::Bpp4>(vram, SnesPpu::VideoRamSize - 1, tileStart + yOffset * 2, xOffset);
 			if(color != 0) {
@@ -506,7 +506,7 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 		uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
 		uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
-		uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
+		uint32_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
 
 		result.Height = largeTileHeight ? 16 : 8;
 		result.Width = largeTileWidth ? 16 : 8;
@@ -523,7 +523,7 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 		result.TileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
 		result.TileMapAddress = addr;
 		
-		uint16_t tileStart = (layer.ChrAddress << 1) + result.TileIndex * 8 * bpp;
+		uint32_t tileStart = (layer.ChrAddress << 1) + result.TileIndex * 8 * bpp;
 		result.TileAddress = tileStart;
 
 	}

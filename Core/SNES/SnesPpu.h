@@ -16,7 +16,7 @@ class SnesPpu : public ISerializable
 public:
 	constexpr static uint32_t SpriteRamSize = 544;
 	constexpr static uint32_t CgRamSize = 512;
-	constexpr static uint32_t VideoRamSize = 0x10000;
+	constexpr static uint32_t VideoRamSize = 0x20000;
 
 private:
 	constexpr static int SpriteLayerIndex = 4;
