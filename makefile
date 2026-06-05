@@ -25,7 +25,19 @@ LINKCHECKUNRESOLVED := -Wl,-z,defs
 
 LINKOPTIONS :=
 MESENOS :=
-UNAME_S := $(shell uname -s)
+
+# Use ?= so we can override these during testing
+UNAME_S ?= $(shell uname -s)
+MACHINE ?= $(shell uname -m)
+
+ifneq ($(ARCH),)
+	ifneq (,$(findstring x64,$(ARCH))$(findstring x86_64,$(ARCH)))
+		override MACHINE := x86_64
+	endif
+	ifneq (,$(findstring arm64,$(ARCH))$(findstring aarch64,$(ARCH)))
+		override MACHINE := aarch64
+	endif
+endif
 
 ifeq ($(UNAME_S),Linux)
 	MESENOS := linux
@@ -42,14 +54,12 @@ endif
 
 MESENFLAGS += -m64
 
-MACHINE := $(shell uname -m)
 ifeq ($(MACHINE),x86_64)
 	MESENPLATFORM := $(MESENOS)-x64
 endif
 ifneq ($(filter %86,$(MACHINE)),)
 	MESENPLATFORM := $(MESENOS)-x64
 endif
-# TODO: this returns `aarch64` on one of my machines...
 ifneq ($(filter arm%,$(MACHINE)),)
 	MESENPLATFORM := $(MESENOS)-arm64
 endif
@@ -57,7 +67,7 @@ ifeq ($(MACHINE),aarch64)
 	MESENPLATFORM := $(MESENOS)-arm64
 	ifeq ($(USE_GCC),true)
 		#don't set -m64 on arm64 for gcc (unrecognized option)
-		MESENFLAGS=
+		MESENFLAGS := $(filter-out -m64,$(MESENFLAGS))
 	endif
 endif
 
@@ -131,7 +141,7 @@ endif
 ifeq ($(USE_AOT),true)
 	PUBLISHFLAGS ?=  -r $(MESENPLATFORM) -p:PublishSingleFile=false -p:PublishAot=true -p:SelfContained=true
 else
-	PUBLISHFLAGS ?=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
+	PUBLISHFLAGS ?=  -r $(MESENPLATFORM) --no-self-contained -p:PublishSingleFile=true
 endif
 
 
@@ -202,10 +212,11 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(OUTFOLDER)/Dependencies
 	rm -fr $(OUTFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(OUTFOLDER)/$(SHAREDLIB)
+	chmod +x UI/prebuild_linux_mac.sh
 	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
 	#Don't run with AOT flags the first time to reduce build duration
-	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) -r $(MESENPLATFORM)
-	cd UI && dotnet publish -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
+	dotnet publish UI/UI.csproj -c $(BUILD_TYPE) $(OPTIMIZEUI) -r $(MESENPLATFORM)
+	dotnet publish UI/UI.csproj -c $(BUILD_TYPE) $(OPTIMIZEUI) $(PUBLISHFLAGS)
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
@@ -243,3 +254,77 @@ clean:
 	rm -r -f $(LUAOBJ)
 	rm -r -f $(MACOSOBJ)
 	rm -r -f $(DLLOBJ)
+
+
+# --- Environment Reporting & Validation ---
+
+# Shared format for the table rows
+PRINT_FORMAT := "%-15s | %-13s %-11s | %-13s %-11s | %-10s\n"
+
+.PHONY: verify-env verify-all-env test-env-row
+
+# Hide the "make[1]: Entering directory..." noise
+.SILENT: test-env-row
+
+# Target for CI: verify the current machine's environment
+verify-env:
+	@echo "Checking Build Environment..."
+	@printf $(PRINT_FORMAT) "INPUT" "MATRIX_REQ" "" "ACTUAL" "" "RESULT"
+	# compare what the matrix requested (REQ_PLAT) vs what the Makefile found (MESENPLATFORM)
+	@$(MAKE) --no-print-directory test-env-row \
+		E_PLAT="$(if $(REQ_PLAT),$(REQ_PLAT),$(MESENPLATFORM))" \
+		E_FLAGS="$(filter -m64,$(MESENFLAGS))"
+
+verify-all-env:
+	@rm -f .test_failed
+	@echo "Validating Makefile Architecture Detection Logic:"
+	@echo "----------------------------------------------------------------------------------------------------------"
+	@printf $(PRINT_FORMAT) "INPUT" "EXPECTED (PLAT/FLAGS)" "" "ACTUAL (PLAT/FLAGS)" "" "RESULT"
+	@echo "----------------------------------------------------------------------------------------------------------"
+	@# --- TEST GROUP 1: Auto-Detection (No ARCH param) ---
+	@# These prove the Makefile works out-of-the-box on different hardware
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Linux  MACHINE=x86_64     E_PLAT=linux-x64   E_FLAGS="-m64" || touch .test_failed
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Linux  MACHINE=aarch64    E_PLAT=linux-arm64 E_FLAGS=""      USE_GCC=true || touch .test_failed
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Darwin MACHINE=x86_64     E_PLAT=osx-x64     E_FLAGS="-m64" || touch .test_failed
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Darwin MACHINE=arm64      E_PLAT=osx-arm64   E_FLAGS="-m64" || touch .test_failed
+
+	@# --- TEST GROUP 2: Explicit Overrides (With ARCH param) ---
+	@# These prove the Makefile correctly ignores the hardware when told to
+	@# Case: On x86_64 hardware, but ARCH says arm64
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Linux  MACHINE=x86_64     E_PLAT=linux-arm64 E_FLAGS=""     ARCH=arm64 USE_GCC=true || touch .test_failed
+
+	@# Case: On ARM64 hardware, but ARCH says x64
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Darwin MACHINE=arm64      E_PLAT=osx-x64     E_FLAGS="-m64" ARCH=x64 || touch .test_failed
+
+	@# Case: Using alternate naming (aarch64) in the ARCH param
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Linux  MACHINE=x86_64     E_PLAT=linux-arm64 E_FLAGS=""     ARCH=aarch64 USE_GCC=true || touch .test_failed
+
+	@# --- TEST GROUP 3: Resilient Naming (Fuzzy ARCH matching) ---
+	@# Test: ARCH contains the full platform name (common in CI)
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Darwin MACHINE=arm64  ARCH=osx-x64   E_PLAT=osx-x64     E_FLAGS="-m64" || touch .test_failed
+
+	@# Test: ARCH contains extra spaces or different casing (handled by findstring)
+	@$(MAKE) --no-print-directory test-env-row UNAME_S=Linux  MACHINE=x86_64 ARCH=linux-arm64 E_PLAT=linux-arm64 E_FLAGS="" USE_GCC=true || touch .test_failed
+	@echo "----------------------------------------------------------------------------------------------------------"
+	@if [ -f .test_failed ]; then \
+		rm .test_failed; \
+		echo "Verification FAILED!"; \
+		exit 1; \
+	else \
+		echo "Verification Complete. All tests PASSED."; \
+	fi
+
+test-env-row:
+	$(eval ACTUAL_FLAGS := $(strip $(filter -m64,$(MESENFLAGS))))
+	$(eval EXP_FLAGS := $(strip $(E_FLAGS)))
+	$(eval PLAT_MATCH := $(if $(filter $(E_PLAT),$(MESENPLATFORM)),OK,FAIL))
+	$(eval FLAG_MATCH := $(if $(subst $(EXP_FLAGS),,$(ACTUAL_FLAGS))$(subst $(ACTUAL_FLAGS),,$(EXP_FLAGS)),FAIL,OK))
+	$(eval PASS := $(if $(filter OKOK,$(PLAT_MATCH)$(FLAG_MATCH)),PASS,FAIL))
+	@printf $(PRINT_FORMAT) \
+		"$(UNAME_S)-$(MACHINE)" \
+		"$(E_PLAT)" "$(EXP_FLAGS)" \
+		"$(MESENPLATFORM)" "$(ACTUAL_FLAGS)" \
+		"$(PASS)"
+	@# Return a non-zero exit code ONLY so verify-all-env can catch it with ||
+	@if [ "$(PASS)" = "FAIL" ]; then exit 1; fi
+

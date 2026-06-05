@@ -1,6 +1,9 @@
 name: Build Mesen
 
-on: [push]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -90,13 +93,17 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update -qy
-          sudo apt-get install -qy libsdl2-dev ccache # The compilers are already installed on GitHub's runners.
+          sudo apt-get install -qy libsdl2-dev ccache zip # The compilers are already installed on GitHub's runners.
 
       - name: Setup CCache
         uses: ./.github/actions/setup-ccache-action
        
       - name: Write commit SHA1 to file
         uses: ./.github/actions/build-sha1-action
+
+      # Verify the Makefile correctly detects this specific Linux environment
+      - name: Verify Environment
+        run: make verify-env ${{ matrix.make_flags }} REQ_PLAT=linux-${{ matrix.platform.path }} ARCH=${{ matrix.platform.path }}
         
       # stderr is not detected as a TTY, so diagnostics are by default printed without colours;
       # forcing colours makes the log a little nicer to read.
@@ -157,7 +164,7 @@ jobs:
       matrix:
         compiler: [clang, clang_aot]
         platform: [
-          {os: macos-13, arch: x64},
+          {os: macos-14, arch: x64},
           {os: macos-14, arch: arm64}
         ]
         include:
@@ -167,6 +174,10 @@ jobs:
             make_flags: "USE_AOT=true"
       fail-fast: false
     runs-on: ${{ matrix.platform.os }}
+    env:
+      # try to save time by preventing brew updates
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
 
     steps:
       - name: Checkout repo
@@ -195,6 +206,10 @@ jobs:
       - name: Write commit SHA1 to file
         uses: ./.github/actions/build-sha1-action
 
+      # Verify the Makefile correctly detects this specific macOS environment
+      - name: Verify Environment
+        run: make verify-env ${{ matrix.make_flags }} REQ_PLAT=osx-${{ matrix.platform.arch }} ARCH=${{ matrix.platform.arch }}
+
       # stderr is not detected as a TTY, so diagnostics are by default printed without colours;
       # forcing colours makes the log a little nicer to read.
       - name: Build Mesen
@@ -202,6 +217,7 @@ jobs:
           ${{ matrix.make_flags }} make -j$(sysctl -n hw.logicalcpu)
 
       - name: Sign binary
+        if: github.event_name != 'pull_request' && env.CERT_DATA != ''
         env:
           APP_NAME: bin/osx-${{ matrix.platform.arch }}/Release/osx-${{ matrix.platform.arch }}/publish/Mesen.app
           CERT_DATA: ${{ secrets.MACOS_CERTIFICATE }}
@@ -228,10 +244,24 @@ jobs:
 
       - name: Zip Mesen.app
         run: |
-          ditto -c -k --sequesterRsrc --keepParent bin/osx-${{ matrix.platform.arch }}/Release/osx-${{ matrix.platform.arch }}/publish/Mesen.app bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip
+          # Find the Mesen.app folder regardless of exactly which subfolder it landed in
+          APP_PATH=$(find bin -name "Mesen.app" -type d | head -n 1)
+
+          if [ -z "$APP_PATH" ]; then
+            echo "::error::Could not find Mesen.app in bin directory!"
+            exit 1
+          fi
+
+          echo "Found app at: $APP_PATH"
+
+          # Create the destination directory if it doesn't exist
+          mkdir -p bin/osx-${{ matrix.platform.arch }}/Release/
+
+          # Zip it up
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip
 
       - name: Upload Mesen
         uses: actions/upload-artifact@v4
         with:
-          name: Mesen (macOS - ${{ matrix.platform.os }} - ${{ matrix.compiler }})
+          name: Mesen (macOS - ${{ matrix.platform.os }} - ${{ matrix.platform.arch }} - ${{ matrix.compiler }})
           path: bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip
