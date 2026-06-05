@@ -118,6 +118,8 @@ public:
 	BaseEventManager* GetEventManager() override;
 	PpuTools* GetPpuTools() override;
 
+	optional<uint32_t> GetRegisterValue(RegisterType registerType) override;
+	bool SetRegisterValue(RegisterType registerType, uint32_t value) override;
 	BaseState& GetState() override;
 	void GetPpuState(BaseState& state) override;
 	void SetPpuState(BaseState& state) override;

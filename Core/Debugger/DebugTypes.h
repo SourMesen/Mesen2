@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Shared/MemoryOperationType.h"
 #include "Shared/CpuType.h"
+#include "Shared/RegisterType.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/AddressInfo.h"
 

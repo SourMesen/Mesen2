@@ -226,6 +226,75 @@ BaseEventManager* Cx4Debugger::GetEventManager()
 	return nullptr;
 }
 
+optional<uint32_t> Cx4Debugger::GetRegisterValue(RegisterType registerType)
+{
+	Cx4State& s = _cx4->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::R0: return s.Regs[0];
+		case RegisterType::R1: return s.Regs[1];
+		case RegisterType::R2: return s.Regs[2];
+		case RegisterType::R3: return s.Regs[3];
+		case RegisterType::R4: return s.Regs[4];
+		case RegisterType::R5: return s.Regs[5];
+		case RegisterType::R6: return s.Regs[6];
+		case RegisterType::R7: return s.Regs[7];
+		case RegisterType::R8: return s.Regs[8];
+		case RegisterType::R9: return s.Regs[9];
+		case RegisterType::R10: return s.Regs[10];
+		case RegisterType::R11: return s.Regs[11];
+		case RegisterType::R12: return s.Regs[12];
+		case RegisterType::R13: return s.Regs[13];
+		case RegisterType::R14: return s.Regs[14];
+		case RegisterType::R15: return s.Regs[15];
+		case RegisterType::Pb: return s.PB;
+		case RegisterType::Pc: return s.PC;
+		case RegisterType::A: return s.A;
+		case RegisterType::P: return s.P;
+		case RegisterType::Sp: return s.SP;
+		case RegisterType::Ml: return (uint32_t)(s.Mult & 0xFFFFFF);
+		case RegisterType::Mh: return (uint32_t)(s.Mult >> 24);
+		case RegisterType::Mdr: return s.MemoryDataReg;
+		case RegisterType::Mar: return s.MemoryAddressReg;
+		case RegisterType::Dpr: return s.DataPointerReg;
+	}
+}
+
+bool Cx4Debugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	Cx4State& s = _cx4->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::R0: s.Regs[0] = value & 0xFFFFFF; break;
+		case RegisterType::R1: s.Regs[1] = value & 0xFFFFFF; break;
+		case RegisterType::R2: s.Regs[2] = value & 0xFFFFFF; break;
+		case RegisterType::R3: s.Regs[3] = value & 0xFFFFFF; break;
+		case RegisterType::R4: s.Regs[4] = value & 0xFFFFFF; break;
+		case RegisterType::R5: s.Regs[5] = value & 0xFFFFFF; break;
+		case RegisterType::R6: s.Regs[6] = value & 0xFFFFFF; break;
+		case RegisterType::R7: s.Regs[7] = value & 0xFFFFFF; break;
+		case RegisterType::R8: s.Regs[8] = value & 0xFFFFFF; break;
+		case RegisterType::R9: s.Regs[9] = value & 0xFFFFFF; break;
+		case RegisterType::R10: s.Regs[10] = value & 0xFFFFFF; break;
+		case RegisterType::R11: s.Regs[11] = value & 0xFFFFFF; break;
+		case RegisterType::R12: s.Regs[12] = value & 0xFFFFFF; break;
+		case RegisterType::R13: s.Regs[13] = value & 0xFFFFFF; break;
+		case RegisterType::R14: s.Regs[14] = value & 0xFFFFFF; break;
+		case RegisterType::R15: s.Regs[15] = value & 0xFFFFFF; break;
+		case RegisterType::Pb: s.PB = (uint16_t)value; break;
+		case RegisterType::Pc: s.PC = (uint8_t)value; break;
+		case RegisterType::A: s.A = value & 0xFFFFFF; break;
+		case RegisterType::P: s.P = (uint16_t)value; break;
+		case RegisterType::Sp: s.SP = (uint8_t)value; break;
+		case RegisterType::Ml: s.Mult = (s.Mult & 0xFFFFFF000000) | (value & 0xFFFFFF); break;
+		case RegisterType::Mh: s.Mult = (s.Mult & 0xFFFFFF) | ((uint64_t)(value & 0xFFFFFF) << 24); break;
+		case RegisterType::Mdr: s.MemoryDataReg = value & 0xFFFFFF; break;
+		case RegisterType::Mar: s.MemoryAddressReg = value & 0xFFFFFF; break;
+		case RegisterType::Dpr: s.DataPointerReg = value & 0xFFFFFF; break;
+	}
+	return true;
+}
+
 BaseState& Cx4Debugger::GetState()
 {
 	return _cx4->GetState();

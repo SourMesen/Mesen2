@@ -264,6 +264,35 @@ BaseEventManager* SpcDebugger::GetEventManager()
 	return nullptr;
 }
 
+optional<uint32_t> SpcDebugger::GetRegisterValue(RegisterType registerType)
+{
+	SpcState& s = _spc->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::A: return s.A;
+		case RegisterType::X: return s.X;
+		case RegisterType::Y: return s.Y;
+		case RegisterType::Sp: return s.SP;
+		case RegisterType::Ps: return s.PS;
+		case RegisterType::Pc: return s.PC;
+	}
+}
+
+bool SpcDebugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	SpcState& s = _spc->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::A: s.A = (uint8_t)value; break;
+		case RegisterType::X: s.X = (uint8_t)value; break;
+		case RegisterType::Y: s.Y = (uint8_t)value; break;
+		case RegisterType::Sp: s.SP = (uint8_t)value; break;
+		case RegisterType::Ps: s.PS = (uint8_t)value; break;
+		case RegisterType::Pc: s.PC = (uint16_t)value; break;
+	}
+	return true;
+}
+
 BaseState& SpcDebugger::GetState()
 {
 	return _spc->GetState();

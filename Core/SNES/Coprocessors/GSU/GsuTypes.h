@@ -40,6 +40,26 @@ struct GsuFlags
 			(Irq << 7)
 		);
 	}
+
+	void SetFlagsLow(uint8_t Bits)
+	{
+		Zero = (Bits & (1 << 1)) != 0;
+		Carry = (Bits & (1 << 2)) != 0;
+		Sign = (Bits & (1 << 3)) != 0;
+		Overflow = (Bits & (1 << 4)) != 0;
+		Running = (Bits & (1 << 5)) != 0;
+		RomReadPending = (Bits & (1 << 6)) != 0;
+	}
+
+	void SetFlagsHigh(uint8_t Bits)
+	{
+		Alt1 = (Bits & (1 << 0)) != 0;
+		Alt2 = (Bits & (1 << 1)) != 0;
+		ImmLow = (Bits & (1 << 2)) != 0;
+		ImmHigh = (Bits & (1 << 3)) != 0;
+		Prefix = (Bits & (1 << 4)) != 0;
+		Irq = (Bits & (1 << 7)) != 0;
+	}
 };
 
 struct GsuPixelCache

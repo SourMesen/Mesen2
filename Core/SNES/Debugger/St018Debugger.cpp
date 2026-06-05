@@ -274,6 +274,57 @@ BreakpointManager* St018Debugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
+optional<uint32_t> St018Debugger::GetRegisterValue(RegisterType registerType)
+{
+	ArmV3CpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::R0: return s.R[0];
+		case RegisterType::R1: return s.R[1];
+		case RegisterType::R2: return s.R[2];
+		case RegisterType::R3: return s.R[3];
+		case RegisterType::R4: return s.R[4];
+		case RegisterType::R5: return s.R[5];
+		case RegisterType::R6: return s.R[6];
+		case RegisterType::R7: return s.R[7];
+		case RegisterType::R8: return s.R[8];
+		case RegisterType::R9: return s.R[9];
+		case RegisterType::R10: return s.R[10];
+		case RegisterType::R11: return s.R[11];
+		case RegisterType::R12: return s.R[12];
+		case RegisterType::R13: case RegisterType::Sp: return s.R[13];
+		case RegisterType::R14: case RegisterType::Lr: return s.R[14];
+		case RegisterType::R15: case RegisterType::Pc: return s.R[15];
+		case RegisterType::Cpsr: return s.CPSR.ToInt32();
+	}
+}
+
+bool St018Debugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	ArmV3CpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::R0: s.R[0] = value; break;
+		case RegisterType::R1: s.R[1] = value; break;
+		case RegisterType::R2: s.R[2] = value; break;
+		case RegisterType::R3: s.R[3] = value; break;
+		case RegisterType::R4: s.R[4] = value; break;
+		case RegisterType::R5: s.R[5] = value; break;
+		case RegisterType::R6: s.R[6] = value; break;
+		case RegisterType::R7: s.R[7] = value; break;
+		case RegisterType::R8: s.R[8] = value; break;
+		case RegisterType::R9: s.R[9] = value; break;
+		case RegisterType::R10: s.R[10] = value; break;
+		case RegisterType::R11: s.R[11] = value; break;
+		case RegisterType::R12: s.R[12] = value; break;
+		case RegisterType::R13: case RegisterType::Sp: s.R[13] = value; break;
+		case RegisterType::R14: case RegisterType::Lr: s.R[14] = value; break;
+		case RegisterType::R15: case RegisterType::Pc: s.R[15] = value; break;
+		case RegisterType::Cpsr: s.CPSR.SetFromInt32(value); break;
+	}
+	return true;
+}
+
 BaseState& St018Debugger::GetState()
 {
 	return _cpu->GetState();

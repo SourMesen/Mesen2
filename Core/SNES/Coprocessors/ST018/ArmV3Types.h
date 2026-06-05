@@ -63,6 +63,17 @@ struct ArmV3CpuFlags
 			(uint8_t)Mode
 		);
 	}
+
+	void SetFromInt32(uint32_t Bits)
+	{
+		Negative = (Bits & (1 << 31)) != 0;
+		Zero = (Bits & (1 << 30)) != 0;
+		Carry = (Bits & (1 << 29)) != 0;
+		Overflow = (Bits & (1 << 28)) != 0;
+		IrqDisable = (Bits & (1 << 7)) != 0;
+		FiqDisable = (Bits & (1 << 6)) != 0;
+		Mode = (ArmV3CpuMode)((uint8_t)Bits);
+	}
 };
 
 struct ArmV3InstructionData

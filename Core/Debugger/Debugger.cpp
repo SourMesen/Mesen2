@@ -830,6 +830,16 @@ void Debugger::BreakImmediately(CpuType sourceCpu, BreakSource source)
 	}
 }
 
+optional<uint32_t> Debugger::GetRegisterValue(RegisterType registerType, CpuType cpuType)
+{
+	return _debuggers[(int)cpuType].Debugger->GetRegisterValue(registerType);
+}
+
+bool Debugger::SetRegisterValue(RegisterType registerType, CpuType cpuType, uint32_t value)
+{
+	return _debuggers[(int)cpuType].Debugger->SetRegisterValue(registerType, value);
+}
+
 void Debugger::GetCpuState(BaseState &dstState, CpuType cpuType)
 {
 	BaseState& srcState = GetCpuStateRef(cpuType);

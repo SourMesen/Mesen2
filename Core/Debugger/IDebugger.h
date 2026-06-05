@@ -76,6 +76,9 @@ public:
 
 	virtual void GetRomHeader(uint8_t* headerData, uint32_t& size) {}
 
+	virtual optional<uint32_t> GetRegisterValue(RegisterType registerType) { return {}; }
+	virtual bool SetRegisterValue(RegisterType registerType, uint32_t value) { return false; }
+
 	virtual BaseState& GetState() = 0;
 	virtual void GetPpuState(BaseState& state) {};
 	virtual void SetPpuState(BaseState& state) {};

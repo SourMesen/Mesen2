@@ -185,6 +185,67 @@ BaseEventManager* GsuDebugger::GetEventManager()
 	return nullptr;
 }
 
+optional<uint32_t> GsuDebugger::GetRegisterValue(RegisterType registerType)
+{
+	GsuState& s = _gsu->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::R0: return s.R[0];
+		case RegisterType::R1: return s.R[1];
+		case RegisterType::R2: return s.R[2];
+		case RegisterType::R3: return s.R[3];
+		case RegisterType::R4: return s.R[4];
+		case RegisterType::R5: return s.R[5];
+		case RegisterType::R6: return s.R[6];
+		case RegisterType::R7: return s.R[7];
+		case RegisterType::R8: return s.R[8];
+		case RegisterType::R9: return s.R[9];
+		case RegisterType::R10: return s.R[10];
+		case RegisterType::R11: return s.R[11];
+		case RegisterType::R12: return s.R[12];
+		case RegisterType::R13: return s.R[13];
+		case RegisterType::R14: return s.R[14];
+		case RegisterType::R15: return s.R[15];
+		case RegisterType::SrcReg: return s.SrcReg;
+		case RegisterType::DstReg: return s.DestReg;
+		case RegisterType::Sfr: return (s.SFR.GetFlagsHigh() << 8) | s.SFR.GetFlagsLow();
+		case RegisterType::Pbr: return s.ProgramBank;
+		case RegisterType::Rombr: return s.RomBank;
+		case RegisterType::Rambr: return s.RamBank;
+	}
+}
+
+bool GsuDebugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	GsuState& s = _gsu->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::R0: s.R[0] = (uint16_t)value; break;
+		case RegisterType::R1: s.R[1] = (uint16_t)value; break;
+		case RegisterType::R2: s.R[2] = (uint16_t)value; break;
+		case RegisterType::R3: s.R[3] = (uint16_t)value; break;
+		case RegisterType::R4: s.R[4] = (uint16_t)value; break;
+		case RegisterType::R5: s.R[5] = (uint16_t)value; break;
+		case RegisterType::R6: s.R[6] = (uint16_t)value; break;
+		case RegisterType::R7: s.R[7] = (uint16_t)value; break;
+		case RegisterType::R8: s.R[8] = (uint16_t)value; break;
+		case RegisterType::R9: s.R[9] = (uint16_t)value; break;
+		case RegisterType::R10: s.R[10] = (uint16_t)value; break;
+		case RegisterType::R11: s.R[11] = (uint16_t)value; break;
+		case RegisterType::R12: s.R[12] = (uint16_t)value; break;
+		case RegisterType::R13: s.R[13] = (uint16_t)value; break;
+		case RegisterType::R14: s.R[14] = (uint16_t)value; break;
+		case RegisterType::R15: s.R[15] = (uint16_t)value; break;
+		case RegisterType::SrcReg: s.SrcReg = (uint8_t)value; break;
+		case RegisterType::DstReg: s.DestReg = (uint8_t)value; break;
+		case RegisterType::Sfr: s.SFR.SetFlagsLow((uint8_t)value); s.SFR.SetFlagsHigh((uint8_t)(value >> 8)); break;
+		case RegisterType::Pbr: s.ProgramBank = (uint8_t)value; break;
+		case RegisterType::Rombr: s.RomBank = (uint8_t)value; break;
+		case RegisterType::Rambr: s.RamBank = (uint8_t)value; break;
+	}
+	return true;
+}
+
 BaseState& GsuDebugger::GetState()
 {
 	return _gsu->GetState();

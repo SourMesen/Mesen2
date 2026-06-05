@@ -409,6 +409,83 @@ BreakpointManager* SmsDebugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
+optional<uint32_t> SmsDebugger::GetRegisterValue(RegisterType registerType)
+{
+	SmsCpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return {};
+		case RegisterType::A: return s.A;
+		case RegisterType::B: return s.B;
+		case RegisterType::C: return s.C;
+		case RegisterType::D: return s.D;
+		case RegisterType::E: return s.E;
+		case RegisterType::F: return s.Flags;
+		case RegisterType::H: return s.H;
+		case RegisterType::L: return s.L;
+		case RegisterType::Af: return (s.A << 8) | s.Flags;
+		case RegisterType::Bc: return (s.B << 8) | s.C;
+		case RegisterType::De: return (s.D << 8) | s.E;
+		case RegisterType::Hl: return (s.H << 8) | s.L;
+		case RegisterType::AltA: return s.AltA;
+		case RegisterType::AltB: return s.AltB;
+		case RegisterType::AltC: return s.AltC;
+		case RegisterType::AltD: return s.AltD;
+		case RegisterType::AltE: return s.AltE;
+		case RegisterType::AltF: return s.AltFlags;
+		case RegisterType::AltH: return s.AltH;
+		case RegisterType::AltL: return s.AltL;
+		case RegisterType::AltAf: return (s.AltA << 8) | s.AltFlags;
+		case RegisterType::AltBc: return (s.AltB << 8) | s.AltC;
+		case RegisterType::AltDe: return (s.AltD << 8) | s.AltE;
+		case RegisterType::AltHl: return (s.AltH << 8) | s.AltL;
+		case RegisterType::Ix: return (s.IXH << 8) | s.IXL;
+		case RegisterType::Iy: return (s.IYH << 8) | s.IYL;
+		case RegisterType::I: return s.I;
+		case RegisterType::R: return s.R;
+		case RegisterType::Sp: return s.SP;
+		case RegisterType::Pc: return s.PC;
+	}
+}
+
+bool SmsDebugger::SetRegisterValue(RegisterType registerType, uint32_t value)
+{
+	SmsCpuState& s = _cpu->GetState();
+	switch(registerType) {
+		default: return false;
+		case RegisterType::A: s.A = (uint8_t)value; break;
+		case RegisterType::B: s.B = (uint8_t)value; break;
+		case RegisterType::C: s.C = (uint8_t)value; break;
+		case RegisterType::D: s.D = (uint8_t)value; break;
+		case RegisterType::E: s.E = (uint8_t)value; break;
+		case RegisterType::F: s.Flags = (uint8_t)value; break;
+		case RegisterType::H: s.H = (uint8_t)value; break;
+		case RegisterType::L: s.L = (uint8_t)value; break;
+		case RegisterType::Af: s.A = (uint8_t)(value >> 8); s.Flags = (uint8_t)value; break;
+		case RegisterType::Bc: s.B = (uint8_t)(value >> 8); s.C = (uint8_t)value; break;
+		case RegisterType::De: s.D = (uint8_t)(value >> 8); s.E = (uint8_t)value; break;
+		case RegisterType::Hl: s.H = (uint8_t)(value >> 8); s.L = (uint8_t)value; break;
+		case RegisterType::AltA: s.AltA = (uint8_t)value; break;
+		case RegisterType::AltB: s.AltB = (uint8_t)value; break;
+		case RegisterType::AltC: s.AltC = (uint8_t)value; break;
+		case RegisterType::AltD: s.AltD = (uint8_t)value; break;
+		case RegisterType::AltE: s.AltE = (uint8_t)value; break;
+		case RegisterType::AltF: s.AltFlags = (uint8_t)value; break;
+		case RegisterType::AltH: s.AltH = (uint8_t)value; break;
+		case RegisterType::AltL: s.AltL = (uint8_t)value; break;
+		case RegisterType::AltAf: s.AltA = (uint8_t)(value >> 8); s.AltFlags = (uint8_t)value; break;
+		case RegisterType::AltBc: s.AltB = (uint8_t)(value >> 8); s.AltC = (uint8_t)value; break;
+		case RegisterType::AltDe: s.AltD = (uint8_t)(value >> 8); s.AltE = (uint8_t)value; break;
+		case RegisterType::AltHl: s.AltH = (uint8_t)(value >> 8); s.AltL = (uint8_t)value; break;
+		case RegisterType::Ix: s.IXH = (uint8_t)(value >> 8); s.IXL = (uint8_t)value; break;
+		case RegisterType::Iy: s.IYH = (uint8_t)(value >> 8); s.IYL = (uint8_t)value; break;
+		case RegisterType::I: s.I = (uint8_t)value; break;
+		case RegisterType::R: s.R = (uint8_t)value; break;
+		case RegisterType::Sp: s.SP = (uint16_t)value; break;
+		case RegisterType::Pc: s.PC = (uint16_t)value; break;
+	}
+	return true;
+}
+
 BaseState& SmsDebugger::GetState()
 {
 	return _cpu->GetState();

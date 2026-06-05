@@ -67,5 +67,7 @@ public:
 	BaseEventManager* GetEventManager() override;
 	ITraceLogger* GetTraceLogger() override;
 
+	optional<uint32_t> GetRegisterValue(RegisterType registerType) override;
+	bool SetRegisterValue(RegisterType registerType, uint32_t value) override;
 	BaseState& GetState() override;
 };
