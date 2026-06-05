@@ -33,6 +33,7 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 	_emu = console->GetEmulator();
 	_mapper = console->GetMapper();
 	_masterClock = 0;
+	_masterClockFrameStart = 0;
 	_masterClockDivider = 4;
 	_settings = _emu->GetSettings();
 
@@ -78,6 +79,7 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 template<class T> void NesPpu<T>::Reset(bool softReset)
 {
 	_masterClock = 0;
+	_masterClockFrameStart = 0;
 
 	//Reset OAM decay timestamps regardless of the reset PPU option
 	memset(_oamDecayCycles, 0, sizeof(_oamDecayCycles));
@@ -879,6 +881,10 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 		}
 
 		if(_scanline >= 0) {
+			if(_scanline == 0 && _cycle == 1) {
+				// get the master clock at the first dot
+				_masterClockFrameStart = _masterClock;
+			}
 			((T*)this)->DrawPixel();
 			ShiftTileRegisters();
 
@@ -1187,15 +1193,18 @@ template<class T> void NesPpu<T>::SendFrame()
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
 	}
 
-	//Get phase at the start of the current frame (341*241 cycles ago)
-	uint32_t videoPhase = ((_masterClock / _masterClockDivider) - 82181) % 3;
+	//Get chroma phase offset at the start of the current frame
+	//In units of color generator clocks
+	//https://www.nesdev.org/wiki/NTSC_video#Color_Artifacts
+	uint32_t videoPhaseOffset = (_masterClockFrameStart % 6) * 2;
+
 	NesConfig& cfg = _console->GetNesConfig();
 	if(_region != ConsoleRegion::Ntsc || cfg.PpuExtraScanlinesAfterNmi != 0 || cfg.PpuExtraScanlinesBeforeNmi != 0) {
 		//Force 2-phase pattern for PAL or when overclocking is used
-		videoPhase = _frameCount & 0x01;
+		videoPhaseOffset = (_frameCount & 0x01) * 4;
 	}
 
-	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount, _console->GetControlManager()->GetPortStates(), videoPhase);
+	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount, _console->GetControlManager()->GetPortStates(), videoPhaseOffset);
 	frame.Data = frameData; //HD packs
 
 	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
@@ -1531,7 +1540,7 @@ template<class T> void NesPpu<T>::Serialize(Serializer& s)
 	SV(_mask.IntensifyBlue); SV(_paletteRamMask); SV(_intensifyColorBits); SV(_statusFlags.SpriteOverflow); SV(_statusFlags.Sprite0Hit); SV(_statusFlags.VerticalBlank); SV(_scanline);
 	SV(_cycle); SV(_frameCount); SV(_memoryReadBuffer); SV(_region);
 
-	SV(_ppuBusAddress); SV(_masterClock);
+	SV(_ppuBusAddress); SV(_masterClock); SV(_masterClockFrameStart);
 
 	if(s.GetFormat() != SerializeFormat::Map) {
 		//Hide these entries from the Lua API

@@ -66,7 +66,7 @@ BisqwitNtscFilter::BisqwitNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 			int scale = 8 / _resDivider;
 			outputBuffer += frameInfo.Width * ((120 - GetOverscan().Top) * scale);
 
-			DecodeFrame(120, 239 - GetOverscan().Bottom, _ppuOutputBuffer, outputBuffer, (GetVideoPhase() * 4) + 327360);
+			DecodeFrame(120, 239 - GetOverscan().Bottom, _ppuOutputBuffer, outputBuffer, GetVideoPhaseOffset() + 120 * 341 * _signalsPerPixel);
 
 			_workDone = true;
 		}
@@ -90,7 +90,7 @@ void BisqwitNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 
 	_workDone = false;
 	_waitWork.Signal();
-	DecodeFrame(GetOverscan().Top, 120, ppuOutputBuffer, GetOutputBuffer(), (GetVideoPhase() * 4) + GetOverscan().Top*341*8);
+	DecodeFrame(GetOverscan().Top, 120, ppuOutputBuffer, GetOutputBuffer(), GetVideoPhaseOffset() + GetOverscan().Top * 341 * _signalsPerPixel);
 	while(!_workDone) {}
 }
 
@@ -140,14 +140,28 @@ void BisqwitNtscFilter::OnBeforeApplyFilter()
 
 	_y = contrast / _yWidth;
 
-	_ir = (int)(contrast * 1.994681e-6 * saturation / _iWidth);
-	_qr = (int)(contrast * 9.915742e-7 * saturation / _qWidth);
+	// https://forums.nesdev.org/viewtopic.php?p=172817#p172817
+	// Bisqwit originally intended to match a certain palette using different
+	// display primaries ("FCC D65"). This resulted in colors that looked off.
+	// The modification here is to more closely match Bisqwit's own palette
+	// generator, which uses a more standard RGB-YIQ matrix.
+	// at hue 0, saturation 1.0, contrast 1.0, brightness 1.0, gamma 2.2
+	// https://bisqwit.iki.fi/utils/nespalette.php
 
-	_ig = (int)(contrast * 9.151351e-8 * saturation / _iWidth);
-	_qg = (int)(contrast * -6.334805e-7 * saturation / _qWidth);
+	// (<contrast at 0> * <saturation at 0>) / (<_iWidth or _qWidth at 0> / 2000)
+	double saturationFactor = (167941.0 * 144044.0) / (12.0 * 2000.0);
 
-	_ib = (int)(contrast * -1.012984e-6 * saturation / _iWidth);
-	_qb = (int)(contrast * 1.667217e-6 * saturation / _qWidth);
+	// IQ coefficients are derived from the NTSC base matrix of luminance and color-difference
+	// with color reduction factors and an additional 33 degree rotation of each respective component.
+	// https://www.nesdev.org/wiki/NTSC_video#Converting_YUV_to_signal_RGB
+	_ir = (int)(contrast * ( 0.956084 / saturationFactor) * saturation / _iWidth);
+	_qr = (int)(contrast * ( 0.620888 / saturationFactor) * saturation / _qWidth);
+
+	_ig = (int)(contrast * (-0.272281 / saturationFactor) * saturation / _iWidth);
+	_qg = (int)(contrast * (-0.646901 / saturationFactor) * saturation / _qWidth);
+
+	_ib = (int)(contrast * (-1.105617 / saturationFactor) * saturation / _iWidth);
+	_qb = (int)(contrast * ( 1.702501 / saturationFactor) * saturation / _qWidth);
 }
 
 void BisqwitNtscFilter::RecursiveBlend(int iterationCount, uint64_t *output, uint64_t *currentLine, uint64_t *nextLine, int pixelsPerCycle, bool verticalBlend)

@@ -16,6 +16,7 @@ class BaseNesPpu : public INesMemoryHandler, public ISerializable
 {
 protected:
 	uint64_t _masterClock = 0;
+	uint64_t _masterClockFrameStart = 0;
 	uint32_t _cycle = 0;
 	int16_t _scanline = 0;
 	bool _emulatorBgEnabled = false;
