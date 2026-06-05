@@ -31,7 +31,7 @@ public:
 
 	__forceinline uint8_t GetInternalOpenBus()
 	{
-		return _externalOpenBus;
+		return _internalOpenBus;
 	}
 
 	__forceinline void SetOpenBus(uint8_t value, bool setInternalOnly)
